@@ -1,0 +1,103 @@
+// vim:set ft=jsonc:
+{
+  "position": "top",
+  "modules-left": [
+    "custom/arch-pill",
+    "sway/mode",
+    "sway/workspaces",
+    "custom/scratchpad_indicator",
+    "sway/window"
+  ],
+  "modules-center": ["custom/playerctl"],
+  "modules-right": [
+    "network",
+    "pulseaudio",
+    "clock",
+    "tray"
+  ],
+  // Modules configuration
+  "sway/workspaces": {
+    "all-outputs": true,
+    "enable-bar-scroll": true,
+    "format": "{icon}",
+    "persistent_workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": []
+    },
+    "format-icons": {
+      "1": "一",
+      "2": "二",
+      "3": "三",
+      "4": "四",
+      "5": "五",
+      "default": "",
+      "urgent": "",
+      "focused": ""
+    }
+  },
+  "custom/arch-pill": {
+    "format": "",
+    "on-click": "wofi",
+    "tooltip": false
+  },
+  "sway/window": { "format": "" },
+  "clock": {
+    "format": "<span foreground='#DDB6F2'> </span><span> {:%I:%M %p}</span>",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    "format-alt": "<span foreground='#96CDFB'> </span><span> {:%I:%M %p  %a %d}</span>"
+  },
+  "network": {
+    "interface": "enp2s0",
+    "format": "Loading",
+    "format-wifi": "<span></span>",
+    "format-ethernet": "<span></span>",
+    "format-linked": "<span></span>",
+    "format-disconnected": "<span>睊</span>",
+    "tooltip-format-linked": "{ifname}  ",
+    "tooltip-format-disconnected": "Disconnected",
+    "tooltip-format-wifi": "Signal Strenght: {signalStrength}% ",
+    "tooltip-format-ethernet": "{ifname}  "
+  },
+  "pulseaudio": {
+    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "format": "<span size='13000' foreground='#FAE3B0'>{icon} </span><span> {volume}%</span>",
+    "format-muted": "<span size='14000'>ﱝ</span>",
+    "format-icons": {
+      "headphone": "",
+      "hands-free": "",
+      "headset": "",
+      "phone": "",
+      "portable": "",
+      "car": "",
+      "default": ["奔", "墳"]
+    },
+    "on-click-right": "pavucontrol"
+  },
+  "custom/playerctl": {
+    "format": "{icon}  <span>{}</span>",
+    "return-type": "json",
+    "max-length": 70,
+    "exec": "playerctl -a metadata --format '{\"text\": \"{{artist}} ~ {{markup_escape(title)}}\", \"tooltip\": \"{{playerName}} : {{markup_escape(title)}}\", \"alt\": \"{{status}}\", \"class\": \"{{status}}\"}' -F",
+    "on-click-middle": "playerctl play-pause",
+    "on-click": "playerctl previous",
+    "on-click-right": "playerctl next",
+    "format-icons": {
+      "Playing": "<span foreground='#ABE9B3'></span>",
+      "Paused": "<span foreground='#E8A2AF'></span>"
+    }
+  },
+"custom/scratchpad_indicator": {
+   "interval": 1,
+   "exec": "swaymsg -t get_tree | jq 'recurse(.nodes[]) | first(select(.name==\"__i3_scratch\")) | .floating_nodes | length | select(. >= 1)'",
+   "format": "{}<span foreground='#E8A2AF'>  </span>",
+   "on-click": "swaymsg 'scratchpad show'",
+   "on-click-right": "swaymsg 'move scratchpad'"
+},
+  "tray": {
+    "icon-size": 24,
+    "reverse-direction": true
+  }
+}

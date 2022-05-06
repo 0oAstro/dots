@@ -1,0 +1,58 @@
+---
+name: 🛡️ ZUnit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['main', 'develop']
+  pull_request_target:
+    branches: ['main', 'develop']
+
+jobs:
+  build-macos:
+    name: 🧪 ZUnit Mac
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: 📚 Get ZUnit
+        run: |
+          mkdir bin
+          curl -fsSL https://raw.githubusercontent.com/zdharma/revolver/13e7af7ee037b6db0a598a4e54242dd9c63a4c45/revolver > bin/revolver
+          curl -fsSL https://raw.githubusercontent.com/zdharma/color/d8f91ab5fcfceb623ae45d3333ad0e543775549c/color.zsh > bin/color
+          git clone https://github.com/zdharma/zunit.git zunit.git
+          cd zunit.git
+          ./build.zsh
+          cd ..
+          mv ./zunit.git/zunit bin
+          chmod u+x bin/{color,revolver,zunit}
+      - name: ✏️ Run
+        run: |
+          export TERM="xterm-256color"
+          export PATH="$PWD/bin:$PATH"
+          zunit
+  
+  build-linux:
+    name: 🧪 ZUnit Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: ℹ️ Setup linux dependencies
+        run: |
+          sudo apt update
+          sudo apt-get install zsh -yq
+      - name: 📚 Get ZUnit
+        run: |
+          mkdir bin
+          curl -fsSL https://raw.githubusercontent.com/zdharma/revolver/13e7af7ee037b6db0a598a4e54242dd9c63a4c45/revolver > bin/revolver
+          curl -fsSL https://raw.githubusercontent.com/zdharma/color/d8f91ab5fcfceb623ae45d3333ad0e543775549c/color.zsh > bin/color
+          git clone https://github.com/zdharma/zunit.git zunit.git
+          cd zunit.git
+          ./build.zsh
+          cd ..
+          mv ./zunit.git/zunit bin
+          chmod u+x bin/{color,revolver,zunit}
+      - name: ✏️ Run
+        run: |
+          export TERM="xterm-256color"
+          export PATH="$PWD/bin:$PATH"
+          zunit

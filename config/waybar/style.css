@@ -1,0 +1,183 @@
+@define-color bg-hover #1a1a28;
+@define-color bg #1E1E2E;
+@define-color blue #96CDFB;
+@define-color sky #89DCEB;
+@define-color red #F28FAD;
+@define-color pink #F5C2E7;
+@define-color lavender #C9CBFF;
+@define-color rosewater #F5E0DC;
+@define-color flamingo #F2CDCD;
+@define-color fg #D9E0EE;
+@define-color green #ABE9B3;
+@define-color dark-fg #161320;
+@define-color peach #F8BD96;
+@define-color border @blue;
+@define-color gray2 #6E6C7E;
+@define-color black4 #575268;
+@define-color black3 #302D41;
+@define-color maroon #E8A2AF;
+
+* {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  font-family: "Iosevka Aile", "JetBrainsMono Nerd Font";
+  font-size: 12pt;
+  padding-bottom: 1px;
+}
+
+tooltip {
+  background: @bg;
+  border-radius: 7px;
+  border: 2px solid @border;
+}
+
+window#waybar {
+  background-color: transparent;
+  color: @lavender;
+}
+
+window#waybar.solo {
+  background-color: @bg;
+  color: @lavender;
+}
+
+window#waybar.solo #workspaces button { border-radius: 5px; }
+
+#custom-arch-pill {
+  margin: 5px;
+  padding-left: 10px;
+  padding-right: 15px;
+  border-radius: 7px;
+  background-color: @lavender;
+  color: @dark-fg;
+}
+
+#custom-scratchpad_indicator {
+  margin: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 7px;
+  background-color: @bg;
+  color: @lavender;
+}
+
+#mode {
+  margin: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 7px;
+  background-color: @bg;
+  color: @peach;
+}
+
+#workspaces {
+  background: @bg;
+  margin-left: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border-radius: 7px;
+}
+
+#workspaces button {
+  padding-left: 10px;
+  padding-right: 10px;
+  min-width: 0;
+  color: @black4;
+}
+
+#workspaces button.current_output {
+  color: @lavender;
+}
+
+#workspaces button.focused {
+  background-color: @flamingo;
+  border-color: @flamingo;
+  color: @dark-fg;
+}
+
+#workspaces button.urgent {
+  background-color: @peach;
+  border-color: @peach;
+  color: @dark-fg;
+}
+
+#workspaces button:hover {
+  background: @bg-hover;
+  border-color: @bg-hover;
+  color: @flamingo;
+}
+
+#workspaces button:first-child:hover,
+#workspaces button.focused:first-child,
+#workspaces button.urgent:first-child {
+  border-top-left-radius: 7px;
+  border-bottom-left-radius: 7px;
+}
+#workspaces button:last-child:hover,
+#workspaces button.focused:last-child,
+#workspaces button.urgent:last-child {
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+}
+
+#network {
+  margin: 5px;
+  padding-left: 10px;
+  padding-right: 15px;
+  border-radius: 7px;
+  color: @dark-fg;
+}
+#network.wifi,
+#network.ethernet {
+  background-color: @green;
+}
+#network.linked {
+  background-color: @peach;
+}
+#network.disconnected,
+#network.disabled {
+  background-color: @red;
+}
+
+#pulseaudio {
+  margin: 5px;
+  padding-left: 10px;
+  padding-right: 15px;
+  border-radius: 7px;
+  color: @lavender;
+  background-color: @bg;
+}
+
+#custom-playerctl {
+  margin: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 7px;
+  color: @lavender;
+  background-color: @bg;
+}
+
+#pulseaudio.muted {
+  background-color: @red;
+  color: @dark-fg;
+}
+
+#clock {
+  margin: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 7px;
+  color: @lavender;
+  background-color: @bg;
+}
+
+/* #tray { */
+/*   margin: 5px; */
+/*   padding: 2px; */
+/*   border-radius: 7px; */
+/*   background-color: @bg; */
+/* } */
+
+/* bottom waybar */

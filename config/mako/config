@@ -1,0 +1,35 @@
+layer=top
+sort=-priority
+markup=1
+anchor=top-right
+width=350
+height=200
+max-icon-size=64
+icon-location=right
+margin=20,20,0
+padding=15,15,15
+border-size=3
+border-radius=7
+font=Iosevka Aile 12
+default-timeout=5000
+group-by=summary
+format=<span font="Iosevka Aile weight=500" size="12288">%s</span>\n<span font="Iosevka Aile weight=425" size="11188">%b</span>
+background-color=#1E1D2F
+text-color=#D9E0EE
+border-color=#96CDFB
+progress-color=over #302D41
+
+
+[grouped]
+format=<span font="Iosevka Aile weight=500" size="12288">%s</span>\n<span font="Iosevka Aile weight=425" size="12288">%b</span>
+
+[mode=do-not-disturb]
+invisible=1
+
+[urgency="low"]
+border-color=#C9CBFF
+
+[urgency="critical"]
+border-color=#F8BD96
+
+default-timeout=10000
