@@ -52,6 +52,7 @@ window#waybar.solo #taskbar button { border-radius: 5px; }
 }
 
 #taskbar button {
+  padding-top: 5px;
   padding-left: 10px;
   padding-right: 10px;
   min-width: 0;
