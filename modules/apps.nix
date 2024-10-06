@@ -44,6 +44,7 @@
       "aerospace"
       "appcleaner"
       "arc"
+      "cyberduck"
       "discord"
       "etrecheckpro"
       "firefox"
