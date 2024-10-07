@@ -41,13 +41,12 @@
 
     # `brew install --cask`
     casks = [
-      "aerospace"
       "appcleaner"
       "arc"
-      "cyberduck"
       "discord"
       "etrecheckpro"
       "firefox"
+      "floorp"
       "iina"
       "imageoptim"
       "keycastr"
