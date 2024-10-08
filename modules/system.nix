@@ -35,6 +35,7 @@
           "/System/Applications/Music.app"
           "/System/Applications/Mail.app"
           "/Applications/Standard Notes.app"
+          "/Applications/Obsidian.app"
           "/Applications/Notion.app"
           "/Applications/Notion Calendar.app"
           "/Applications/Arc.app"
@@ -133,7 +134,7 @@
         "com.apple.desktopservices" = {
           # Avoid creating .DS_Store files on network or USB volumes
           DSDontWriteNetworkStores = true;
-          DSDontWriteUSBStores = true;
+          DSDontWriteUSBStores = false;
         };
         "com.apple.spaces" = {
           "spans-displays" = 0; # Display have seperate spaces

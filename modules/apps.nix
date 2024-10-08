@@ -53,6 +53,7 @@
       "maestral"
       "notion"
       "notion-calendar"
+      "obsidian"
       "protonvpn"
       "standard-notes"
       "stremio"
