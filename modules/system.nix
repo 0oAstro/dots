@@ -30,10 +30,10 @@
 
         mouse-over-hilite-stack = true;
         persistent-apps = [
-          "/Applications/Launchpad.app"
-          "/Applications/System Settings.app"
-          "/Applications/Music.app"
-          "/Applications/Mail.app"
+          "/System/Applications/Launchpad.app"
+          "/System/Applications/System Settings.app"
+          "/System/Applications/Music.app"
+          "/System/Applications/Mail.app"
           "/Applications/Standard Notes.app"
           "/Applications/Notion.app"
           "/Applications/Notion Calendar.app"
