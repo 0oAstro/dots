@@ -1,4 +1,4 @@
-{pkgs, ...}:
+{pkgs, username, ...}:
 ###################################################################################
 #
 #  macOS's System configuration
@@ -31,20 +31,21 @@
         mouse-over-hilite-stack = true;
         persistent-apps = [
           "/Applications/Launchpad.app"
-          "/Applications/System\ Settings.app"
+          "/Applications/System Settings.app"
           "/Applications/Music.app"
           "/Applications/Mail.app"
-          "/Applications/Standard\ Notes.app"
+          "/Applications/Standard Notes.app"
           "/Applications/Notion.app"
-          "/Applications/Notion\ Calendar.app"
+          "/Applications/Notion Calendar.app"
           "/Applications/Arc.app"
+          "/Applications/Visual Studio Code.app"
           "/Applications/WezTerm.app"
           "/Applications/WhatsApp.app"
           "/Applications/Discord.app"
         ];
         persistent-others = [
-          "~/Downloads"
-          "~/Dropbox/Screenshots"
+          "/Users/${username}/Downloads"
+          "/Users/${username}/Dropbox/Screenshots"
         ];
         showhidden = true;
         wvous-tl-corner = 2; # top-left - Mission Control
