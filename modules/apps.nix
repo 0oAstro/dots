@@ -45,8 +45,6 @@
       "arc"
       "discord"
       "etrecheckpro"
-      "firefox"
-      "floorp"
       "iina"
       "imageoptim"
       "keycastr"
@@ -63,7 +61,6 @@
       "visual-studio-code"
       "wezterm"
       "whisky"
-      "zen-browser"
     ];
 
     masApps = {

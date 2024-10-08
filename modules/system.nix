@@ -26,28 +26,25 @@
       # customize dock
       dock = {
         autohide = false;
-        show-recents = true; # disable recent apps
+        show-recents = false; # disable recent apps
 
         mouse-over-hilite-stack = true;
         persistent-apps = [
           "/Applications/Launchpad.app"
           "/Applications/System\ Settings.app"
-          "/Applications/Mail.app"
           "/Applications/Music.app"
-          "/Applications/Preview.app"
+          "/Applications/Mail.app"
           "/Applications/Standard\ Notes.app"
-          "/Applications/Notes.app"
-          "/Applications/Firefox.app"
-          "/Applications/Safari.app"
+          "/Applications/Notion.app"
+          "/Applications/Notion\ Calendar.app"
+          "/Applications/Arc.app"
           "/Applications/WezTerm.app"
-          "/Applications/Zed.app"
-          "/Applications/IINA.app"
-          "/Applications/Stremio.app"
           "/Applications/WhatsApp.app"
           "/Applications/Discord.app"
         ];
         persistent-others = [
           "~/Downloads"
+          "~/Dropbox/Screenshots"
         ];
         showhidden = true;
         wvous-tl-corner = 2; # top-left - Mission Control
@@ -65,7 +62,7 @@
         ShowStatusBar = true; # show status bar
         CreateDesktop = false; # disable desktop icons
         FXDefaultSearchScope = "SCcf"; # When performing a search, search the current folder by default
-        FXPreferredViewStyle = "icnv"; # set default view style to icon view
+        FXPreferredViewStyle = "clmv"; # set default view style to icon view
       };
 
       # customize trackpad
@@ -79,7 +76,7 @@
         SecondClickThreshold = 2; # firm touch
       };
 
-      SoftwareUpdate.AutomaticallyInstallMacOSUpdates = false; # disable automatic macOS updates
+      SoftwareUpdate.AutomaticallyInstallMacOSUpdates = true; # disable automatic macOS updates
 
       # customize settings that not supported by nix-darwin directly
       # Incomplete list of macOS `defaults` commands :
@@ -97,7 +94,7 @@
         # sets how long it takes before it starts repeating.
         InitialKeyRepeat = 15; # normal minimum is 15 (225 ms), maximum is 120 (1800 ms)
         # sets how fast it repeats once it starts.
-        KeyRepeat = 3; # normal minimum is 2 (30 ms), maximum is 120 (1800 ms)
+        KeyRepeat = 2; # normal minimum is 2 (30 ms), maximum is 120 (1800 ms)
 
         NSAutomaticCapitalizationEnabled = false; # disable auto capitalization(自动大写)
         NSAutomaticDashSubstitutionEnabled = false; # disable auto dash substitution(智能破折号替换)
