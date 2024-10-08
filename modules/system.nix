@@ -38,8 +38,10 @@
           "/Applications/Notion.app"
           "/Applications/Notion Calendar.app"
           "/Applications/Arc.app"
+          "/Applications/Safari.app"
           "/Applications/Visual Studio Code.app"
           "/Applications/WezTerm.app"
+          "/System/Applications/Utilities/Terminal.app"
           "/Applications/WhatsApp.app"
           "/Applications/Discord.app"
         ];
