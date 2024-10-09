@@ -182,6 +182,8 @@
       # disabled, caused only problems!
       swapLeftCommandAndLeftAlt = false;
     };
+
+    stateVersion = 5; # nix-darwin state version
   };
 
   # Add ability to used TouchID for sudo authentication
