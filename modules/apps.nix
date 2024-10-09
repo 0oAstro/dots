@@ -43,6 +43,7 @@
     casks = [
       "appcleaner"
       "arc"
+      "capcut"
       "discord"
       "dropshelf"
       "etrecheckpro"
