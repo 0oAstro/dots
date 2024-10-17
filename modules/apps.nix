@@ -43,8 +43,6 @@
     casks = [
       "appcleaner"
       "arc"
-      "au-lab"
-      "blackhole-2ch"
       "capcut"
       "discord"
       "etrecheckpro"
