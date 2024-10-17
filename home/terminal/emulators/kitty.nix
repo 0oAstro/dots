@@ -6,7 +6,7 @@
     # let homebrew manage this
     package = pkgs.emptyDirectory;
     
-    enable = true;
+    enable = false;
     font = {
       size = 16;
       name = "MonoLisa";
