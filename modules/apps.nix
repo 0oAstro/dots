@@ -41,6 +41,7 @@
     casks = [
       "appcleaner"
       "arc"
+      "discord"
       "etrecheckpro"
       "iina"
       "imageoptim"
@@ -58,12 +59,12 @@
       "tunnelblick"
       "visual-studio-code"
       "wezterm"
+      "whatsapp@beta"
       "whisky"
       "zen-browser"
     ];
 
     masApps = {
-        WhatsApp = 310633997;
         "Microsoft Word" = 462054704;
         "Microsoft Excel" = 462058435;
         "Microsoft PowerPoint" = 462062816;
