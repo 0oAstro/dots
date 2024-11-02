@@ -16,6 +16,12 @@
 
       local config = {}
 
+      local mux = wezterm.mux
+
+      local cache_dir = os.getenv('HOME') .. '/.cache/wezterm/'
+      local window_size_cache_path = cache_dir .. 'window_size_cache.txt'
+
+
       local function scheme_for_appearance(appearance)
           if appearance:find "Dark" then
               return "Catppuccin Mocha"
