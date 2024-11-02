@@ -10,6 +10,7 @@
     ./terminal
     ./terminal/emulators/wezterm.nix
     ./terminal/emulators/kitty.nix
+    ./gui.nix
   ];
 
   # Home Manager needs a bit of information about you and the

@@ -1,4 +1,3 @@
-
 {pkgs, ...}: {
   ##########################################################################
   #
@@ -36,33 +35,31 @@
 
     taps = [
       "homebrew/services"
-      "nikitabobko/tap"
     ];
 
     # `brew install --cask`
     casks = [
       "appcleaner"
       "arc"
-      "capcut"
-      "discord"
       "etrecheckpro"
       "iina"
       "imageoptim"
       "keycastr"
       "maccy"
       "maestral"
-      "neardrop"
       "notion"
       "notion-calendar"
       "obsidian"
       "protonvpn"
       "standard-notes"
       "stremio"
+      "thunderbird@beta"
       "transmission"
       "tunnelblick"
       "visual-studio-code"
       "wezterm"
       "whisky"
+      "zen-browser"
     ];
 
     masApps = {
