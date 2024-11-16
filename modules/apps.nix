@@ -52,6 +52,7 @@
       "notion-calendar"
       "obsidian"
       "protonvpn"
+      "spotify"
       "standard-notes"
       "stremio"
       "thunderbird@beta"
@@ -65,11 +66,12 @@
     ];
 
     masApps = {
+        Bitwarden = 1352778147;
+        "DaVinci Resolve" = 571213070;
+        Grammarly = 1462114288;
         "Microsoft Word" = 462054704;
         "Microsoft Excel" = 462058435;
         "Microsoft PowerPoint" = 462062816;
-        "DaVinci Resolve" = 571213070;
-        Bitwarden = 1352778147;
     };
 
     caskArgs.no_quarantine = true;
