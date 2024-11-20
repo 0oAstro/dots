@@ -32,12 +32,11 @@
         persistent-apps = [
           "/System/Applications/Launchpad.app"
           "/System/Applications/System Settings.app"
-          "/System/Applications/Music.app"
+          "/Applications/Spotify.app"
           "/System/Applications/Mail.app"
           "/Applications/Standard Notes.app"
           "/Applications/Obsidian.app"
           "/Applications/Notion.app"
-          "/Applications/Notion Calendar.app"
           "/Applications/Arc.app"
           # "/Applications/Safari.app"
           "/Applications/Visual Studio Code.app"
