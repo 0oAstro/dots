@@ -43,6 +43,8 @@
       "arc"
       "discord"
       "etrecheckpro"
+      "firefox@nightly"
+      "grammarly-desktop"
       "iina"
       "imageoptim"
       "keycastr"
@@ -56,19 +58,16 @@
       "standard-notes"
       "stremio"
       "thunderbird@beta"
-      "transmission"
       "tunnelblick"
       "visual-studio-code"
       "wezterm"
-      "whatsapp@beta"
-      "whisky"
+      "whatsapp"
+      "zed"
       "zen-browser"
     ];
 
     masApps = {
-        Bitwarden = 1352778147;
-        "DaVinci Resolve" = 571213070;
-        Grammarly = 1462114288;
+        # "DaVinci Resolve" = 571213070;
         "Microsoft Word" = 462054704;
         "Microsoft Excel" = 462058435;
         "Microsoft PowerPoint" = 462062816;
