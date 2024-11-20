@@ -57,7 +57,7 @@ in {
         format = "ssh";
         ssh.allowedSignersFile = config.home.homeDirectory + "/" + config.xdg.configFile."git/allowed_signers".target;
       };
-      
+
       pull.rebase = true;
     };
 

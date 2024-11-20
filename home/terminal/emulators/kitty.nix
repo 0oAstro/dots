@@ -1,11 +1,8 @@
-{pkgs, ...}:
-
-{
+{pkgs, ...}: {
   programs.kitty = {
-
     # let homebrew manage this
     package = pkgs.emptyDirectory;
-    
+
     enable = false;
     font = {
       size = 16;

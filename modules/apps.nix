@@ -67,10 +67,10 @@
     ];
 
     masApps = {
-        # "DaVinci Resolve" = 571213070;
-        "Microsoft Word" = 462054704;
-        "Microsoft Excel" = 462058435;
-        "Microsoft PowerPoint" = 462062816;
+      # "DaVinci Resolve" = 571213070;
+      "Microsoft Word" = 462054704;
+      "Microsoft Excel" = 462058435;
+      "Microsoft PowerPoint" = 462062816;
     };
 
     caskArgs.no_quarantine = true;

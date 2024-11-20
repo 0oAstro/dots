@@ -1,6 +1,4 @@
-{pkgs, ...}:
-
-{
+{pkgs, ...}: {
   programs.wezterm = {
     enable = true;
 
@@ -35,18 +33,18 @@
       end
 
       wezterm.on("gui-startup", function()
-    	  os.execute("mkdir " .. cache_dir)
+       os.execute("mkdir " .. cache_dir)
 
-    	  local window_size_cache_file = io.open(window_size_cache_path, "r")
-    	  local window
-    	  if window_size_cache_file ~= nil then
-    	  	_, _, width, height = string.find(window_size_cache_file:read(), "(%d+),(%d+)")
-    	  	_, _, window = mux.spawn_window({ width = tonumber(width), height = tonumber(height) })
-    	  	window_size_cache_file:close()
-    	  else
-    	  	_, _, window = mux.spawn_window({})
-    	  	window:gui_window():maximize()
-    	  end
+       local window_size_cache_file = io.open(window_size_cache_path, "r")
+       local window
+       if window_size_cache_file ~= nil then
+       	_, _, width, height = string.find(window_size_cache_file:read(), "(%d+),(%d+)")
+       	_, _, window = mux.spawn_window({ width = tonumber(width), height = tonumber(height) })
+       	window_size_cache_file:close()
+       else
+       	_, _, window = mux.spawn_window({})
+       	window:gui_window():maximize()
+       end
       end)
 
       wezterm.on("window-resized", function(_, pane)
@@ -64,7 +62,7 @@
       		print("Error: Could not open file for writing: " .. window_size_cache_path)
       	end
       end)
-      
+
       config.font_size = 16
       config.window_background_opacity = 0.6
       config.macos_window_background_blur = 40
