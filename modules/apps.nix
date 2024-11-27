@@ -43,6 +43,8 @@
       "arc"
       "discord"
       "etrecheckpro"
+      "figma"
+      "figma-agent"
       "firefox@nightly"
       "grammarly-desktop"
       "iina"

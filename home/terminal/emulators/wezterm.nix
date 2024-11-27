@@ -12,7 +12,7 @@
       local act = wezterm.action
       local font = "CartographCF Nerd Font"
 
-      local config = {}
+      local weconfig = {}
 
       local mux = wezterm.mux
 
