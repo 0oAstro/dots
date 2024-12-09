@@ -9,12 +9,10 @@
       automatic = true;
       options = "--delete-older-than 7d";
     };
+    optimise.automatic = true;
     settings = {
       # enable flakes globally
       experimental-features = ["nix-command" "flakes"];
-
-      # garbage collection
-      auto-optimise-store = true;
 
       # substituers that will be considered before the official ones(https://cache.nixos.org)
       substituters = [
