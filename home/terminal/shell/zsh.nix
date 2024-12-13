@@ -75,6 +75,10 @@
       ${pkgs.pokeget-rs}/bin/pokeget random --hide-name
     '';
 
+    initExtraFirst = ''
+      unset MAILCHECK
+    '';
+
     profileExtra = ''
       eval $(/opt/homebrew/bin/brew shellenv)
     '';

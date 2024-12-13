@@ -41,19 +41,14 @@
     casks = [
       "appcleaner"
       "arc"
-      "discord"
       "etrecheckpro"
-      "figma"
-      "figma-agent"
       "firefox@nightly"
-      "grammarly-desktop"
       "iina"
       "imageoptim"
       "keycastr"
       "maccy"
       "maestral"
       "notion"
-      "notion-calendar"
       "obsidian"
       "protonvpn"
       "spotify"
@@ -65,7 +60,7 @@
       "wezterm"
       "whatsapp"
       "zed"
-      "zen-browser"
+      "zen-browser@twilight"
     ];
 
     masApps = {
@@ -75,6 +70,8 @@
       "Microsoft PowerPoint" = 462062816;
     };
 
-    caskArgs.no_quarantine = true;
+    caskArgs = {
+      no_quarantine = true;
+    };
   };
 }

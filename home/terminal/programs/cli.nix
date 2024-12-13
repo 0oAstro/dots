@@ -17,7 +17,21 @@
   ];
 
   programs = {
-    eza.enable = true;
-    ssh.enable = true;
+    eza = {
+      enable = true;
+      icons = "always";
+      colors = "alawys";
+      git = true;
+      
+    };
+    ssh = {
+      enable = true;
+      extraConfig = ''
+        Host *
+          AddKeysToAgent yes
+          UseKeychain yes
+          IdentityFile ~/.ssh/id_ed25519
+      '';
+    };
   };
 }

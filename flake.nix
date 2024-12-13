@@ -12,22 +12,6 @@
     ];
   };
 
-  # This is the standard format for flake.nix. `inputs` are the dependencies of the flake,
-  # Each item in `inputs` will be passed as a parameter to the `outputs` function after being pulled and built.
-  inputs = {
-    nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-24.11-darwin";
-    darwin = {
-      url = "github:lnl7/nix-darwin";
-      inputs.nixpkgs.follows = "nixpkgs-darwin";
-    };
-
-    # home-manager, used for managing user configuration
-    home-manager = {
-      url = "github:nix-community/home-manager/release-24.05";
-      inputs.nixpkgs.follows = "nixpkgs-darwin";
-    };
-  };
-
   # The `outputs` function will return all the build results of the flake.
   # A flake can have many use cases and different types of outputs,
   # parameters in `outputs` are defined in `inputs` and can be referenced by their names.
@@ -38,12 +22,13 @@
     nixpkgs,
     darwin,
     home-manager,
+    mac-app-util,
     ...
   }: let
-    # TODO replace with your own username, system and hostname
+    # TODO: replace with your own username, system and hostname
     username = "shaurya";
     system = "aarch64-darwin"; # aarch64-darwin or x86_64-darwin
-    hostname = "shadowfax";
+    hostname = "aki";
 
     specialArgs =
       inputs
@@ -60,6 +45,8 @@
 
         ./modules/host-users.nix
 
+        mac-app-util.darwinModules.default
+
         home-manager.darwinModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
@@ -71,5 +58,26 @@
     };
     # nix code formatter
     formatter.${system} = nixpkgs.legacyPackages.${system}.alejandra;
+  };
+
+  # This is the standard format for flake.nix. `inputs` are the dependencies of the flake,
+  # Each item in `inputs` will be passed as a parameter to the `outputs` function after being pulled and built.
+  inputs = {
+    # nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-24.11-darwin";
+    nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-unstable"; # not darwin but still being on the edge
+    darwin = {
+      url = "github:lnl7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
+    };
+
+    # home-manager, used for managing user configuration
+    home-manager = {
+      url = "github:nix-community/home-manager/release-24.05";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
+    };
+    mac-app-util = {
+      url = "github:hraban/mac-app-util";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
+    };
   };
 }

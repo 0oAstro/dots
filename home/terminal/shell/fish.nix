@@ -1,0 +1,73 @@
+{ pkgs, ... }:
+{
+  programs.fish = {
+    enable = true;
+    shellAliases = {
+      ls = "eza -laHG --icons --git";
+      tmp = "cd (mktemp -d)";
+      ".." = "cd ..";
+      bat = "bat";
+    };
+
+    shellAbbrs = {
+      e = "$EDITOR";
+      ga = "git add";
+      gb = "git branch";
+      gc = "git commit";
+      gca = "git commit --amend";
+      gcm = "git commit -m";
+      gco = "git checkout";
+      gd = "git diff";
+      gds = "git diff --staged";
+      gp = "git push";
+      gpl = "git pull";
+      gl = "git log";
+      gr = "git rebase";
+      gs = "git status --short";
+      gss = "git status";
+
+      us = "systemctl --user";
+
+      grep = "grep --color";
+      ip = "ip --color";
+      md = "mkdir -p";
+      rm = "rip"; # I am used to rm but rip is :noice:
+    };
+    plugins = [
+      {
+        name = "autopair";
+        src = pkgs.fishPlugins.autopair;
+      }
+    ];
+    interactiveShellInit = ''
+      # colorscript
+      function fish_greeting
+        ${pkgs.pokeget-rs}/bin/pokeget random --hide-name
+      end
+
+      # GPG TTY
+      export GPG_TTY=(tty)
+
+      # mailcheck
+      set --erase MAILCHECK
+    '';
+    functions = {
+      lwhich = {
+        description = "Show the full path of a command, resolving links along the way";
+        body = "readlink -f (which $argv[1])";
+      };
+
+      mkcd = {
+        description = "Make and enter a directory";
+        body = ''
+          if test (count $argv) -ne 1
+              echo "mkcd: Expected exactly one argument."
+              return 127
+          else
+              mkdir $argv[1] && cd $argv[1]
+          end
+        '';
+      };
+    };
+  };
+}

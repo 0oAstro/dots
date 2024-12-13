@@ -65,6 +65,14 @@ in {
     userName = "Shaurya Pratap Singh (Astro)";
   };
 
+  programs.jujutsu = {
+    enable = true;
+    settings = {
+      user = cfg.userName;
+      email = cfg.userEmail;
+    };
+  };
+
   xdg.configFile."git/allowed_signers".text = ''
     ${cfg.userEmail} namespaces="git" ${key}
   '';

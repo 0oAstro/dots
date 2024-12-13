@@ -44,10 +44,10 @@
           "/Applications/Arc.app"
           # "/Applications/Safari.app"
           "/Applications/Visual Studio Code.app"
-          "/Applications/WezTerm.app"
+          "/Applications/Ghostty.app"
           # "/System/Applications/Utilities/Terminal.app"
           "/Applications/WhatsApp.app"
-          "/Applications/Discord.app"
+          "${pkgs.discord}/Applications/Doiscord.app"
         ];
         persistent-others = [
           "/Users/${username}/Downloads"
@@ -195,7 +195,9 @@
   # Create /etc/zshrc that loads the nix-darwin environment.
   # this is required if you want to use darwin's default shell - zsh
   programs.zsh.enable = true;
+  programs.fish.enable = true;
   environment.shells = [
     pkgs.zsh
+    pkgs.fish
   ];
 }
