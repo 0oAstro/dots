@@ -41,6 +41,7 @@
     casks = [
       "appcleaner"
       "arc"
+      "discord"
       "etrecheckpro"
       "firefox@nightly"
       "iina"
