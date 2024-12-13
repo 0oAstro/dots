@@ -47,7 +47,7 @@
           "/Applications/Ghostty.app"
           # "/System/Applications/Utilities/Terminal.app"
           "/Applications/WhatsApp.app"
-          "${pkgs.discord}/Applications/Doiscord.app"
+          "${pkgs.discord}/Applications/Discord.app"
         ];
         persistent-others = [
           "/Users/${username}/Downloads"

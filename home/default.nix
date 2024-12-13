@@ -9,7 +9,7 @@
     ./terminal/emulators/wezterm.nix
     ./terminal/emulators/kitty.nix
     mac-app-util.homeManagerModules.default
-    # ./gui.nix
+    ./gui.nix
   ];
 
   # Home Manager needs a bit of information about you and the
