@@ -19,8 +19,6 @@
   programs = {
     eza = {
       enable = true;
-      icons = "always";
-      colors = "alawys";
       git = true;
     };
     ssh = {
