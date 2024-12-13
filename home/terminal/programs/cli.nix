@@ -22,7 +22,6 @@
       icons = "always";
       colors = "alawys";
       git = true;
-      
     };
     ssh = {
       enable = true;
