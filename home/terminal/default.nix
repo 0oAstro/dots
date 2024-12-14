@@ -5,9 +5,7 @@
 in {
   imports = [
     ./programs
-    ./shell/starship.nix
-    ./shell/zsh.nix
-    ./shell/zoxide.nix
+    ./shell
   ];
 
   # add environment variables
@@ -21,6 +19,8 @@ in {
 
     EDITOR = "nvim";
     DIRENV_LOG_FORMAT = "";
+
+    MAILCHECK = "";
 
     # auto-run programs using nix-index-database
     NIX_AUTO_RUN = "1";

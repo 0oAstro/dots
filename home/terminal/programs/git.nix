@@ -62,7 +62,7 @@ in {
     };
 
     userEmail = "ee1240486@iitd.ac.in";
-    userName = "Shaurya Pratap Singh (Astro)";
+    userName = "0oAstro";
   };
 
   programs.jujutsu = {
