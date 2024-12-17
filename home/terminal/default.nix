@@ -21,8 +21,6 @@ in {
       EDITOR = "nvim";
       DIRENV_LOG_FORMAT = "";
 
-      MAILCHECK = "";
-
       # auto-run programs using nix-index-database
       NIX_AUTO_RUN = "1";
 
