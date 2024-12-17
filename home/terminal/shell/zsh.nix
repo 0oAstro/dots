@@ -75,23 +75,13 @@
       ${pkgs.pokeget-rs}/bin/pokeget random --hide-name
     '';
 
-    initExtraFirst = ''
-      unset MAILCHECK
-    '';
-
-    profileExtra = ''
-      eval $(/opt/homebrew/bin/brew shellenv)
-    '';
-
-    shellAliases =
-      {
-        grep = "grep --color";
-        ip = "ip --color";
-        l = "eza -l";
-        la = "eza -la";
-        md = "mkdir -p";
-      }
-      // lib.optionalAttrs config.programs.bat.enable {cat = "bat";};
-    shellGlobalAliases = {eza = "eza --icons --git";};
+    shellAliases = {
+      grep = "rg";
+      l = "eza -l";
+      la = "eza -la";
+      md = "mkdir -p";
+      ls = "eza -laHG --icons --git";
+      rm = "trash";
+    };
   };
 }

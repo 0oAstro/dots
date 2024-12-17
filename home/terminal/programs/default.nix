@@ -2,7 +2,7 @@
   imports = [
     ./bat.nix
     ./cli.nix
-    ./editors.nix
+    ./editors
     ./git.nix
     ./gpg.nix
     ./java.nix

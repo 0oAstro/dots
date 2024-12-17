@@ -8,6 +8,7 @@
     fd
     file
     ripgrep
+    darwin.trash
 
     aria2
     yt-dlp

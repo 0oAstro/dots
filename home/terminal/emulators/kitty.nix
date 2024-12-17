@@ -1,9 +1,6 @@
-{pkgs, ...}: {
+{ ... }: {
   programs.kitty = {
-    # let homebrew manage this
-    package = pkgs.emptyDirectory;
-
-    enable = false;
+    enable = true;
     font = {
       size = 16;
       name = "MonoLisa";

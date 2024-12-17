@@ -1,9 +1,6 @@
-{pkgs, ...}: {
+{ ... }: {
   programs.wezterm = {
     enable = true;
-
-    # let homebrew manage this
-    package = pkgs.emptyDirectory;
 
     enableBashIntegration = false;
     enableZshIntegration = false;
@@ -64,7 +61,7 @@
       end)
 
       config.font_size = 16
-      config.window_background_opacity = 0.6
+      config.window_background_opacity = 0.96
       config.macos_window_background_blur = 40
       config.hide_tab_bar_if_only_one_tab = true
       config.audible_bell = "Disabled"

@@ -45,6 +45,7 @@
       "etrecheckpro"
       "firefox@nightly"
       "iina"
+      "hammerspoon"
       "imageoptim"
       "keycastr"
       "maccy"
@@ -55,13 +56,11 @@
       "spotify"
       "standard-notes"
       "stremio"
-      "thunderbird@beta"
       "tunnelblick"
       "visual-studio-code"
-      "wezterm"
       "whatsapp"
       "zed"
-      "zen-browser@twilight"
+      "zen-browser"
     ];
 
     masApps = {

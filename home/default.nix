@@ -1,16 +1,25 @@
 {
   username,
+  nix-index-database,
   mac-app-util,
+  ghostty,
   ...
 }: {
   # import sub modules
   imports = [
     ./terminal
-    ./terminal/emulators/wezterm.nix
-    ./terminal/emulators/kitty.nix
+    ./terminal/emulators
+    nix-index-database.hmModules.nix-index
     mac-app-util.homeManagerModules.default
+    ghostty.homeModules.default
     # ./gui.nix
   ];
+
+
+  programs.nix-index.enable = true;
+
+  # never index the developer folder in spotlight.
+  home.file."Developer/.metadata_never_index".text = "";
 
   # Home Manager needs a bit of information about you and the
   # paths it should manage.

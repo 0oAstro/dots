@@ -7,7 +7,6 @@
       ".." = "cd ..";
       bat = "bat";
     };
-
     shellAbbrs = {
       e = "$EDITOR";
       ga = "git add";
@@ -25,12 +24,8 @@
       gs = "git status --short";
       gss = "git status";
 
-      us = "systemctl --user";
-
-      grep = "grep --color";
-      ip = "ip --color";
       md = "mkdir -p";
-      rm = "rip"; # I am used to rm but rip is :noice:
+      rm = "trash"; # I am used to rm but rip is :noice:
     };
     plugins = [
       {
@@ -47,8 +42,8 @@
       # GPG TTY
       export GPG_TTY=(tty)
 
-      # mailcheck
-      set --erase MAILCHECK
+      # choose theme
+      fish_config theme choose $(defaults read -globalDomain AppleInterfaceStyle &> /dev/null && echo "Catppuccin Frappe" || echo "Catppuccin Latte")
     '';
     functions = {
       lwhich = {
@@ -68,5 +63,19 @@
         '';
       };
     };
+  };
+
+
+  xdg.configFile."fish/themes/Catppuccin-Frappe.theme" = {
+    source = ./themes/Catppuccin-Frappe.theme;
+  };
+  xdg.configFile."fish/themes/Catppuccin-Latte.theme" = {
+    source = ./themes/Catppuccin-Latte.theme;
+  };
+  xdg.configFile."fish/themes/Catppuccin-Mocha.theme" = {
+    source = ./themes/Catppuccin-Mocha.theme;
+  };
+  xdg.configFile."fish/themes/Catppuccin-Macchiato.theme" = {
+    source = ./themes/Catppuccin-Macchiato.theme;
   };
 }

@@ -1,10 +1,12 @@
 {
   config,
   pkgs,
+  username,
+  hostname,
   ...
 }: let
   cfg = config.programs.git;
-  key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXANO4l9/bWShWkJOKzreP+PyDNPQlTWrGVXapRoROF shaurya@shadowfax";
+  key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXANO4l9/bWShWkJOKzreP+PyDNPQlTWrGVXapRoROF ${username}@${hostname}";
 in {
   home.packages = [pkgs.gh];
 
@@ -45,7 +47,7 @@ in {
       oops = "checkout --";
     };
 
-    ignores = ["*~" "*.swp" "*result*" ".direnv" "node_modules" "*.bin"];
+    ignores = ["*~" "*.swp" "*result*" ".direnv" "node_modules" ".jj" "*.bin" "**/.DS_Store" "**/._.DS_Store"];
 
     signing = {
       key = "${config.home.homeDirectory}/.ssh/id_ed25519";

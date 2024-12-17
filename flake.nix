@@ -22,7 +22,10 @@
     nixpkgs,
     darwin,
     home-manager,
+    nix-index-database,
     mac-app-util,
+    ghostty,
+    ghostty-color-schemes,
     ...
   }: let
     # TODO: replace with your own username, system and hostname
@@ -75,8 +78,23 @@
       url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
+    
+    ghostty.url = "github:clo4/ghostty-hm-module";
+
+    ghostty-color-schemes = {
+      url = "github:mbadolato/iTerm2-Color-Schemes";
+      flake = false;
+    };
+
+    helix.url = "github:helix-editor/helix";
+
     mac-app-util = {
       url = "github:hraban/mac-app-util";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
+    };
+
+    nix-index-database = {
+      url = "github:Mic92/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
   };
