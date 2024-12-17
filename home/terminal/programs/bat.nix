@@ -3,7 +3,7 @@
     enable = true;
     config = {
       pager = "less -FR";
-      theme = "$(defaults read -globalDomain AppleInterfaceStyle &> /dev/null && echo Catppuccin-frappe || echo Catppuccin-latte)";
+      # theme = "$(defaults read -globalDomain AppleInterfaceStyle &> /dev/null && echo Catppuccin-frappe || echo Catppuccin-latte)";
     };
   };
 
