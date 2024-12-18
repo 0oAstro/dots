@@ -78,7 +78,7 @@
 
       # pokeget
       ${pkgs.pokeget-rs}/bin/pokeget random --hide-name
-      
+
       # Function to set FZF color based on macOS theme (Dark/Light)
       sync_fzf_with_os_theme() {
         # Check if Dark Mode is enabled

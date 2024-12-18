@@ -21,7 +21,7 @@
       "shift+ctrl+right_bracket" = "next_tab";
     };
     extraConfig = ''
-		keybind = global:cmd+`=toggle_quick_terminal
+      keybind = global:cmd+`=toggle_quick_terminal
     '';
   };
 }
