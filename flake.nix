@@ -49,6 +49,7 @@
         ./modules/host-users.nix
 
         mac-app-util.darwinModules.default
+        nix-index-database.darwinModules.nix-index
 
         home-manager.darwinModules.home-manager
         {

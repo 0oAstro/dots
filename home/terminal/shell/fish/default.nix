@@ -2,10 +2,10 @@
   programs.fish = {
     enable = true;
     shellAliases = {
-      ls = "eza -laHG --icons --git";
+      ls = "${pkgs.eza}/bin/eza -laHG --icons --git";
       tmp = "cd (mktemp -d)";
       ".." = "cd ..";
-      bat = "bat";
+      bat = "bat --theme=(defaults read -globalDomain AppleInterfaceStyle &> /dev/null && echo Catppuccin-frappe || echo Catppuccin-latte)";
     };
     shellAbbrs = {
       e = "$EDITOR";

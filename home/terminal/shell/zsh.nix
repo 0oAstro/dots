@@ -29,12 +29,13 @@
     };
 
     initExtra = ''
-      # search history based on what's typed in the prompt
-      autoload -U history-search-end
-      zle -N history-beginning-search-backward-end history-search-end
-      zle -N history-beginning-search-forward-end history-search-end
-      bindkey "^[OA" history-beginning-search-backward-end
-      bindkey "^[OB" history-beginning-search-forward-end
+      # Cycle through history based on characters already typed on the line
+      autoload -U up-line-or-beginning-search
+      autoload -U down-line-or-beginning-search
+      zle -N up-line-or-beginning-search
+      zle -N down-line-or-beginning-search
+      bindkey "$key[Up]" up-line-or-beginning-search
+      bindkey "$key[Down]" down-line-or-beginning-search
 
       # C-right / C-left for word skips
       bindkey "^[[1;5C" forward-word
@@ -66,6 +67,10 @@
       zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/.zcompcache"
       _comp_options+=(globdots)
 
+      # fzf tab
+      autoload -U compinit; compinit
+      source ${pkgs.zsh-fzf-tab}/share/fzf-tab/fzf-tab.plugin.zsh
+
       ${lib.optionalString config.services.gpg-agent.enable ''
         gnupg_path=$(ls $XDG_RUNTIME_DIR/gnupg)
         export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gnupg/$gnupg_path/S.gpg-agent.ssh"
@@ -73,6 +78,19 @@
 
       # pokeget
       ${pkgs.pokeget-rs}/bin/pokeget random --hide-name
+
+      # fzf auto coloring kinda
+      defaults read -globalDomain AppleInterfaceStyle &> /dev/null && \
+        export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
+        --color=bg+:#414559,bg:#303446,spinner:#f2d5cf,hl:#e78284 \
+        --color=fg:#c6d0f5,header:#e78284,info:#ca9ee6,pointer:#f2d5cf \
+        --color=marker:#babbf1,fg+:#c6d0f5,prompt:#ca9ee6,hl+:#e78284 \
+        --color=selected-bg:#51576d" \
+      || export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
+        --color=bg+:#ccd0da,bg:#eff1f5,spinner:#dc8a78,hl:#d20f39 \
+        --color=fg:#4c4f69,header:#d20f39,info:#8839ef,pointer:#dc8a78 \
+        --color=marker:#7287fd,fg+:#4c4f69,prompt:#8839ef,hl+:#d20f39 \
+        --color=selected-bg:#bcc0cc"
     '';
 
     shellAliases = {
@@ -82,6 +100,7 @@
       md = "mkdir -p";
       ls = "eza -laHG --icons --git";
       rm = "trash";
+      bat = "bat --theme=$(defaults read -globalDomain AppleInterfaceStyle &> /dev/null && echo Catppuccin-frappe || echo Catppuccin-latte)";
     };
   };
 }
