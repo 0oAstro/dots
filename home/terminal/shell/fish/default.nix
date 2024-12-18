@@ -43,7 +43,7 @@
       export GPG_TTY=(tty)
 
       # choose theme
-      fish_config theme choose (defaults read -globalDomain AppleInterfaceStyle &> /dev/null && echo "Catppuccin Frappe" || echo "Catppuccin Latte")
+      fish_config theme choose (defaults read -globalDomain AppleInterfaceStyle &> /dev/null && echo "Catppuccin-Frappe" || echo "Catppuccin-Latte")
     '';
     functions = {
       lwhich = {
