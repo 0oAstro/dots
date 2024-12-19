@@ -6,7 +6,6 @@
 
     # utils
     fd
-    file
     ripgrep
     darwin.trash
 
@@ -16,20 +15,4 @@
 
     pokeget-rs
   ];
-
-  programs = {
-    eza = {
-      enable = true;
-      git = true;
-    };
-    ssh = {
-      enable = true;
-      extraConfig = ''
-        Host *
-          AddKeysToAgent yes
-          UseKeychain yes
-          IdentityFile ~/.ssh/id_ed25519
-      '';
-    };
-  };
 }

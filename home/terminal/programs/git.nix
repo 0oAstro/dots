@@ -70,8 +70,10 @@ in {
   programs.jujutsu = {
     enable = true;
     settings = {
-      user = cfg.userName;
-      email = cfg.userEmail;
+      user = {
+        name = cfg.userName;
+        email = cfg.userEmail;
+      };
     };
   };
 
