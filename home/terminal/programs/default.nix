@@ -1,6 +1,6 @@
 {
   imports = [
-    ./bat.nix
+    ./bat
     ./cli.nix
     ./editors
     ./eza.nix
@@ -12,5 +12,6 @@
     ./nix.nix
     ./node.nix
     ./ssh.nix
+    ./zoxide.nix
   ];
 }

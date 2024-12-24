@@ -1,5 +1,5 @@
 {
-  description = "LoL";
+  description = "🗿";
 
   # the nixConfig here only affects the flake itself, not the system configuration!
   nixConfig = {

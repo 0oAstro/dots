@@ -34,20 +34,20 @@
 
         mouse-over-hilite-stack = true;
         persistent-apps = [
-          "/System/Applications/Launchpad.app"
-          "/System/Applications/System Settings.app"
+          # "/System/Applications/Launchpad.app"
+          # "/System/Applications/System Settings.app"
           "/Applications/Spotify.app"
           "/System/Applications/Mail.app"
-          "/Applications/Standard Notes.app"
-          "/Applications/Obsidian.app"
+          # "/Applications/Standard Notes.app"
+          # "/Applications/Obsidian.app"
           "/Applications/Notion.app"
           "/Applications/Arc.app"
           # "/Applications/Safari.app"
-          "/Applications/Visual Studio Code.app"
+          # "/Applications/Visual Studio Code.app"
           "/Applications/Ghostty.app"
           # "/System/Applications/Utilities/Terminal.app"
-          "/Applications/WhatsApp.app"
-          "/Applications/Discord.app"
+          # "/Applications/WhatsApp.app"
+          # "/Applications/Discord.app"
         ];
         persistent-others = [
           "/Users/${username}/Downloads"
@@ -64,10 +64,10 @@
       finder = {
         _FXShowPosixPathInTitle = true; # show full path in finder title
         FXEnableExtensionChangeWarning = false; # disable warning when changing file extension
-        QuitMenuItem = true; # enable quit menu item
+        QuitMenuItem = false; # enable quit menu item
         ShowPathbar = true; # show path bar
         ShowStatusBar = true; # show status bar
-        CreateDesktop = false; # disable desktop icons
+        CreateDesktop = true; # disable desktop icons
         FXDefaultSearchScope = "SCcf"; # When performing a search, search the current folder by default
         FXPreferredViewStyle = "clmv"; # set default view style to icon view
       };
@@ -82,8 +82,6 @@
         FirstClickThreshold = 0; # light touch
         SecondClickThreshold = 2; # firm touch
       };
-
-      SoftwareUpdate.AutomaticallyInstallMacOSUpdates = true; # disable automatic macOS updates
 
       # customize settings that not supported by nix-darwin directly
       # Incomplete list of macOS `defaults` commands :

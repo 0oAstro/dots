@@ -63,7 +63,7 @@ in {
       pull.rebase = true;
     };
 
-    userEmail = "ee1240486@iitd.ac.in";
+    userEmail = "79555780+0oAstro@users.noreply.github.com"; # private e-mail, mail scraping is a thing?
     userName = "0oAstro";
   };
 

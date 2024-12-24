@@ -2,7 +2,7 @@
   programs.ghostty = {
     enable = true;
     settings = {
-      theme = "light:catppuccin-latte,dark:catppuccin-frappe";
+      theme = "Kanagawa Wave";
 
       font-family-italic = "CartographCF Nerd Font";
       font-size = 14;
@@ -21,7 +21,7 @@
       "shift+ctrl+right_bracket" = "next_tab";
     };
     extraConfig = ''
-      keybind = global:cmd+`=toggle_quick_terminal
+      keybind = global:cmd+alt+`=toggle_quick_terminal
     '';
   };
 }

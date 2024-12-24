@@ -55,11 +55,11 @@
       "protonvpn"
       "spotify"
       "standard-notes"
+      "transmission"
       "stremio"
       "tunnelblick"
       "visual-studio-code"
       "whatsapp"
-      "zed"
       "zen-browser"
     ];
 

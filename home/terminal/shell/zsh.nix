@@ -78,31 +78,6 @@
 
       # pokeget
       ${pkgs.pokeget-rs}/bin/pokeget random --hide-name
-
-      # Function to set FZF color based on macOS theme (Dark/Light)
-      sync_fzf_with_os_theme() {
-        # Check if Dark Mode is enabled
-        defaults read -g AppleInterfaceStyle &> /dev/null
-
-        if [[ $? -ne 0 ]]; then
-          # Light Mode is active
-          export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
-            --color=bg+:#ccd0da,spinner:#dc8a78,hl:#d20f39 \
-            --color=fg:#4c4f69,header:#d20f39,info:#8839ef,pointer:#dc8a78 \
-            --color=marker:#7287fd,fg+:#4c4f69,prompt:#8839ef,hl+:#d20f39 \
-            --color=selected-bg:#bcc0cc"
-        else
-          # Dark mode is active
-          export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
-            --color=bg+:#414559,spinner:#f2d5cf,hl:#e78284 \
-            --color=fg:#c6d0f5,header:#e78284,info:#ca9ee6,pointer:#f2d5cf \
-            --color=marker:#babbf1,fg+:#c6d0f5,prompt:#ca9ee6,hl+:#e78284 \
-            --color=selected-bg:#51576d"
-        fi
-      }
-
-      # Call the function to sync FZF with OS theme
-      sync_fzf_with_os_theme
     '';
 
     shellAliases = {
@@ -112,7 +87,6 @@
       md = "mkdir -p";
       ls = "eza -laHG --icons --git";
       rm = "trash";
-      bat = "bat --theme=$(defaults read -globalDomain AppleInterfaceStyle &> /dev/null && echo Catppuccin-frappe || echo Catppuccin-latte)";
       cd = "z";
     };
   };
