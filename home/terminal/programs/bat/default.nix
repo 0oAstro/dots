@@ -29,8 +29,7 @@
     MANROFFOPT = "-c";
   };
 
-    xdg.configFile."bat/themes/kanagawa.theme" = {
-    source = ./themes/kanagawa.theme;
-};
-
+  xdg.configFile."bat/themes/kanagawa.tmTheme" = {
+    source = ./themes/kanagawa.tmTheme;
+  };
 }

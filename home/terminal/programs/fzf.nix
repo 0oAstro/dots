@@ -21,6 +21,6 @@
       "--color=marker:#FF9E3B,prompt:#DCA561,spinner:#6A9589"
     ];
     changeDirWidgetCommand = "${pkgs.fd}/bin/fd --type d --hidden --exclude '.jj' --exclude '.direnv' --exclude '.venv' --exclude '.git' --exclude '.pnpm-store' --exclude 'node_modules'";
-    historyWidgetOptions = [ "--sort" ];
+    historyWidgetOptions = ["--sort"];
   };
 }
