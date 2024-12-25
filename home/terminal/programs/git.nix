@@ -6,7 +6,7 @@
   ...
 }: let
   cfg = config.programs.git;
-  key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXANO4l9/bWShWkJOKzreP+PyDNPQlTWrGVXapRoROF ${username}@${hostname}";
+  key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJfml6YGLlOvm7VICn5K/G05N6JkHVLtWtpDL7ejvlvB ${username}@${hostname}";
 in {
   home.packages = [pkgs.gh];
 

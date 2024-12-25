@@ -70,12 +70,7 @@
       # fzf tab
       autoload -U compinit; compinit
       source ${pkgs.zsh-fzf-tab}/share/fzf-tab/fzf-tab.plugin.zsh
-
-      ${lib.optionalString config.services.gpg-agent.enable ''
-        gnupg_path=$(ls $XDG_RUNTIME_DIR/gnupg)
-        export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gnupg/$gnupg_path/S.gpg-agent.ssh"
-      ''}
-
+      
       # pokeget
       ${pkgs.pokeget-rs}/bin/pokeget random --hide-name
     '';
