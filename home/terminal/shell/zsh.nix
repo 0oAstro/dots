@@ -70,7 +70,7 @@
       # fzf tab
       autoload -U compinit; compinit
       source ${pkgs.zsh-fzf-tab}/share/fzf-tab/fzf-tab.plugin.zsh
-      
+
       # pokeget
       ${pkgs.pokeget-rs}/bin/pokeget random --hide-name
     '';

@@ -1,10 +1,14 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
-    neovim
-    micro
+{
+  neovim-nightly-overlay,
+  pkgs,
+  ...
+}: {
+  home.packages = [
+    pkgs.micro
 
-    luajit
-    luajitPackages.luarocks
+    neovim-nightly-overlay.packages.${pkgs.system}.default
+    pkgs.luajit
+    pkgs.luajitPackages.luarocks
   ];
 
   imports = [

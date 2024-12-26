@@ -26,6 +26,7 @@
     mac-app-util,
     ghostty,
     ghostty-color-schemes,
+    neovim-nightly-overlay,
     ...
   }: let
     # TODO: replace with your own username, system and hostname
@@ -91,6 +92,8 @@
       url = "github:hraban/mac-app-util";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
+
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
 
     nix-index-database = {
       url = "github:Mic92/nix-index-database";
