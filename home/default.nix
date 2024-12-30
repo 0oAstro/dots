@@ -1,7 +1,7 @@
 {
   username,
-  nix-index-database,
-  mac-app-util,
+  # nix-index-database,
+  # mac-app-util,
   ghostty,
   ...
 }: {
@@ -9,8 +9,8 @@
   imports = [
     ./terminal
     ./terminal/emulators
-    nix-index-database.hmModules.nix-index
-    mac-app-util.homeManagerModules.default
+    # nix-index-database.hmModules.nix-index
+    # mac-app-util.homeManagerModules.default
     ghostty.homeModules.default
     # ./gui.nix
   ];

@@ -49,11 +49,7 @@
           # "/Applications/WhatsApp.app"
           # "/Applications/Discord.app"
         ];
-        persistent-others = [
-          "/Users/${username}/Downloads"
-          "/Users/${username}/Dropbox/Screenshots"
-        ];
-        showhidden = true;
+       showhidden = true;
         wvous-tl-corner = 2; # top-left - Mission Control
         wvous-tr-corner = 10; # top-right - Sleep Display
         wvous-bl-corner = 3; # bottom-left - Application Windows
@@ -151,7 +147,7 @@
           askForPasswordDelay = 0;
         };
         "com.apple.screencapture" = {
-          location = "~/Dropbox/Screenshots";
+          location = "/Users/${username}/Dropbox/Screenshots";
           type = "png";
         };
         "com.apple.AdLib" = {
@@ -159,6 +155,37 @@
         };
         # Prevent Photos from opening automatically when devices are plugged in
         "com.apple.ImageCapture".disableHotPlug = true;
+        # dock folders with correst sort order
+        # PR: https://github.com/LnL7/nix-darwin/pull/1004
+      "com.apple.dock" = {
+        persistent-others = [
+          {
+            "tile-data" = {
+              "file-data" = {
+                "_CFURLString" = "/Users/${username}/Downloads";
+                "_CFURLStringType" = 0;
+              };
+              "arrangement" = 2;  # sorting order
+              "displayas" = 1;
+              "showas" = 2;
+            };
+            "tile-type" = "directory-tile";
+          }
+          {
+            "tile-data" = {
+              "file-data" = {
+                "_CFURLString" = "/Users/${username}/Dropbox/Screenshots";
+                "_CFURLStringType" = 0;
+              };
+            };
+            "arrangement" = 2;
+            "displayas" = 1;
+            "showas" = 2;
+            "tile-type" = "directory-tile";
+          }
+        ];
+      };
+
       };
 
       loginwindow = {
