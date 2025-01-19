@@ -26,7 +26,7 @@
   users.users."${username}" = {
     home = "/Users/${username}";
     description = username;
-    shell = pkgs.fish;
+    shell = pkgs.zsh;
   };
 
   nix.settings.trusted-users = [username];

@@ -7,13 +7,12 @@
     '';
     gc = {
       automatic = true;
-      options = "--delete-older-than 7d";
+      options = "--delete-older-than 3d";
     };
-    optimise.automatic = true;
     settings = {
       # enable flakes globally
       experimental-features = ["nix-command" "flakes"];
-
+ 
       # substituers that will be considered before the official ones(https://cache.nixos.org)
       substituters = [
         "https://nix-community.cachix.org"
@@ -23,6 +22,7 @@
       ];
       builders-use-substitutes = true;
     };
+    optimise.automatic = true;
   };
 
   # Auto upgrade nix package and the daemon service.
