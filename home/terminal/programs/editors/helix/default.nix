@@ -1,5 +1,9 @@
-{pkgs, ...}: {
-  imports = [./languages.nix];
+{
+  pkgs,
+  ...
+}:
+{
+  imports = [ ./languages.nix ];
 
   programs.helix = {
     enable = true;
@@ -10,7 +14,7 @@
     ];
 
     settings = {
-      theme = "catppuccin_frappe";
+      theme = "kanagawa";
       editor = {
         color-modes = true;
         completion-trigger-len = 1;
@@ -22,12 +26,12 @@
           select = "underline";
         };
         indent-guides.render = true;
-        # inline-diagnostics = {
-        #   cursor-line = "hint";
-        #   other-lines = "error";
-        # };
+        inline-diagnostics = {
+          cursor-line = "hint";
+          other-lines = "error";
+        };
         lsp.display-inlay-hints = true;
-        statusline.center = ["position-percentage"];
+        statusline.center = [ "position-percentage" ];
         true-color = true;
         whitespace.characters = {
           newline = "↴";

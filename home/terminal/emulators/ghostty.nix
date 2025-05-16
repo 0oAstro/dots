@@ -1,11 +1,13 @@
-{...}: {
+{ ... }:
+{
   programs.ghostty = {
     enable = true;
+    package = null;
     settings = {
       theme = "Kanagawa Wave";
 
-      font-family-italic = "CartographCF Nerd Font";
-      font-size = 14;
+      font-family-italic = "Liga SFMono Nerd Font";
+      font-size = 18;
 
       macos-titlebar-style = "tabs";
       macos-titlebar-proxy-icon = "hidden";
@@ -15,13 +17,11 @@
       background-blur-radius = 40;
 
       auto-update = "off";
+      keybind = [
+        "shift+ctrl+left_bracket=previous_tab"
+        "shift+ctrl+right_bracket=next_tab"
+        "global:cmd+alt+`=toggle_quick_terminal"
+      ];
     };
-    keybindings = {
-      "shift+ctrl+left_bracket" = "previous_tab";
-      "shift+ctrl+right_bracket" = "next_tab";
-    };
-    extraConfig = ''
-      keybind = global:cmd+alt+`=toggle_quick_terminal
-    '';
   };
 }

@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -25,10 +26,18 @@
 
     syntaxHighlighting = {
       enable = true;
-      highlighters = ["main" "brackets" "pattern" "regexp" "cursor" "root" "line"];
+      highlighters = [
+        "main"
+        "brackets"
+        "pattern"
+        "regexp"
+        "cursor"
+        "root"
+        "line"
+      ];
     };
 
-    initExtra = ''
+    initContent = ''
       # Cycle through history based on characters already typed on the line
       autoload -U up-line-or-beginning-search
       autoload -U down-line-or-beginning-search

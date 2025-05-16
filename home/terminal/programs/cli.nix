@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   home.packages = with pkgs; [
     # archives
     zip
@@ -14,5 +15,7 @@
     mas
 
     pokeget-rs
+
+    _1password-cli
   ];
 }

@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   ##########################################################################
   #
   #  Install all apps and packages here.
@@ -6,7 +7,7 @@
   #  NOTE: Your can find all available options in:
   #    https://daiderd.com/nix-darwin/manual/index.html
   #
-  # TODO Fell free to modify this file to fit your needs.
+  # TODO Feel free to modify this file to fit your needs.
   #
   ##########################################################################
 
@@ -34,33 +35,40 @@
     };
 
     taps = [
-      "homebrew/services"
+      "apple/apple"
     ];
 
-    # `brew install --cask`
+    # `brew install --cask
     casks = [
+      "1password"
       "appcleaner"
-      "arc"
-      "discord"
+      "brave-browser"
+      "cursor"
       "etrecheckpro"
-      "iina"
+      "galaxybudsclient"
+      "ghostty"
       "hammerspoon"
+      "heroic"
+      "hoppscotch"
+      "iina"
       "imageoptim"
       "keycastr"
+      "kodi"
       "maccy"
       "maestral"
       "notion"
       "obsidian"
+      "openemu"
       "protonvpn"
       "spotify"
       "standard-notes"
-      "transmission"
       "steam"
-      "stremio"
       "tunnelblick"
-      "visual-studio-code"
+      "vesktop"
       "whatsapp"
-      "zen-browser"
+      "windsurf"
+      "zed@preview"
+      "zen"
     ];
 
     masApps = {
@@ -68,6 +76,7 @@
       "Microsoft Word" = 462054704;
       "Microsoft Excel" = 462058435;
       "Microsoft PowerPoint" = 462062816;
+      "OneDrive" = 477537958;
     };
 
     caskArgs = {

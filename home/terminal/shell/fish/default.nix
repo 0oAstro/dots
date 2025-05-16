@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   programs.fish = {
     enable = true;
     shellAliases = {
@@ -38,10 +39,6 @@
         ${pkgs.pokeget-rs}/bin/pokeget random --hide-name
       end
 
-      # GPG TTY
-      export GPG_TTY=(tty)
-
-
       # Kanagawa Fish shell theme
       # A template was taken and modified from Tokyonight:
       # https://github.com/folke/tokyonight.nvim/blob/main/extras/fish_tokyonight_night.fish
@@ -80,6 +77,9 @@
 
       # brew
       set -p fish_complete_path (brew --prefix)/share/fish/vendor_completions.d
+
+      # any-nix-shell
+      ${pkgs.any-nix-shell}/bin/any-nix-shell fish --info-right | source
     '';
     functions = {
       lwhich = {
@@ -98,19 +98,22 @@
           end
         '';
       };
+
+      # fish greeting
+      fish_greeting = {
+        description = "Show a random Pokémon";
+        body = ''
+          ${pkgs.pokeget-rs}/bin/pokeget random --hide-name
+        '';
+      };
+
+      # gitignore
+      gitignore = {
+        description = "Create a .gitignore file";
+        body = ''
+          curl -sL https://www.gitignore.io/api/$argv
+        '';
+      };
     };
   };
-
-  # xdg.configFile."fish/themes/Catppuccin-Frappe.theme" = {
-  #   source = ./themes/Catppuccin-Frappe.theme;
-  # };
-  # xdg.configFile."fish/themes/Catppuccin-Latte.theme" = {
-  #   source = ./themes/Catppuccin-Latte.theme;
-  # };
-  # xdg.configFile."fish/themes/Catppuccin-Mocha.theme" = {
-  #   source = ./themes/Catppuccin-Mocha.theme;
-  # };
-  # xdg.configFile."fish/themes/Catppuccin-Macchiato.theme" = {
-  #   source = ./themes/Catppuccin-Macchiato.theme;
-  # };
 }

@@ -1,7 +1,9 @@
-{pkgs, ...}:
+{ pkgs, ... }:
 # node tooling
 {
-  home.packages = with pkgs.nodePackages_latest; [
-    nodejs
+  home.packages = with pkgs; [
+    nodePackages_latest.nodejs
+    pnpm
+    bun
   ];
 }

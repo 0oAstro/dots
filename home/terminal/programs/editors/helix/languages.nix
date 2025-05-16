@@ -2,51 +2,82 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   programs.helix.languages = {
-    language = let
-      deno = lang: {
-        command = lib.getExe pkgs.deno;
-        args = ["fmt" "-" "--ext" lang];
-      };
+    language =
+      let
+        deno = lang: {
+          command = lib.getExe pkgs.deno;
+          args = [
+            "fmt"
+            "-"
+            "--ext"
+            lang
+          ];
+        };
 
-      prettier = lang: {
-        command = lib.getExe pkgs.nodePackages.prettier;
-        args = ["--parser" lang];
-      };
-      prettierLangs = map (e: {
-        name = e;
-        formatter = prettier e;
-      });
-      langs = ["css" "scss" "html"];
-    in
+        prettier = lang: {
+          command = lib.getExe pkgs.nodePackages.prettier;
+          args = [
+            "--parser"
+            lang
+          ];
+        };
+        prettierLangs = map (e: {
+          name = e;
+          formatter = prettier e;
+        });
+        langs = [
+          "css"
+          "scss"
+          "html"
+        ];
+      in
       [
         {
           name = "bash";
           auto-format = true;
           formatter = {
             command = lib.getExe pkgs.shfmt;
-            args = ["-i" "2"];
+            args = [
+              "-i"
+              "2"
+            ];
           };
         }
         {
           name = "clojure";
           injection-regex = "(clojure|clj|edn|boot|yuck)";
-          file-types = ["clj" "cljs" "cljc" "clje" "cljr" "cljx" "edn" "boot" "yuck"];
+          file-types = [
+            "clj"
+            "cljs"
+            "cljc"
+            "clje"
+            "cljr"
+            "cljx"
+            "edn"
+            "boot"
+            "yuck"
+          ];
         }
         {
           name = "cmake";
           auto-format = true;
-          language-servers = ["cmake-language-server"];
+          language-servers = [ "cmake-language-server" ];
           formatter = {
             command = lib.getExe pkgs.cmake-format;
-            args = ["-"];
+            args = [ "-" ];
           };
         }
         {
           name = "javascript";
           auto-format = true;
-          language-servers = ["dprint" "typescript-language-server"];
+          language-servers = [
+            "dprint"
+            "typescript-language-server"
+            "uwu-colors"
+          ];
         }
         {
           name = "json";
@@ -54,20 +85,46 @@
         }
         {
           name = "markdown";
-          language-servers = ["dprint" "markdown-oxide"];
+          language-servers = [
+            "dprint"
+            "markdown-oxide"
+          ];
+        }
+        {
+          name = "nix";
+          language-servers = [
+            "nil"
+            "uwu-colors"
+          ];
         }
         {
           name = "python";
-          language-servers = ["basedpyright"];
-          formatter = {
-            command = lib.getExe pkgs.black;
-            args = ["-" "--quiet" "--line-length 100"];
-          };
+          auto-format = true;
+          language-servers = [
+            "basedpyright"
+            "ruff"
+          ];
+        }
+        {
+          name = "qml";
+          language-servers = [
+            "qmlls"
+            "uwu-colors"
+          ];
         }
         {
           name = "typescript";
           auto-format = true;
-          language-servers = ["dprint" "typescript-language-server"];
+          language-servers = [
+            "dprint"
+            "typescript-language-server"
+            "uwu-colors"
+          ];
+        }
+        {
+          name = "typst";
+          auto-format = true;
+          language-servers = [ "tinymist" ];
         }
       ]
       ++ prettierLangs langs;
@@ -77,12 +134,12 @@
 
       bash-language-server = {
         command = lib.getExe pkgs.bash-language-server;
-        args = ["start"];
+        args = [ "start" ];
       };
 
       clangd = {
         command = "${pkgs.clang-tools}/bin/clangd";
-        clangd.fallbackFlags = ["-std=c++2b"];
+        clangd.fallbackFlags = [ "-std=c++2b" ];
       };
 
       cmake-language-server = {
@@ -91,7 +148,7 @@
 
       deno-lsp = {
         command = lib.getExe pkgs.deno;
-        args = ["lsp"];
+        args = [ "lsp" ];
         environment.NO_COLOR = "1";
         config.deno = {
           enable = true;
@@ -99,7 +156,9 @@
           unstable = true;
           suggest = {
             completeFunctionCalls = false;
-            imports = {hosts."https://deno.land" = true;};
+            imports = {
+              hosts."https://deno.land" = true;
+            };
           };
           inlayHints = {
             enumMemberValues.enabled = true;
@@ -114,17 +173,40 @@
 
       dprint = {
         command = lib.getExe pkgs.dprint;
-        args = ["lsp"];
+        args = [ "lsp" ];
       };
 
       nil = {
         command = lib.getExe pkgs.nil;
-        config.nil.formatting.command = ["${lib.getExe pkgs.alejandra}" "-q"];
+        config.nil.formatting.command = [
+          "${lib.getExe pkgs.alejandra}"
+          "-q"
+        ];
+      };
+
+      qmlls = {
+        command = "${pkgs.qt6.qtdeclarative}/bin/qmlls";
+        args = [ "-E" ];
+      };
+
+      ruff = {
+        command = lib.getExe pkgs.ruff;
+        args = [ "server" ];
+      };
+
+      tinymist = {
+        command = lib.getExe pkgs.tinymist;
+        config = {
+          exportPdf = "onType";
+          outputPath = "$root/target/$dir/$name";
+          formatterMode = "typstyle";
+          formatterPrintWidth = 80;
+        };
       };
 
       typescript-language-server = {
         command = lib.getExe pkgs.nodePackages.typescript-language-server;
-        args = ["--stdio"];
+        args = [ "--stdio" ];
         config = {
           typescript-language-server.source = {
             addMissingImports.ts = true;
@@ -137,8 +219,8 @@
       };
 
       vscode-css-language-server = {
-        command = "${pkgs.nodePackages.vscode-langservers-extracted}/bin/vscode-css-languageserver";
-        args = ["--stdio"];
+        command = "${pkgs.nodePackages.vscode-langservers-extracted}/bin/vscode-css-language-server";
+        args = [ "--stdio" ];
         config = {
           provideFormatter = true;
           css.validate.enable = true;
@@ -148,25 +230,27 @@
     };
   };
 
-  home.file.".dprint.json".source = builtins.toFile "dprint.json" (builtins.toJSON {
-    lineWidth = 80;
+  home.file.".dprint.json".source = builtins.toFile "dprint.json" (
+    builtins.toJSON {
+      lineWidth = 80;
 
-    # This applies to both JavaScript & TypeScript
-    typescript = {
-      quoteStyle = "preferSingle";
-      binaryExpression.operatorPosition = "sameLine";
-    };
+      # This applies to both JavaScript & TypeScript
+      typescript = {
+        quoteStyle = "preferSingle";
+        binaryExpression.operatorPosition = "sameLine";
+      };
 
-    json.indentWidth = 2;
+      json.indentWidth = 2;
 
-    excludes = [
-      "**/*-lock.json"
-    ];
+      excludes = [
+        "**/*-lock.json"
+      ];
 
-    plugins = [
-      "https://plugins.dprint.dev/typescript-0.93.0.wasm"
-      "https://plugins.dprint.dev/json-0.19.3.wasm"
-      "https://plugins.dprint.dev/markdown-0.17.8.wasm"
-    ];
-  });
+      plugins = [
+        "https://plugins.dprint.dev/typescript-0.93.0.wasm"
+        "https://plugins.dprint.dev/json-0.19.3.wasm"
+        "https://plugins.dprint.dev/markdown-0.17.8.wasm"
+      ];
+    }
+  );
 }

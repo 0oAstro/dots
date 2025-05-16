@@ -1,8 +1,9 @@
-{config, ...}: let
-  data = config.xdg.dataHome;
+{ config, ... }:
+let
   conf = config.xdg.configHome;
   cache = config.xdg.cacheHome;
-in {
+in
+{
   imports = [
     ./programs
     ./shell
@@ -15,21 +16,16 @@ in {
       LESSHISTFILE = "${cache}/less/history";
       LESSKEY = "${conf}/less/lesskey";
 
-      WINEPREFIX = "${data}/wine";
-      XAUTHORITY = "$XDG_RUNTIME_DIR/Xauthority";
-
       EDITOR = "nvim";
       DIRENV_LOG_FORMAT = "";
 
       # auto-run programs using nix-index-database
       NIX_AUTO_RUN = "1";
 
-      # My projects directory
       PROJECTS = "~/Developer";
     };
     sessionPath = [
       "/opt/homebrew/bin"
-      "/Applications/Ghostty.app/Contents/MacOS/"
     ];
   };
 }

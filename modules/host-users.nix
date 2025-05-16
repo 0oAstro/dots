@@ -23,11 +23,14 @@
     pkgs.fish
   ];
 
+  users.knownUsers = [ username ];
+
   users.users."${username}" = {
     home = "/Users/${username}";
     description = username;
-    shell = pkgs.zsh;
+    shell = pkgs.fish;
+    uid = 501;
   };
 
-  nix.settings.trusted-users = [username];
+  nix.settings.trusted-users = [ username ];
 }

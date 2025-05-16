@@ -2,7 +2,8 @@
   neovim-nightly-overlay,
   pkgs,
   ...
-}: {
+}:
+{
   home.packages = with pkgs; [
     micro
 

@@ -1,5 +1,4 @@
 {
-  pkgs,
   username,
   ...
 }:
@@ -14,6 +13,8 @@
 #
 ###################################################################################
 {
+  ids.gids.nixbld = 30000;
+
   system = {
     # activationScripts are executed every time you boot the system or run `nixos-rebuild` / `darwin-rebuild`.
     activationScripts.postUserActivation.text = ''
@@ -31,29 +32,39 @@
       dock = {
         autohide = false;
         show-recents = false; # disable recent apps
-
+        enable-spring-load-actions-on-all-items = true;
+        expose-group-apps = true;
+        magnification = true;
+        minimize-to-application = true;
         mouse-over-hilite-stack = true;
         persistent-apps = [
-          # "/System/Applications/Launchpad.app"
-          # "/System/Applications/System Settings.app"
-          "/Applications/Spotify.app"
-          "/System/Applications/Mail.app"
-          # "/Applications/Standard Notes.app"
-          # "/Applications/Obsidian.app"
-          "/Applications/Notion.app"
-          "/Applications/Arc.app"
-          # "/Applications/Safari.app"
-          # "/Applications/Visual Studio Code.app"
-          "/Applications/Ghostty.app"
-          # "/System/Applications/Utilities/Terminal.app"
-          # "/Applications/WhatsApp.app"
-          # "/Applications/Discord.app"
+          { app = "/Applications/1Password.app"; }
+          { app = "/Applications/Spotify.app"; }
+          { app = "/System/Applications/Mail.app"; }
+          { app = "/Applications/Zen.app"; }
+          { app = "/Applications/Zed Preview.app"; }
+          { app = "/Applications/Ghostty.app"; }
         ];
+        scroll-to-open = true;
         showhidden = true;
-        wvous-tl-corner = 2; # top-left - Mission Control
-        wvous-tr-corner = 10; # top-right - Sleep Display
-        wvous-bl-corner = 3; # bottom-left - Application Windows
-        wvous-br-corner = 14; # bottom-right - Quick Note
+
+        # 1: Disabled
+        # 2: Mission Control
+        # 3: Application Windows
+        # 4: Desktop
+        # 5: Start Screen Saver
+        # 6: Disable Screen Saver
+        # 7: Dashboard
+        # 10: Put Display to Sleep
+        # 11: Launchpad
+        # 12: Notification Center
+        # 13: Lock Screen
+        # 14: Quick Note
+
+        wvous-tl-corner = 2; # top-left
+        wvous-tr-corner = 5; # top-right
+        wvous-bl-corner = 3; # bottom-left
+        wvous-br-corner = 12; # bottom-right
       };
 
       # customize finder
@@ -193,26 +204,9 @@
       };
     };
 
-    # keyboard settings is not very useful on macOS
-    # the most important thing is to remap option key to alt key globally,
-    # but it's not supported by macOS yet.
-    keyboard = {
-      enableKeyMapping = true; # enable key mapping so that we can use `option` as `control`
-
-      # NOTE: do NOT support remap capslock to both control and escape at the same time
-      remapCapsLockToControl = false; # remap caps lock to control, useful for emac users
-      remapCapsLockToEscape = true; # remap caps lock to escape, useful for vim users
-
-      # swap left command and left alt
-      # so it matches common keyboard layout: `ctrl | command | alt`
-      #
-      # disabled, caused only problems!
-      swapLeftCommandAndLeftAlt = false;
-    };
-
     stateVersion = 5; # nix-darwin state version
   };
 
   # Add ability to used TouchID for sudo authentication
-  security.pam.enableSudoTouchIdAuth = true;
+  security.pam.services.sudo_local.touchIdAuth = true;
 }

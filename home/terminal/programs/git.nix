@@ -4,14 +4,13 @@
   username,
   hostname,
   ...
-}: let
+}:
+let
   cfg = config.programs.git;
   key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJfml6YGLlOvm7VICn5K/G05N6JkHVLtWtpDL7ejvlvB ${username}@${hostname}";
-in {
-  home.packages = [pkgs.gh];
-
-  # enable scrolling in git diff
-  home.sessionVariables.DELTA_PAGER = "less -R";
+in
+{
+  home.packages = [ pkgs.gh ];
 
   programs.git = {
     enable = true;
@@ -19,11 +18,6 @@ in {
     delta = {
       enable = true;
       options.dark = true;
-    };
-
-    extraConfig = {
-      diff.colorMoved = "default";
-      merge.conflictstyle = "diff3";
     };
 
     aliases = {
@@ -47,7 +41,17 @@ in {
       oops = "checkout --";
     };
 
-    ignores = ["*~" "*.swp" "*result*" ".direnv" "node_modules" ".jj" "*.bin" "**/.DS_Store" "**/._.DS_Store"];
+    ignores = [
+      "*~"
+      "*.swp"
+      "*result*"
+      ".direnv"
+      "node_modules"
+      ".jj"
+      "*.bin"
+      "**/.DS_Store"
+      "**/._.DS_Store"
+    ];
 
     signing = {
       key = "${config.home.homeDirectory}/.ssh/id_ed25519";
@@ -57,24 +61,40 @@ in {
     extraConfig = {
       gpg = {
         format = "ssh";
-        ssh.allowedSignersFile = config.home.homeDirectory + "/" + config.xdg.configFile."git/allowed_signers".target;
+        ssh.allowedSignersFile =
+          config.home.homeDirectory + "/" + config.xdg.configFile."git/allowed_signers".target;
       };
 
+      gpg."ssh".program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+
       pull.rebase = true;
+
+      init.defaultBranch = "main";
+      push.autoSetupRemote = true;
+
+      rebase = {
+        autosquash = true;
+        autostash = true;
+      };
+
+      commit = {
+        verbose = true;
+        gpgsign = true;
+      };
+
+      rerere.enabled = true;
+      help.autocorrect = "prompt";
+
+      diff.algorithm = "histogram";
+
+      url."git@github.com:".insteadOf = "https://github.com/";
+
+      merge.tool = "meld";
+      branch.sort = "-committerdate";
     };
 
     userEmail = "79555780+0oAstro@users.noreply.github.com"; # private e-mail, mail scraping is a thing?
     userName = "0oAstro";
-  };
-
-  programs.jujutsu = {
-    enable = true;
-    settings = {
-      user = {
-        name = cfg.userName;
-        email = cfg.userEmail;
-      };
-    };
   };
 
   xdg.configFile."git/allowed_signers".text = ''

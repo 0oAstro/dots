@@ -14,7 +14,10 @@
 
       git_branch = {
         always_show_remote = true;
-        ignore_branches = ["master" "main"];
+        ignore_branches = [
+          "master"
+          "main"
+        ];
       };
 
       git_state = {
