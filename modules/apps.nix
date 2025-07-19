@@ -68,7 +68,6 @@
       "vesktop"
       "whatsapp"
       "zed@preview"
-      "zen@twilight"
     ];
 
     masApps = {
