@@ -42,41 +42,38 @@
     casks = [
       "1password"
       "appcleaner"
-      "brave-browser"
+      "brave-browser@nightly"
       "cursor"
       "etrecheckpro"
-      "galaxybudsclient"
       "ghostty"
+      "google-drive"
       "hammerspoon"
       "heroic"
       "hoppscotch"
       "iina"
       "imageoptim"
       "keycastr"
-      "kodi"
       "maccy"
       "maestral"
+      "mechvibes"
       "notion"
       "obsidian"
-      "openemu"
-      "protonvpn"
+      "raycast"
+      "slack"
       "spotify"
       "standard-notes"
       "steam"
+      "tor-browser"
       "tunnelblick"
       "vesktop"
       "whatsapp"
-      "windsurf"
       "zed@preview"
-      "zen"
+      "zen@twilight"
     ];
 
     masApps = {
-      # "DaVinci Resolve" = 571213070;
-      "Microsoft Word" = 462054704;
-      "Microsoft Excel" = 462058435;
+      "XCode" = 497799835;
       "Microsoft PowerPoint" = 462062816;
-      "OneDrive" = 477537958;
     };
 
     caskArgs = {

@@ -7,7 +7,6 @@
     ./fuck.nix
     ./fzf.nix
     ./git.nix
-    ./java.nix
     ./nix.nix
     ./node.nix
     ./ssh.nix

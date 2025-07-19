@@ -95,10 +95,9 @@
       #   https://github.com/yannbertrand/macos-defaults
       NSGlobalDomain = {
         # `defaults read NSGlobalDomain "xxx"`
-        "com.apple.swipescrolldirection" = true; # enable natural scrolling(default to true)
         "com.apple.sound.beep.feedback" = 0; # disable beep sound when pressing volume up/down key
         AppleKeyboardUIMode = 3; # Mode 3 enables full keyboard control.
-        ApplePressAndHoldEnabled = true; # enable press and hold
+        ApplePressAndHoldEnabled = false; # we use vim
 
         # If you press and hold certain keyboard keys when in a text area, the key’s character begins to repeat.
         # This is very useful for vim users, they use `hjkl` to move cursor.
@@ -109,7 +108,7 @@
 
         NSAutomaticCapitalizationEnabled = false; # disable auto capitalization(自动大写)
         NSAutomaticDashSubstitutionEnabled = false; # disable auto dash substitution(智能破折号替换)
-        NSAutomaticPeriodSubstitutionEnabled = false; # disable auto period substitution(智能句号替换)
+        NSAutomaticPeriodSubstitutionEnabled = true; # enable auto period substitution(智能句号替换)
         NSAutomaticQuoteSubstitutionEnabled = false; # disable auto quote substitution(智能引号替换)
         NSAutomaticSpellingCorrectionEnabled = false; # disable auto spelling correction(自动拼写检查)
         NSNavPanelExpandedStateForSaveMode = true; # expand save panel by default(保存文件时的路径选择/文件名输入页)
@@ -148,12 +147,11 @@
         };
         "com.apple.WindowManager" = {
           StandardHideDesktopIcons = 1; # Hide items on desktop
-          HideDesktop = 1; # Do not hide items on desktop & stage manager
+          HideDesktop = 0; # Hide items on desktop & stage manager
           StageManagerHideWidgets = 0;
           StandardHideWidgets = 0;
         };
         "com.apple.screensaver" = {
-          # Require password immediately after sleep or screen saver begins
           askForPassword = 1;
           askForPasswordDelay = 0;
         };

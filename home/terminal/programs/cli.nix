@@ -12,7 +12,6 @@
 
     aria2
     yt-dlp
-    mas
 
     pokeget-rs
 
