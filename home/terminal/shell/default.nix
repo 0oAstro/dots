@@ -1,7 +1,7 @@
 {
   imports = [
-    ./fish
-    ./starship.nix
+    ./fish.nix
+    ./starship
     ./zsh.nix
   ];
 }

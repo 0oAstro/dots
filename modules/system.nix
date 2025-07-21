@@ -40,15 +40,14 @@
         persistent-apps = [
           { app = "/Applications/1Password.app"; }
           { app = "/Applications/Spotify.app"; }
-          { app = "/System/Applications/Mail.app"; }
           { app = "/Applications/Obsidian.app"; }
           { app = "/Applications/Notion.app"; }
           { app = "/Applications/Brave Browser Nightly.app"; }
           { app = "/Applications/Zed Preview.app"; }
           { app = "/Applications/Ghostty.app"; }
+          { app = "/System/Applications/Mail.app"; }
           { app = "/Applications/WhatsApp.app"; }
           { app = "/Applications/Vesktop.app"; }
-          { app = "/Applications/Slack.app"; }
         ];
         scroll-to-open = true;
         showhidden = true;

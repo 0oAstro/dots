@@ -36,32 +36,30 @@
 
     taps = [
       "apple/apple"
+      "FelixKratz/formulae"
+      "nikitabobko/tap"
     ];
 
-    # `brew install --cask
+    brews = [ "borders" "spicetify-cli" ];
     casks = [
       "1password"
+      "aerospace"
       "appcleaner"
       "brave-browser@nightly"
       "cursor"
-      "etrecheckpro"
       "ghostty"
       "google-drive"
-      "hammerspoon"
       "heroic"
       "hoppscotch"
       "iina"
       "imageoptim"
       "keycastr"
-      "maccy"
       "maestral"
-      "mechvibes"
       "notion"
       "obsidian"
       "raycast"
       "slack"
       "spotify"
-      "standard-notes"
       "steam"
       "tor-browser"
       "tunnelblick"
