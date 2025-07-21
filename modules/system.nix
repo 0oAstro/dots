@@ -44,6 +44,7 @@
           { app = "/Applications/Notion.app"; }
           { app = "/Applications/Brave Browser Nightly.app"; }
           { app = "/Applications/Zed Preview.app"; }
+          { app = "/Applications/Cursor.app"; }
           { app = "/Applications/Ghostty.app"; }
           { app = "/System/Applications/Mail.app"; }
           { app = "/Applications/WhatsApp.app"; }
@@ -65,10 +66,10 @@
         # 13: Lock Screen
         # 14: Quick Note
 
-        wvous-tl-corner = 2; # top-left
-        wvous-tr-corner = 5; # top-right
-        wvous-bl-corner = 3; # bottom-left
-        wvous-br-corner = 12; # bottom-right
+        wvous-tl-corner = 1; # top-left
+        wvous-tr-corner = 1; # top-right
+        wvous-bl-corner = 1; # bottom-left
+        wvous-br-corner = 1; # bottom-right
       };
 
       # customize finder

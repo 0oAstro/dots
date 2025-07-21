@@ -6,15 +6,15 @@
     settings = {
       theme = "Kanagawa Wave";
 
-      font-family-italic = "Liga SFMono Nerd Font";
+      font-family-italic = "JetBrainsMono Nerd Font Mono";
       font-size = 18;
 
       macos-titlebar-style = "tabs";
       macos-titlebar-proxy-icon = "hidden";
       macos-option-as-alt = true;
 
-      background-opacity = 0.96;
-      background-blur-radius = 40;
+      background-opacity = 0.90;
+      background-blur-radius = 20;
 
       auto-update = "off";
       keybind = [
