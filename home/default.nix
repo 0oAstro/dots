@@ -8,7 +8,7 @@
   imports = [
     ./terminal
     ./terminal/emulators
-    nix-index-database.hmModules.nix-index
+    nix-index-database.homeModules.nix-index
   ];
 
   programs.nix-index.enable = true;

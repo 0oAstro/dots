@@ -67,7 +67,10 @@ in
 
       gpg."ssh".program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
 
-      pull.rebase = true;
+      pull = {
+        rebase = true;
+        ff = "only";
+      };
 
       init.defaultBranch = "main";
       push.autoSetupRemote = true;
@@ -85,12 +88,24 @@ in
       rerere.enabled = true;
       help.autocorrect = "prompt";
 
-      diff.algorithm = "histogram";
+      diff = {
+        algorithm = "histogram";
+      };
+
+      log.date = "iso";
+      tag.sort = "version:refname";
+
 
       url."git@github.com:".insteadOf = "https://github.com/";
 
-      merge.tool = "meld";
+      merge = {
+        tool = "meld";
+        conflictstyle = "zdiff3";
+      };
+      transfer.fsckobjects = true;
+      receive.fsckobjects = true;
       branch.sort = "-committerdate";
+      fetch.prune = true;
     };
 
     userEmail = "79555780+0oAstro@users.noreply.github.com"; # private e-mail, mail scraping is a thing?

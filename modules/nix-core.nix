@@ -33,4 +33,6 @@
   nix.package = pkgs.nix;
 
   nixpkgs.config.allowUnfree = true;
+
+  nix.channel.enable = false;
 }

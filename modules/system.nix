@@ -16,12 +16,7 @@
   ids.gids.nixbld = 30000;
 
   system = {
-    # activationScripts are executed every time you boot the system or run `nixos-rebuild` / `darwin-rebuild`.
-    activationScripts.postUserActivation.text = ''
-      # activateSettings -u will reload the settings from the database and apply them to the current session,
-      # so we do not need to logout and login again to make the changes take effect.
-      /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
-    '';
+    primaryUser = username;
 
     startup.chime = false; # disable startup sound
 
@@ -32,7 +27,7 @@
       dock = {
         autohide = true;
         autohide-time-modifier = 0.15;
-        autohide-delay = 0;
+        autohide-delay = 0.00;
         show-recents = false; # disable recent apps
         enable-spring-load-actions-on-all-items = true;
         expose-group-apps = true;
@@ -153,7 +148,7 @@
           askForPasswordDelay = 0;
         };
         "com.apple.screencapture" = {
-          location = "/Users/${username}/Google Drive/My Drive/screens";
+          location = "/Users/${username}/Google Drive/My Drive/captures";
           type = "png";
         };
         "com.apple.AdLib" = {

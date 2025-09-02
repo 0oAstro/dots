@@ -1,9 +1,11 @@
 { ... }:
 {
-  programs.thefuck = {
+  programs.pay-respects = {
     enable = true;
-    enableInstantMode = true;
-    enableFishIntegration = true;
-    alias = "fuck";
+    # enableFishIntegration = true;
+    options = [
+      "--alias"
+      "f"
+    ];
   };
 }

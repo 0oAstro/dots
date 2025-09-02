@@ -47,7 +47,7 @@ automatically-unhide-macos-hidden-apps = true
     inherit-env-vars = true
 
 [exec.env-vars]
-    PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:~/.config/aerospace/scripts:${PATH}'
+    PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:/etc/profiles/per-user/shaurya/bin:${PATH}'
 
 # Gaps between windows (inner-*) and between monitor edges (outer-*).
 # Possible values:
@@ -74,7 +74,7 @@ if.app-id = "com.apple.finder"
 run = ["layout floating"]
 [[on-window-detected]]
 if.app-id="com.mitchellh.ghostty"
-run= [ "move-node-to-workspace 一", "layout tiling" ]
+run= [ "layout tiling", "move-node-to-workspace 一" ]
 [[on-window-detected]]
 if.app-id="com.brave.Browser.nightly"
 run= "move-node-to-workspace 二"
@@ -83,37 +83,37 @@ if.app-id="com.apple.Safari"
 run= "move-node-to-workspace 二"
 [[on-window-detected]]
 if.app-id = "com.todesktop.230313mzl4w4u92" # Cursor
-run = ["move-node-to-workspace 三", "layout tiling"]
+run = ["layout tiling", "move-node-to-workspace 三"]
 [[on-window-detected]]
 if.app-id = "dev.zed.Zed-Preview" # Zed
-run = ["move-node-to-workspace 三", "layout tiling"]
+run = ["layout tiling", "move-node-to-workspace 三"]
 [[on-window-detected]]
 if.app-id = "md.obsidian"
-run = ["move-node-to-workspace 四", "layout tiling"]
+run = ["layout tiling", "move-node-to-workspace 四"]
 [[on-window-detected]]
 if.app-id = "notion.id"
-run = ["move-node-to-workspace 四", "layout tiling"]
+run = ["layout tiling", "move-node-to-workspace 四"]
 [[on-window-detected]]
 if.app-id = "com.tinyspeck.slackmacgap" # Slack
-run = ["move-node-to-workspace 五", "layout tiling"]
+run = ["layout tiling", "move-node-to-workspace 五"]
 [[on-window-detected]]
 if.app-id = "com.apple.mail" # Mail
-run = ["move-node-to-workspace 五", "layout tiling"]
+run = ["layout tiling", "move-node-to-workspace 五"]
 [[on-window-detected]]
 if.app-id = "net.whatsapp.WhatsApp" # WhatsApp
-run = ["move-node-to-workspace 五", "layout tiling"]
+run = ["layout tiling", "move-node-to-workspace 五"]
 [[on-window-detected]]
 if.app-id = "app.legcord.Legcord" # Discord
-run = ["move-node-to-workspace 五", "layout tiling"]
+run = ["layout tiling", "move-node-to-workspace 五"]
 [[on-window-detected]]
 if.app-id = "com.spotify.client"
-run = ["move-node-to-workspace 六", "layout tiling"] # Music; Spotify
+run = ["layout tiling", "move-node-to-workspace 六"] # Music; Spotify
 [[on-window-detected]]
 if.app-id = "com.apple.Music"
-run = ["move-node-to-workspace 六", "layout tiling"] # Music; Spotify
+run = ["layout tiling", "move-node-to-workspace 六"] # Music; Spotify
 [[on-window-detected]]
 if.app-id = "com.apple.Preview"
-run = [ "move-node-to-workspace 七", "layout tiling" ]
+run = [ "layout tiling", "move-node-to-workspace 七" ]
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes

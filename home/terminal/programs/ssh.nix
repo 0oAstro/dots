@@ -5,12 +5,29 @@ in
 {
   programs.ssh = {
     enable = true;
-    extraConfig = ''
-      Host *
-        AddKeysToAgent yes
-        UseKeychain yes
-        IdentityAgent '${onePassPath}'
-        SetEnv TERM=xterm-256color
-    '';
+    enableDefaultConfig = false;
+    matchBlocks = {
+      "iitd" = {
+        user = "ee1240486";
+        host = "ssh1.iitd.ac.in";
+        forwardAgent = true;
+      };
+      "*" = {
+        forwardAgent = false;
+        addKeysToAgent = "confirm";
+        compression = true;
+        serverAliveInterval = 0;
+        serverAliveCountMax = 3;
+        hashKnownHosts = true;
+        userKnownHostsFile = "~/.ssh/known_hosts";
+        controlMaster = "auto";
+        controlPath = "~/.ssh/master-%r@%n:%p";
+        controlPersist = "10m";
+        identityAgent = "'${onePassPath}'";
+        setEnv = {
+          TERM = "xterm-256color";
+        };
+      };
+    };
   };
 }
