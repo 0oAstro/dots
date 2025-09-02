@@ -40,7 +40,10 @@
       "nikitabobko/tap"
     ];
 
-    brews = [ "borders" "spicetify-cli" ];
+    brews = [
+      "borders"
+      "spicetify-cli"
+    ];
     casks = [
       "1password"
       "aerospace"

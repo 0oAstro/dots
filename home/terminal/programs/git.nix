@@ -105,7 +105,10 @@ in
     enable = true;
     settings = {
       gui.theme = {
-        activeBorderColor = [ "#dc8a78" "bold" ];
+        activeBorderColor = [
+          "#dc8a78"
+          "bold"
+        ];
         inactiveBorderColor = [ "#6c6f85" ];
         optionsTextColor = [ "#1e66f5" ];
         selectedLineBgColor = [ "#ccd0da" ];
@@ -117,6 +120,7 @@ in
         authorColors = {
           "*" = "#7287fd";
         };
+      };
     };
   };
 }
