@@ -1,7 +1,9 @@
 {
   imports = [
     ./bat
+    ./c.nix
     ./cli.nix
+    ./docker
     ./editors
     ./eza.nix
     ./fuck.nix

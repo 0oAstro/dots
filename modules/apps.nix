@@ -49,28 +49,24 @@
       "cursor"
       "ghostty"
       "google-drive"
-      "heroic"
       "hoppscotch"
       "iina"
-      "imageoptim"
       "keycastr"
+      "legcord"
       "maestral"
       "notion"
       "obsidian"
       "raycast"
-      "slack"
       "spotify"
       "steam"
       "tor-browser"
       "tunnelblick"
-      "vesktop"
       "whatsapp"
       "zed@preview"
     ];
 
     masApps = {
       "XCode" = 497799835;
-      "Microsoft PowerPoint" = 462062816;
     };
 
     caskArgs = {

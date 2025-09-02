@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+appName="$1"
+
+osascript <<EOF
+tell application "System Events"
+    set frontApp to name of first application process whose frontmost is true
+end tell
+
+if frontApp is "$appName" then
+    tell application "$appName"
+        if it is running then
+            tell application "System Events" to keystroke "n" using {command down}
+        end if
+    end tell
+end if
+
+tell application "$appName"
+    activate
+    try
+        set miniaturized of windows to false
+    end try
+    try
+        set collapsed of windows to false
+    end try
+    try
+        tell application "System Events" to tell process "Dock"
+            click (last UI element of list 1 where role description is "minimized window dock item")
+        end tell
+    end try
+    try
+        reopen
+    end try
+end tell
+EOF

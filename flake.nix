@@ -62,6 +62,8 @@
 
           ./modules/host-users.nix
 
+          ./modules/services.nix
+
           nix-index-database.darwinModules.nix-index
 
           home-manager.darwinModules.home-manager

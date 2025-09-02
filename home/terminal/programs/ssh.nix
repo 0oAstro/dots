@@ -10,6 +10,7 @@ in
         AddKeysToAgent yes
         UseKeychain yes
         IdentityAgent '${onePassPath}'
+        SetEnv TERM=xterm-256color
     '';
   };
 }

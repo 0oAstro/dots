@@ -2,8 +2,9 @@
 {
   home.packages = with pkgs; [
     # archives
-    zip
-    unzip
+    # zip
+    # unzip
+    p7zip
 
     # utils
     fd
@@ -15,6 +16,9 @@
 
     pokeget-rs
 
-    _1password-cli
+    (writeShellApplication {
+      name = "launch";
+      text = builtins.readFile ../scripts/launch;
+    })
   ];
 }

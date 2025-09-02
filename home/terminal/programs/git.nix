@@ -100,4 +100,23 @@ in
   xdg.configFile."git/allowed_signers".text = ''
     ${cfg.userEmail} namespaces="git" ${key}
   '';
+
+  programs.lazygit = {
+    enable = true;
+    settings = {
+      gui.theme = {
+        activeBorderColor = [ "#dc8a78" "bold" ];
+        inactiveBorderColor = [ "#6c6f85" ];
+        optionsTextColor = [ "#1e66f5" ];
+        selectedLineBgColor = [ "#ccd0da" ];
+        cherryPickedCommitBgColor = [ "#bcc0cc" ];
+        cherryPickedCommitFgColor = [ "#dc8a78" ];
+        unstagedChangesColor = [ "#d20f39" ];
+        defaultFgColor = [ "#4c4f69" ];
+        searchingActiveBorderColor = [ "#df8e1d" ];
+        authorColors = {
+          "*" = "#7287fd";
+        };
+    };
+  };
 }

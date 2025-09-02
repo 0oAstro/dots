@@ -4,7 +4,7 @@
 # You can use it to add commands that run after AeroSpace startup.
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 after-startup-command = [
-    "exec-and-forget borders active_color=0xffa9eed6 inactive_color=0xff111d1e width=5.0 hidpi=on ax_focus=on",
+    "exec-and-forget borders width=3.0 hidpi=on active_color=0xfff38ba8 inactive_color=0x00000000 ax_focus=on order=a",
 ]
 
 start-at-login = true
@@ -16,7 +16,7 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 # See: https://nikitabobko.github.io/AeroSpace/guide#layouts
 # The 'accordion-padding' specifies the size of accordion padding
 # You can set 0 to disable the padding feature
-accordion-padding = 30
+accordion-padding = 10
 
 # Possible values: tiles|accordion
 default-root-container-layout = 'tiles'
@@ -43,6 +43,12 @@ automatically-unhide-macos-hidden-apps = true
 [key-mapping]
     preset = 'qwerty'
 
+[exec]
+    inherit-env-vars = true
+
+[exec.env-vars]
+    PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:~/.config/aerospace/scripts:${PATH}'
+
 # Gaps between windows (inner-*) and between monitor edges (outer-*).
 # Possible values:
 # - Constant:     gaps.outer.top = 8
@@ -55,8 +61,8 @@ automatically-unhide-macos-hidden-apps = true
     inner.horizontal = 10
     inner.vertical =   10
     outer.left =       16
-    outer.bottom =     5
-    outer.top =        5
+    outer.bottom =     10
+    outer.top =        10
     outer.right =      16
 
 
@@ -67,11 +73,8 @@ run = ["layout floating"]
 if.app-id = "com.apple.finder"
 run = ["layout floating"]
 [[on-window-detected]]
-if.app-id = "com.apple.Preview" # Preview
-run = "layout floating"
-[[on-window-detected]]
 if.app-id="com.mitchellh.ghostty"
-run= [ "move-node-to-workspace 一" ]
+run= [ "move-node-to-workspace 一", "layout tiling" ]
 [[on-window-detected]]
 if.app-id="com.brave.Browser.nightly"
 run= "move-node-to-workspace 二"
@@ -80,40 +83,37 @@ if.app-id="com.apple.Safari"
 run= "move-node-to-workspace 二"
 [[on-window-detected]]
 if.app-id = "com.todesktop.230313mzl4w4u92" # Cursor
-run = "move-node-to-workspace 三"
+run = ["move-node-to-workspace 三", "layout tiling"]
 [[on-window-detected]]
 if.app-id = "dev.zed.Zed-Preview" # Zed
-run = "move-node-to-workspace 三"
+run = ["move-node-to-workspace 三", "layout tiling"]
 [[on-window-detected]]
 if.app-id = "md.obsidian"
-run = "move-node-to-workspace 四"
+run = ["move-node-to-workspace 四", "layout tiling"]
 [[on-window-detected]]
 if.app-id = "notion.id"
-run = "move-node-to-workspace 四"
+run = ["move-node-to-workspace 四", "layout tiling"]
 [[on-window-detected]]
 if.app-id = "com.tinyspeck.slackmacgap" # Slack
-run = "move-node-to-workspace 五"
+run = ["move-node-to-workspace 五", "layout tiling"]
 [[on-window-detected]]
 if.app-id = "com.apple.mail" # Mail
-run = "move-node-to-workspace 五"
+run = ["move-node-to-workspace 五", "layout tiling"]
 [[on-window-detected]]
 if.app-id = "net.whatsapp.WhatsApp" # WhatsApp
-run = "move-node-to-workspace 五"
+run = ["move-node-to-workspace 五", "layout tiling"]
 [[on-window-detected]]
-if.app-id = "dev.vencord.vesktop" # Discord
-run = "move-node-to-workspace 五"
+if.app-id = "app.legcord.Legcord" # Discord
+run = ["move-node-to-workspace 五", "layout tiling"]
 [[on-window-detected]]
 if.app-id = "com.spotify.client"
-run = "move-node-to-workspace 六" # Music; Spotify
+run = ["move-node-to-workspace 六", "layout tiling"] # Music; Spotify
 [[on-window-detected]]
 if.app-id = "com.apple.Music"
-run = "move-node-to-workspace 六" # Music; Spotify
+run = ["move-node-to-workspace 六", "layout tiling"] # Music; Spotify
 [[on-window-detected]]
-if.app-id = "com.apple.TV"
-run = "move-node-to-workspace 七"
-[[on-window-detected]]
-if.app-id = "com.github.thaunknown.miru" # hayase
-run = "move-node-to-workspace 七"
+if.app-id = "com.apple.Preview"
+run = [ "move-node-to-workspace 七", "layout tiling" ]
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -141,14 +141,7 @@ run = "move-node-to-workspace 七"
     # See: https://nikitabobko.github.io/AeroSpace/commands#exec-and-forget
     # You can uncomment the following lines to open up terminal with alt + enter shortcut
     # (like in i3)
-    alt-enter = '''exec-and-forget osascript -e 'tell application "Ghostty"
-      if it is running then
-      activate
-      tell application "System Events" to keystroke "n" using {command down}
-      else
-      activate
-      end if
-    end tell''''
+    alt-enter = '''exec-and-forget launch "Ghostty"'''
 
     cmd-shift-v = '''exec-and-forget osascript -e 'tell application "System Events" to set textToType to (the clipboard as text)' -e 'tell application "System Events"' -e 'delay 1' -e 'repeat with eachChar in characters of textToType' -e 'keystroke eachChar' -e 'delay 0.02' -e 'end repeat' -e 'end tell''''
 
@@ -184,6 +177,7 @@ run = "move-node-to-workspace 七"
     alt-5 = 'workspace 五' # chat around
     alt-6 = 'workspace 六' # music
     alt-7 = 'workspace 七' # anime/streaming
+    alt-8 = 'workspace 八' # preview
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
     alt-shift-1 = 'move-node-to-workspace 一'
@@ -193,6 +187,7 @@ run = "move-node-to-workspace 七"
     alt-shift-5 = 'move-node-to-workspace 五'
     alt-shift-6 = 'move-node-to-workspace 六'
     alt-shift-7 = 'move-node-to-workspace 七'
+    alt-shift-8 = 'move-node-to-workspace 八'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
     alt-tab = 'workspace-back-and-forth'
@@ -203,7 +198,6 @@ run = "move-node-to-workspace 七"
 
     # See: https://github.com/nikitabobko/AeroSpace/issues/1097
     alt-w = 'exec-and-forget current_workspace="$(aerospace list-workspaces --focused)"; aerospace close; aerospace workspace "$current_workspace"'
-
     alt-shift-enter = 'fullscreen --no-outer-gaps'
     ctrl-alt-enter = 'macos-native-fullscreen'
 
@@ -230,16 +224,15 @@ run = "move-node-to-workspace 七"
 [mode.launch.binding]
     esc = ['mode main']
     alt-space = ['mode main']
-    t = [ '''exec-and-forget osascript -e 'tell application "Ghostty" to activate'''', 'mode main' ]
-    f = [ '''exec-and-forget osascript -e 'tell application "Finder" to activate'''', 'mode main' ]
-    c = [ '''exec-and-forget osascript -e 'tell application "Cursor" to activate'''', 'mode main' ]
-    b = [ '''exec-and-forget osascript -e 'tell application "Brave Browser Nightly" to activate'''', 'mode main' ]
-    w = [ '''exec-and-forget osascript -e 'tell application "WhatsApp" to activate'''', 'mode main' ]
-    o = [ '''exec-and-forget osascript -e 'tell application "Obsidian" to activate'''', 'mode main' ]
-    n = [ '''exec-and-forget osascript -e 'tell application "Notion" to activate'''', 'mode main' ]
-    d = [ '''exec-and-forget osascript -e 'tell application "Vesktop" to activate'''', 'mode main' ]
-    s = [ '''exec-and-forget osascript -e 'tell application "Spotify" to activate'''', 'mode main' ]
-    h = [ '''exec-and-forget osascript -e 'tell application "Hayase" to activate'''', 'mode main' ]
-    m = [ '''exec-and-forget osascript -e 'tell application "Mail" to activate'''',  'mode main' ]
-    z = [ '''exec-and-forget osascript -e 'tell application "Zed Preview" to activate'''', 'mode main' ]
-    alt-s = [ '''exec-and-forget osascript -e 'tell application "Slack" to activate'''', 'mode main' ]
+    t = [ '''exec-and-forget launch "Ghostty"''', 'mode main' ]
+    f = [ '''exec-and-forget launch "Finder"''', 'mode main' ]
+    c = [ '''exec-and-forget launch "Cursor"''', 'mode main' ]
+    b = [ '''exec-and-forget launch "Brave Browser Nightly"''', 'mode main' ]
+    w = [ '''exec-and-forget launch "WhatsApp"''', 'mode main' ]
+    o = [ '''exec-and-forget launch "Obsidian"''', 'mode main' ]
+    n = [ '''exec-and-forget launch "Notion"''', 'mode main' ]
+    d = [ '''exec-and-forget launch "Legcord"''', 'mode main' ]
+    s = [ '''exec-and-forget launch "Spotify"''', 'mode main' ]
+    h = [ '''exec-and-forget launch "Hayase"''', 'mode main' ]
+    m = [ '''exec-and-forget launch "Mail"''',  'mode main' ]
+    z = [ '''exec-and-forget launch "Zed Preview"''', 'mode main' ]

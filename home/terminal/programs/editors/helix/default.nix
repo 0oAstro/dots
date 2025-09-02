@@ -14,7 +14,7 @@
     ];
 
     settings = {
-      theme = "kanagawa";
+      theme = "catppuccin_latte";
       editor = {
         color-modes = true;
         completion-trigger-len = 1;

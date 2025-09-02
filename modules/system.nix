@@ -30,7 +30,9 @@
 
       # customize dock
       dock = {
-        autohide = false;
+        autohide = true;
+        autohide-time-modifier = 0.15;
+        autohide-delay = 0;
         show-recents = false; # disable recent apps
         enable-spring-load-actions-on-all-items = true;
         expose-group-apps = true;
@@ -38,17 +40,11 @@
         minimize-to-application = true;
         mouse-over-hilite-stack = true;
         persistent-apps = [
-          { app = "/Applications/1Password.app"; }
-          { app = "/Applications/Spotify.app"; }
-          { app = "/Applications/Obsidian.app"; }
-          { app = "/Applications/Notion.app"; }
+          { app = "/Applications/Ghostty.app"; }
           { app = "/Applications/Brave Browser Nightly.app"; }
           { app = "/Applications/Zed Preview.app"; }
-          { app = "/Applications/Cursor.app"; }
-          { app = "/Applications/Ghostty.app"; }
-          { app = "/System/Applications/Mail.app"; }
+          { app = "/Applications/Obsidian.app"; }
           { app = "/Applications/WhatsApp.app"; }
-          { app = "/Applications/Vesktop.app"; }
         ];
         scroll-to-open = true;
         showhidden = true;
@@ -81,7 +77,10 @@
         ShowStatusBar = true; # show status bar
         CreateDesktop = true; # disable desktop icons
         FXDefaultSearchScope = "SCcf"; # When performing a search, search the current folder by default
-        FXPreferredViewStyle = "clmv"; # set default view style to icon view
+        FXPreferredViewStyle = "clmv"; # set default view style to column view
+        FXRemoveOldTrashItems = true;
+        ShowRemovableMediaOnDesktop = false;
+        _FXSortFoldersFirst = true;
       };
 
       # customize trackpad
@@ -135,13 +134,6 @@
           # Add a context menu item for showing the Web Inspector in web views
           WebKitDeveloperExtras = true;
         };
-        "com.apple.finder" = {
-          ShowExternalHardDrivesOnDesktop = true;
-          ShowHardDrivesOnDesktop = true;
-          ShowMountedServersOnDesktop = true;
-          ShowRemovableMediaOnDesktop = true;
-          _FXSortFoldersFirst = true;
-        };
         "com.apple.desktopservices" = {
           # Avoid creating .DS_Store files on network or USB volumes
           DSDontWriteNetworkStores = true;
@@ -161,7 +153,7 @@
           askForPasswordDelay = 0;
         };
         "com.apple.screencapture" = {
-          location = "/Users/${username}/Dropbox/Screenshots";
+          location = "/Users/${username}/Google Drive/My Drive/screens";
           type = "png";
         };
         "com.apple.AdLib" = {
@@ -188,7 +180,7 @@
             {
               "tile-data" = {
                 "file-data" = {
-                  "_CFURLString" = "/Users/${username}/Dropbox/Screenshots";
+                  "_CFURLString" = "/Users/${username}/Google Drive/My Drive/captures";
                   "_CFURLStringType" = 0;
                 };
                 "arrangement" = 2;
