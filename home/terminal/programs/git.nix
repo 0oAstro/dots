@@ -95,7 +95,6 @@ in
       log.date = "iso";
       tag.sort = "version:refname";
 
-
       url."git@github.com:".insteadOf = "https://github.com/";
 
       merge = {
