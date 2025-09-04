@@ -2,7 +2,7 @@
 {
   ## COLIMA
   launchd.user.agents."colima.default" = {
-    script = "colima start --foreground --cpu 1 --memory 2 --disk 10";
+    script = "colima start --foreground --cpu 1 --memory 0.5 --disk 5";
     serviceConfig = {
       Label = "com.colima.default";
       RunAtLoad = true;
