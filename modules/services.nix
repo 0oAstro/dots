@@ -1,8 +1,8 @@
 { pkgs, username, ... }:
 {
   ## COLIMA
-  launchd.agents."colima.default" = {
-    command = "${pkgs.colima}/bin/colima start --foreground";
+  launchd.user.agents."colima.default" = {
+    script = "colima start --foreground --cpu 1 --memory 2 --disk 10";
     serviceConfig = {
       Label = "com.colima.default";
       RunAtLoad = true;
@@ -12,8 +12,11 @@
 
       # not using launchd.agents.<name>.path because colima needs the system ones as well
       EnvironmentVariables = {
-        PATH = "${pkgs.colima}/bin:${pkgs.docker}/bin:/usr/bin:/bin:/usr/sbin:/sbin";
+        HOME = "/Users/${username}";
+        PATH = "${pkgs.colima}/bin:${pkgs.docker}/bin:${pkgs.curl}/bin:${pkgs.gnutar}/bin:${pkgs.coreutils}/bin:/usr/bin:/bin:/usr/sbin:/sbin";
       };
+
+      UserName = username;
     };
   };
 }
