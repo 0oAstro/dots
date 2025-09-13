@@ -7,7 +7,7 @@
     #    installBatSyntax = true;
     #    installVimSyntax = true;
     settings = {
-      theme = "catppuccin-latte";
+      theme = "catppuccin-mocha";
 
       font-family = "DankMono Nerd Font";
       font-size = 18;
@@ -24,6 +24,11 @@
       scrollback-limit = 1000000;
 
       window-save-state = "always";
+
+      window-padding-x = 15;
+      window-padding-y = 10;
+
+      window-inherit-working-directory = true;
 
       # Keybindings need to be defined as a list of strings with the format "key=action"
       keybind = [
