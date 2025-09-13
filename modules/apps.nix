@@ -61,7 +61,6 @@
       "steam"
       "transmission"
       "tunnelblick"
-      "whatsapp"
       "zed@preview"
     ];
 
