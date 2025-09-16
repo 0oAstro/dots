@@ -42,7 +42,7 @@
 
     brews = [
       "borders"
-      "spicetify-cli"
+      "mas"
     ];
     casks = [
       "1password"

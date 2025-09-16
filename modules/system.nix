@@ -36,7 +36,7 @@
         mouse-over-hilite-stack = true;
         persistent-apps = [
           { app = "/Applications/Ghostty.app"; }
-          { app = "/Applications/Safari.app"; }
+          { app = "/Applications/Brave Browser Nightly.app"; }
           { app = "/Applications/Zed Preview.app"; }
           { app = "/Applications/Obsidian.app"; }
         ];

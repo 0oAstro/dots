@@ -4,7 +4,7 @@
 # You can use it to add commands that run after AeroSpace startup.
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 after-startup-command = [
-    "exec-and-forget /opt/homebrew/bin/borders width=3.0 hidpi=on active_color=0xfff38ba8 inactive_color=0x00000000 ax_focus=on order=a",
+    # "exec-and-forget /opt/homebrew/bin/borders width=3.0 hidpi=on active_color=0xfff38ba8 inactive_color=0x00000000 ax_focus=on order=a",
 ]
 
 start-at-login = true

@@ -10,14 +10,14 @@
       theme = "catppuccin-mocha";
 
       font-family = "DankMono Nerd Font";
-      font-size = 18;
+      font-size = 16;
 
       macos-titlebar-style = "tabs";
       macos-titlebar-proxy-icon = "hidden";
       macos-option-as-alt = true;
 
-      background-opacity = 0.70;
-      background-blur-radius = 40;
+      background-opacity = 0.80;
+      background-blur-radius = 80;
 
       auto-update = "off";
       mouse-hide-while-typing = true;
