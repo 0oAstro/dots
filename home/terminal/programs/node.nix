@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{pkgs, ...}:
 # node tooling
 {
   home.packages = with pkgs; [

@@ -40,9 +40,9 @@
     fish
   ];
 
-  environment.systemPackages = with pkgs; [ cachix ];
+  environment.systemPackages = with pkgs; [cachix];
 
-  users.knownUsers = [ username ];
+  users.knownUsers = [username];
 
   users.users."${username}" = {
     home = "/Users/${username}";
@@ -51,5 +51,5 @@
     uid = 501;
   };
 
-  nix.settings.trusted-users = [ username ];
+  nix.settings.trusted-users = [username];
 }

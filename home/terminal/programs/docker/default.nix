@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   imports = [
     ./lazydocker.nix
   ];
@@ -8,5 +7,5 @@
   #   enable = true;
   # };
 
-  home.packages = [ pkgs.docker-client ];
+  home.packages = [pkgs.docker-client];
 }

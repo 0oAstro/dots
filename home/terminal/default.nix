@@ -1,9 +1,7 @@
-{ config, ... }:
-let
+{config, ...}: let
   conf = config.xdg.configHome;
   cache = config.xdg.cacheHome;
-in
-{
+in {
   imports = [
     ./programs
     ./shell

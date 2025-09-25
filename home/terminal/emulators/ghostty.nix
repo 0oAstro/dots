@@ -1,5 +1,4 @@
-{ ... }:
-{
+{...}: {
   programs.ghostty = {
     enable = true;
     package = null; # broken in unstable
@@ -7,7 +6,7 @@
     #    installBatSyntax = true;
     #    installVimSyntax = true;
     settings = {
-      theme = "catppuccin-mocha";
+      theme = "Kanagawa Wave";
 
       font-family = "DankMono Nerd Font";
       font-size = 16;

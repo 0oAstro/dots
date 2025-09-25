@@ -1,24 +1,21 @@
-{ pkgs, ... }:
-{
-  programs.fzf = {
+{pkgs, ...}: {
+  programs.skim = {
     enable = true;
-    enableZshIntegration = true;
+    enableZshIntegration = false;
     enableFishIntegration = true;
-    defaultCommand = "${pkgs.fd}/bin/fd --hidden --type f --exclude '.jj' --exclude '.direnv' --exclude '.venv' --exclude '.git' --exclude 'logs'--exclude 'dist' --exclude 'build' --exclude 'node_modules' --exclude '.DS_Store' --exclude 'out' --exclude '.vscode' --exclude '.nuxt' --exclude '.next'";
+    defaultCommand = "${pkgs.fd}/bin/fd --type f";
     changeDirWidgetOptions = [
       "--preview '${pkgs.eza}/bin/eza --icons --git --color always -T -L 3 {} | head -200'"
-      "--exact"
     ];
     defaultOptions = [
       "--prompt='~ '"
       "--layout=reverse"
       "--multi"
-      "--height=80%"
+      "--height=40%"
       "--info=inline"
-      "--border"
-
+      "--border=top"
     ];
-    changeDirWidgetCommand = "${pkgs.fd}/bin/fd --hidden --type f --exclude '.jj' --exclude '.direnv' --exclude '.venv' --exclude '.git' --exclude 'logs' --exclude 'dist' --exclude 'build' --exclude 'node_modules' --exclude '.DS_Store' --exclude 'out' --exclude '.vscode' --exclude '.nuxt' --exclude '.next' --exclude '.cache'";
-    historyWidgetOptions = [ "--sort" ];
+    changeDirWidgetCommand = "${pkgs.fd}/bin/fd --type d";
+    historyWidgetOptions = ["--tac" "--sort"];
   };
 }

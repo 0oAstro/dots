@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{pkgs, ...}:
 # c tooling
 {
   home.packages = with pkgs; [

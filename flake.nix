@@ -17,83 +17,80 @@
   # parameters in `outputs` are defined in `inputs` and can be referenced by their names.
   # However, `self` is an exception, this special parameter points to the `outputs` itself (self-reference)
   # The `@` syntax here is used to alias the attribute set of the inputs's parameter, making it convenient to use inside the function.
-  outputs =
-    inputs@{
-      self,
-      nixpkgs,
-      darwin,
-      home-manager,
-      nix-index-database,
-      neovim-nightly-overlay,
-      ...
-    }:
-    let
-      # TODO: replace with your own username, system and hostname
-      username = "shaurya";
-      system = "aarch64-darwin"; # aarch64-darwin or x86_64-darwin
-      hostname = "asuna";
+  outputs = inputs @ {
+    self,
+    nixpkgs,
+    darwin,
+    home-manager,
+    nix-index-database,
+    neovim-nightly-overlay,
+    ...
+  }: let
+    # TODO: replace with your own username, system and hostname
+    username = "shaurya";
+    system = "aarch64-darwin"; # aarch64-darwin or x86_64-darwin
+    hostname = "asuna";
 
-      specialArgs = inputs // {
+    specialArgs =
+      inputs
+      // {
         inherit username hostname;
       };
 
-      supportedSystems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
-      forEachSupportedSystem =
-        f:
-        inputs.nixpkgs.lib.genAttrs supportedSystems (
-          system:
+    supportedSystems = [
+      "x86_64-linux"
+      "aarch64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
+    ];
+    forEachSupportedSystem = f:
+      inputs.nixpkgs.lib.genAttrs supportedSystems (
+        system:
           f {
-            pkgs = import inputs.nixpkgs { inherit system; };
+            pkgs = import inputs.nixpkgs {inherit system;};
           }
-        );
-    in
-    {
-      darwinConfigurations."${hostname}" = darwin.lib.darwinSystem {
-        inherit system specialArgs;
-        modules = [
-          ./modules/nix-core.nix
-          ./modules/system.nix
-          ./modules/apps.nix
-
-          ./modules/host-users.nix
-
-          ./modules/services.nix
-
-          nix-index-database.darwinModules.nix-index
-
-          home-manager.darwinModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = specialArgs;
-            home-manager.users.${username} = import ./home;
-          }
-        ];
-      };
-
-      devShells = forEachSupportedSystem (
-        { pkgs }:
-        {
-          default = pkgs.mkShell {
-            packages = [
-              pkgs.nixfmt-rfc-style
-              pkgs.nixd
-              pkgs.git
-            ];
-            name = "dots";
-            DIRENV_LOG_FORMAT = "";
-          };
-        }
       );
+  in {
+    darwinConfigurations."${hostname}" = darwin.lib.darwinSystem {
+      inherit system specialArgs;
+      modules = [
+        ./modules/nix-core.nix
+        ./modules/system.nix
+        ./modules/apps.nix
 
-      # nix code formatter
-      formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
+        ./modules/host-users.nix
+
+        ./modules/services.nix
+
+        nix-index-database.darwinModules.nix-index
+
+        home-manager.darwinModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.extraSpecialArgs = specialArgs;
+          home-manager.users.${username} = import ./home;
+        }
+      ];
     };
+
+    devShells = forEachSupportedSystem (
+      {pkgs}: {
+        default = pkgs.mkShell {
+          packages = [
+            pkgs.alejandra
+            pkgs.nixd
+            pkgs.git
+          ];
+          name = "dots";
+          DIRENV_LOG_FORMAT = "";
+        };
+      }
+    );
+
+    # nix code formatter
+    formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
+  };
 
   # This is the standard format for flake.nix. `inputs` are the dependencies of the flake,
   # Each item in `inputs` will be passed as a parameter to the `outputs` function after being pulled and built.
@@ -120,7 +117,7 @@
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
 
     nix-index-database = {
-      url = "github:Mic92/nix-index-database";
+      url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
   };

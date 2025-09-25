@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   nix = {
     extraOptions = ''
       # for direnv GC roots
@@ -35,4 +34,7 @@
   nixpkgs.config.allowUnfree = true;
 
   nix.channel.enable = false;
+
+  # tmpdir fix
+  services.nix-daemon.tempDir = "/private/tmp";
 }

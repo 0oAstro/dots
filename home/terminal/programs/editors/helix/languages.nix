@@ -2,38 +2,36 @@
   pkgs,
   lib,
   ...
-}:
-{
+}: {
   programs.helix.languages = {
-    language =
-      let
-        deno = lang: {
-          command = lib.getExe pkgs.deno;
-          args = [
-            "fmt"
-            "-"
-            "--ext"
-            lang
-          ];
-        };
-
-        prettier = lang: {
-          command = lib.getExe pkgs.nodePackages.prettier;
-          args = [
-            "--parser"
-            lang
-          ];
-        };
-        prettierLangs = map (e: {
-          name = e;
-          formatter = prettier e;
-        });
-        langs = [
-          "css"
-          "scss"
-          "html"
+    language = let
+      deno = lang: {
+        command = lib.getExe pkgs.deno;
+        args = [
+          "fmt"
+          "-"
+          "--ext"
+          lang
         ];
-      in
+      };
+
+      prettier = lang: {
+        command = lib.getExe pkgs.nodePackages.prettier;
+        args = [
+          "--parser"
+          lang
+        ];
+      };
+      prettierLangs = map (e: {
+        name = e;
+        formatter = prettier e;
+      });
+      langs = [
+        "css"
+        "scss"
+        "html"
+      ];
+    in
       [
         {
           name = "bash";
@@ -64,10 +62,10 @@
         {
           name = "cmake";
           auto-format = true;
-          language-servers = [ "cmake-language-server" ];
+          language-servers = ["cmake-language-server"];
           formatter = {
             command = lib.getExe pkgs.cmake-format;
-            args = [ "-" ];
+            args = ["-"];
           };
         }
         {
@@ -124,7 +122,7 @@
         {
           name = "typst";
           auto-format = true;
-          language-servers = [ "tinymist" ];
+          language-servers = ["tinymist"];
         }
       ]
       ++ prettierLangs langs;
@@ -134,12 +132,12 @@
 
       bash-language-server = {
         command = lib.getExe pkgs.bash-language-server;
-        args = [ "start" ];
+        args = ["start"];
       };
 
       clangd = {
         command = "${pkgs.clang-tools}/bin/clangd";
-        clangd.fallbackFlags = [ "-std=c++2b" ];
+        clangd.fallbackFlags = ["-std=c++2b"];
       };
 
       cmake-language-server = {
@@ -148,7 +146,7 @@
 
       deno-lsp = {
         command = lib.getExe pkgs.deno;
-        args = [ "lsp" ];
+        args = ["lsp"];
         environment.NO_COLOR = "1";
         config.deno = {
           enable = true;
@@ -173,7 +171,7 @@
 
       dprint = {
         command = lib.getExe pkgs.dprint;
-        args = [ "lsp" ];
+        args = ["lsp"];
       };
 
       nil = {
@@ -186,12 +184,12 @@
 
       qmlls = {
         command = "${pkgs.qt6.qtdeclarative}/bin/qmlls";
-        args = [ "-E" ];
+        args = ["-E"];
       };
 
       ruff = {
         command = lib.getExe pkgs.ruff;
-        args = [ "server" ];
+        args = ["server"];
       };
 
       tinymist = {
@@ -206,7 +204,7 @@
 
       typescript-language-server = {
         command = lib.getExe pkgs.nodePackages.typescript-language-server;
-        args = [ "--stdio" ];
+        args = ["--stdio"];
         config = {
           typescript-language-server.source = {
             addMissingImports.ts = true;
@@ -220,7 +218,7 @@
 
       vscode-css-language-server = {
         command = "${pkgs.nodePackages.vscode-langservers-extracted}/bin/vscode-css-language-server";
-        args = [ "--stdio" ];
+        args = ["--stdio"];
         config = {
           provideFormatter = true;
           css.validate.enable = true;

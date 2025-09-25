@@ -1,15 +1,13 @@
-{ ... }:
-let
+{...}: let
   onePassPath = "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
-in
-{
+in {
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
     matchBlocks = {
       "iitd" = {
         user = "ee1240486";
-        host = "ssh1.iitd.ac.in";
+        hostname = "ssh1.iitd.ac.in";
         forwardAgent = true;
       };
       "*" = {

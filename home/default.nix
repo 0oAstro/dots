@@ -2,12 +2,12 @@
   username,
   nix-index-database,
   ...
-}:
-{
+}: {
   # import sub modules
   imports = [
     ./terminal
     ./terminal/emulators
+    # ./gui
     nix-index-database.homeModules.nix-index
   ];
 

@@ -1,5 +1,4 @@
-{ ... }:
-{
+{...}: {
   ## COLIMA
   # launchd.user.agents."colima.default" = {
   #   script = "colima start --foreground --cpu 1 --memory 0.2 --disk 5";

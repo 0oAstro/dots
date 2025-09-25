@@ -1,9 +1,5 @@
-{
-  pkgs,
-  ...
-}:
-{
-  imports = [ ./languages.nix ];
+{pkgs, ...}: {
+  imports = [./languages.nix];
 
   programs.helix = {
     enable = true;
@@ -14,7 +10,7 @@
     ];
 
     settings = {
-      theme = "catppuccin_mocha";
+      theme = "kanagawa";
       editor = {
         color-modes = true;
         completion-trigger-len = 1;
@@ -31,7 +27,7 @@
           other-lines = "error";
         };
         lsp.display-inlay-hints = true;
-        statusline.center = [ "position-percentage" ];
+        statusline.center = ["position-percentage"];
         true-color = true;
         whitespace.characters = {
           newline = "↴";

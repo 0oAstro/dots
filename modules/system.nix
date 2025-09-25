@@ -1,7 +1,4 @@
-{
-  username,
-  ...
-}:
+{username, ...}:
 ###################################################################################
 #
 #  macOS's System configuration
@@ -35,10 +32,10 @@
         minimize-to-application = true;
         mouse-over-hilite-stack = true;
         persistent-apps = [
-          { app = "/Applications/Ghostty.app"; }
-          { app = "/Applications/Brave Browser Nightly.app"; }
-          { app = "/Applications/Zed Preview.app"; }
-          { app = "/Applications/Obsidian.app"; }
+          {app = "/Applications/Ghostty.app";}
+          {app = "/Applications/Brave Browser Nightly.app";}
+          {app = "/Applications/Zed Preview.app";}
+          {app = "/Applications/Obsidian.app";}
         ];
         scroll-to-open = true;
         showhidden = true;

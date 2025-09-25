@@ -4,13 +4,11 @@
   username,
   hostname,
   ...
-}:
-let
+}: let
   cfg = config.programs.git;
   key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJfml6YGLlOvm7VICn5K/G05N6JkHVLtWtpDL7ejvlvB ${username}@${hostname}";
-in
-{
-  home.packages = [ pkgs.gh ];
+in {
+  home.packages = [pkgs.gh];
 
   programs.git = {
     enable = true;
@@ -116,21 +114,21 @@ in
   '';
 
   programs.lazygit = {
-    enable = true;
+    enable = false;
     settings = {
       gui.theme = {
         activeBorderColor = [
           "#dc8a78"
           "bold"
         ];
-        inactiveBorderColor = [ "#6c6f85" ];
-        optionsTextColor = [ "#1e66f5" ];
-        selectedLineBgColor = [ "#ccd0da" ];
-        cherryPickedCommitBgColor = [ "#bcc0cc" ];
-        cherryPickedCommitFgColor = [ "#dc8a78" ];
-        unstagedChangesColor = [ "#d20f39" ];
-        defaultFgColor = [ "#4c4f69" ];
-        searchingActiveBorderColor = [ "#df8e1d" ];
+        inactiveBorderColor = ["#6c6f85"];
+        optionsTextColor = ["#1e66f5"];
+        selectedLineBgColor = ["#ccd0da"];
+        cherryPickedCommitBgColor = ["#bcc0cc"];
+        cherryPickedCommitFgColor = ["#dc8a78"];
+        unstagedChangesColor = ["#d20f39"];
+        defaultFgColor = ["#4c4f69"];
+        searchingActiveBorderColor = ["#df8e1d"];
         authorColors = {
           "*" = "#7287fd";
         };
