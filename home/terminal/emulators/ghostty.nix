@@ -15,23 +15,20 @@
       macos-titlebar-proxy-icon = "hidden";
       macos-option-as-alt = true;
 
-      background-opacity = 0.80;
-      background-blur-radius = 80;
+      background-opacity = 1.00;
 
-      auto-update = "off";
       mouse-hide-while-typing = true;
       scrollback-limit = 1000000;
 
       window-save-state = "always";
 
-      window-padding-x = 15;
-      window-padding-y = 10;
+      window-padding-x = 25;
+      window-padding-y = 20;
 
       window-inherit-working-directory = true;
 
       # Keybindings need to be defined as a list of strings with the format "key=action"
       keybind = [
-        "ctrl+n=new_window"
         "ctrl+h=goto_split:left"
         "ctrl+j=goto_split:bottom"
         "ctrl+k=goto_split:top"
@@ -44,8 +41,6 @@
         "ctrl+a>n=next_tab"
         "ctrl+a>p=previous_tab"
         "super+r=reload_config"
-        "shift+ctrl+left_bracket=previous_tab"
-        "shift+ctrl+right_bracket=next_tab"
         "global:cmd+alt+`=toggle_quick_terminal"
       ];
     };

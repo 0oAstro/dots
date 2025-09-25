@@ -58,12 +58,12 @@ automatically-unhide-macos-hidden-apps = true
 #                 See:
 #                 https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [gaps]
-    inner.horizontal = 10
-    inner.vertical =   10
-    outer.left =       16
-    outer.bottom =     10
-    outer.top =        10
-    outer.right =      16
+    inner.horizontal = 15
+    inner.vertical =   15
+    outer.left =       25
+    outer.bottom =     20
+    outer.top =        20
+    outer.right =      25
 
 
 [[on-window-detected]]
@@ -143,7 +143,7 @@ run = [ "layout tiling", "move-node-to-workspace 七" ]
     # (like in i3)
     alt-enter = '''exec-and-forget launch "Ghostty"'''
 
-    cmd-shift-v = '''exec-and-forget osascript -e 'tell application "System Events"' \
+    cmd-alt-shift-v = '''exec-and-forget osascript -e 'tell application "System Events"' \
                                                -e 'set textToType to (the clipboard as text)' \
                                                -e 'delay 0.2' \
                                                -e 'repeat with eachChar in characters of textToType' \

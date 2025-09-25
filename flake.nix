@@ -23,7 +23,6 @@
     darwin,
     home-manager,
     nix-index-database,
-    neovim-nightly-overlay,
     ...
   }: let
     # TODO: replace with your own username, system and hostname
@@ -48,6 +47,7 @@
         system:
           f {
             pkgs = import inputs.nixpkgs {inherit system;};
+            inherit system;
           }
       );
   in {
@@ -74,14 +74,31 @@
       ];
     };
 
+    checks = forEachSupportedSystem ({
+      system,
+      pkgs,
+    }: {
+      pre-commit-check = inputs.pre-commit-hooks.lib.${system}.run {
+        src = ./.;
+        hooks = {
+          alejandra.enable = true;
+        };
+      };
+    });
+
     devShells = forEachSupportedSystem (
-      {pkgs}: {
+      {
+        system,
+        pkgs,
+      }: {
         default = pkgs.mkShell {
           packages = [
             pkgs.alejandra
             pkgs.nixd
             pkgs.git
           ];
+          inherit (self.checks.${system}.pre-commit-check) shellHook;
+          buildInputs = self.checks.${system}.pre-commit-check.enabledPackages;
           name = "dots";
           DIRENV_LOG_FORMAT = "";
         };
@@ -89,7 +106,7 @@
     );
 
     # nix code formatter
-    formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
+    formatter.${system} = nixpkgs.legacyPackages.${system}.alejandra;
   };
 
   # This is the standard format for flake.nix. `inputs` are the dependencies of the flake,
@@ -113,8 +130,6 @@
         nixpkgs.follows = "nixpkgs-darwin";
       };
     };
-
-    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
 
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
