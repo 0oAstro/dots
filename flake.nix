@@ -95,7 +95,6 @@
           packages = [
             pkgs.alejandra
             pkgs.nixd
-            pkgs.git
           ];
           inherit (self.checks.${system}.pre-commit-check) shellHook;
           buildInputs = self.checks.${system}.pre-commit-check.enabledPackages;
@@ -112,7 +111,7 @@
   # This is the standard format for flake.nix. `inputs` are the dependencies of the flake,
   # Each item in `inputs` will be passed as a parameter to the `outputs` function after being pulled and built.
   inputs = {
-    nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-unstable"; # not darwin but still being on the edge
+    nixpkgs-darwin.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1.*.tar.gz"; # not darwin but still being on the edge
     darwin = {
       url = "github:lnl7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
