@@ -9,6 +9,9 @@ _zush_deferred() {
   (( _zush_deferred_done )) && return
   _zush_deferred_done=1
 
+  # ── Pokemon greeting (deferred: one precmd cycle, avoids p10k double-prompt) ──
+  pokeget random --hide-name 2>/dev/null
+
   # ── autopair (deferred init) ──
   (( ${+functions[autopair-init]} )) && autopair-init
 
@@ -17,13 +20,18 @@ _zush_deferred() {
   (( ${+commands[fzf]} )) && [[ -r $_forgit ]] && source $_forgit
 
   # ── Lazy-load brew (on first `brew` call) ──
-  if [[ -x /opt/homebrew/bin/brew ]]; then
-    function brew() {
-      unfunction brew
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-      brew "$@"
-    }
-  fi
+  local _brew
+  for _brew in /opt/homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/brew /usr/local/bin/brew; do
+    if [[ -x $_brew ]]; then
+      function brew() {
+        unfunction brew
+        eval "$($_brew shellenv)"
+        brew "$@"
+      }
+      break
+    fi
+  done
+  unset _brew
 
   # ── Lazy-load cargo ──
   if [[ -f $CARGO_HOME/env ]]; then

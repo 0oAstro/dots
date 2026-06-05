@@ -27,13 +27,23 @@ bindkey '^[[Z' reverse-menu-complete
 # ── fpath + autoload ─────────────────────────────────────────────
 fpath=(
   $HOME/.config/zsh/functions
-  $HOME/Library/Caches/antidote/github.com/zsh-users/zsh-completions/src
+  $ANTIDOTE_HOME/github.com/zsh-users/zsh-completions/src
   /opt/homebrew/share/zsh/site-functions
+  /usr/local/share/zsh/site-functions
+  /usr/share/zsh/site-functions
   $fpath
 )
 autoload -Uz $HOME/.config/zsh/functions/[^_]*(N.:t)
 
 # ── fzf key-bindings (before FSH so widgets are known) ───────────
-if [[ -r /opt/homebrew/opt/fzf/shell/key-bindings.zsh ]]; then
-  source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
-fi
+local _fzf_kb
+for _fzf_kb in \
+  /opt/homebrew/opt/fzf/shell/key-bindings.zsh \
+  /usr/share/fzf/key-bindings.zsh \
+  /usr/share/doc/fzf/examples/key-bindings.zsh; do
+  if [[ -r $_fzf_kb ]]; then
+    source $_fzf_kb
+    break
+  fi
+done
+unset _fzf_kb

@@ -26,11 +26,9 @@ export INPUTRC=$XDG_CONFIG_HOME/readline/inputrc
 export GNUPGHOME=$XDG_DATA_HOME/gnupg
 
 # ── Path additions ──────────────────────────────────────────────
-path+=(
-  $HOMEBREW_PREFIX/opt/macos-trash/bin
-  $HOMEBREW_PREFIX/opt/postgresql@18/bin
-  /Applications/IINA.app/Contents/MacOS
-)
+[[ -d $HOMEBREW_PREFIX/opt/macos-trash/bin ]] && path+=($HOMEBREW_PREFIX/opt/macos-trash/bin)
+[[ -d $HOMEBREW_PREFIX/opt/postgresql@18/bin ]] && path+=($HOMEBREW_PREFIX/opt/postgresql@18/bin)
+[[ -d /Applications/IINA.app/Contents/MacOS ]] && path+=(/Applications/IINA.app/Contents/MacOS)
 
 # ── Bitwarden CLI ────────────────────────────────────────────────
 bw() { bwbio "$@"; }

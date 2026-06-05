@@ -1,6 +1,7 @@
 #!/bin/zsh
 #
-# 03-completions.zsh — Completion system zstyles + ez-compinit config
+# 03-completions.zsh — Completion system zstyles
+# (antidote + ez-compinit zstyles are in .zstyles, sourced by .zshrc)
 #
 
 zstyle ':completion:*' menu select=2
@@ -11,6 +12,3 @@ zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path $XDG_CACHE_HOME/zsh/.zcompcache
 _comp_options+=(globdots)
 ZSH_COMPDUMP=$XDG_CACHE_HOME/zsh/zcompdump-$HOST
-
-# External zstyles
-[[ -r $ZDOTDIR/.zstyles ]] && source $ZDOTDIR/.zstyles

@@ -1,7 +1,12 @@
 #!/bin/zsh
 #
-# .zstyles — zstyle settings for completion, history, plugins
+# .zstyles — zstyle settings for completion, history, plugins, antidote
 #
+
+# ── antidote ─────────────────────────────────────────────────────
+zstyle ':antidote:home'  path "$ANTIDOTE_HOME"
+zstyle ':antidote:repo'  path "$ZDOTDIR/.antidote"
+zstyle ':antidote:*'     zcompile 'yes'
 
 # ── ez-compinit ──────────────────────────────────────────────────
 zstyle ':plugin:ez-compinit' 'compstyle' 'zshzoo'

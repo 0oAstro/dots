@@ -43,6 +43,13 @@ case $OSTYPE in
   *)        export OS=unknown ;;
 esac
 
+# ── Antidote cache path (platform-specific) ──────────────────────
+if [[ $OS == macos ]]; then
+  export ANTIDOTE_HOME=$HOME/Library/Caches/antidote
+else
+  export ANTIDOTE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/antidote
+fi
+
 # ── Homebrew env (eager, zero-fork — no brew shellenv needed) ───
 if [[ $OS == macos ]]; then
   export HOMEBREW_PREFIX=/opt/homebrew
@@ -56,12 +63,14 @@ path=(
   $HOME/.local/bin
   $HOME/.local/share/npm/bin
   $HOME/.local/share/cargo/bin
-  /opt/homebrew/bin
-  /opt/homebrew/sbin
   $GOPATH/bin
   $CARGO_HOME/bin
   $path
 )
+# Homebrew (macOS only, zero-fork — guard with $OS)
+if [[ $OS == macos ]]; then
+  path=(/opt/homebrew/bin /opt/homebrew/sbin $path)
+fi
 
 # ── Source .zprofile for non-login interactive shells ───────────
 if [[ ! -o LOGIN ]] && [[ -s $ZDOTDIR/.zprofile ]]; then

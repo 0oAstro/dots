@@ -17,8 +17,24 @@ if [[ -r ${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh ]]; 
   source ${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh
 fi
 
-# ── Pokemon greeting (after instant prompt, before config loading) ──
-pokeget random --hide-name 2>/dev/null
+# ── zstyles (sourced early — antidote bootstrap needs them) ──────
+[[ -r $ZDOTDIR/.zstyles ]] && source $ZDOTDIR/.zstyles
+
+# ── Antidote plugin bootstrap ────────────────────────────────────
+local _plugins_txt=$ZDOTDIR/.zsh_plugins.txt
+local _plugins_zsh=$ZDOTDIR/.zsh_plugins.zsh
+
+# Clone antidote if missing
+if [[ ! -d $ZDOTDIR/.antidote ]]; then
+  git clone --depth 1 https://github.com/mattmc3/antidote $ZDOTDIR/.antidote 2>/dev/null
+fi
+
+# Regenerate static plugin file when .txt is newer than .zsh
+if [[ ! -f $_plugins_zsh || $_plugins_txt -nt $_plugins_zsh ]]; then
+  fpath=($ZDOTDIR/.antidote $fpath)
+  autoload -Uz antidote
+  antidote bundle <$_plugins_txt >|$_plugins_zsh 2>/dev/null
+fi
 
 # ── Modular config (zsh auto-loads .zwc bytecode when available) ──
 local _cfg=$ZDOTDIR/config
