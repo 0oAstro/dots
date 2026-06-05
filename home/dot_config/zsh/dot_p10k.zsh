@@ -100,10 +100,10 @@
   typeset -g POWERLEVEL9K_VIRTUALENV_SHOW_PYTHON_VERSION=false
   typeset -g POWERLEVEL9K_VIRTUALENV_{LEFT,RIGHT}_DELIMITER=
 
-  # Blue current directory. Show only repo name in git repos (like starship).
+  # Blue current directory. Truncate at VCS root (git/jj/hg/svn).
   typeset -g POWERLEVEL9K_DIR_FOREGROUND=$blue
   typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_with_folder_marker
-  typeset -g POWERLEVEL9K_SHORTEN_FOLDER_MARKER='.git'
+  typeset -g POWERLEVEL9K_SHORTEN_FOLDER_MARKER='(.git|.jj|.hg|.svn)'
 
   # Context format when root: user@host. The first part white, the rest grey.
   typeset -g POWERLEVEL9K_CONTEXT_ROOT_TEMPLATE="%F{$white}%n%f%F{$grey}@%m%f"
@@ -181,7 +181,7 @@
   #   - verbose: Enable instant prompt and print a warning when detecting console output during
   #              zsh initialization. Choose this if you've never tried instant prompt, haven't
   #              seen the warning, or if you are unsure what this all means.
-  typeset -g POWERLEVEL9K_INSTANT_PROMPT=verbose
+  typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
   # Hot reload allows you to change POWERLEVEL9K options after Powerlevel10k has been initialized.
   # For example, you can type POWERLEVEL9K_BACKGROUND=red and see your prompt turn red. Hot reload
