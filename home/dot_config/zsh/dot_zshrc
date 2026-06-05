@@ -234,13 +234,6 @@ _zush_deferred() {
   zle -N fancy-ctrl-z
   bindkey '^Z' fancy-ctrl-z
 
-  # ── magic-enter ──
-  function magic-enter-cmd { local cmd; zstyle -s ':zsh:plugin:magic-enter' command cmd || cmd="${MAGIC_ENTER_OTHER_COMMAND:-ls}"; if command git rev-parse --is-inside-work-tree &>/dev/null; then zstyle -s ':zsh:plugin:magic-enter' git-command cmd || cmd="${MAGIC_ENTER_GIT_COMMAND:-git status -sb}"; fi; echo $cmd; }
-  function magic-enter { if [[ -n "$BUFFER" || "$CONTEXT" != start ]]; then zle .accept-line; return; fi; BUFFER=$(magic-enter-cmd); zle .accept-line; }
-  zle -N magic-enter
-  bindkey -M emacs '^M' magic-enter
-  bindkey -M viins '^M' magic-enter
-
   # ── globalias ──
   typeset -gA _globalias_noexpand
   local -a _words=(ls grep gpg vi e z 0 1 2 3 4 5 6 7 8 9)
@@ -252,6 +245,13 @@ _zush_deferred() {
   zle -N globalias-accept
   local _gkm; for _gkm in emacs viins; do bindkey -M "$_gkm" ' ' globalias-space; bindkey -M "$_gkm" '\e ' magic-space; bindkey -M "$_gkm" '^M' globalias-accept; done
   bindkey -M isearch ' ' magic-space
+
+  # ── magic-enter (overwrites globalias ^M — globalias only uses Space in practice) ──
+  function magic-enter-cmd { local cmd; zstyle -s ':zsh:plugin:magic-enter' command cmd || cmd="${MAGIC_ENTER_OTHER_COMMAND:-ls}"; if command git rev-parse --is-inside-work-tree &>/dev/null; then zstyle -s ':zsh:plugin:magic-enter' git-command cmd || cmd="${MAGIC_ENTER_GIT_COMMAND:-git status -sb}"; fi; echo $cmd; }
+  function magic-enter { if [[ -n "$BUFFER" || "$CONTEXT" != start ]]; then zle .accept-line; return; fi; BUFFER=$(magic-enter-cmd); zle .accept-line; }
+  zle -N magic-enter
+  bindkey -M emacs '^M' magic-enter
+  bindkey -M viins '^M' magic-enter
 
   # ── Ctrl+L pokemon clear ──
   _pokeget_clear() { clear; pokeget random --hide-name; zle reset-prompt; }
