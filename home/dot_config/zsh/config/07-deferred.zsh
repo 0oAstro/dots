@@ -9,9 +9,6 @@ _zush_deferred() {
   (( _zush_deferred_done )) && return
   _zush_deferred_done=1
 
-  # ── Pokemon greeting (deferred: one precmd cycle, avoids p10k double-prompt) ──
-  pokeget random --hide-name 2>/dev/null
-
   # ── autopair (deferred init) ──
   (( ${+functions[autopair-init]} )) && autopair-init
 

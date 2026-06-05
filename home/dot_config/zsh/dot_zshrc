@@ -12,7 +12,10 @@
 #     Broken: mv .zshrc.bak .zshrc          ← stale .zwc wins ❌
 #
 
-# ── Powerlevel10k instant prompt (MUST BE FIRST) ────────────────
+# ── Pokemon greeting (BEFORE instant prompt — included in saved terminal state) ──
+pokeget random --hide-name 2>/dev/null
+
+# ── Powerlevel10k instant prompt (MUST BE FIRST after any output) ──
 if [[ -r ${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh ]]; then
   source ${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh
 fi
