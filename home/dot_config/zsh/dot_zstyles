@@ -5,6 +5,6 @@
 
 # ── ez-compinit ──────────────────────────────────────────────────
 zstyle ':plugin:ez-compinit' 'compstyle' 'zshzoo'
-
-# ── Editor ───────────────────────────────────────────────────────
-# Placeholder for future editor zstyles (zsh-vi-mode, etc.)
+# Disable compinit -C (unsafe). Without this, completions for newly
+# installed tools may not appear without manually deleting the dump.
+zstyle ':plugin:ez-compinit' 'use-cache' no

@@ -5,7 +5,7 @@
 # Completion system (must be first — before plugins that call compdef)
 mattmc3/ez-compinit
 
-# Prompt (instant prompt shows before plugins load)
+# Prompt — powerlevel10k (instant prompt + git status)
 romkatv/powerlevel10k
 
 # Completions (fpath only, loaded by compinit)
@@ -14,9 +14,6 @@ zsh-users/zsh-completions kind:fpath path:src
 # Editor / typing
 hlissner/zsh-autopair
 romkatv/zsh-no-ps2
-
-# Interactive git commands with fzf
-wfxr/forgit
 
 # Extra git subcommands (sourced from mattmc3's repo)
 mattmc3/git-cmds kind:path
