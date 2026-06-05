@@ -27,15 +27,3 @@ spa() {
   mosh --predict=experimental --predict-overwrite "$host" -- tmux new-session -A -s "$session"
 }
 
-# ── pokeget (fish-style greeting + Ctrl+L pokemon) ─────────────
-typeset -g _zsh_greeting_done=0
-# Only greet after p10k has finished instant prompt phase
-_zsh_pokeget_greeting() {
-  (( _zsh_greeting_done )) && return
-  _zsh_greeting_done=1
-  pokeget random --hide-name 2>/dev/null
-}
-precmd_functions+=(_zsh_pokeget_greeting)
-
-_pokeget_clear() { clear; pokeget random --hide-name; zle reset-prompt; }
-zle -N _pokeget_clear
