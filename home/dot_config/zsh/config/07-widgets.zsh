@@ -1,7 +1,4 @@
 
-# ── autopair (deferred init) ──
-(( ${+functions[autopair-init]} )) && autopair-init
-
 # ── forgit (lazy) ──
 local _forgit=$HOME/Library/Caches/antidote/github.com/wfxr/forgit/forgit.plugin.zsh
 (( ${+commands[fzf]} )) && [[ -r $_forgit ]] && source $_forgit
@@ -223,3 +220,6 @@ bindkey '^[[H' beginning-of-line
 bindkey '^[[F' end-of-line
 bindkey '^[[1~' beginning-of-line
 bindkey '^[[4~' end-of-line
+
+# ── Rebind autosuggestions (MANUAL_REBIND mode — pick up new widgets once) ──
+(( ${+functions[_zsh_autosuggest_bind_widgets]} )) && _zsh_autosuggest_bind_widgets
