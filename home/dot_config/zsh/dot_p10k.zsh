@@ -102,8 +102,8 @@
 
   # Blue current directory. Show only repo name in git repos (like starship).
   typeset -g POWERLEVEL9K_DIR_FOREGROUND=$blue
-  typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_unique
-  typeset -g POWERLEVEL9K_DIR_TRUNCATE_PROMINENT_IN_GIT_REPOS=true
+  typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_with_folder_marker
+  typeset -g POWERLEVEL9K_SHORTEN_FOLDER_MARKER='.git'
 
   # Context format when root: user@host. The first part white, the rest grey.
   typeset -g POWERLEVEL9K_CONTEXT_ROOT_TEMPLATE="%F{$white}%n%f%F{$grey}@%m%f"
