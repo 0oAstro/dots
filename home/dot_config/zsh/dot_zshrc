@@ -19,12 +19,12 @@ autoload -Uz $ZDOTDIR/functions/[^_]*(N.:t)
 # ── Antidote plugin manager ──────────────────────────────────────
 source $ZDOTDIR/lib/antidote-fast.zsh
 
-# ── Ensure p10k gitstatus submodule is initialized ───────────────
+# ── Ensure p10k gitstatus is cloned (antidote skips submodules) ──
 () {
-  local gs_dir="${ANTIDOTE_HOME:-${XDG_CACHE_HOME:-$HOME/.cache}/antidote}/github.com/romkatv/powerlevel10k/gitstatus"
-  [[ -d "$gs_dir" ]] || return
-  if [[ ! -e "$gs_dir/usrbin/gitstatusd" ]]; then
-    git -C "$gs_dir/.." submodule update --init --depth 1 gitstatus 2>/dev/null
+  local p10k_dir="${ANTIDOTE_HOME:-${XDG_CACHE_HOME:-$HOME/.cache}/antidote}/github.com/romkatv/powerlevel10k"
+  [[ -d "$p10k_dir" ]] || return
+  if [[ ! -f "$p10k_dir/gitstatus/gitstatus.plugin.zsh" ]]; then
+    git clone --depth 1 https://github.com/romkatv/gitstatus "$p10k_dir/gitstatus" 2>/dev/null
   fi
 }
 
