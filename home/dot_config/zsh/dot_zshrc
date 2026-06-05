@@ -29,7 +29,7 @@ local _plugins_zsh=$ZDOTDIR/.zsh_plugins.zsh
 
 # Clone antidote if missing
 if [[ ! -d $ZDOTDIR/.antidote ]]; then
-  git clone --depth 1 https://github.com/mattmc3/antidote $ZDOTDIR/.antidote 2>/dev/null
+  git clone --depth 1 --quiet https://github.com/mattmc3/antidote $ZDOTDIR/.antidote 2>/dev/null
 fi
 
 # Regenerate static plugin file when .txt is newer than .zsh
@@ -48,7 +48,7 @@ source $_cfg/03-completions.zsh
 source $_cfg/04-env.zsh
 source $_cfg/05-aliases.zsh
 source $_cfg/06-funcs.zsh
-source $_cfg/07-deferred.zsh
+source $_cfg/07-widgets.zsh
 source $_cfg/08-prompt.zsh
 
 # ── Recompile helper ─────────────────────────────────────────────
