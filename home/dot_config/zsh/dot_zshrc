@@ -4,13 +4,15 @@
 #
 
 # ── Powerlevel10k instant prompt (must be at the very top) ──────
-# Renders prompt BEFORE plugins load. pokeget is deferred via sched.
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+# gitstatus submodule not cloned by antidote — disable for now
+POWERLEVEL9K_DISABLE_GITSTATUS=true
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
 # ── Rosé Pine colors ─────────────────────────────────────────────
-source ~/Developer/zsh-plugins/rose-pine/rose-pine.plugin.zsh
+source $ZDOTDIR/lib/rose-pine/rose-pine.plugin.zsh
 
 # ── Autoload functions ───────────────────────────────────────────
 fpath=($ZDOTDIR/functions $fpath)
