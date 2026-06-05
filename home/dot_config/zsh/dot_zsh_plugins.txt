@@ -1,0 +1,33 @@
+#
+# .zsh_plugins.txt - antidote plugin list
+#
+
+# Completion system (must be first — before plugins that call compdef)
+mattmc3/ez-compinit
+
+# Prompt (instant prompt shows before plugins load)
+romkatv/powerlevel10k
+
+# Completions (fpath only, loaded by compinit)
+zsh-users/zsh-completions kind:fpath path:src
+
+# Editor / typing
+hlissner/zsh-autopair
+romkatv/zsh-no-ps2
+
+# Interactive git commands with fzf
+wfxr/forgit
+
+# Extra git subcommands (sourced from mattmc3's repo)
+mattmc3/git-cmds kind:path
+
+# Fast syntax highlighting (sync — works on first keystroke)
+zdharma-continuum/fast-syntax-highlighting
+
+# Autosuggestions (sync — works on first keystroke)
+zsh-users/zsh-autosuggestions
+
+# History substring search (binds keys via post: hook)
+zsh-users/zsh-history-substring-search post:bindkey-hss
+
+# vi: ft=properties
