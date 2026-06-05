@@ -30,7 +30,7 @@ Benchmark 1: zsh -i -c exit
 - **Instant prompt, deferred everything else.** p10k instant prompt renders in ~0 ms. Heavy plugins (FSH, autosuggestions) load synchronously but p10k's cached prompt hides the wait. Non-essential init (autopair, forgit, brew, cargo, zoxide, clipboard, history-aux) is deferred to the first precmd hook — runs before you can type.
 - **`ZSH_AUTOSUGGEST_MANUAL_REBIND=1`.** The single biggest perf win. Prevents autosuggestions from rebinding all ZLE widgets on every precmd. Cuts command_lag from ~47 ms to ~2 ms.
 - **p10k SSH detection bypass.** Pre-set `P9K_SSH` / `_P9K_SSH_TTY` before p10k loads, eliminating the `who -m` fork (~8 ms saved).
-- **Flat `.zshrc`.** No framework, no library indirection. All config inlined — no 23-file `conf.d/` glob, no `core.zsh` / `compiler.zsh` / `lazy-loader.zsh` overhead.
+- **Modular + compiled.** 9 files in `config/` — each compiled to `.zwc` bytecode via `zcompile`. zsh auto-recompiles when source is newer than `.zwc`, so editing `config/*.zsh` and restarting just works. Run `recompile` to force regeneration. ⚠️ If reverting with `mv`, run `touch` on the restored file afterward — `mv` preserves mtime and zsh will trust the stale `.zwc`.
 - **Lazy-loaded tools.** `brew`, `cargo`/`rustc`/`rustup`, `z`/`zoxide`/`zi` are placeholder functions that init on first call. Zero cost until you need them.
 
 ## Setup
@@ -54,16 +54,25 @@ exec zsh
 
 ```
 ~/.config/zsh/
-├── .zshrc              # interactive shell — flat, inlined
+├── .zshrc              # interactive shell entry point (20 lines)
 ├── .zshenv             # always-sourced env — zero forks
 ├── .zprofile           # login shell — mkdir/chmod (rare, one-time)
 ├── .zsh_plugins.txt    # antidote plugin manifest
 ├── .zsh_plugins.zsh    # generated static plugin loader
 ├── .p10k.zsh           # powerlevel10k config (Pure style)
-├── .zstyles            # zstyle settings (ez-compinit compstyle)
+├── .zstyles            # zstyle settings
+├── config/             # modular config (zwc-compiled, auto-reload on edit)
+│   ├── 00-opts.zsh         # shell options, history, key bindings, fpath, fzf
+│   ├── 01-plugins.zsh      # antidote static plugin source
+│   ├── 02-theme.zsh        # Rosé Pine FSH theme
+│   ├── 03-completions.zsh  # completion zstyles
+│   ├── 04-env.zsh          # environment, secrets, FZF, XDG, PATH, Bitwarden
+│   ├── 05-aliases.zsh      # all aliases
+│   ├── 06-funcs.zsh        # helper functions (bak, touchf, up, ls→eza)
+│   ├── 07-deferred.zsh     # deferred precmd hook (lazy tools, widgets)
+│   └── 08-prompt.zsh       # directory backrefs, p10k finalize
 ├── functions/          # custom autoloaded functions (trash, cdf, extract …)
-├── lib/
-│   └── rose-pine/      # Rosé Pine syntax highlighting theme for FSH
+├── lib/rose-pine/      # Rosé Pine theme for FSH
 └── .antidote/          # plugin cache (gitignored)
 ```
 
@@ -74,11 +83,15 @@ exec zsh
 | **`.zshenv`** | ZDOTDIR, XDG dirs, Homebrew env (static), PATH (static) | ~3 ms |
 | **Instant prompt** | p10k cached prompt renders immediately | ~0 ms |
 | **Pokeget** | Random pokémon greeting | ~2 ms |
-| **Plugins** | ez-compinit (lazy compinit), p10k, FSH, autosuggestions, history-substring-search | ~15 ms |
-| **Rose Pine** | FSH theme styles | ~1 ms |
-| **Inline config** | Options, history, env, aliases, secrets, completions zstyles | ~1 ms |
-| **p10k finalize** | Hand off instant prompt → real prompt | ~1 ms |
-| **Deferred precmd** | autopair, forgit, brew/cargo/zoxide lazy stubs, clipboard, fancy-ctrl-z, magic-enter, globalias, history-aux, fzf bindings | ~10 ms |
+| **config/00-opts** | Shell options, history, key bindings, fpath, fzf widgets | ~1 ms |
+| **config/01-plugins** | ez-compinit (lazy), p10k, FSH, autosuggestions, history-substring-search | ~15 ms |
+| **config/02-theme** | Rosé Pine FSH theme | ~1 ms |
+| **config/03-completions** | Completion zstyles + .zstyles source | ~1 ms |
+| **config/04-env** | Environment, secrets, FZF, XDG, PATH, Bitwarden, SPA | ~1 ms |
+| **config/05-aliases** | All aliases + conditional python/dir helpers | ~1 ms |
+| **config/06-funcs** | Helper functions (bak, touchf, up, ls→eza) | ~1 ms |
+| **config/08-prompt** | Directory backrefs, p10k finalize | ~1 ms |
+| **Deferred precmd** | config/07-deferred: autopair, forgit, brew/cargo/zoxide lazy stubs, clipboard, fancy-ctrl-z, magic-enter, globalias, history-aux, key bindings | ~10 ms |
 
 ## Plugins
 
@@ -107,17 +120,29 @@ These tools are zero-cost at startup — placeholder functions init on first cal
 
 ## Performance tricks
 
-### Deliberately avoided
+### zwc bytecode (safe usage)
 
-These common optimizations are rejected because they cause subtle, hard-to-debug issues:
+Every `config/*.zsh` file is compiled to `.zwc` via `zcompile`. zsh auto-recompiles when the source is newer than the bytecode, so normal editing works transparently.
 
-| Optimization | Why unsafe |
-|---|---|
-| `zcompile .zshrc` | `mv` preserves mtime → zwc goes stale → edits silently ignored. Aliases defined in `.zshrc` can't be used within `.zshrc`. |
-| `compinit -C` | Skips function-existence check. Newly `brew install`'d tools have no completions until you manually `rm ~/.cache/zsh/zcompdump-*`. |
-| Instant prompt after conditionals | If plugins need installation, the prompt appears before the error message, making it easy to miss. |
+**The one footgun:** `mv` preserves file modification time.
 
-The combined cost of avoiding all three: **~1-2ms**. Not worth the debugging pain.
+```zsh
+# ❌ BROKEN: revert with mv — stale .zwc wins
+cp config/00-opts.zsh config/00-opts.bak
+vi config/00-opts.zsh        # edit → zsh auto-recompiles
+exec zsh                      # oops, that broke things
+mv config/00-opts.bak config/00-opts.zsh  # mv preserves old mtime
+exec zsh                      # ❌ loads stale bytecode!
+
+# ✅ FIX: touch after mv
+mv config/00-opts.bak config/00-opts.zsh
+touch config/00-opts.zsh      # update mtime → zsh recompiles
+exec zsh                      # ✅ loads fresh source
+```
+
+Or just use `cp` instead of `mv` to revert — `cp` updates mtime.
+
+Run `recompile` anytime to force-regenerate all `.zwc` files.
 
 ### `ZSH_AUTOSUGGEST_MANUAL_REBIND=1`
 
