@@ -83,7 +83,6 @@ path=(
 
 # pokemon freeting
 export ZDOTS_GREETING=1
-export ZDOTS_HISTORY_AUX=1
 
 # .zprofile is login-only. Keep .zshenv fork-free and avoid running mkdir/chmod
 # for every non-login interactive shell.
