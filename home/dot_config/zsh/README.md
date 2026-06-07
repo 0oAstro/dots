@@ -10,7 +10,7 @@ Measured with [zsh-bench](https://github.com/romkatv/zsh-bench) (32 iterations, 
 |---|---|---|
 | `command_lag_ms` | **2.2 ms** | Per-command latency after shell ready |
 | `input_lag_ms` | **6.5 ms** | Keystroke-to-screen latency |
-| `first_prompt_lag_ms` | **20.7 ms** | Time to first prompt (p10k instant prompt) |
+| `first_prompt_lag_ms` | **~25 ms** | Time to first prompt (starship) |
 | `first_command_lag_ms` | **129 ms** | Time to first command output |
 | `exit_time_ms` | **49 ms** | `zsh -lic exit` wall time |
 
@@ -27,10 +27,9 @@ Benchmark 1: zsh -i -c exit
 ## Philosophy
 
 - **Zero-fork `.zshenv`.** No `date`, `mkdir`, `chmod`, `uname`, `id` — only zsh builtins and static exports. Every fork costs ~1 ms; this file is sourced for *all* shells including scripts.
-- **Instant prompt, deferred everything else.** p10k instant prompt renders in ~0 ms. Heavy plugins (FSH, autosuggestions) load synchronously but p10k's cached prompt hides the wait. Non-essential init (autopair, forgit, brew, cargo, zoxide, clipboard, history-aux) is deferred to the first precmd hook — runs before you can type.
-- **`ZSH_AUTOSUGGEST_MANUAL_REBIND=1`.** The single biggest perf win. Prevents autosuggestions from rebinding all ZLE widgets on every precmd. Cuts command_lag from ~47 ms to ~2 ms.
-- **p10k SSH detection bypass.** Pre-set `P9K_SSH` / `_P9K_SSH_TTY` before p10k loads, eliminating the `who -m` fork (~8 ms saved).
-- **Modular + compiled.** 9 files in `config/` — each compiled to `.zwc` bytecode via `zcompile`. zsh auto-recompiles when source is newer than `.zwc`, so editing `config/*.zsh` and restarting just works. Run `recompile` to force regeneration. ⚠️ If reverting with `mv`, run `touch` on the restored file afterward — `mv` preserves mtime and zsh will trust the stale `.zwc`.
+- **Starship prompt.** Lightweight, pure-Rust prompt with no shell-level instant-prompt complexity. Renders quickly without the edge cases p10k had with terminal state/sizing.
+- **`ZSH_AUTOSUGGEST_MANUAL_REBIND=1`.** The single biggest perf win. Prevents autosuggestions from rebinding all ZLE widgets on every precmd. Avoids a large per-command widget-rebind tax.
+- **Modular + compiled.** 9 files in `config/` — each compiled to `.zwc` bytecode via `zcompile`. zsh auto-loads adjacent `.zwc` bytecode when it is newer than the source. Source `.zsh` files, never `.zwc` directly. Run `recompile` after edits to regenerate bytecode.
 - **Lazy-loaded tools.** `brew`, `cargo`/`rustc`/`rustup`, `z`/`zoxide`/`zi` are placeholder functions that init on first call. Zero cost until you need them.
 
 ## Setup
@@ -59,8 +58,8 @@ exec zsh
 ├── .zprofile           # login shell — mkdir/chmod (rare, one-time)
 ├── .zsh_plugins.txt    # antidote plugin manifest
 ├── .zsh_plugins.zsh    # generated static plugin loader
-├── .p10k.zsh           # powerlevel10k config (Pure style)
 ├── .zstyles            # zstyle settings
+├── starship.toml       # starship prompt config (in ~/.config/starship.toml)
 ├── config/             # modular config (zwc-compiled, auto-reload on edit)
 │   ├── 00-opts.zsh         # shell options, history, key bindings, fpath, fzf
 │   ├── 01-plugins.zsh      # antidote static plugin source
@@ -69,8 +68,9 @@ exec zsh
 │   ├── 04-env.zsh          # environment, secrets, FZF, XDG, PATH, Bitwarden
 │   ├── 05-aliases.zsh      # all aliases
 │   ├── 06-funcs.zsh        # helper functions (bak, touchf, up, ls→eza)
-│   ├── 07-deferred.zsh     # deferred precmd hook (lazy tools, widgets)
-│   └── 08-prompt.zsh       # directory backrefs, p10k finalize
+│   ├── 07-widgets.zsh      # widgets, fzf/git helpers, history aux, zsh4humans-style keys
+│   ├── 08-prompt.zsh       # directory backrefs
+│   └── 09-z4h-integrations.zsh # zssh, ztmux, terminfo, fzf completion UX
 ├── functions/          # custom autoloaded functions (trash, cdf, extract …)
 ├── lib/rose-pine/      # Rosé Pine theme for FSH
 └── .antidote/          # plugin cache (gitignored)
@@ -81,23 +81,23 @@ exec zsh
 | Phase | What | Cost |
 |---|---|---|
 | **`.zshenv`** | ZDOTDIR, XDG dirs, Homebrew env (static), PATH (static) | ~3 ms |
-| **Instant prompt** | p10k cached prompt renders immediately | ~0 ms |
+| **Starship init** | `eval "$(starship init zsh)"` — sets precmd hook | ~2 ms |
 | **Pokeget** | Random pokémon greeting | ~2 ms |
 | **config/00-opts** | Shell options, history, key bindings, fpath, fzf widgets | ~1 ms |
-| **config/01-plugins** | ez-compinit (lazy), p10k, FSH, autosuggestions, history-substring-search | ~15 ms |
+| **config/01-plugins** | ez-compinit (lazy), FSH, autosuggestions, history-substring-search | ~15 ms |
 | **config/02-theme** | Rosé Pine FSH theme | ~1 ms |
 | **config/03-completions** | Completion zstyles + .zstyles source | ~1 ms |
 | **config/04-env** | Environment, secrets, FZF, XDG, PATH, Bitwarden, SPA | ~1 ms |
 | **config/05-aliases** | All aliases + conditional python/dir helpers | ~1 ms |
 | **config/06-funcs** | Helper functions (bak, touchf, up, ls→eza) | ~1 ms |
-| **config/08-prompt** | Directory backrefs, p10k finalize | ~1 ms |
-| **Deferred precmd** | config/07-deferred: autopair, forgit, brew/cargo/zoxide lazy stubs, clipboard, fancy-ctrl-z, magic-enter, globalias, history-aux, key bindings | ~10 ms |
+| **config/08-prompt** | Directory backrefs | ~1 ms |
+| **config/07-widgets** | forgit, zoxide lazy stubs, clipboard, fancy-ctrl-z, magic-enter, globalias, history-aux, zsh4humans-style key bindings | ~10 ms |
 
 ## Plugins
 
 | Plugin | Load | Why |
 |---|---|---|
-| [powerlevel10k](https://github.com/romkatv/powerlevel10k) | Sync | Prompt — instant prompt + async git status |
+| [starship](https://starship.rs) | Sync | Prompt — pure Rust, simple, no terminal edge-cases |
 | [fast-syntax-highlighting](https://github.com/zdharma-continuum/fast-syntax-highlighting) | Sync | Syntax highlighting (needs first keystroke) |
 | [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) | Sync | Fish-style suggestions (needs first keystroke) |
 | [zsh-history-substring-search](https://github.com/zsh-users/zsh-history-substring-search) | Sync | Up/Down searches history |
@@ -107,6 +107,22 @@ exec zsh
 | [zsh-no-ps2](https://github.com/romkatv/zsh-no-ps2) | Sync | No `>` continuation prompt |
 | [forgit](https://github.com/wfxr/forgit) | Deferred | Interactive git with fzf |
 | [git-cmds](https://github.com/mattmc3/git-cmds) | PATH | Extra git subcommands |
+
+
+## zsh4humans-style integrations
+
+- `Tab` uses compsys-backed `fzf-tab`, so command-specific completions like `brew install <Tab>` stay correct.
+- `Alt-C` opens an fzf directory picker and runs `cd`.
+- `ztmux [session]` starts/attaches tmux with sane UTF-8/terminfo defaults.
+- `zterminfo-install` installs romkatv's terminfo set into `~/.terminfo`.
+- `zssh host [command]` teleports this zsh config plus the Antidote plugin cache, installs terminfo best-effort, sets `ZDOTDIR`/`ANTIDOTE_HOME`, and starts remote zsh. Normal `ssh` is untouched.
+
+Configure with zstyles:
+
+```zsh
+zstyle ':zdots:ssh:*' term xterm-256color
+zstyle ':zdots:ssh:myhost' send-extra-files ~/.tmux.conf ~/.gitconfig
+```
 
 ## Lazy-loaded tools
 
@@ -122,35 +138,31 @@ These tools are zero-cost at startup — placeholder functions init on first cal
 
 ### zwc bytecode (safe usage)
 
-Every `config/*.zsh` file is compiled to `.zwc` via `zcompile`. zsh auto-recompiles when the source is newer than the bytecode, so normal editing works transparently.
+Every sourced `.zsh` file can be compiled to adjacent `.zwc` bytecode via `zcompile`. zsh uses the `.zwc` only when it is newer than the source. It does not auto-recompile; run `recompile` after edits.
 
 **The one footgun:** `mv` preserves file modification time.
 
 ```zsh
 # ❌ BROKEN: revert with mv — stale .zwc wins
 cp config/00-opts.zsh config/00-opts.bak
-vi config/00-opts.zsh        # edit → zsh auto-recompiles
-exec zsh                      # oops, that broke things
+vi config/00-opts.zsh        # edit
+recompile && exec zsh         # oops, that broke things
 mv config/00-opts.bak config/00-opts.zsh  # mv preserves old mtime
 exec zsh                      # ❌ loads stale bytecode!
 
 # ✅ FIX: touch after mv
 mv config/00-opts.bak config/00-opts.zsh
-touch config/00-opts.zsh      # update mtime → zsh recompiles
-exec zsh                      # ✅ loads fresh source
+touch config/00-opts.zsh      # update mtime so stale bytecode is ignored
+recompile && exec zsh         # ✅ loads fresh bytecode
 ```
 
 Or just use `cp` instead of `mv` to revert — `cp` updates mtime.
 
-Run `recompile` anytime to force-regenerate all `.zwc` files.
+Run `recompile` anytime to regenerate `.zshrc`, `.zstyles`, `.zsh_plugins.zsh`, and all `config/*.zsh` bytecode.
 
 ### `ZSH_AUTOSUGGEST_MANUAL_REBIND=1`
 
 Without this, autosuggestions rebinds every ZLE widget on **every precmd** — that's hundreds of `zle -N` calls per command. Setting this flag disables automatic rebinding, saving ~45 ms per command cycle. You must manually call `_zsh_autosuggest_bind_widgets` if you add new widgets after startup.
-
-### p10k SSH bypass
-
-p10k calls `who -m` (~8 ms fork) to detect SSH sessions. We pre-set `P9K_SSH=0` and `_P9K_SSH_TTY=$TTY` before p10k loads, so `_p9k_init_ssh` returns immediately. In actual SSH sessions, `SSH_CLIENT`/`SSH_TTY`/`SSH_CONNECTION` are set by sshd, so our pre-set `P9K_SSH=1` is correct.
 
 ### Zero-fork `.zshenv`
 
@@ -165,15 +177,13 @@ Every external command (`date`, `mkdir`, `id`, `uname`, `test -x`) costs ~1 ms. 
 | `chmod 700 $XDG_RUNTIME_DIR` | Moved to `.zprofile` | ~0.6 ms |
 | `date -r` cache checks | Eliminated entirely | ~3 ms |
 
-### Deferred precmd hook
+### Widgets
 
-Non-essential setup runs in a precmd hook that fires **once**, after the prompt appears. The user never sees a delay — they can't type fast enough to beat it.
-
-Deferred items: autopair-init, forgit, brew/cargo/zoxide lazy stubs, clipboard helpers, fancy-ctrl-z, magic-enter, globalias, pokeget Ctrl+L, history-aux (sqlite + json), fzf widget bindings, key bindings.
+Widget items: forgit, zoxide lazy stubs, clipboard helpers, fancy-ctrl-z, globalias, Alt-Enter magic-enter, pokeget Ctrl+L, history-aux (sqlite + json), fzf history/directory widgets, zsh4humans-style autosuggestion key bindings.
 
 ## Secrets
 
-API keys and tokens live in the macOS Keychain, cached to `$XDG_CACHE_HOME/zsh/secrets-cache.zsh` on first shell load. Zero forks on subsequent loads — just a `source` of the cached file.
+Secrets are platform-agnostic. Preferred files are `$ZDOTDIR/secrets.zsh.gpg`, `$ZDOTDIR/secrets.zsh.age`, then local plaintext `$ZDOTDIR/secrets.zsh` (gitignored, chmod 600). Use `secrets-edit [file]` and `secrets-load [file]`. `.age` defaults to SSH identity `$HOME/.ssh/id_ed25519` / `.pub`; `.gpg` uses symmetric AES256 by default.
 
 ## Dependencies
 
@@ -181,13 +191,13 @@ API keys and tokens live in the macOS Keychain, cached to `$XDG_CACHE_HOME/zsh/s
 |---|---|---|
 | zsh ≥ 5.8 | Shell | ships with macOS |
 | antidote | Plugin manager | bootstrapped by `.zshrc` |
-| powerlevel10k | Prompt | antidote plugin |
+| starship | Prompt | `brew install starship` |
 | fzf | Fuzzy finder | `brew install fzf` |
 | zoxide | Smarter cd | `brew install zoxide` |
 | eza | `ls` replacement | `brew install eza` |
 | fd | Fast `find` | `brew install fd` |
 | bat | `cat` replacement | `brew install bat` |
-| pokeget | Greeting pokémon | `brew install pokeget` |
+| pokeget | Optional greeting / Ctrl+L art | `brew install pokeget` |
 | bwbio | Bitwarden Touch ID | `brew install bwbio` |
 | bitwarden-cli | Secrets backend | `brew install bitwarden-cli` |
 | sqlite3 | History DB | ships with macOS |

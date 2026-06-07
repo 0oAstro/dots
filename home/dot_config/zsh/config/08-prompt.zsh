@@ -1,6 +1,6 @@
 #!/bin/zsh
 #
-# 08-prompt.zsh — Directory backrefs + Powerlevel10k prompt
+# 08-prompt.zsh — Directory backrefs
 #
 
 # ── Directory backrefs (..2 = ../.., 2 = cd -2) ─────────────────
@@ -11,10 +11,6 @@ for _index in {1..9}; do
   _dotdot+="/.."
 done
 unset _dotdot _index
-
-# ── Powerlevel10k prompt ─────────────────────────────────────────
-source $ZDOTDIR/.p10k.zsh
-(( ! ${+functions[p10k]} )) || p10k finalize
 
 # ── Never start in root ─────────────────────────────────────────
 [[ "$PWD" != "/" ]] || cd

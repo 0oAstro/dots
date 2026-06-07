@@ -4,8 +4,8 @@
 #
 
 export SHELL_SESSIONS_DISABLE=1
-export EDITOR=nvim
-export VISUAL=code
+export EDITOR=${EDITOR:-nvim}
+export VISUAL=${VISUAL:-code}
 
 # ── Ensure XDG_RUNTIME_DIR exists (only in login shell — rare) ─
 [[ -d $XDG_RUNTIME_DIR ]] || mkdir -p $XDG_RUNTIME_DIR 2>/dev/null

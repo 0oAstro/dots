@@ -37,4 +37,8 @@ colormap() {
 }
 
 # eza override (better ls)
-ls() { eza -laH --icons --git --color=always "$@"; }
+ls() {
+  if (( $+commands[eza] )); then eza -laH --icons --git --color=always "$@"
+  else command ls -la "$@"
+  fi
+}

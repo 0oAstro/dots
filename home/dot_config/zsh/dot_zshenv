@@ -4,13 +4,16 @@
 # Must be FORK-FREE. No external commands (date, mkdir, chmod, uname, id, test -x, etc.)
 #
 
-export ZDOTDIR=$HOME/.config/zsh
+export ZDOTDIR=${ZDOTDIR:-$HOME/.config/zsh}
+export SHELL_SESSIONS_DISABLE=1
+export EDITOR=${EDITOR:-nvim}
+export VISUAL=${VISUAL:-code}
 
 # ── XDG base directories ────────────────────────────────────────
-export XDG_CONFIG_HOME=$HOME/.config
-export XDG_CACHE_HOME=$HOME/.cache
-export XDG_DATA_HOME=$HOME/.local/share
-export XDG_STATE_HOME=$HOME/.local/state
+export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
+export XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}
+export XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
+export XDG_STATE_HOME=${XDG_STATE_HOME:-$HOME/.local/state}
 export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/tmp/xdg-runtime-$UID}
 
 # ── XDG app redirects (xdg-ninja / clean-home) ──────────────────
@@ -43,19 +46,27 @@ case $OSTYPE in
   *)        export OS=unknown ;;
 esac
 
-# ── Antidote cache path (platform-specific) ──────────────────────
-if [[ $OS == macos ]]; then
-  export ANTIDOTE_HOME=$HOME/Library/Caches/antidote
-else
-  export ANTIDOTE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/antidote
-fi
+# ── Antidote cache path ─────────────────────────────────────────
+export ANTIDOTE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/antidote
 
-# ── Homebrew env (eager, zero-fork — no brew shellenv needed) ───
-if [[ $OS == macos ]]; then
-  export HOMEBREW_PREFIX=/opt/homebrew
-  export HOMEBREW_CELLAR=/opt/homebrew/Cellar
-  export HOMEBREW_REPOSITORY=/opt/homebrew
-  export INFOPATH=/opt/homebrew/share/info:
+# ── Homebrew/Linuxbrew env (static, no brew shellenv fork) ───────
+# Prefer exported HOMEBREW_PREFIX. Otherwise use common locations on each OS.
+if [[ -z ${HOMEBREW_PREFIX:-} ]]; then
+  case $OS in
+    macos)
+      [[ -d /opt/homebrew ]] && export HOMEBREW_PREFIX=/opt/homebrew
+      [[ -z ${HOMEBREW_PREFIX:-} && -d /usr/local/Homebrew ]] && export HOMEBREW_PREFIX=/usr/local
+      ;;
+    linux)
+      [[ -d /home/linuxbrew/.linuxbrew ]] && export HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
+      ;;
+  esac
+fi
+if [[ -n ${HOMEBREW_PREFIX:-} ]]; then
+  export HOMEBREW_PREFIX
+  export HOMEBREW_CELLAR=${HOMEBREW_CELLAR:-$HOMEBREW_PREFIX/Cellar}
+  export HOMEBREW_REPOSITORY=${HOMEBREW_REPOSITORY:-$HOMEBREW_PREFIX}
+  export INFOPATH=$HOMEBREW_PREFIX/share/info:${INFOPATH:-}
 fi
 
 # ── PATH — zero-fork, all static ────────────────────────────────
@@ -67,12 +78,12 @@ path=(
   $CARGO_HOME/bin
   $path
 )
-# Homebrew (macOS only, zero-fork — guard with $OS)
-if [[ $OS == macos ]]; then
-  path=(/opt/homebrew/bin /opt/homebrew/sbin $path)
-fi
+# Homebrew/Linuxbrew if configured
+[[ -n ${HOMEBREW_PREFIX:-} ]] && path=($HOMEBREW_PREFIX/bin $HOMEBREW_PREFIX/sbin $path)
 
-# ── Source .zprofile for non-login interactive shells ───────────
-if [[ ! -o LOGIN ]] && [[ -s $ZDOTDIR/.zprofile ]]; then
-  source $ZDOTDIR/.zprofile
-fi
+# pokemon freeting
+export ZDOTS_GREETING=1
+export ZDOTS_HISTORY_AUX=1
+
+# .zprofile is login-only. Keep .zshenv fork-free and avoid running mkdir/chmod
+# for every non-login interactive shell.

@@ -1,29 +1,9 @@
 
 # ── forgit (lazy) ──
-local _forgit=$HOME/Library/Caches/antidote/github.com/wfxr/forgit/forgit.plugin.zsh
+local _forgit=$ANTIDOTE_HOME/github.com/wfxr/forgit/forgit.plugin.zsh
 (( ${+commands[fzf]} )) && [[ -r $_forgit ]] && source $_forgit
 
-# ── Lazy-load brew (on first `brew` call) ──
-local _brew
-for _brew in /opt/homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/brew /usr/local/bin/brew; do
-  if [[ -x $_brew ]]; then
-    function brew() {
-      unfunction brew
-      eval "$($_brew shellenv)"
-      brew "$@"
-    }
-    break
-  fi
-done
-unset _brew
-
-# ── Lazy-load cargo ──
-if [[ -f $CARGO_HOME/env ]]; then
-  function cargo()  { unfunction cargo rustc rustup; source $CARGO_HOME/env; cargo "$@"; }
-  function rustc()  { unfunction cargo rustc rustup; source $CARGO_HOME/env; rustc "$@"; }
-  function rustup() { unfunction cargo rustc rustup; source $CARGO_HOME/env; rustup "$@"; }
-fi
-
+# ── Homebrew (already set in .zshenv — no lazy-load needed) ───
 # ── Lazy-load zoxide ──
 if (( $+commands[zoxide] )); then
   function z()      { unfunction z zoxide zi; eval "$(zoxide init zsh)"; z "$@"; }
@@ -69,25 +49,93 @@ zle -N fancy-ctrl-z
 bindkey '^Z' fancy-ctrl-z
 
 # ── globalias (Space expands aliases) ──
-typeset -gA _globalias_noexpand
-local -a _words=(ls grep gpg vi e z 0 1 2 3 4 5 6 7 8 9)
-local _w; for _w in "${_words[@]}"; do _globalias_noexpand[$_w]=1; done
-_globalias_expand_word() {
-  local word=${${(Az)LBUFFER}[-1]}
-  (( $+_globalias_noexpand[$word] )) && return
-  (( $+galiases[$word] || ! $+commands[$word] )) && zle _expand_alias
+# DISABLED: we don't use global aliases. `..2` etc. are global aliases
+# but they're typed with a trailing space, not on Enter. Keeping this
+# just adds a broken indirection that fights zsh-autosuggestions.
+# typeset -gA _globalias_noexpand
+# local -a _words=(ls grep gpg vi e z 0 1 2 3 4 5 6 7 8 9)
+# local _w; for _w in "${_words[@]}"; do _globalias_noexpand[$_w]=1; done
+# _globalias_expand_word() {
+#   local word=${${(Az)LBUFFER}[-1]}
+#   (( $+_globalias_noexpand[$word] )) && return
+#   (( $+galiases[$word] || ! $+commands[$word] )) && zle _expand_alias
+# }
+# globalias-space()  { _globalias_expand_word; zle self-insert; }
+# globalias-accept() {
+#   _globalias_expand_word
+#   [[ -n $POSTDISPLAY ]] && { BUFFER="$BUFFER$POSTDISPLAY"; POSTDISPLAY=; }
+#   zle .accept-line
+# }
+# zle -N globalias-space
+# zle -N globalias-accept
+# local _gkm
+# for _gkm in emacs viins; do
+#   bindkey -M "$_gkm" ' '  globalias-space
+#   bindkey -M "$_gkm" '\e ' magic-space
+#   bindkey -M "$_gkm" '^M' globalias-accept
+# done
+# bindkey -M isearch ' ' magic-space
+
+# ── Simple Enter: accept autosuggestion + execute ─────────────────
+accept-line-with-suggestion() {
+  if [[ -n $POSTDISPLAY ]]; then
+    BUFFER="$BUFFER$POSTDISPLAY"
+    POSTDISPLAY=""
+  fi
+  zle .accept-line
 }
-globalias-space()  { _globalias_expand_word; zle self-insert; }
-globalias-accept() { _globalias_expand_word; zle .accept-line; }
-zle -N globalias-space
-zle -N globalias-accept
-local _gkm
+zle -N accept-line-with-suggestion
 for _gkm in emacs viins; do
-  bindkey -M "$_gkm" ' '  globalias-space
+  bindkey -M "$_gkm" '^M' magic-enter
   bindkey -M "$_gkm" '\e ' magic-space
-  bindkey -M "$_gkm" '^M' globalias-accept
+  bindkey -M "$_gkm" ' '  self-insert
+  bindkey -M "$_gkm" '^[^M' accept-line-with-suggestion
 done
-bindkey -M isearch ' ' magic-space
+bindkey -M isearch ' ' self-insert
+bindkey -M isearch '\e ' magic-space
+bindkey -M isearch '^M' magic-enter
+bindkey -M isearch '^[^M' accept-line-with-suggestion
+unset _gkm
+
+# ── Right arrow / Ctrl+E: accept full suggestion ──────────────────
+accept-full-suggestion() {
+  if [[ -n $POSTDISPLAY ]]; then
+    BUFFER="$BUFFER$POSTDISPLAY"
+    POSTDISPLAY=""
+  fi
+  zle end-of-line
+}
+zle -N accept-full-suggestion
+bindkey -M emacs '^[[C' accept-full-suggestion
+bindkey -M emacs '^[OC' accept-full-suggestion
+bindkey -M emacs '^E' accept-full-suggestion
+
+# ── Alt+F / Alt+→: accept one word of suggestion ─────────────────
+accept-suggestion-word() {
+  if [[ -n $POSTDISPLAY ]]; then
+    local rest=$POSTDISPLAY take
+    if [[ $rest == [[:space:]]##* ]]; then
+      take=${${rest%%[^[:space:]]*}:-$rest}
+      rest=${rest#$take}
+    fi
+    if [[ -n $rest ]]; then
+      local wordchars=${WORDCHARS//[[:space:][:alnum:]]}
+      if [[ $rest == [[:alnum:]$wordchars]##* ]]; then
+        take+=${rest%%[^[:alnum:]$wordchars]*}
+      else
+        take+=${rest[1]}
+      fi
+    fi
+    [[ -n $take ]] || take=${POSTDISPLAY[1]}
+    BUFFER+=$take
+    POSTDISPLAY=${POSTDISPLAY#$take}
+  fi
+  zle end-of-line
+}
+zle -N accept-suggestion-word
+bindkey -M emacs '^[[1;3C' accept-suggestion-word
+bindkey -M emacs '^[Oc' accept-suggestion-word
+bindkey -M emacs '^[f' accept-suggestion-word
 
 # ── magic-enter (empty Enter → ls / git status) ──
 # (overwrites globalias ^M — globalias only uses Space in practice)
@@ -103,22 +151,27 @@ function magic-enter-cmd {
 }
 function magic-enter {
   if [[ -n "$BUFFER" || "$CONTEXT" != start ]]; then
+    # Accept autosuggestion into buffer if visible (like Fish → then Enter)
+    [[ -n "$POSTDISPLAY" ]] && BUFFER="$BUFFER$POSTDISPLAY" && POSTDISPLAY=
     zle .accept-line; return
   fi
   BUFFER=$(magic-enter-cmd)
   zle .accept-line
 }
 zle -N magic-enter
-bindkey -M emacs '^M' magic-enter
-bindkey -M viins '^M' magic-enter
 
 # ── Ctrl+L pokemon clear ──
-_pokeget_clear() { clear; pokeget random --hide-name; zle reset-prompt; }
+_pokeget_clear() {
+  clear
+  (( $+commands[pokeget] )) && [[ -t 1 && $TERM != dumb ]] && pokeget random --hide-name 2>/dev/null
+  zle reset-prompt
+}
 zle -N _pokeget_clear
 bindkey '^L' _pokeget_clear
 
-# ── history-aux (sqlite + json) ──
-if (( $+commands[sqlite3] && $+commands[jq] )); then
+# ── history-aux (sqlite + json, opt-in: export ZDOTS_HISTORY_AUX=1) ──
+# Disabled by default: it forks sqlite3+jq on every prompt and dominates command lag.
+if [[ -n ${ZDOTS_HISTORY_AUX:-} ]] && (( $+commands[sqlite3] && $+commands[jq] )); then
   zmodload zsh/datetime 2>/dev/null
   export HISTDBFILE=$XDG_DATA_HOME/zsh/zsh_history.db
   export HISTJSFILE=$XDG_DATA_HOME/zsh/zsh_history.json
@@ -198,7 +251,8 @@ SQL
     (( $#o_help )) && { print "usage: histdb [-d] [-f] [-s] [-S] [-r] [-n N] [pattern]"; return 0; }
     local limit=${o_limit[-1]:-50} pattern=${1:-''} order=ASC
     (( $#o_reverse )) && order=DESC
-    local -a where q="'"
+    local -a where
+    local q="'"
     (( $#o_here ))    && where+=("cwd = '${PWD//$q/$q$q}'")
     (( $#o_session )) && where+=("sid = '${_history_aux_state[session]//$q/$q$q}'")
     (( $#o_fail ))    && where+=("ret != 0")
@@ -213,7 +267,145 @@ SQL
   }
 fi
 
-# ── Key bindings (deferred widgets) ──
+# ── zsh4humans-inspired fzf/history/directory widgets ─────────────
+_zfh_fzf_cmd() { (( $+commands[fzf] )) || { zle -M "fzf not found"; return 1; } }
+
+_zfh_accept_autosuggest_full() {
+  if (( $+widgets[autosuggest-accept] )) && [[ -n $POSTDISPLAY ]]; then
+    zle autosuggest-accept
+  else
+    zle end-of-line
+  fi
+}
+zle -N _zfh_accept_autosuggest_full
+
+_zfh_accept_autosuggest_word() {
+  emulate -L zsh -o extended_glob
+  if [[ -n $POSTDISPLAY ]]; then
+    local rest=$POSTDISPLAY take
+    if [[ $rest == [[:space:]]##* ]]; then
+      take=${${rest%%[^[:space:]]*}:-$rest}
+      rest=${rest#$take}
+    fi
+    if [[ -n $rest ]]; then
+      local wordchars=${WORDCHARS//[[:space:][:alnum:]]}
+      if [[ $rest == [[:alnum:]$wordchars]##* ]]; then
+        take+=${rest%%[^[:alnum:]$wordchars]*}
+      else
+        take+=${rest[1]}
+      fi
+    fi
+    [[ -n $take ]] || take=${POSTDISPLAY[1]}
+    BUFFER+=$take
+    POSTDISPLAY=${POSTDISPLAY#$take}
+    CURSOR=${#BUFFER}
+    zle .reset-prompt
+  else
+    zle _zfh_forward_word
+  fi
+}
+zle -N _zfh_accept_autosuggest_word
+
+_zfh_forward_word() {
+  emulate -L zsh -o extended_glob
+  local buf w=${WORDCHARS//[[:space:][:alnum:]]}
+  repeat ${NUMERIC:-1}; do
+    buf=${RBUFFER##[[:space:]]#}
+    if (( $#buf < 2 )); then
+      buf=
+    elif [[ $buf == ?[[:space:]]* ]]; then
+      buf[1]=
+    elif [[ $buf[1,2] != *[[:alnum:]$w]* ]]; then
+      buf=${buf##[^[:space:][:alnum:]$w]#}
+    else
+      [[ $buf == [[:alnum:]$w]* ]] || buf[1]=
+      buf=${buf##[[:alnum:]$w]#}
+    fi
+    (( CURSOR += $#RBUFFER - $#buf ))
+  done
+}
+zle -N _zfh_forward_word
+
+_zfh_backward_word() {
+  emulate -L zsh -o extended_glob
+  local buf w=${WORDCHARS//[[:space:][:alnum:]]}
+  repeat ${NUMERIC:-1}; do
+    buf=${LBUFFER%%[[:space:]]#}
+    if (( $#buf < 2 )); then
+      buf=
+    elif [[ $buf == *[[:space:]]? ]]; then
+      buf[-1]=
+    elif [[ $buf[-2,-1] != *[[:alnum:]$w]* ]]; then
+      buf=${buf%%[^[:space:][:alnum:]$w]#}
+    else
+      [[ $buf == *[[:alnum:]$w] ]] || buf[-1]=
+      buf=${buf%%[[:alnum:]$w]#}
+    fi
+    (( CURSOR -= $#LBUFFER - $#buf ))
+  done
+}
+zle -N _zfh_backward_word
+
+_zfh_forward_zword() {
+  emulate -L zsh
+  local word buf
+  repeat ${NUMERIC:-1}; do
+    buf=$PREBUFFER$BUFFER
+    for word in ${(Z:n:)buf} ''; do
+      (( $#buf < $#RBUFFER )) && break
+      buf=${${buf##[[:space:]]#}:$#word}
+    done
+    CURSOR=$(($#BUFFER - $#buf))
+    (( CURSOR > $#BUFFER )) && CURSOR=$#BUFFER
+  done
+}
+zle -N _zfh_forward_zword
+
+_zfh_backward_zword() {
+  emulate -L zsh
+  local word buf tail
+  repeat ${NUMERIC:-1}; do
+    buf=$PREBUFFER$BUFFER
+    for word in '' ${(Z:n:)buf}; do
+      tail=${${buf:$#word}##[[:space:]]#}
+      (( $#tail <= $#RBUFFER )) && break
+      buf=$tail
+    done
+    CURSOR=$(($#buf <= $#BUFFER ? $#BUFFER - $#buf : 0))
+  done
+}
+zle -N _zfh_backward_zword
+
+_zfh_fzf_history() {
+  _zfh_fzf_cmd || return
+  local selected
+  selected=$(fc -rl 1 2>/dev/null | awk '{$1=""; sub(/^ /,""); if (!seen[$0]++) print}' | \
+    FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:-} --height=80% --layout=reverse --border --no-multi --exact --cycle --bind=ctrl-u:clear-query,ctrl-k:kill-line,alt-j:clear-query" \
+    fzf --query="$LBUFFER" --preview 'printf %s {}' --preview-window=wrap:3:down:noborder) || return
+  BUFFER=$selected
+  CURSOR=${#BUFFER}
+  zle -R
+}
+zle -N _zfh_fzf_history
+
+_zfh_fzf_dir_history() {
+  _zfh_fzf_cmd || return
+  local selected source_cmd
+  if (( $+commands[zoxide] )); then
+    source_cmd='zoxide query -l 2>/dev/null'
+  else
+    source_cmd='dirs -lp 2>/dev/null; print -rl -- ${(u)$(fc -rl 1 2>/dev/null | sed -n "s/.*cd \\([^;&|]*\\).*/\\1/p")}'
+  fi
+  selected=$(eval $source_cmd | awk 'NF && !seen[$0]++' | \
+    FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:-} --height=80% --layout=reverse --border --no-multi --exact --cycle --bind=tab:down,btab:up,ctrl-u:clear-query" \
+    fzf --preview 'eza -la --color=always {} 2>/dev/null || ls -la {} 2>/dev/null' --preview-window=right:50%) || return
+  [[ -d $selected ]] || { zle -M "not a directory: $selected"; return 1; }
+  cd -- $selected || return
+  zle reset-prompt
+}
+zle -N _zfh_fzf_dir_history
+
+# ── Key bindings ──
 bindkey '^[OH' beginning-of-line
 bindkey '^[OF' end-of-line
 bindkey '^[[H' beginning-of-line
@@ -221,5 +413,38 @@ bindkey '^[[F' end-of-line
 bindkey '^[[1~' beginning-of-line
 bindkey '^[[4~' end-of-line
 
-# ── Rebind autosuggestions (MANUAL_REBIND mode — pick up new widgets once) ──
-(( ${+functions[_zsh_autosuggest_bind_widgets]} )) && _zsh_autosuggest_bind_widgets
+# zsh4humans-style autosuggestion/navigation bindings.
+# bindkey -M emacs '^[[C' _zfh_accept_autosuggest_full
+# bindkey -M emacs '^[OC' _zfh_accept_autosuggest_full
+# bindkey -M emacs '^[[1;3C' _zfh_accept_autosuggest_word
+# bindkey -M emacs '^[Oc' _zfh_accept_autosuggest_word
+# bindkey -M emacs '^[f' _zfh_accept_autosuggest_word
+bindkey -M emacs '^[[1;5C' _zfh_forward_zword
+bindkey -M emacs '^[[D' backward-char
+bindkey -M emacs '^[[1;3D' _zfh_backward_word
+bindkey -M emacs '^[b' _zfh_backward_word
+bindkey -M emacs '^[[1;5D' _zfh_backward_zword
+bindkey -M emacs '^R' _zfh_fzf_history
+bindkey -M emacs '^[r' _zfh_fzf_dir_history
+bindkey -M emacs '^[[3;5~' kill-word
+bindkey -M emacs '^[[3;3~' kill-word
+
+# ── Autosuggestions (MANUAL_REBIND mode) ─────────────────────────
+# Avoid full _zsh_autosuggest_bind_widgets here (~200 widgets). Bind only
+# user widgets defined after zsh-autosuggestions loaded that can edit BUFFER.
+# ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(magic-enter _zfh_fzf_history _zfh_fzf_dir_history _zfh_accept_autosuggest_word)
+# if (( ${+functions[_zsh_autosuggest_bind_widget]} )); then
+#   _zsh_autosuggest_bind_widget globalias-space modify
+#   _zsh_autosuggest_bind_widget globalias-accept execute
+# fi
+
+# ── Autosuggestions: our widgets handle it natively ───────────────
+ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(magic-enter accept-line-with-suggestion accept-full-suggestion accept-suggestion-word _zfh_fzf_history _zfh_fzf_dir_history)
+
+# ── Esc clears autosuggestion (low timeout avoids arrow-key lag) ──
+KEYTIMEOUT=1
+bindkey -M emacs '^[' autosuggest-clear
+
+# ── Backspace: normal delete char ──
+bindkey -M emacs '^?' backward-delete-char
+bindkey -M emacs '^H' backward-delete-char

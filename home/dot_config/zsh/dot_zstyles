@@ -13,3 +13,18 @@ zstyle ':plugin:ez-compinit' 'compstyle' 'zshzoo'
 # Disable compinit -C (unsafe). Without this, completions for newly
 # installed tools may not appear without manually deleting the dump.
 zstyle ':plugin:ez-compinit' 'use-cache' no
+
+# ── fzf-tab: compsys-backed zsh4humans-style completion ─────────
+zstyle ':completion:*:descriptions' format '[%d]'
+zstyle ':completion:*' menu no
+zstyle ':fzf-tab:*' fzf-command fzf
+zstyle ':fzf-tab:*' fzf-flags --height=40% --min-height=12 --layout=reverse --border --cycle --bind=tab:accept --bind=ctrl-z:ignore
+zstyle ':fzf-tab:*' switch-group '<' '>'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath 2>/dev/null || ls -la $realpath 2>/dev/null'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza -1 --color=always $realpath 2>/dev/null || ls -la $realpath 2>/dev/null'
+zstyle ':fzf-tab:complete:*:*' fzf-preview '[[ -d $realpath ]] && (eza -1 --color=always $realpath 2>/dev/null || ls -la $realpath 2>/dev/null) || (bat --color=always --style=numbers --line-range=:160 $realpath 2>/dev/null || sed -n "1,120p" $realpath 2>/dev/null)'
+
+# ── zdots z4h-inspired integrations ─────────────────────────────
+zstyle ':zdots:ssh:*' term xterm-256color
+# Example opt-ins:
+# zstyle ':zdots:ssh:spa' send-extra-files ~/.tmux.conf ~/.gitconfig

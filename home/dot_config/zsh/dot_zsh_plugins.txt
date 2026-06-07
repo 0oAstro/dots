@@ -5,11 +5,11 @@
 # Completion system (must be first — before plugins that call compdef)
 mattmc3/ez-compinit
 
-# Prompt — powerlevel10k (instant prompt + git status)
-romkatv/powerlevel10k
-
 # Completions (fpath only, loaded by compinit)
 zsh-users/zsh-completions kind:fpath path:src
+
+# zsh4humans-style fzf completion menu (loads after compinit, before autosuggest)
+Aloxaf/fzf-tab
 
 # Editor / typing
 hlissner/zsh-autopair
