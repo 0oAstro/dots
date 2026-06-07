@@ -96,8 +96,11 @@ source $_cfg/08-prompt.zsh
 source $_cfg/09-z4h-integrations.zsh
 
 # ── Age-encrypted local secrets (synced via git, decrypted at runtime) ──
+# Requires age identity at AGE_IDENTITY or ~/.config/age/keys.txt
 if [[ -r $ZDOTDIR/.zshrc.local.age ]] && (( $+commands[age] )); then
-  eval "$(age -d $ZDOTDIR/.zshrc.local.age 2>/dev/null)"
+  local _age_key="${AGE_IDENTITY:-$HOME/.config/age/keys.txt}"
+  [[ -r $_age_key ]] && eval "$(age -d -i $_age_key $ZDOTDIR/.zshrc.local.age 2>/dev/null)"
+  unset _age_key
 fi
 
 # ── Recompile helper ─────────────────────────────────────────────
