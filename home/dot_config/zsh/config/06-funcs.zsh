@@ -42,3 +42,23 @@ ls() {
   else command ls -la "$@"
   fi
 }
+
+# Age-encrypted secrets helper
+# Decrypts .zshrc.local.age, opens in $EDITOR, re-encrypts, commits, pushes.
+edit-secrets() {
+  local _key="${AGE_IDENTITY:-$HOME/.config/age/keys.txt}"
+  local _enc="$ZDOTDIR/.zshrc.local.age"
+  local _plain="${TMPDIR:-/tmp}/.zshrc.local.$$"
+
+  [[ -r $_enc ]] || { echo >&2 "edit-secrets: $_enc not found"; return 1; }
+  [[ -r $_key ]]  || { echo >&2 "edit-secrets: age key $_key not found"; return 1; }
+
+  age -d -i $_key $_enc > $_plain
+  ${EDITOR:-vim} $_plain
+
+  local _pubkey=$(age-keygen -y $_key 2>/dev/null)
+  age -r "$_pubkey" -o $_enc $_plain 2>/dev/null
+  rm -f $_plain
+
+  (cd $ZDOTDIR && git add .zshrc.local.age && git commit -m "update secrets" && git push)
+}
