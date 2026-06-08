@@ -48,54 +48,90 @@ function fancy-ctrl-z {
 zle -N fancy-ctrl-z
 bindkey '^Z' fancy-ctrl-z
 
-# ── globalias (Space expands aliases) ──
-# DISABLED: we don't use global aliases. `..2` etc. are global aliases
-# but they're typed with a trailing space, not on Enter. Keeping this
-# just adds a broken indirection that fights zsh-autosuggestions.
-# typeset -gA _globalias_noexpand
-# local -a _words=(ls grep gpg vi e z 0 1 2 3 4 5 6 7 8 9)
-# local _w; for _w in "${_words[@]}"; do _globalias_noexpand[$_w]=1; done
-# _globalias_expand_word() {
-#   local word=${${(Az)LBUFFER}[-1]}
-#   (( $+_globalias_noexpand[$word] )) && return
-#   (( $+galiases[$word] || ! $+commands[$word] )) && zle _expand_alias
-# }
-# globalias-space()  { _globalias_expand_word; zle self-insert; }
-# globalias-accept() {
-#   _globalias_expand_word
-#   [[ -n $POSTDISPLAY ]] && { BUFFER="$BUFFER$POSTDISPLAY"; POSTDISPLAY=; }
-#   zle .accept-line
-# }
-# zle -N globalias-space
-# zle -N globalias-accept
-# local _gkm
-# for _gkm in emacs viins; do
-#   bindkey -M "$_gkm" ' '  globalias-space
-#   bindkey -M "$_gkm" '\e ' magic-space
-#   bindkey -M "$_gkm" '^M' globalias-accept
-# done
-# bindkey -M isearch ' ' magic-space
+# ═══════════════════════════════════════════════════════════════════
+# Enter key behavior — inspired by mattmc3/zdotdir
+#
+# Two layers, completely separate:
+#   1. globalias-accept — Fish-like alias expansion on Space/Enter
+#   2. magic-enter      — accept_line_hook, fills empty prompts
+#
+# ═══════════════════════════════════════════════════════════════════
 
-# ── Simple Enter: accept autosuggestion + execute ─────────────────
-accept-line-with-suggestion() {
-  if [[ -n $POSTDISPLAY ]]; then
-    BUFFER="$BUFFER$POSTDISPLAY"
-    POSTDISPLAY=""
+# ── globalias: Fish-like abbreviation expansion ───────────────────
+# Space  → expand the last word if it's an alias, then insert space
+# Enter  → expand the last word if it's an alias, then execute
+# Alt+Space → insert a literal space without expanding
+#
+# Skip expansion for words in the noexpand list (common commands
+# that happen to be aliased, or dirstack shortcuts).
+
+typeset -gA _globalias_noexpand
+() {
+  local -a _words
+  local _w
+  zstyle -a ':zdots:globalias' noexpand '_words' 2>/dev/null \
+    || _words=(ls grep gpg vi e z 0 1 2 3 4 5 6 7 8 9)
+  for _w in "${_words[@]}"; do
+    _globalias_noexpand[$_w]=1
+  done
+}
+
+_globalias_expand_word() {
+  local word=${${(Az)LBUFFER}[-1]}
+  (( $+_globalias_noexpand[$word] )) && return
+  (( $+galiases[$word] || ! $+commands[$word] )) && zle _expand_alias
+}
+
+globalias-space() {
+  _globalias_expand_word
+  zle self-insert
+}
+zle -N globalias-space
+
+globalias-accept() {
+  # If buffer is empty, fill it with the default command (magic-enter)
+  if [[ -z "$BUFFER" && "$CONTEXT" == start ]]; then
+    BUFFER=$(magic-enter-cmd)
+  else
+    _globalias_expand_word
+  fi
+  zle accept-line
+}
+zle -N globalias-accept
+
+for _gkm in emacs viins; do
+  bindkey -M "$_gkm" ' '   globalias-space
+  bindkey -M "$_gkm" '\e ' magic-space
+  bindkey -M "$_gkm" '^M'  globalias-accept
+done
+bindkey -M isearch ' ' magic-space
+unset _gkm
+
+# ── magic-enter: empty prompt → ls / git status ──────────────────
+# Checks happen inside globalias-accept and accept-line-plain.
+# (Same effect as matt's accept_line_hook but works with standard zsh.)
+function magic-enter-cmd {
+  local cmd
+  zstyle -s ':zdots:magic-enter' command cmd || cmd="${MAGIC_ENTER_OTHER_COMMAND:-ls}"
+  if command git rev-parse --is-inside-work-tree &>/dev/null; then
+    zstyle -s ':zdots:magic-enter' git-command cmd || cmd="${MAGIC_ENTER_GIT_COMMAND:-git status -sb}"
+  fi
+  echo $cmd
+}
+
+# ── Alt+Enter: plain execute (no expansion) ──────────────────────
+accept-line-plain() {
+  # Also handle magic-enter for empty prompts
+  if [[ -z "$BUFFER" && "$CONTEXT" == start ]]; then
+    BUFFER=$(magic-enter-cmd)
   fi
   zle .accept-line
 }
-zle -N accept-line-with-suggestion
-for _gkm in emacs viins; do
-  bindkey -M "$_gkm" '^M' magic-enter
-  bindkey -M "$_gkm" '\e ' magic-space
-  bindkey -M "$_gkm" ' '  self-insert
-  bindkey -M "$_gkm" '^[^M' accept-line-with-suggestion
-done
-bindkey -M isearch ' ' self-insert
-bindkey -M isearch '\e ' magic-space
-bindkey -M isearch '^M' magic-enter
-bindkey -M isearch '^[^M' accept-line-with-suggestion
-unset _gkm
+zle -N accept-line-plain
+bindkey -M emacs  '^[^M' accept-line-plain
+bindkey -M viins  '^[^M' accept-line-plain
+bindkey -M isearch '^[^M' accept-line-plain
+# ═══════════════════════════════════════════════════════════════════
 
 # ── Right arrow / Ctrl+E: accept full suggestion ──────────────────
 accept-full-suggestion() {
@@ -136,29 +172,6 @@ zle -N accept-suggestion-word
 bindkey -M emacs '^[[1;3C' accept-suggestion-word
 bindkey -M emacs '^[Oc' accept-suggestion-word
 bindkey -M emacs '^[f' accept-suggestion-word
-
-# ── magic-enter (empty Enter → ls / git status) ──
-# (overwrites globalias ^M — globalias only uses Space in practice)
-function magic-enter-cmd {
-  local cmd
-  zstyle -s ':zsh:plugin:magic-enter' command cmd ||
-    cmd="${MAGIC_ENTER_OTHER_COMMAND:-ls}"
-  if command git rev-parse --is-inside-work-tree &>/dev/null; then
-    zstyle -s ':zsh:plugin:magic-enter' git-command cmd ||
-      cmd="${MAGIC_ENTER_GIT_COMMAND:-git status -sb}"
-  fi
-  echo $cmd
-}
-function magic-enter {
-  if [[ -n "$BUFFER" || "$CONTEXT" != start ]]; then
-    # Accept autosuggestion into buffer if visible (like Fish → then Enter)
-    [[ -n "$POSTDISPLAY" ]] && BUFFER="$BUFFER$POSTDISPLAY" && POSTDISPLAY=
-    zle .accept-line; return
-  fi
-  BUFFER=$(magic-enter-cmd)
-  zle .accept-line
-}
-zle -N magic-enter
 
 # ── Ctrl+L pokemon clear ──
 _pokeget_clear() {
@@ -413,12 +426,7 @@ bindkey '^[[F' end-of-line
 bindkey '^[[1~' beginning-of-line
 bindkey '^[[4~' end-of-line
 
-# zsh4humans-style autosuggestion/navigation bindings.
-# bindkey -M emacs '^[[C' _zfh_accept_autosuggest_full
-# bindkey -M emacs '^[OC' _zfh_accept_autosuggest_full
-# bindkey -M emacs '^[[1;3C' _zfh_accept_autosuggest_word
-# bindkey -M emacs '^[Oc' _zfh_accept_autosuggest_word
-# bindkey -M emacs '^[f' _zfh_accept_autosuggest_word
+# zsh4humans-style autosuggestion/navigation bindings
 bindkey -M emacs '^[[1;5C' _zfh_forward_zword
 bindkey -M emacs '^[[D' backward-char
 bindkey -M emacs '^[[1;3D' _zfh_backward_word
@@ -429,17 +437,13 @@ bindkey -M emacs '^[r' _zfh_fzf_dir_history
 bindkey -M emacs '^[[3;5~' kill-word
 bindkey -M emacs '^[[3;3~' kill-word
 
-# ── Autosuggestions (MANUAL_REBIND mode) ─────────────────────────
-# Avoid full _zsh_autosuggest_bind_widgets here (~200 widgets). Bind only
-# user widgets defined after zsh-autosuggestions loaded that can edit BUFFER.
-# ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(magic-enter _zfh_fzf_history _zfh_fzf_dir_history _zfh_accept_autosuggest_word)
-# if (( ${+functions[_zsh_autosuggest_bind_widget]} )); then
-#   _zsh_autosuggest_bind_widget globalias-space modify
-#   _zsh_autosuggest_bind_widget globalias-accept execute
-# fi
-
-# ── Autosuggestions: our widgets handle it natively ───────────────
-ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(magic-enter accept-line-with-suggestion accept-full-suggestion accept-suggestion-word _zfh_fzf_history _zfh_fzf_dir_history)
+# ── Autosuggestions ───────────────────────────────────────────────
+ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(
+  globalias-accept globalias-space
+  accept-full-suggestion accept-suggestion-word
+  _zfh_fzf_history _zfh_fzf_dir_history
+  accept-line-plain
+)
 
 # ── Esc clears autosuggestion (low timeout avoids arrow-key lag) ──
 KEYTIMEOUT=1

@@ -12,6 +12,17 @@ alias gr="git rebase" gs="git status --short" gss="git status"
 alias md="mkdir -p" rrm="command rm"
 (( $+commands[trash] )) && alias rm=trash
 alias ..="cd .."
+
+# Directory stack aliases (Fish-like navigation via globalias expansion on Enter)
+# ..2 → cd ../..   ..3 → cd ../../..   etc.
+# 1 → cd -1         2 → cd -2          etc.
+_dotdot=".."
+for _index in {1..9}; do
+  alias "$_index"="cd -${_index}"
+  alias -g "..${_index}"="${_dotdot}"
+  _dotdot+="/.."
+done
+unset _dotdot _index
 alias _=sudo l=ls g=git
 alias grep="${aliases[grep]:-grep} --exclude-dir={.git,.vscode}"
 alias ping='ping -c 5' vi=vim
