@@ -29,6 +29,7 @@ export CP_HOME_DIR=$XDG_DATA_HOME/cocoapods
 export ANDROID_USER_HOME=$XDG_DATA_HOME/android
 export ANDROID_AVD_HOME=$XDG_DATA_HOME/android/avd
 export NPM_CONFIG_TMP=$XDG_RUNTIME_DIR/npm
+export AZURE_CONFIG_DIR=$XDG_DATA_HOME/azure
 
 # ── Runtime tool homes ──────────────────────────────────────────
 export CARGO_HOME=$XDG_DATA_HOME/cargo
