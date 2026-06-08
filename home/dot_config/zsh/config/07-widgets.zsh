@@ -51,19 +51,53 @@ bindkey '^Z' fancy-ctrl-z
 # ═══════════════════════════════════════════════════════════════════
 # Enter key behavior — inspired by mattmc3/zdotdir
 #
-# Two layers, completely separate:
-#   1. globalias-accept — Fish-like alias expansion on Space/Enter
-#   2. magic-enter      — accept_line_hook, fills empty prompts
-#
+# Two independent layers, completely separate (like matt):
+#   1.  accept_line  →  wrapper that fires _zdots_accept_line_hook
+#   2.  ^M           →  globalias-accept  (alias expansion, then accept-line)
+#   3.  space        →  globalias-space   (alias expansion, then self-insert)
+#   4.  empty prompt →  magic-enter hook  (fills buffer via hook) 
 # ═══════════════════════════════════════════════════════════════════
+
+# ── magic-enter: empty prompt → ls / git status ──────────────────
+# A separate hook function, not baked into any widget.
+# Lives in _zdots_accept_line_hook, fired by the accept-line wrapper.
+
+function magic-enter-cmd {
+  local cmd
+  zstyle -s ':zdots:magic-enter' command cmd || cmd="${MAGIC_ENTER_OTHER_COMMAND:-ls}"
+  if command git rev-parse --is-inside-work-tree &>/dev/null; then
+    zstyle -s ':zdots:magic-enter' git-command cmd || cmd="${MAGIC_ENTER_GIT_COMMAND:-git status -sb}"
+  fi
+  echo $cmd
+}
+
+_zdots_magic_enter() {
+  [[ -n "$BUFFER" || "$CONTEXT" != start ]] && return
+  BUFFER=$(magic-enter-cmd)
+}
+
+# ── accept_line wrapper (fires hooks, then .accept-line) ─────────
+# Replaces accept-line so all callers (globalias-accept,
+# accept-line-plain, fancy-ctrl-z, etc.) fire the hooks.
+
+typeset -ga _zdots_accept_line_hook
+_zdots_accept_line_hook=(_zdots_magic_enter)
+
+_zdots_accept_line() {
+  local hook
+  for hook in $_zdots_accept_line_hook; do
+    $hook
+  done
+  zle .accept-line
+}
+zle -N accept-line _zdots_accept_line
 
 # ── globalias: Fish-like abbreviation expansion ───────────────────
 # Space  → expand the last word if it's an alias, then insert space
 # Enter  → expand the last word if it's an alias, then execute
 # Alt+Space → insert a literal space without expanding
 #
-# Skip expansion for words in the noexpand list (common commands
-# that happen to be aliased, or dirstack shortcuts).
+# Skip expansion for words in the noexpand list.
 
 typeset -gA _globalias_noexpand
 () {
@@ -89,13 +123,8 @@ globalias-space() {
 zle -N globalias-space
 
 globalias-accept() {
-  # If buffer is empty, fill it with the default command (magic-enter)
-  if [[ -z "$BUFFER" && "$CONTEXT" == start ]]; then
-    BUFFER=$(magic-enter-cmd)
-  else
-    _globalias_expand_word
-  fi
-  zle accept-line
+  _globalias_expand_word
+  zle accept-line    # fires _zdots_accept_line → hooks → .accept-line
 }
 zle -N globalias-accept
 
@@ -107,25 +136,9 @@ done
 bindkey -M isearch ' ' magic-space
 unset _gkm
 
-# ── magic-enter: empty prompt → ls / git status ──────────────────
-# Checks happen inside globalias-accept and accept-line-plain.
-# (Same effect as matt's accept_line_hook but works with standard zsh.)
-function magic-enter-cmd {
-  local cmd
-  zstyle -s ':zdots:magic-enter' command cmd || cmd="${MAGIC_ENTER_OTHER_COMMAND:-ls}"
-  if command git rev-parse --is-inside-work-tree &>/dev/null; then
-    zstyle -s ':zdots:magic-enter' git-command cmd || cmd="${MAGIC_ENTER_GIT_COMMAND:-git status -sb}"
-  fi
-  echo $cmd
-}
-
-# ── Alt+Enter: plain execute (no expansion) ──────────────────────
+# ── Alt+Enter: plain execute (no alias expansion) ────────────────
 accept-line-plain() {
-  # Also handle magic-enter for empty prompts
-  if [[ -z "$BUFFER" && "$CONTEXT" == start ]]; then
-    BUFFER=$(magic-enter-cmd)
-  fi
-  zle .accept-line
+  zle accept-line    # same wrapper → magic-enter hook still fires
 }
 zle -N accept-line-plain
 bindkey -M emacs  '^[^M' accept-line-plain

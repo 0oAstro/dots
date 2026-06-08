@@ -18,8 +18,8 @@ if [[ $OS == macos ]]; then
   [[ -S $_bw_sock ]] && export SSH_AUTH_SOCK=$_bw_sock
   [[ -d /Library/Java/JavaVirtualMachines/zulu-21.jdk/Contents/Home ]] && \
     export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-21.jdk/Contents/Home
-  # trash-cli is keg-only (not symlinked); add its bin to PATH
-  [[ -d $HOMEBREW_PREFIX/opt/trash-cli/bin ]] && path+=($HOMEBREW_PREFIX/opt/trash-cli/bin)
+  # trash-cli is keg-only (not symlinked); prepend so it beats /usr/bin/trash
+  [[ -d $HOMEBREW_PREFIX/opt/trash-cli/bin ]] && path[1,0]=($HOMEBREW_PREFIX/opt/trash-cli/bin)
 fi
 
 # ── Secrets ──────────────────────────────────────────────────────
