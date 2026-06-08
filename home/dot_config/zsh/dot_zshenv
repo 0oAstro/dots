@@ -31,8 +31,12 @@ export ANDROID_AVD_HOME=$XDG_DATA_HOME/android/avd
 export NPM_CONFIG_TMP=$XDG_RUNTIME_DIR/npm
 export AZURE_CONFIG_DIR=$XDG_DATA_HOME/azure
 export CLAUDE_CONFIG_DIR=$XDG_CONFIG_HOME/claude
-export TERMINFO=$XDG_DATA_HOME/terminfo
-export TERMINFO_DIRS=$XDG_DATA_HOME/terminfo:/usr/share/terminfo
+
+# ── Terminal color/terminfo defaults ────────────────────────────
+# Simple search path; don't set TERMINFO because it overrides TERMINFO_DIRS.
+export TERMINFO_DIRS=$HOME/.terminfo:$XDG_DATA_HOME/terminfo:/Applications/Ghostty.app/Contents/Resources/terminfo:/opt/homebrew/share/terminfo:/usr/local/share/terminfo:/usr/share/terminfo
+unset TERMINFO
+export COLORTERM=${COLORTERM:-truecolor}
 
 # ── Runtime tool homes ──────────────────────────────────────────
 export CARGO_HOME=$XDG_DATA_HOME/cargo

@@ -5,9 +5,8 @@
 
 # ── Terminfo / truecolor normalization ───────────────────────────
 zmodload zsh/terminfo 2>/dev/null
-if [[ -n ${TERM:-} && $TERMINFO != $HOME/.terminfo && -e $HOME/.terminfo/${TERM[1]}/$TERM ]]; then
-  export TERMINFO=$HOME/.terminfo
-fi
+# Keep TERMINFO as a single-directory override only when the user explicitly
+# supplied it. TERMINFO_DIRS from .zshenv is the portable search path.
 [[ ${terminfo[Tc]:-} == yes && -z ${COLORTERM:-} ]] && export COLORTERM=truecolor
 
 zterminfo-install() {
