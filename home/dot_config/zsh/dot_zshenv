@@ -42,7 +42,6 @@ export LESSKEY=$XDG_CONFIG_HOME/less/lesskey
 # ── Platform detection (zero-fork: use $OSTYPE) ─────────────────
 case $OSTYPE in
   darwin*)  export OS=macos ;;
-  linux*)   export OS=linux ;;
   *)        export OS=unknown ;;
 esac
 
@@ -56,9 +55,6 @@ if [[ -z ${HOMEBREW_PREFIX:-} ]]; then
     macos)
       [[ -d /opt/homebrew ]] && export HOMEBREW_PREFIX=/opt/homebrew
       [[ -z ${HOMEBREW_PREFIX:-} && -d /usr/local/Homebrew ]] && export HOMEBREW_PREFIX=/usr/local
-      ;;
-    linux)
-      [[ -d /home/linuxbrew/.linuxbrew ]] && export HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
       ;;
   esac
 fi

@@ -27,7 +27,6 @@ alias print-path='echo $PATH | tr ":" "\n"'
 alias print-functions='print -l ${(k)functions[(I)[^_]*]} | sort'
 alias zshrc='${EDITOR:-vim} "${ZDOTDIR:-$HOME}"/.zshrc'
 alias zbench='for i in {1..10}; do /usr/bin/time zsh -lic exit; done'
-[[ $OS == macos ]] && alias sedi="sed -i ''" || alias sedi="sed -i"
 
 # Conditional aliases (only if commands exist)
 (( $+commands[python3] )) && ! (( $+commands[python] )) && alias python=python3

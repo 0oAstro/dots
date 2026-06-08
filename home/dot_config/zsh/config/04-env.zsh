@@ -12,15 +12,12 @@ export GNUPGHOME=$XDG_DATA_HOME/gnupg
 export TAILSCALE_TAILNET=${TAILSCALE_TAILNET:-kitty-armadillo.ts.net}
 export RIPGREP_CONFIG_PATH=$XDG_CONFIG_HOME/ripgrep/config
 
-
 # Platform-specific optional paths/sockets.
 if [[ $OS == macos ]]; then
   local _bw_sock=$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock
   [[ -S $_bw_sock ]] && export SSH_AUTH_SOCK=$_bw_sock
   [[ -d /Library/Java/JavaVirtualMachines/zulu-21.jdk/Contents/Home ]] && \
     export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-21.jdk/Contents/Home
-elif [[ $OS == linux ]]; then
-  [[ -S ${XDG_RUNTIME_DIR:-}/ssh-agent.socket ]] && export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
 fi
 
 # ── Secrets ──────────────────────────────────────────────────────
@@ -75,9 +72,7 @@ export FZF_CTRL_T_COMMAND=$FZF_DEFAULT_COMMAND
 unset _fzf_preview_file _fzf_preview_dir
 
 # ── Path additions ──────────────────────────────────────────────
-[[ -n ${HOMEBREW_PREFIX:-} && -d $HOMEBREW_PREFIX/opt/macos-trash/bin ]] && path+=($HOMEBREW_PREFIX/opt/macos-trash/bin)
 [[ -n ${HOMEBREW_PREFIX:-} && -d $HOMEBREW_PREFIX/opt/postgresql@18/bin ]] && path+=($HOMEBREW_PREFIX/opt/postgresql@18/bin)
-[[ $OS == macos && -d /Applications/IINA.app/Contents/MacOS ]] && path+=(/Applications/IINA.app/Contents/MacOS)
 
 # ── Bitwarden CLI ────────────────────────────────────────────────
 (( $+commands[bwbio] )) && bw() { bwbio "$@"; }
