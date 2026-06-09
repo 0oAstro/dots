@@ -26,6 +26,7 @@ unset _dotdot _index
 alias _=sudo l=ls g=git
 alias grep="${aliases[grep]:-grep} --exclude-dir={.git,.vscode}"
 alias ping='ping -c 5' vi=vim
+alias adb='HOME="$XDG_DATA_HOME"/android adb'
 alias get=git quit=exit cd..='cd ..' zz=exit
 alias ll='ls -lh' la='ls -lAh'
 alias timestamp="date '+%Y-%m-%d %H:%M:%S'"
