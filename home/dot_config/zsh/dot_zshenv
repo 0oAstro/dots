@@ -85,6 +85,9 @@ if [[ -n ${HOMEBREW_PREFIX:-} ]]; then
 fi
 
 # ── PATH — zero-fork, all static ────────────────────────────────
+# zsh normally does not de-duplicate $path. Keep this global so login +
+# interactive startup cannot append the same XDG dirs twice.
+typeset -gU path PATH
 path=(
   $HOME/.local/bin
   $HOME/.local/share/npm/bin
