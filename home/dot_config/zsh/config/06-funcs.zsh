@@ -43,20 +43,3 @@ ls() {
   fi
 }
 
-# Edit .zshrc.local.age without committing/pushing.
-edit-secrets() {
-  emulate -L zsh; setopt no_aliases
-  local key="$HOME/.config/age/keys.txt"
-  local enc="$ZDOTDIR/.zshrc.local.age"
-  local plain="${TMPDIR:-/tmp}/.zshrc.local.$$"
-
-  [[ -r $key ]] || { print -ru2 "edit-secrets: age key $key not found"; return 1; }
-  (( $+commands[age] )) || { print -ru2 'edit-secrets: age not found'; return 127; }
-  [[ -r $enc ]] && age -d -i $key -- "$enc" >| "$plain" 2>/dev/null
-
-  $EDITOR "$plain"
-  age -r "$(age-keygen -y $key)" -o "$enc" "$plain"
-  chmod 600 "$enc" 2>/dev/null || true
-  command rm -f "$plain"
-}
-
