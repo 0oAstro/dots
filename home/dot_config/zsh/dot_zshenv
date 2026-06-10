@@ -33,6 +33,8 @@ export ANDROID_AVD_HOME=$XDG_DATA_HOME/android/avd
 export NPM_CONFIG_TMP=$XDG_RUNTIME_DIR/npm
 export AZURE_CONFIG_DIR=$XDG_DATA_HOME/azure
 export CLAUDE_CONFIG_DIR=$XDG_CONFIG_HOME/claude
+export AWS_CONFIG_FILE=$XDG_CONFIG_HOME/aws/config
+export AWS_SHARED_CREDENTIALS_FILE=$XDG_CONFIG_HOME/aws/credentials
 
 # ── Terminal color/terminfo defaults ────────────────────────────
 # Simple search path; don't set TERMINFO because it overrides TERMINFO_DIRS.
@@ -79,6 +81,7 @@ fi
 path=(
   $HOME/.local/bin
   $HOME/.local/share/npm/bin
+  $BUN_INSTALL/bin
   $HOME/.local/share/cargo/bin
   $GOPATH/bin
   $CARGO_HOME/bin
