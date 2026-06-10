@@ -7,16 +7,29 @@
 export ZDOTDIR=${ZDOTDIR:-$HOME/.config/zsh}
 export SHELL_SESSIONS_DISABLE=1
 export EDITOR=${EDITOR:-nvim}
-export VISUAL=${VISUAL:-code}
+export VISUAL=${VISUAL:-zed-preview}
+
+# ── Platform detection (zero-fork: use $OSTYPE) ─────────────────
+case $OSTYPE in
+  darwin*) export OS=macos ;;
+  linux*)  export OS=linux ;;
+  *)       export OS=unknown ;;
+esac
 
 # ── XDG base directories ────────────────────────────────────────
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 export XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}
 export XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 export XDG_STATE_HOME=${XDG_STATE_HOME:-$HOME/.local/state}
-# user systemd/dbus live under /run/user/$UID. do not default to /tmp here.
-export XDG_RUNTIME_DIR=/run/user/$UID
-export DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus
+case $OS in
+  linux)
+    export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/user/$UID}
+    export DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}
+    ;;
+  macos)
+    export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}/zdots-runtime-$UID}
+    ;;
+esac
 
 # ── XDG app redirects (xdg-ninja / clean-home) ──────────────────
 export CODEX_HOME=$XDG_CONFIG_HOME/codex
@@ -50,12 +63,6 @@ export RUSTUP_HOME=$XDG_DATA_HOME/rustup
 export DOCKER_CONFIG=$XDG_CONFIG_HOME/docker
 export LESSHISTFILE=$XDG_CACHE_HOME/less/history
 export LESSKEY=$XDG_CONFIG_HOME/less/lesskey
-
-# ── Platform detection (zero-fork: use $OSTYPE) ─────────────────
-case $OSTYPE in
-  darwin*)  export OS=macos ;;
-  *)        export OS=unknown ;;
-esac
 
 # ── Antidote cache path ─────────────────────────────────────────
 export ANTIDOTE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/antidote

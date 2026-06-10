@@ -23,40 +23,27 @@ if [[ $OS == macos ]]; then
 fi
 
 # ── Secrets ──────────────────────────────────────────────────────
-# Preferred files, in order:
-#   $ZDOTDIR/secrets.zsh.gpg  - decrypted with gpg -dq
-#   $ZDOTDIR/secrets.zsh.age  - decrypted with age -d -i ~/.ssh/id_ed25519
-#   $ZDOTDIR/secrets.zsh      - plaintext local fallback (gitignored; chmod 600)
 # Secret files should contain zsh exports, e.g. export FOO=bar.
-export ZDOTS_SECRETS_FILE=${ZDOTS_SECRETS_FILE:-}
+# Canonical encrypted file: $ZDOTDIR/secrets.zsh.age
 _zdots_source_secrets() {
   emulate -L zsh; setopt no_aliases
-  local f=${1:-$ZDOTS_SECRETS_FILE} out
-  if [[ -z $f ]]; then
-    if [[ -r $ZDOTDIR/secrets.zsh.gpg ]]; then f=$ZDOTDIR/secrets.zsh.gpg
-    elif [[ -r $ZDOTDIR/secrets.zsh.age ]]; then f=$ZDOTDIR/secrets.zsh.age
-    elif [[ -r $ZDOTDIR/secrets.zsh ]]; then f=$ZDOTDIR/secrets.zsh
-    else return 0
-    fi
-  fi
-  case $f in
-    *.gpg) (( $+commands[gpg] )) || return 1; out=$(gpg -dq -- "$f") || return 1; source /dev/stdin <<<"$out" ;;
-    *.age) (( $+commands[age] )) || return 1; out=$(age -d -i ${ZDOTS_SECRETS_KEY:-$HOME/.ssh/id_ed25519} -- "$f") || return 1; source /dev/stdin <<<"$out" ;;
-    *)     [[ -r $f ]] && source "$f" ;;
-  esac
+  local f=${1:-$ZDOTDIR/secrets.zsh.age} out
+  [[ -r $f ]] || return 0
+  (( $+commands[age] )) || return 1
+  out=$(age -d -i $HOME/.config/age/keys.txt -- "$f") || return 1
+  source /dev/stdin <<<"$out"
 }
 _zdots_source_secrets
 
 secrets-load() { _zdots_source_secrets "$@"; }
 secrets-edit() {
   emulate -L zsh; setopt no_aliases
-  local plain=${TMPDIR:-/tmp}/zdots-secrets.$$ f=${1:-${ZDOTS_SECRETS_FILE:-$ZDOTDIR/secrets.zsh.gpg}}
+  local plain=${TMPDIR:-/tmp}/zdots-secrets.$$ f=${1:-$ZDOTDIR/secrets.zsh.age}
   umask 077
-  case $f in
-    *.gpg) [[ -r $f ]] && gpg -dq -- "$f" >| "$plain" 2>/dev/null; ${EDITOR:-vi} "$plain"; gpg -c --cipher-algo AES256 -o "$f" "$plain" ;;
-    *.age) [[ -r $f ]] && age -d -i ${ZDOTS_SECRETS_KEY:-$HOME/.ssh/id_ed25519} -- "$f" >| "$plain" 2>/dev/null; ${EDITOR:-vi} "$plain"; age -R ${ZDOTS_SECRETS_RECIPIENTS:-$HOME/.ssh/id_ed25519.pub} -o "$f" "$plain" ;;
-    *)     ${EDITOR:-vi} "$f"; chmod 600 "$f" 2>/dev/null ;;
-  esac
+  local _age_key="$HOME/.config/age/keys.txt"
+  [[ -r $f ]] && age -d -i $_age_key -- "$f" >| "$plain" 2>/dev/null
+  $EDITOR "$plain"
+  age -r "$(age-keygen -y $_age_key)" -o "$f" "$plain"
   command rm -f "$plain"
 }
 
@@ -78,15 +65,6 @@ unset _fzf_preview_file _fzf_preview_dir
 
 # ── Bitwarden CLI ────────────────────────────────────────────────
 (( $+commands[bwbio] )) && bw() { bwbio "$@"; }
-load-secret() {
-  local value; value=$(bw get item "$1" 2>/dev/null | jq -r '.notes // empty')
-  if [[ -n "$value" && "$value" != "null" ]]; then
-    export "$1"="$value"; echo "✅  $1"
-  else
-    echo "❌  $1 — not found (bw unlocked? item exists?)" >&2; return 1
-  fi
-}
-load-secrets() { for name in "$@"; do load-secret "$name"; done }
 
 # ── SPA (tmux/mosh remote) ──────────────────────────────────────
 spa() {
@@ -102,22 +80,11 @@ spa() {
   mosh --predict=experimental --predict-overwrite "$host" -- tmux new-session -A -s "$session"
 }
 
-secrets-encrypt-gpg() {
-  emulate -L zsh; setopt no_aliases
-  local plain=${1:-$ZDOTDIR/secrets.zsh} out=${2:-$ZDOTDIR/secrets.zsh.gpg} recipient=${SECRETS_GPG_RECIPIENT:-}
-  [[ -r $plain ]] || { print -ru2 "missing $plain"; return 1; }
-  if [[ -n $recipient ]]; then
-    gpg --yes --encrypt --recipient "$recipient" --output "$out" "$plain"
-  else
-    gpg --yes --symmetric --cipher-algo AES256 --output "$out" "$plain"
-  fi
-  chmod 600 "$out" 2>/dev/null || true
-}
-
 secrets-encrypt-age() {
   emulate -L zsh; setopt no_aliases
-  local plain=${1:-$ZDOTDIR/secrets.zsh} out=${2:-$ZDOTDIR/secrets.zsh.age} recipients=${ZDOTS_SECRETS_RECIPIENTS:-$HOME/.ssh/id_ed25519.pub}
+  local plain=${1:-$ZDOTDIR/secrets.zsh} out=${2:-$ZDOTDIR/secrets.zsh.age} key="$HOME/.config/age/keys.txt"
   [[ -r $plain ]] || { print -ru2 "missing $plain"; return 1; }
+  [[ -r $key ]] || { print -ru2 "secrets-encrypt-age: age key $key not found"; return 1; }
   (( $+commands[age] )) || { print -ru2 'secrets-encrypt-age: age not found'; return 127; }
-  age -R "$recipients" -o "$out" "$plain" && chmod 600 "$out" 2>/dev/null || true
+  age -r "$(age-keygen -y $key)" -o "$out" "$plain" && chmod 600 "$out" 2>/dev/null || true
 }
