@@ -151,8 +151,10 @@ accept-full-suggestion() {
   if [[ -n $POSTDISPLAY ]]; then
     BUFFER="$BUFFER$POSTDISPLAY"
     POSTDISPLAY=""
+    zle end-of-line
+  else
+    zle forward-char
   fi
-  zle end-of-line
 }
 zle -N accept-full-suggestion
 bindkey -M emacs '^[[C' accept-full-suggestion
