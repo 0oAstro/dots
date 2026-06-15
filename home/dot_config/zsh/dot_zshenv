@@ -23,7 +23,10 @@ export XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 export XDG_STATE_HOME=${XDG_STATE_HOME:-$HOME/.local/state}
 case $OS in
   linux)
-    export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/user/$UID}
+    # /run/user/$UID is the systemd/logind runtime dir. Some login paths (e.g.
+    # Tailscale SSH or a parent tmux) inherit a stale /tmp runtime dir, which
+    # breaks systemctl --user. Force the correct path on Linux.
+    export XDG_RUNTIME_DIR=/run/user/$UID
     export DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}
     ;;
   macos)
