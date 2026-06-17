@@ -53,9 +53,10 @@ export AWS_CONFIG_FILE=$XDG_CONFIG_HOME/aws/config
 export AWS_SHARED_CREDENTIALS_FILE=$XDG_CONFIG_HOME/aws/credentials
 
 # ── Terminal color/terminfo defaults ────────────────────────────
-# Simple search path; don't set TERMINFO because it overrides TERMINFO_DIRS.
-export TERMINFO_DIRS=$HOME/.terminfo:$XDG_DATA_HOME/terminfo:/Applications/Ghostty.app/Contents/Resources/terminfo:/opt/homebrew/share/terminfo:/usr/local/share/terminfo:/usr/share/terminfo
-unset TERMINFO
+# xdg-ninja-friendly terminfo location. Point directly at XDG_DATA_HOME so
+# tools do not fail on missing/default TERMINFO_DIRS entries.
+export TERMINFO=${TERMINFO:-$XDG_DATA_HOME/terminfo}
+unset TERMINFO_DIRS
 export COLORTERM=${COLORTERM:-truecolor}
 
 # ── Runtime tool homes ──────────────────────────────────────────
@@ -86,6 +87,10 @@ if [[ -n ${HOMEBREW_PREFIX:-} ]]; then
   export HOMEBREW_REPOSITORY=${HOMEBREW_REPOSITORY:-$HOMEBREW_PREFIX}
   export INFOPATH=$HOMEBREW_PREFIX/share/info:${INFOPATH:-}
 fi
+
+# ── ADB mDNS auto-discovery (wireless debugging) ───────────────
+export ADB_MDNS_OPENSCREEN=1
+export ADB_MDNS_AUTO_CONNECT=all
 
 # ── PATH — zero-fork, all static ────────────────────────────────
 # zsh normally does not de-duplicate $path. Keep this global so login +
