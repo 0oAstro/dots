@@ -51,6 +51,7 @@ export AZURE_CONFIG_DIR=$XDG_DATA_HOME/azure
 export CLAUDE_CONFIG_DIR=$XDG_CONFIG_HOME/claude
 export AWS_CONFIG_FILE=$XDG_CONFIG_HOME/aws/config
 export AWS_SHARED_CREDENTIALS_FILE=$XDG_CONFIG_HOME/aws/credentials
+export GNUPGHOME=$XDG_DATA_HOME/gnupg
 
 # ── Terminal color/terminfo defaults ────────────────────────────
 # xdg-ninja-friendly terminfo location. Point directly at XDG_DATA_HOME so
