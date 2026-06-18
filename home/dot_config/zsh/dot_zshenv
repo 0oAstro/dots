@@ -89,10 +89,6 @@ if [[ -n ${HOMEBREW_PREFIX:-} ]]; then
   export INFOPATH=$HOMEBREW_PREFIX/share/info:${INFOPATH:-}
 fi
 
-# ── ADB mDNS auto-discovery (wireless debugging) ───────────────
-export ADB_MDNS_OPENSCREEN=1
-export ADB_MDNS_AUTO_CONNECT=all
-
 # ── PATH — zero-fork, all static ────────────────────────────────
 # zsh normally does not de-duplicate $path. Keep this global so login +
 # interactive startup cannot append the same XDG dirs twice.
