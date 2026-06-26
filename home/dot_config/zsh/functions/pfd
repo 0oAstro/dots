@@ -1,4 +1,3 @@
-#!/bin/zsh
 ##? pfd - Print the frontmost Finder directory.
 #function pfd {
 osascript 2> /dev/null <<EOF

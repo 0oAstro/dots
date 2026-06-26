@@ -1,4 +1,3 @@
-#!/bin/zsh
 #
 # .zshenv — loaded for ALL zsh shells (interactive + non-interactive + scripts)
 # Must be FORK-FREE. No external commands (date, mkdir, chmod, uname, id, test -x, etc.)
@@ -9,30 +8,11 @@ export SHELL_SESSIONS_DISABLE=1
 export EDITOR=${EDITOR:-nvim}
 export VISUAL=${VISUAL:-zed-preview}
 
-# ── Platform detection (zero-fork: use $OSTYPE) ─────────────────
-case $OSTYPE in
-  darwin*) export OS=macos ;;
-  linux*)  export OS=linux ;;
-  *)       export OS=unknown ;;
-esac
-
 # ── XDG base directories ────────────────────────────────────────
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 export XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}
 export XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 export XDG_STATE_HOME=${XDG_STATE_HOME:-$HOME/.local/state}
-case $OS in
-  linux)
-    # /run/user/$UID is the systemd/logind runtime dir. Some login paths (e.g.
-    # Tailscale SSH or a parent tmux) inherit a stale /tmp runtime dir, which
-    # breaks systemctl --user. Force the correct path on Linux.
-    export XDG_RUNTIME_DIR=/run/user/$UID
-    export DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}
-    ;;
-  macos)
-    export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}/zdots-runtime-$UID}
-    ;;
-esac
 
 # ── XDG app redirects (xdg-ninja / clean-home) ──────────────────
 export CODEX_HOME=$XDG_CONFIG_HOME/codex
@@ -46,7 +26,6 @@ export BUNDLE_USER_CACHE=$XDG_CACHE_HOME/bundle
 export CP_HOME_DIR=$XDG_DATA_HOME/cocoapods
 export ANDROID_USER_HOME=$XDG_DATA_HOME/android
 export ANDROID_AVD_HOME=$XDG_DATA_HOME/android/avd
-export NPM_CONFIG_TMP=$XDG_RUNTIME_DIR/npm
 export AZURE_CONFIG_DIR=$XDG_DATA_HOME/azure
 export CLAUDE_CONFIG_DIR=$XDG_CONFIG_HOME/claude
 export AWS_CONFIG_FILE=$XDG_CONFIG_HOME/aws/config
@@ -72,22 +51,11 @@ export LESSKEY=$XDG_CONFIG_HOME/less/lesskey
 # ── Antidote cache path ─────────────────────────────────────────
 export ANTIDOTE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/antidote
 
-# ── Homebrew/Linuxbrew env (static, no brew shellenv fork) ───────
-# Prefer exported HOMEBREW_PREFIX. Otherwise use common locations on each OS.
-if [[ -z ${HOMEBREW_PREFIX:-} ]]; then
-  case $OS in
-    macos)
-      [[ -d /opt/homebrew ]] && export HOMEBREW_PREFIX=/opt/homebrew
-      [[ -z ${HOMEBREW_PREFIX:-} && -d /usr/local/Homebrew ]] && export HOMEBREW_PREFIX=/usr/local
-      ;;
-  esac
-fi
-if [[ -n ${HOMEBREW_PREFIX:-} ]]; then
-  export HOMEBREW_PREFIX
-  export HOMEBREW_CELLAR=${HOMEBREW_CELLAR:-$HOMEBREW_PREFIX/Cellar}
-  export HOMEBREW_REPOSITORY=${HOMEBREW_REPOSITORY:-$HOMEBREW_PREFIX}
-  export INFOPATH=$HOMEBREW_PREFIX/share/info:${INFOPATH:-}
-fi
+# ── Homebrew env (static, no brew shellenv fork or path probing) ──
+export HOMEBREW_PREFIX=${HOMEBREW_PREFIX:-/opt/homebrew}
+export HOMEBREW_CELLAR=${HOMEBREW_CELLAR:-$HOMEBREW_PREFIX/Cellar}
+export HOMEBREW_REPOSITORY=${HOMEBREW_REPOSITORY:-$HOMEBREW_PREFIX}
+export INFOPATH=$HOMEBREW_PREFIX/share/info:${INFOPATH:-}
 
 # ── PATH — zero-fork, all static ────────────────────────────────
 # zsh normally does not de-duplicate $path. Keep this global so login +
@@ -102,8 +70,7 @@ path=(
   $CARGO_HOME/bin
   $path
 )
-# Homebrew/Linuxbrew if configured
-[[ -n ${HOMEBREW_PREFIX:-} ]] && path=($HOMEBREW_PREFIX/bin $HOMEBREW_PREFIX/sbin $path)
+path=($HOMEBREW_PREFIX/bin $HOMEBREW_PREFIX/sbin $path)
 
 # pokemon freeting
 export ZDOTS_GREETING=1

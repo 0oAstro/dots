@@ -1,4 +1,3 @@
-#!/bin/zsh
 ##? mand - Read man page with Dash.app.
 local -a o_docset=(manpages)
 zmodload zsh/zutil

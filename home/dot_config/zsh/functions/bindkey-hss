@@ -1,4 +1,3 @@
-#!/bin/zsh
 zmodload zsh/terminfo
 
 # Emacs
@@ -14,4 +13,6 @@ local keymap
 for keymap in 'main' 'emacs' 'viins'; do
   [[ -n "$terminfo[kcuu1]" ]] && bindkey -M "$keymap" "$terminfo[kcuu1]" history-substring-search-up
   [[ -n "$terminfo[kcud1]" ]] && bindkey -M "$keymap" "$terminfo[kcud1]" history-substring-search-down
+  bindkey -M "$keymap" '^[[A' history-substring-search-up
+  bindkey -M "$keymap" '^[[B' history-substring-search-down
 done

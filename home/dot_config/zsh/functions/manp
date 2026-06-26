@@ -1,4 +1,3 @@
-#!/bin/zsh
 ##? manp - read man page with Preview.app
 # https://scriptingosx.com/2022/11/on-viewing-man-pages-ventura-update/
 if ! (( $# )); then

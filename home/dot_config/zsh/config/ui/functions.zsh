@@ -1,7 +1,4 @@
-#!/bin/zsh
-#
-# 06-funcs.zsh — Shell scripting helpers
-#
+# Small interactive helper functions.
 
 die()  { warn "$@"; exit "${ERR:-1}"; }
 say()  { printf '%s\n' "$@"; }
@@ -11,13 +8,13 @@ bak() {
   local now f
   now=$(date +"%Y%m%d-%H%M%S")
   for f in "$@"; do
-    [[ -e "$f" ]] || { echo "file not found: $f" >&2; continue; }
+    [[ -e $f ]] || { echo "file not found: $f" >&2; continue; }
     cp -R "$f" "$f".$now.bak
   done
 }
 
 touchf() {
-  [[ -n "$1" ]] && [[ ! -f "$1" ]] && mkdir -p "$1:h" && touch "$1"
+  [[ -n $1 ]] && [[ ! -f $1 ]] && mkdir -p "$1:h" && touch "$1"
 }
 
 up() {
@@ -28,7 +25,9 @@ up() {
   cd $dotdot
 }
 
-weather() { curl "http://wttr.in/$1"; }
+weather() {
+  curl "http://wttr.in/$1"
+}
 
 colormap() {
   for i in {0..255}; do
@@ -36,10 +35,6 @@ colormap() {
   done
 }
 
-# eza override (better ls)
 ls() {
-  if (( $+commands[eza] )); then eza -laH --icons --git --color=always "$@"
-  else command ls -la "$@"
-  fi
+  eza -laH --icons --git --color=always "$@"
 }
-

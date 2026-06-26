@@ -1,4 +1,3 @@
-#!/bin/zsh
 #
 # .zstyles — zstyle settings for completion, history, plugins, antidote
 #
@@ -20,9 +19,9 @@ zstyle ':completion:*' menu no
 zstyle ':fzf-tab:*' fzf-command fzf
 zstyle ':fzf-tab:*' fzf-flags --height=40% --min-height=12 --layout=reverse --border --cycle --bind=tab:accept --bind=ctrl-z:ignore
 zstyle ':fzf-tab:*' switch-group '<' '>'
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath 2>/dev/null || ls -la $realpath 2>/dev/null'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza -1 --color=always $realpath 2>/dev/null || ls -la $realpath 2>/dev/null'
-zstyle ':fzf-tab:complete:*:*' fzf-preview '[[ -d $realpath ]] && (eza -1 --color=always $realpath 2>/dev/null || ls -la $realpath 2>/dev/null) || (bat --color=always --style=numbers --line-range=:160 $realpath 2>/dev/null || sed -n "1,120p" $realpath 2>/dev/null)'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza -1 --color=always $realpath'
+zstyle ':fzf-tab:complete:*:*' fzf-preview 'if [[ -d $realpath ]]; then eza -1 --color=always $realpath; else bat --color=always --style=numbers --line-range=:160 $realpath; fi'
 
 # ── zdots z4h-inspired integrations ─────────────────────────────
 zstyle ':zdots:ssh:*' term xterm-256color

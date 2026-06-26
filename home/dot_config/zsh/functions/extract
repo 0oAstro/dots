@@ -1,4 +1,3 @@
-#!/bin/zsh
 #alias x=extract
 
 extract() {
