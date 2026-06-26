@@ -28,7 +28,7 @@ source "$ZDOTDIR/config/plugins/zoxide.zsh"
 source "$ZDOTDIR/lib/prompt.zsh"
 
 source "$ZDOTDIR/config/integrations/macos.zsh"
-source "$ZDOTDIR/config/integrations/secrets.zsh"
+source "$ZDOTDIR/config/integrations/age-secrets.zsh"
 source "$ZDOTDIR/config/integrations/bitwarden.zsh"
 source "$ZDOTDIR/config/integrations/terminal.zsh"
 source "$ZDOTDIR/config/integrations/remote.zsh"
