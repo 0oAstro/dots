@@ -4,7 +4,9 @@
 theme = "kanagawa"
 
 # Enable or disable dynamic highlighting. Can be `true` or `false` ...
-dynamic = true
+# Use partial path highlighting so existing file/directory prefixes are styled
+# while typing, not only after the path is complete.
+dynamic = { callables = true, paths = "partial" }
 
 # ... or a table with the keys `callables` and `paths`.
 # dynamic = { callables = true, paths = "complete" }
@@ -29,3 +31,26 @@ max_line_length = 20000
 # be aborted in the middle of a line. If you often deal with long lines that
 # take longer to highlight than the timeout, consider reducing `max_line_length`.
 timeout_ms = 500
+
+# Treat our short sudo alias as a precommand too, so `_ nvim /etc/hosts` gets
+# the same downstream command/argument highlighting as `sudo nvim /etc/hosts`.
+[[highlighting.precommands]]
+name = "_"
+mode = "default"
+options = [
+  { short = "u", long = "user", arg = "required" },
+  { short = "g", long = "group", arg = "required" },
+  { short = "h", long = "host", arg = "required" },
+  { short = "C", long = "close-from", arg = "required" },
+  { short = "p", long = "prompt", arg = "required" },
+  { short = "A", long = "askpass", arg = "none" },
+  { short = "b", long = "background", arg = "none" },
+  { short = "E", long = "preserve-env", arg = "optional" },
+  { short = "H", long = "set-home", arg = "none" },
+  { short = "k", long = "reset-timestamp", arg = "none" },
+  { short = "n", long = "non-interactive", arg = "none" },
+  { short = "S", long = "stdin", arg = "none" },
+  { short = "v", long = "validate", arg = "none" },
+  { short = "l", long = "list", arg = "none", switch_to_mode = "arguments" },
+  { short = "e", long = "edit", arg = "none", switch_to_mode = "arguments" },
+]
