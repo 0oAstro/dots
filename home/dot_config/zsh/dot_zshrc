@@ -1,9 +1,5 @@
 [[ ${ZPROFRC:-0} == 1 ]] && zmodload zsh/zprof
 
-# Interactive shell entry point.
-
-PROMPT_EOL_MARK=''
-
 # Pokemon greeting. Toggle with ZDOTS_GREETING=1.
 if [[ -n ${ZDOTS_GREETING:-} && -t 0 && -t 1 && -z ${ZSH_EXECUTION_STRING:-} ]] && (( $+commands[pokeget] )); then
   () {
@@ -12,6 +8,19 @@ if [[ -n ${ZDOTS_GREETING:-} && -t 0 && -t 1 && -z ${ZSH_EXECUTION_STRING:-} ]] 
     print
   }
 fi
+
+
+# Enable Powerlevel10k instant prompt. Should stay close to the top of .zshrc.
+# Initialization code that may require console input must go above this block;
+# everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# Interactive shell entry point.
+
+PROMPT_EOL_MARK=''
+
 
 source "$ZDOTDIR/.zstyles"
 source "$ZDOTDIR/lib/antidote.zsh"
