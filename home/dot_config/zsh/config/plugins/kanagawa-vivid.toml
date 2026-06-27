@@ -1,0 +1,95 @@
+# Kanagawa Vivid for zsh-patina
+#
+# A higher-contrast shell syntax theme based on rebelot/kanagawa.nvim's Wave
+# palette. The built-in zsh-patina Kanagawa theme is intentionally muted and
+# maps many common shell scopes close to the normal foreground. This variant
+# keeps the Kanagawa color language but makes commands, expansions, operators,
+# paths, and errors visually distinct at the prompt.
+
+# Comments / disabled text
+"comment" = "#727169"
+"punctuation.definition.comment.begin" = "#727169"
+
+# Base text: slightly warmer than pure default but not used for commands.
+"source" = "#dcd7ba"
+
+# Commands and callables
+"variable.function" = { foreground = "#7e9cd8", bold = true }
+"entity.name.function" = { foreground = "#7e9cd8", bold = true }
+"meta.function-call" = "#7e9cd8"
+
+# Arguments should be readable but visibly secondary.
+"meta.function-call.arguments" = "#c8c093"
+
+# Strings
+"string" = "#98bb6c"
+"punctuation.definition.string" = "#98bb6c"
+"constant.character.escape" = { foreground = "#ffa066", bold = true }
+
+# Variables / parameters / expansions
+"variable" = "#dcd7ba"
+"variable.other" = "#e6c384"
+"variable.language" = "#e46876"
+"variable.parameter" = "#d27e99"
+"variable.parameter.option" = { foreground = "#9cabca", bold = true }
+"punctuation.definition.variable" = "#7fb4ca"
+"meta.group.expansion.parameter" = "#7fb4ca"
+"meta.group.expansion.arithmetic" = "#d27e99"
+"meta.group.expansion.command" = "#a3d4d5"
+"meta.group.expansion.history" = { foreground = "#ff9e3b", bold = true }
+"variable.language.tilde" = { foreground = "#b8b4d0", bold = true }
+
+# Numbers / constants
+"constant" = "#d27e99"
+"constant.numeric" = { foreground = "#d27e99", bold = true }
+
+# Keywords / control flow / precommands
+"keyword" = { foreground = "#957fb8", bold = true }
+"keyword.control" = { foreground = "#957fb8", bold = true }
+"keyword.control.case.item" = "#9cabca"
+"precommand" = { foreground = "#7aa89f", bold = true }
+
+# Operators and punctuation
+"keyword.operator" = "#c0a36e"
+"keyword.operator.logical" = { foreground = "#e6c384", bold = true }
+"keyword.operator.assignment" = "#c0a36e"
+"keyword.operator.arithmetic" = "#d27e99"
+"keyword.operator.regexp" = "#c0a36e"
+"keyword.operator.logical.continue" = "#9cabca"
+"punctuation" = "#9cabca"
+"punctuation.section" = "#7fb4ca"
+"punctuation.section.parens" = "#7fb4ca"
+"punctuation.section.expansion" = "#7fb4ca"
+"support" = { foreground = "#9cabca", bold = true }
+
+# Regexes
+"keyword.control.regexp" = "#9cabca"
+"meta.regexp" = "#c0a36e"
+
+# Assignments / declarations
+"storage" = { foreground = "#957fb8", bold = true }
+"storage.modifier" = "#b8b4d0"
+
+# Invalid/missing should be unmistakable.
+"invalid" = { foreground = "#e82424", bold = true }
+
+# Dynamic runtime highlighting. These are the important live prompt scopes.
+"dynamic.callable" = { foreground = "#7e9cd8", bold = true }
+"dynamic.callable.command" = { foreground = "#7e9cd8", bold = true }
+"dynamic.callable.function" = { foreground = "#a3d4d5", bold = true }
+"dynamic.callable.builtin" = { foreground = "#7fb4ca", bold = true }
+"dynamic.callable.alias" = { foreground = "#7aa89f", bold = true }
+"dynamic.callable.missing" = { foreground = "#e82424", bold = true }
+
+# Paths: give them both color and underline. Built-in Kanagawa only underlines.
+"dynamic.path" = { foreground = "#98bb6c", underline = true }
+"dynamic.path.file" = { foreground = "#98bb6c", underline = true }
+"dynamic.path.directory" = { foreground = "#7aa89f", underline = true, bold = true }
+"dynamic.path.file.partial" = { foreground = "#76946a", underline = true }
+"dynamic.path.directory.partial" = { foreground = "#6a9589", underline = true, bold = true }
+
+# Fallback meta scopes should not wash the whole line cyan like the stock theme.
+"meta" = "#dcd7ba"
+
+[metadata]
+extends = "kanagawa"

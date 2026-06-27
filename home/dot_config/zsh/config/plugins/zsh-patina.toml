@@ -1,7 +1,7 @@
 [highlighting]
 # Either the name of a built-in theme (e.g. `"simple"`, `"patina"`) or a string
 # in the form `"file:/path/mytheme.toml"` pointing to a custom theme toml file.
-theme = "kanagawa"
+theme = "file:$ZDOTDIR/config/plugins/kanagawa-vivid.toml"
 
 # Enable or disable dynamic highlighting. Can be `true` or `false` ...
 # Use partial path highlighting so existing file/directory prefixes are styled
