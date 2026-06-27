@@ -1,7 +1,6 @@
 # Prompt setup.
 #
-# Pure is sourced by Antidote from .zsh_plugins.txt. Pure calls its own setup
-# function when sourced, which avoids promptinit's fpath scan.
+# Powerlevel10k is sourced by Antidote from .zsh_plugins.txt. Use the existing
+# Pure-style P10k config generated from romkatv/powerlevel10k/config/p10k-pure.zsh.
 
-# pure has no right prompt; avoid stale RPROMPT from other themes.
-RPROMPT=
+[[ -r "$ZDOTDIR/.p10k.zsh" ]] && source "$ZDOTDIR/.p10k.zsh"

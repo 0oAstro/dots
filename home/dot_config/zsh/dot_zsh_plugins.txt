@@ -8,11 +8,12 @@ mattmc3/ez-compinit
 # Completions (fpath only, loaded by compinit)
 zsh-users/zsh-completions kind:fpath path:src
 
-# Prompt (sourced directly; avoids promptinit's fpath scan)
-sindresorhus/pure
+# Prompt
+romkatv/powerlevel10k path:powerlevel10k.zsh-theme
+# sindresorhus/pure  # disabled: using p10k pure-style prompt
 
 # zsh4humans-style fzf completion menu (loads after compinit, before autosuggest)
-Aloxaf/fzf-tab
+# Aloxaf/fzf-tab  # disabled temporarily: enable-fzf-tab startup cost
 
 # Editor / typing
 hlissner/zsh-autopair
