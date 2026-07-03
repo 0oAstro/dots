@@ -35,6 +35,8 @@ export BUNDLE_USER_CACHE=$XDG_CACHE_HOME/bundle
 export CP_HOME_DIR=$XDG_DATA_HOME/cocoapods
 export ANDROID_USER_HOME=$XDG_DATA_HOME/android
 export ANDROID_AVD_HOME=$XDG_DATA_HOME/android/avd
+# Avoid duplicate wireless-debug transports; use explicit `adb connect host:port`.
+export ADB_MDNS_AUTO_CONNECT=0
 export AZURE_CONFIG_DIR=$XDG_DATA_HOME/azure
 export CLAUDE_CONFIG_DIR=$XDG_CONFIG_HOME/claude
 export AWS_CONFIG_FILE=$XDG_CONFIG_HOME/aws/config
@@ -79,7 +81,6 @@ path=(
   $CARGO_HOME/bin
   $path
 )
-path=($HOMEBREW_PREFIX/bin $HOMEBREW_PREFIX/sbin $path)
 
 # pokemon freeting
 export ZDOTS_GREETING=1
