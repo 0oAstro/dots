@@ -5,11 +5,11 @@ setopt NO_FLOW_CONTROL
 setopt NO_PROMPT_SP
 setopt AUTO_CD
 setopt EXTENDED_HISTORY
-setopt INC_APPEND_HISTORY
+# Write completed commands with elapsed time; do not import history from peers.
+setopt INC_APPEND_HISTORY_TIME
 setopt HIST_IGNORE_DUPS
 setopt HIST_IGNORE_SPACE
 setopt HIST_VERIFY
-setopt SHARE_HISTORY
 
 HISTFILE=$XDG_STATE_HOME/zsh/history
 HISTSIZE=100000

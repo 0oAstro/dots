@@ -1,14 +1,13 @@
 [[ ${ZPROFRC:-0} == 1 ]] && zmodload zsh/zprof
 
-# Pokemon greeting. Toggle with ZDOTS_GREETING=1.
-if [[ -n ${ZDOTS_GREETING:-} && -t 0 && -t 1 && -z ${ZSH_EXECUTION_STRING:-} ]] && (( $+commands[pokeget] )); then
+# Pokemon greeting.
+if [[ -t 0 && -t 1 && -z ${ZSH_EXECUTION_STRING:-} ]] && (( $+commands[pokeget] )); then
   () {
     setopt localoptions noprompt_sp noprompt_cr
     pokeget random --hide-name 2>/dev/null
     print
   }
 fi
-
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of .zshrc.
 # Initialization code that may require console input must go above this block;
@@ -27,7 +26,6 @@ source "$ZDOTDIR/lib/antidote.zsh"
 
 source "$ZDOTDIR/config/core/options.zsh"
 source "$ZDOTDIR/config/core/completions.zsh"
-source "$ZDOTDIR/config/core/env.zsh"
 
 source "$ZDOTDIR/config/plugins/env.zsh"
 source "$ZDOTDIR/config/plugins/load.zsh"

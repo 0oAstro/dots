@@ -1,10 +1,9 @@
 # Encrypted local secrets.
 
 # Startup strategy:
-# - Fast path: source a 0600 plaintext cache when it is present and fresh.
-# - Slow path: if the cache is missing/stale, decrypt in the background and source
-#   it from the next prompt. A background job cannot mutate this shell's env, so
-#   the parent shell must do the final `source`.
+# - Fast path: source the 0600 plaintext cache when it is present and fresh.
+# - Cold/stale path: decrypt synchronously once, atomically replace the cache,
+#   then source it. A child process cannot mutate this shell's environment.
 
 _zdots_secrets_paths() {
   emulate -L zsh
