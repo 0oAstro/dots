@@ -42,7 +42,6 @@ export INFOPATH=$HOMEBREW_PREFIX/share/info:${INFOPATH:-}
 typeset -gU path PATH
 path=(
   $HOME/.local/bin
-  $HOME/.local/share/npm/bin
   $HOME/.bun/bin
   $HOME/.cargo/bin
   $HOME/go/bin
