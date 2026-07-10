@@ -15,22 +15,6 @@ I like my Zsh to behave like [Fish][fish], so there's a lot of features that wil
 
 Since this is my personal `$ZDOTDIR`, this installation procedure is mostly for my personal use.
 
-It's a good idea to backup existing files first:
-
-```zsh
-setopt extended_glob
-zfiles=(
-  ${ZDOTDIR:-~}/.zsh*(.N)
-  ${ZDOTDIR:-~}/.zlog*(.N)
-  ${ZDOTDIR:-~}/.zprofile(.N)
-)
-mkdir -p ~/.bak
-for zfile in $zfiles; do
-  cp $zfile ~/.bak
-done
-unset zfile zfiles
-```
-
 Install this dotfiles repo to your `$ZDOTDIR`:
 
 ```zsh

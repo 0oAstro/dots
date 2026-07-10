@@ -20,44 +20,12 @@ if [[ -z ${XDG_RUNTIME_DIR:-} ]]; then
   esac
 fi
 
-# ── XDG app redirects (xdg-ninja / clean-home) ──────────────────
-export CODEX_HOME=$XDG_CONFIG_HOME/codex
-export PI_CODING_AGENT_DIR=$XDG_CONFIG_HOME/pi/agent
-export NPM_CONFIG_USERCONFIG=$XDG_CONFIG_HOME/npm/npmrc
-export NPM_CONFIG_INIT_MODULE=$XDG_CONFIG_HOME/npm/config/npm-init.js
-export NPM_CONFIG_CACHE=$XDG_CACHE_HOME/npm
-if [[ -n ${XDG_RUNTIME_DIR:-} ]]; then
-  export NPM_CONFIG_TMP=$XDG_RUNTIME_DIR/npm
-fi
-export BUNDLE_USER_CONFIG=$XDG_CONFIG_HOME/bundle
-export BUNDLE_USER_PLUGIN=$XDG_DATA_HOME/bundle
-export BUNDLE_USER_CACHE=$XDG_CACHE_HOME/bundle
-export CP_HOME_DIR=$XDG_DATA_HOME/cocoapods
-export ANDROID_USER_HOME=$XDG_DATA_HOME/android
-export ANDROID_AVD_HOME=$XDG_DATA_HOME/android/avd
 # Avoid duplicate wireless-debug transports; use explicit `adb connect host:port`.
 export ADB_MDNS_AUTO_CONNECT=0
-export AZURE_CONFIG_DIR=$XDG_DATA_HOME/azure
-export CLAUDE_CONFIG_DIR=$XDG_CONFIG_HOME/claude
-export AWS_CONFIG_FILE=$XDG_CONFIG_HOME/aws/config
-export AWS_SHARED_CREDENTIALS_FILE=$XDG_CONFIG_HOME/aws/credentials
-export GNUPGHOME=$XDG_DATA_HOME/gnupg
 
-# ── Terminal color/terminfo defaults ────────────────────────────
-# xdg-ninja-friendly terminfo location. Point directly at XDG_DATA_HOME so
-# tools do not fail on missing/default TERMINFO_DIRS entries.
-export TERMINFO=${TERMINFO:-$XDG_DATA_HOME/terminfo}
-unset TERMINFO_DIRS
+# Terminal color defaults
 export COLORTERM=${COLORTERM:-truecolor}
 
-# ── Runtime tool homes ──────────────────────────────────────────
-export CARGO_HOME=$XDG_DATA_HOME/cargo
-export GOPATH=$XDG_DATA_HOME/go
-export BUN_INSTALL=$XDG_DATA_HOME/bun
-export RUSTUP_HOME=$XDG_DATA_HOME/rustup
-export DOCKER_CONFIG=$XDG_CONFIG_HOME/docker
-export LESSHISTFILE=$XDG_CACHE_HOME/less/history
-export LESSKEY=$XDG_CONFIG_HOME/less/lesskey
 
 # ── Antidote cache path ─────────────────────────────────────────
 export ANTIDOTE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/antidote
@@ -75,10 +43,9 @@ typeset -gU path PATH
 path=(
   $HOME/.local/bin
   $HOME/.local/share/npm/bin
-  $BUN_INSTALL/bin
-  $HOME/.local/share/cargo/bin
-  $GOPATH/bin
-  $CARGO_HOME/bin
+  $HOME/.bun/bin
+  $HOME/.cargo/bin
+  $HOME/go/bin
   $path
 )
 

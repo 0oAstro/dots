@@ -12,8 +12,6 @@ alias ..="cd .."
 alias _=sudo l=ls g=git
 alias grep='grep --exclude-dir={.git,.vscode}'
 alias ping='ping -c 5' vi=vim
-# xdg-ninja: adb does not fully respect ANDROID_USER_HOME for its key store.
-alias adb='HOME="$XDG_DATA_HOME"/android adb'
 alias get=git quit=exit cd..='cd ..' zz=exit
 alias ll='ls -lh' la='ls -lAh'
 alias timestamp="date '+%Y-%m-%d %H:%M:%S'"
