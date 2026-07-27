@@ -1,6 +1,6 @@
 # Small interactive helper functions.
 
-die()  { warn "$@"; exit "${ERR:-1}"; }
+die()  { warn "$@"; return "${ERR:-1}"; }
 say()  { printf '%s\n' "$@"; }
 warn() { say "$@" >&2; }
 
@@ -35,6 +35,8 @@ colormap() {
   done
 }
 
-ls() {
-  eza -laH --icons --git --color=always "$@"
+# `ls` may already be an alias (for example, from a system profile). The
+# `function` form prevents alias expansion while defining the replacement.
+function ls {
+  eza -laH --icons --git --color=auto "$@"
 }

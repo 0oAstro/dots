@@ -1,20 +1,13 @@
 # Encrypted local secrets.
+#
+# Threat model: age protects secrets in a public/synced git repo, not the local
+# machine. A 0600 plaintext cache under $XDG_CACHE_HOME is an accepted trade for
+# startup latency — fast path sources it when fresh; cold/stale path decrypts
+# synchronously once, atomically replaces the cache, then sources it.
 
-# Startup strategy:
-# - Fast path: source the 0600 plaintext cache when it is present and fresh.
-# - Cold/stale path: decrypt synchronously once, atomically replace the cache,
-#   then source it. A child process cannot mutate this shell's environment.
-
-_zdots_secrets_paths() {
-  emulate -L zsh
-  setopt no_aliases
-
-  local enc=$ZDOTDIR/.zshrc.local.age
-  local key=$HOME/.config/age/keys.txt
-  local cache=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zshrc.local
-
-  print -r -- "$enc" "$key" "$cache"
-}
+_zdots_secrets_enc=$ZDOTDIR/.zshrc.local.age
+_zdots_secrets_key=$HOME/.config/age/keys.txt
+_zdots_secrets_cache=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zshrc.local
 
 _zdots_secrets_cache_fresh() {
   emulate -L zsh
@@ -28,9 +21,7 @@ _zdots_build_secrets_cache() {
   emulate -L zsh
   setopt no_aliases
 
-  local enc=$ZDOTDIR/.zshrc.local.age
-  local key=$HOME/.config/age/keys.txt
-  local cache=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zshrc.local
+  local enc=$_zdots_secrets_enc key=$_zdots_secrets_key cache=$_zdots_secrets_cache
   local tmp
 
   [[ -r $enc ]] || return 0
@@ -52,9 +43,7 @@ _zdots_source_secrets() {
   emulate -L zsh
   setopt no_aliases
 
-  local enc=$ZDOTDIR/.zshrc.local.age
-  local key=$HOME/.config/age/keys.txt
-  local cache=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zshrc.local
+  local enc=$_zdots_secrets_enc key=$_zdots_secrets_key cache=$_zdots_secrets_cache
 
   [[ -r $enc ]] || return 0
   [[ -r $key ]] || return 1
@@ -66,15 +55,21 @@ _zdots_source_secrets() {
   source "$cache"
 }
 
-_zdots_source_secrets_deferred() {
-  # Keep the public entrypoint name for compatibility with older compiled files
-  # and muscle memory, but use the safer startup policy:
-  # - cold/stale cache: block once to build it, so the first command has secrets
-  # - warm cache: source the cache immediately, which is effectively free
-  _zdots_source_secrets
+_zdots_edit_secrets_invoke() {
+  emulate -L zsh
+  setopt no_aliases
+
+  local plain=$1
+
+  if [[ ${EDITOR:t} == nvim ]]; then
+    "$EDITOR" -n -i NONE -c 'set noundofile nobackup nowritebackup noswapfile' -- "$plain"
+  else
+    print -ru2 'edit-secrets: warning: EDITOR is not nvim; plaintext may leak into editor state'
+    "$EDITOR" -- "$plain"
+  fi
 }
 
-_zdots_source_secrets_deferred
+_zdots_source_secrets
 
 secrets-load() {
   _zdots_source_secrets
@@ -88,21 +83,20 @@ edit-secrets() {
   emulate -L zsh
   setopt no_aliases
 
-  local enc=$ZDOTDIR/.zshrc.local.age
-  local key=$HOME/.config/age/keys.txt
-  local cache=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zshrc.local
-  local plain before recipient rel
+  local enc=$_zdots_secrets_enc key=$_zdots_secrets_key cache=$_zdots_secrets_cache
+  local plain before recipient rel tmpdir
 
   [[ -r $key ]] || { print -ru2 "edit-secrets: age key $key not found"; return 1; }
   [[ -n $EDITOR ]] || { print -ru2 'edit-secrets: EDITOR is not set'; return 1; }
 
+  tmpdir=${${TMPDIR:-/tmp}%/}
   umask 077
-  plain=$(command mktemp /tmp/.zshrc.local.XXXXXX) || return 1
-  before=$(command mktemp /tmp/.zshrc.local.before.XXXXXX) || { command rm -f -- "$plain"; return 1; }
+  plain=$(command mktemp "${tmpdir}/.zshrc.local.XXXXXX") || return 1
+  before=$(command mktemp "${tmpdir}/.zshrc.local.before.XXXXXX") || { command rm -f -- "$plain"; return 1; }
   {
     [[ -r $enc ]] && age -d -i "$key" -- "$enc" >| "$plain" 2>/dev/null
     command cp -- "$plain" "$before" || return
-    "$EDITOR" "$plain" || return
+    _zdots_edit_secrets_invoke "$plain" || return
     command cmp -s -- "$before" "$plain" && { print 'edit-secrets: unchanged'; return 0; }
 
     recipient=$(age-keygen -y "$key") || return
@@ -125,9 +119,9 @@ secrets-encrypt-age() {
   setopt no_aliases
 
   local plain=$ZDOTDIR/.zshrc.local
-  local out=$ZDOTDIR/.zshrc.local.age
-  local key=$HOME/.config/age/keys.txt
-  local cache=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zshrc.local
+  local out=$_zdots_secrets_enc
+  local key=$_zdots_secrets_key
+  local cache=$_zdots_secrets_cache
   local recipient
 
   [[ -r $plain ]] || { print -ru2 "missing $plain"; return 1; }

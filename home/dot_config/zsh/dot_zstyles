@@ -9,21 +9,26 @@ zstyle ':antidote:*'     zcompile 'yes'
 
 # ── ez-compinit ──────────────────────────────────────────────────
 zstyle ':plugin:ez-compinit' 'compstyle' 'zshzoo'
-# Disable compinit -C (unsafe). Without this, completions for newly
-# installed tools may not appear without manually deleting the dump.
-zstyle ':plugin:ez-compinit' 'use-cache' no
+# use-cache yes: warm path uses compinit -C; cold path uses -i (no insecure-dir prompt).
+# lib/compinit.zsh deletes the dump when $fpath changes, so new completions appear immediately.
+zstyle ':plugin:ez-compinit' 'use-cache' yes
 
-# ── fzf-tab: compsys-backed zsh4humans-style completion ─────────
+# ── completion ───────────────────────────────────────────────────
+zstyle ':completion:*' menu select=2
+zstyle ':completion:*' group-name '' verbose yes
 zstyle ':completion:*:descriptions' format '[%d]'
-zstyle ':completion:*' menu no
+zstyle ':completion:*' completer _complete _ignored _approximate
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/.zcompcache"
+
+# ── fzf-tab: disabled pending plugin re-enable ───────────────────
+# disabled temporarily in .zsh_plugins.txt (enable-fzf-tab startup cost).
+# Re-enabling fzf-tab also needs `menu no`, which conflicts with menu select=2 above.
+# zstyle ':completion:*' menu no
 zstyle ':fzf-tab:*' fzf-command fzf
 zstyle ':fzf-tab:*' fzf-flags --height=40% --min-height=12 --layout=reverse --border --cycle --bind=tab:accept --bind=ctrl-z:ignore
 zstyle ':fzf-tab:*' switch-group '<' '>'
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza -1 --color=always $realpath'
 zstyle ':fzf-tab:complete:*:*' fzf-preview 'if [[ -d $realpath ]]; then eza -1 --color=always $realpath; else bat --color=always --style=numbers --line-range=:160 $realpath; fi'
-
-# ── zdots z4h-inspired integrations ─────────────────────────────
-zstyle ':zdots:ssh:*' term xterm-256color
-# Example opt-ins:
-# zstyle ':zdots:ssh:spa' send-extra-files ~/.tmux.conf ~/.gitconfig

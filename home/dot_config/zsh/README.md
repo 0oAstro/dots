@@ -4,12 +4,17 @@ My `$ZDOTDIR` [dotfiles] directory, which contains my zsh configuration.
 
 ## My setup
 
-I like my Zsh to behave like [Fish][fish], so there's a lot of features that will be very familiar to other Fish users. I also like the basic plugin structure of [Oh-My-Zsh][oh-my-zsh], even if I'm not as big of a fan of OMZ itself. My Zsh has things like:
+I like my Zsh to behave like [Fish][fish], so there's a lot of features that will be very familiar to other Fish users. I also like the basic plugin structure of [Oh-My-Zsh][oh-my-zsh], even if I'm not as big of a fan of OMZ itself. This config is split into a few top-level areas:
 
-- A functions directory for my custom functions
-- A completions directory for my custom completions
-- A conf.d directory so that .zshrc isn't a cluttered mess
-- My custom plugins in a separate `$ZSH_CUSTOM` project similar to how OMZ works
+- `config/core/` — shell options, history, key bindings, and `fpath`
+- `config/plugins/` — antidote plugin wiring, fzf/zoxide, and zsh-patina theme toml
+- `config/integrations/` — platform hooks (macOS/Linux), age-encrypted secrets, `spa` mosh helper, terminal tweaks
+- `config/ui/` — aliases, clipboard helpers, fzf widgets, autosuggestions, editor keymaps
+- `config/local/` — placeholder for machine-local overrides (secrets live in `.zshrc.local.age`)
+- `lib/` — shared bootstrap (`antidote`, `path`, `compinit`, `prompt`, `recompile`)
+- `functions/` — autoloaded command helpers on `$fpath`
+
+Plugins are declared in `.zsh_plugins.txt` and bundled by [antidote][antidote] at startup (the `.antidote` checkout is gitignored and cloned on first use). Completion styles live in `.zstyles`; `lib/compinit.zsh` handles compdump freshness. `.zprofile` re-asserts `PATH` after macOS `path_helper` and runs a Linux-only `ssh-add` hook.
 
 ## Installation
 
@@ -22,7 +27,7 @@ Install this dotfiles repo to your `$ZDOTDIR`:
 export ZDOTDIR=~/.config/zsh
 
 # clone this repo
-git clone --recursive git@github.com:0oAstro/zdots.git $ZDOTDIR
+git clone git@github.com:0oAstro/zdots.git $ZDOTDIR
 
 # change the root .zshenv file to use ZDOTDIR
 cat << 'EOF' >| ~/.zshenv
@@ -36,35 +41,18 @@ zsh
 
 ## Performance
 
-A snappy shell is very important. I regularly run [zsh-bench](https://github.com/romkatv/zsh-bench) to make sure my shell feels snappy.
+A snappy shell is very important. I regularly run [zsh-bench](https://github.com/romkatv/zsh-bench) to make sure my shell feels snappy (input lag, first-prompt latency, etc.).
 
-The latest benchmark run shows that we load a new shell pretty fast.
-
-```zsh
-% # Apple M1 Air: starship prompt
-% zsh-bench
-==> benchmarking login shell of user shaurya ...
-creates_tty=0
-has_compsys=1
-has_syntax_highlighting=1
-has_autosuggestions=1
-has_git_prompt=1
-first_prompt_lag_ms=25.000
-first_command_lag_ms=129.000
-command_lag_ms=2.200
-input_lag_ms=6.500
-exit_time_ms=49.000
-```
-
-If you prefer a naive, completely meaningless Zsh 'exit' benchmark, I include that too for legacy reasons.
+For a blunt exit benchmark on this machine (Apple Silicon, [powerlevel10k][p10k] prompt, zsh 5.9):
 
 ```zsh
-% # Apple M1 Air
-% hyperfine 'zsh -i -c exit'
-Benchmark 1: zsh -i -c exit
-  Time (mean ± σ):      43.3 ms ± 1.7 ms
-  Range (min … max):    41.5 ms … 46.9 ms
+% hyperfine --warmup 10 'zsh -lic exit'
+Benchmark 1: zsh -lic exit
+  Time (mean ± σ):      59.9 ms ±   2.9 ms
+  Range (min … max):    56.9 ms …  65.5 ms    20 runs
 ```
+
+Numbers drift as plugins and integrations change — re-run the command above rather than trusting a README snapshot.
 
 ## Look-and-feel
 
@@ -86,7 +74,7 @@ brew install --cask font-sauce-code-pro-nerd-font
 iTerm2 has some awesome [color schemes][iterm2-colors]. You can use them for more than
 just iTerm2.
 
-I use Rosé Pine.
+Syntax highlighting uses [zsh-patina](https://github.com/jdrouet/zsh-patina) with a custom Kanagawa Vivid theme in `config/plugins/kanagawa-vivid.toml` (referenced from `config/plugins/zsh-patina.toml`).
 
 ## Resources
 
@@ -112,8 +100,8 @@ This config is heavily inspired by [mattmc3/zdotdir][zdotdir], which is a master
 [iterm2-colors]: https://github.com/mbadolato/iTerm2-Color-Schemes
 [nerd-fonts]: https://github.com/ryanoasis/nerd-fonts
 [oh-my-zsh]: https://github.com/ohmyzsh/ohmyzsh
+[p10k]: https://github.com/romkatv/powerlevel10k
 [prezto]: https://github.com/sorin-ionescu/prezto
-[starship]: https://starship.rs
 [supercharge-zsh]: https://blog.callstack.io/supercharge-your-terminal-with-zsh-8b369d689770
 [zdotdir]: https://github.com/mattmc3/zdotdir
 [zephyr]: https://github.com/zshzoo/zephyr

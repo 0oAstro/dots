@@ -1,6 +1,6 @@
 #
 # .zprofile — sourced for login shells only.
 #
-#
-# Login-shell work intentionally lives elsewhere right now. Keep this file so
-# ZDOTDIR has an explicit login entry point when we need one again.
+# Re-assert PATH after macOS path_helper, which /etc/zprofile runs after .zshenv.
+
+source "$ZDOTDIR/lib/path.zsh"

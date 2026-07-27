@@ -10,4 +10,3 @@ ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(
 )
 
 KEYTIMEOUT=1
-bindkey -M emacs '^[' autosuggest-clear

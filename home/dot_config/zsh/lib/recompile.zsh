@@ -9,6 +9,7 @@ recompile() {
     "$ZDOTDIR/.zshenv" \
     "$ZDOTDIR/.zshrc" \
     "$ZDOTDIR/.zstyles" \
+    "$ZDOTDIR/.p10k.zsh" \
     "$ZDOTDIR/.zsh_plugins.zsh" \
     "$ZDOTDIR"/lib/*.zsh(N) \
     "$ZDOTDIR"/config/**/*.zsh(N); do
@@ -28,4 +29,12 @@ recompile() {
     [[ -r $file ]] || continue
     zcompile "$file" && print "compiled antidote/${file#$ANTIDOTE_HOME/}"
   done
+
+  # prune stale zcompdump files from old remote hosts
+  local -a stale_dumps=( $XDG_CACHE_HOME/zsh/zcompdump-*(Nm+30) )
+  stale_dumps=( ${stale_dumps:#(${ZSH_COMPDUMP}|${ZSH_COMPDUMP}.zwc)} )
+  if (( $#stale_dumps )); then
+    command rm -f -- $stale_dumps
+    print "pruned $#stale_dumps stale zcompdump file(s)"
+  fi
 }

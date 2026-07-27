@@ -32,7 +32,7 @@ alias envsubst="python -c 'import os,sys;[sys.stdout.write(os.path.expandvars(l)
 local dotdot=".."
 local index
 for index in {1..9}; do
-  alias "$index"="cd -${index}"
+  alias "$index"="builtin cd -${index}"
   alias -g "..${index}"="$dotdot"
   dotdot+="/.."
 done

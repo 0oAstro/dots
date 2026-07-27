@@ -16,7 +16,9 @@ romkatv/powerlevel10k path:powerlevel10k.zsh-theme
 # Aloxaf/fzf-tab  # disabled temporarily: enable-fzf-tab startup cost
 
 # Editor / typing
-hlissner/zsh-autopair
+# hlissner/zsh-autopair  # disabled: AUTOPAIR_INHIBIT_INIT was set and nothing
+# ever called autopair-init, so it bound nothing and only cost startup time.
+# It also wants the space key, which globalias already owns.
 romkatv/zsh-no-ps2
 
 # Extra git subcommands (sourced from mattmc3's repo)
