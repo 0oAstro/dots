@@ -17,6 +17,7 @@ path=(
   $HOMEBREW_PREFIX/opt/mysql-client/bin
   $HOMEBREW_PREFIX/opt/sqlite/bin
   $HOME/.local/bin
+  $HOME/.local/share/pnpm/bin
   $HOME/.bun/bin
   $CARGO_HOME/bin
   $GOPATH/bin
