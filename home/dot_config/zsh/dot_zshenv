@@ -30,7 +30,6 @@ export GOPATH=$XDG_DATA_HOME/go
 export CP_HOME_DIR=$XDG_DATA_HOME/cocoapods
 export GNUPGHOME=$XDG_DATA_HOME/gnupg
 export CARGO_HOME=$XDG_DATA_HOME/cargo
-export DOCKER_CONFIG=$XDG_CONFIG_HOME/docker
 export RUSTUP_HOME=$XDG_DATA_HOME/rustup
 export LESSHISTFILE=$XDG_STATE_HOME/lesshst
 export TERMINFO=$XDG_DATA_HOME/terminfo
@@ -48,7 +47,7 @@ export NPM_CONFIG_TMP=$XDG_RUNTIME_DIR/npm
 # keep the common path fork-free after the first shell.
 for _zdots_dir in \
   "$XDG_CONFIG_HOME" "$XDG_CONFIG_HOME/readline" "$XDG_CONFIG_HOME/ripgrep" \
-  "$XDG_CONFIG_HOME/bundle" "$XDG_CONFIG_HOME/npm/config" "$XDG_CONFIG_HOME/docker" \
+  "$XDG_CONFIG_HOME/bundle" "$XDG_CONFIG_HOME/npm/config" \
   "$XDG_CACHE_HOME" "$XDG_CACHE_HOME/zsh" "$XDG_CACHE_HOME/bundle" "$XDG_CACHE_HOME/npm" \
   "$XDG_DATA_HOME" "$XDG_DATA_HOME/zsh" "$XDG_DATA_HOME/bundle" "$XDG_DATA_HOME/go" \
   "$XDG_DATA_HOME/cocoapods" "$XDG_DATA_HOME/gnupg" "$XDG_DATA_HOME/cargo" \

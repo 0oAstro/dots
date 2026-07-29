@@ -20,6 +20,6 @@ aardvark() {
         ;;
     esac
   fi
-  remote_command="zellij attach -c ${(q)session}"
+  remote_command="tmux new-session -A -s ${(q)session}"
   et --command "$remote_command" "$host"
 }
