@@ -18,7 +18,6 @@ export XDG_STATE_HOME=${XDG_STATE_HOME:-$HOME/.local/state}
 export PROJECTS=${PROJECTS:-$HOME/Developer}
 export INPUTRC=$XDG_CONFIG_HOME/readline/inputrc
 export RIPGREP_CONFIG_PATH=$XDG_CONFIG_HOME/ripgrep/config
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-21.jdk/Contents/Home
 
 # XDG-aware tool homes
 export BUNDLE_USER_CONFIG=$XDG_CONFIG_HOME/bundle

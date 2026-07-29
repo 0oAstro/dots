@@ -23,6 +23,11 @@ fi
 
 PROMPT_EOL_MARK=''
 
+# Keep language runtimes and their environment variables in sync with mise.
+if (( $+commands[mise] )); then
+  eval "$(mise activate zsh)"
+fi
+
 # p10k falls back to forking `who -m` to detect SSH whenever SSH_* is unset.
 # Those variables are authoritative here, so answer the question up front.
 if [[ -z $SSH_CLIENT && -z $SSH_TTY && -z $SSH_CONNECTION ]]; then

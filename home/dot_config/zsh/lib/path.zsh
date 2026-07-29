@@ -16,6 +16,7 @@ path=(
   $HOMEBREW_PREFIX/opt/libpq/bin
   $HOMEBREW_PREFIX/opt/mysql-client/bin
   $HOMEBREW_PREFIX/opt/sqlite/bin
+  $HOME/.local/share/mise/shims
   $HOME/.local/bin
   $HOME/.local/share/pnpm/bin
   $HOME/.bun/bin
