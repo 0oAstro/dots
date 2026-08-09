@@ -1,22 +1,20 @@
 [[ ${ZPROFRC:-0} == 1 ]] && zmodload zsh/zprof
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of .zshrc.
-# Initialization code that may require console input must go above this block;
-# everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
-# Pokemon greeting. Kept below the instant prompt block so p10k buffers the art
-# and replays it after init instead of holding back the first visible prompt.
-# The tty tests the guard used to do are wrong here: instant prompt points fd 1
-# at a temp file, so `-o interactive` is what actually distinguishes the cases.
-if [[ -o interactive && -z ${ZSH_EXECUTION_STRING:-} ]] && (( $+commands[pokeget] )); then
+# Pokemon greeting. Run it before P10k captures terminal output so the art is
+# visible immediately and becomes part of the terminal state P10k saves.
+if [[ -o interactive && -z ${ZSH_EXECUTION_STRING:-} ]]; then
   () {
     setopt localoptions noprompt_sp noprompt_cr
     pokeget random --hide-name 2>/dev/null
     print
   }
+fi
+
+# Enable Powerlevel10k instant prompt. Should stay close to the top of .zshrc.
+# Initialization code that may require console input must go above this block;
+# everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
 # Interactive shell entry point.

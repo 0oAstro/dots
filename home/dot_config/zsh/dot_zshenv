@@ -41,7 +41,6 @@ if [[ -z ${XDG_RUNTIME_DIR:-} ]]; then
   esac
 fi
 export NPM_CONFIG_TMP=$XDG_RUNTIME_DIR/npm
-
 # Create the directories used by this config on first use. The directory checks
 # keep the common path fork-free after the first shell.
 for _zdots_dir in \
