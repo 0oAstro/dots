@@ -1,0 +1,61 @@
+# Kanagawa Lotus for zsh-patina
+# Scope mapping based on the official Kanagawa Lotus palette.
+
+"comment" = "#8a8980"
+"punctuation.definition.comment.begin" = "#8a8980"
+"source" = "#545464"
+"variable.function" = { foreground = "#4d699b", bold = true }
+"entity.name.function" = { foreground = "#4d699b", bold = true }
+"meta.function-call" = "#4d699b"
+"meta.function-call.arguments" = "#716e61"
+"string" = "#6f894e"
+"punctuation.definition.string" = "#6f894e"
+"constant.character.escape" = { foreground = "#cc6d00", bold = true }
+"variable" = "#545464"
+"variable.other" = "#77713f"
+"variable.language" = "#c84053"
+"variable.parameter" = "#b35b79"
+"variable.parameter.option" = { foreground = "#6693bf", bold = true }
+"punctuation.definition.variable" = "#597b75"
+"meta.group.expansion.parameter" = "#597b75"
+"meta.group.expansion.arithmetic" = "#b35b79"
+"meta.group.expansion.command" = "#4d699b"
+"meta.group.expansion.history" = { foreground = "#e98a00", bold = true }
+"variable.language.tilde" = { foreground = "#624c83", bold = true }
+"constant" = "#b35b79"
+"constant.numeric" = { foreground = "#b35b79", bold = true }
+"keyword" = { foreground = "#624c83", bold = true }
+"keyword.control" = { foreground = "#624c83", bold = true }
+"keyword.control.case.item" = "#6693bf"
+"precommand" = { foreground = "#597b75", bold = true }
+"keyword.operator" = "#cc6d00"
+"keyword.operator.logical" = { foreground = "#77713f", bold = true }
+"keyword.operator.assignment" = "#cc6d00"
+"keyword.operator.arithmetic" = "#b35b79"
+"keyword.operator.regexp" = "#cc6d00"
+"keyword.operator.logical.continue" = "#6693bf"
+"punctuation" = "#6693bf"
+"punctuation.section" = "#597b75"
+"punctuation.section.parens" = "#597b75"
+"punctuation.section.expansion" = "#597b75"
+"support" = { foreground = "#6693bf", bold = true }
+"keyword.control.regexp" = "#6693bf"
+"meta.regexp" = "#cc6d00"
+"storage" = { foreground = "#624c83", bold = true }
+"storage.modifier" = "#b35b79"
+"invalid" = { foreground = "#d7474b", bold = true }
+"dynamic.callable" = { foreground = "#4d699b", bold = true }
+"dynamic.callable.command" = { foreground = "#4d699b", bold = true }
+"dynamic.callable.function" = { foreground = "#597b75", bold = true }
+"dynamic.callable.builtin" = { foreground = "#6693bf", bold = true }
+"dynamic.callable.alias" = { foreground = "#6f894e", bold = true }
+"dynamic.callable.missing" = { foreground = "#d7474b", bold = true }
+"dynamic.path" = { foreground = "#6f894e", underline = true }
+"dynamic.path.file" = { foreground = "#6f894e", underline = true }
+"dynamic.path.directory" = { foreground = "#597b75", underline = true, bold = true }
+"dynamic.path.file.partial" = { foreground = "#6e915f", underline = true }
+"dynamic.path.directory.partial" = { foreground = "#5e857a", underline = true, bold = true }
+"meta" = "#545464"
+
+[metadata]
+extends = "kanagawa"

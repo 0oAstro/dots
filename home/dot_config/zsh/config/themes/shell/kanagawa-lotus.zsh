@@ -1,5 +1,5 @@
 # Kanagawa Lotus shell palette (official terminal palette colors).
-typeset -g ZDOTS_THEME_PATINA=catppuccin-latte
+typeset -g ZDOTS_THEME_PATINA=kanagawa-lotus
 typeset -g ZDOTS_COLOR_GREY='#8a8980'
 typeset -g ZDOTS_COLOR_RED='#c84053'
 typeset -g ZDOTS_COLOR_YELLOW='#77713f'
