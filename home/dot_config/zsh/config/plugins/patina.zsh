@@ -17,10 +17,20 @@ if [[ $_zdots_patina_active != $ZSH_PATINA_THEME\|$_zdots_patina_pid ||
       $ZSH_PATINA_CONFIG_PATH -nt $_zdots_patina_marker ||
       ( -n ${ZDOTS_THEME_FILE:-} && $ZDOTS_THEME_FILE -nt $_zdots_patina_marker ) ]]; then
   if zsh-patina restart >/dev/null 2>&1; then
-    [[ -r $_zdots_patina_pidfile ]] && IFS= read -r _zdots_patina_pid < $_zdots_patina_pidfile
-    print -r -- "$ZSH_PATINA_THEME|$_zdots_patina_pid" >| $_zdots_patina_marker
+    # `restart` daemonizes and can return before daemon.pid is replaced. Poll
+    # only on this rare restart path; never bless the old PID as current.
+    _zdots_patina_nextpid=
+    for _zdots_patina_try in {1..50}; do
+      [[ -r $_zdots_patina_pidfile ]] && IFS= read -r _zdots_patina_nextpid < $_zdots_patina_pidfile
+      [[ -n $_zdots_patina_nextpid && $_zdots_patina_nextpid != $_zdots_patina_pid ]] && break
+      command sleep 0.01
+    done
+    if [[ -n $_zdots_patina_nextpid && $_zdots_patina_nextpid != $_zdots_patina_pid ]]; then
+      print -r -- "$ZSH_PATINA_THEME|$_zdots_patina_nextpid" >| $_zdots_patina_marker
+    fi
   fi
 fi
-unset _zdots_patina_marker _zdots_patina_pidfile _zdots_patina_active _zdots_patina_pid
+unset _zdots_patina_marker _zdots_patina_pidfile _zdots_patina_active \
+  _zdots_patina_pid _zdots_patina_nextpid _zdots_patina_try
 
 eval "$(zsh-patina activate)"
