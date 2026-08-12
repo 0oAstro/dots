@@ -9,7 +9,13 @@
 # The daemon owns the loaded theme. Track both the selection and daemon PID so
 # an external/manual daemon restart cannot leave our cheap theme marker lying.
 _zdots_patina_marker=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/patina-theme
-_zdots_patina_pidfile=${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/zsh-patina/daemon.pid
+_zdots_patina_rundir=${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/zsh-patina
+# zsh-patina 1.8 uses daemon.pid; 1.9 stores the PID in daemon.lock.
+if [[ -r $_zdots_patina_rundir/daemon.pid ]]; then
+  _zdots_patina_pidfile=$_zdots_patina_rundir/daemon.pid
+else
+  _zdots_patina_pidfile=$_zdots_patina_rundir/daemon.lock
+fi
 _zdots_patina_active= _zdots_patina_pid=
 [[ -r $_zdots_patina_pidfile ]] && IFS= read -r _zdots_patina_pid < $_zdots_patina_pidfile
 [[ -r $_zdots_patina_marker ]] && IFS= read -r _zdots_patina_active < $_zdots_patina_marker
@@ -30,7 +36,7 @@ if [[ $_zdots_patina_active != $ZSH_PATINA_THEME\|$_zdots_patina_pid ||
     fi
   fi
 fi
-unset _zdots_patina_marker _zdots_patina_pidfile _zdots_patina_active \
-  _zdots_patina_pid _zdots_patina_nextpid _zdots_patina_try
+unset _zdots_patina_marker _zdots_patina_rundir _zdots_patina_pidfile \
+  _zdots_patina_active _zdots_patina_pid _zdots_patina_nextpid _zdots_patina_try
 
 eval "$(zsh-patina activate)"
