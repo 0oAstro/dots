@@ -23,8 +23,10 @@ export RIPGREP_CONFIG_PATH=$XDG_CONFIG_HOME/ripgrep/config
 export BUNDLE_USER_CONFIG=$XDG_CONFIG_HOME/bundle
 export BUNDLE_USER_CACHE=$XDG_CACHE_HOME/bundle
 export BUNDLE_USER_PLUGIN=$XDG_DATA_HOME/bundle
-export NPM_CONFIG_INIT_MODULE=$XDG_CONFIG_HOME/npm/config/npm-init.js
+export NPM_CONFIG_USERCONFIG=$XDG_CONFIG_HOME/npm/npmrc
 export NPM_CONFIG_CACHE=$XDG_CACHE_HOME/npm
+# npm 11 no longer supports NPM_CONFIG_TMP; discard stale inherited values.
+unset NPM_CONFIG_INIT_MODULE NPM_CONFIG_TMP
 export GOPATH=$XDG_DATA_HOME/go
 export CP_HOME_DIR=$XDG_DATA_HOME/cocoapods
 export GNUPGHOME=$XDG_DATA_HOME/gnupg
@@ -40,18 +42,16 @@ if [[ -z ${XDG_RUNTIME_DIR:-} ]]; then
     *) export XDG_RUNTIME_DIR=${${TMPDIR:-/tmp}%/}/xdg-runtime-$UID ;;
   esac
 fi
-export NPM_CONFIG_TMP=$XDG_RUNTIME_DIR/npm
 # Create the directories used by this config on first use. The directory checks
 # keep the common path fork-free after the first shell.
 for _zdots_dir in \
   "$XDG_CONFIG_HOME" "$XDG_CONFIG_HOME/readline" "$XDG_CONFIG_HOME/ripgrep" \
-  "$XDG_CONFIG_HOME/bundle" "$XDG_CONFIG_HOME/npm/config" \
+  "$XDG_CONFIG_HOME/bundle" \
   "$XDG_CACHE_HOME" "$XDG_CACHE_HOME/zsh" "$XDG_CACHE_HOME/bundle" "$XDG_CACHE_HOME/npm" \
   "$XDG_DATA_HOME" "$XDG_DATA_HOME/zsh" "$XDG_DATA_HOME/bundle" "$XDG_DATA_HOME/go" \
   "$XDG_DATA_HOME/cocoapods" "$XDG_DATA_HOME/gnupg" "$XDG_DATA_HOME/cargo" \
   "$XDG_DATA_HOME/rustup" "$XDG_DATA_HOME/terminfo" \
-  "$XDG_STATE_HOME" "$XDG_STATE_HOME/zsh" \
-  "$XDG_RUNTIME_DIR/npm"; do
+  "$XDG_STATE_HOME" "$XDG_STATE_HOME/zsh"; do
   [[ -d $_zdots_dir ]] || command mkdir -p -- "$_zdots_dir" 2>/dev/null
 done
 [[ -d $XDG_RUNTIME_DIR ]] || command mkdir -m 700 -p -- "$XDG_RUNTIME_DIR" 2>/dev/null
