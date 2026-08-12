@@ -80,6 +80,8 @@ Syntax highlighting uses [zsh-patina](https://github.com/michel-kraemer/zsh-pati
 
 On macOS, the current appearance is cached in `$XDG_CACHE_HOME/zsh/macos-appearance`. Normal startup uses only zsh builtins (well below the 3 ms budget); `/usr/bin/plutil` runs only when the preferences plist changes. Set `ZDOTS_APPEARANCE=light` or `dark` to override detection. Ghostty does not currently export the active half of a paired theme to its child shell.
 
+`ZDOTS_APPEARANCE` is exported so SSH can forward the already-resolved `light`/`dark` value with `SendEnv ZDOTS_APPEARANCE`; servers opt in with `AcceptEnv ZDOTS_APPEARANCE`. This gives remote shells the same palette without running a platform appearance command remotely. Without a forwarded value, non-macOS shells safely default to dark.
+
 ## Resources
 
 - [fish][fish]

@@ -5,7 +5,7 @@
 # zsh-patina theme. ZDOTS_APPEARANCE=light|dark is an explicit override.
 typeset -g ZDOTS_THEME_LIGHT=${ZDOTS_THEME_LIGHT:-kanagawa-lotus}
 typeset -g ZDOTS_THEME_DARK=${ZDOTS_THEME_DARK:-kanagawa-dragon}
-typeset -g ZDOTS_APPEARANCE=${ZDOTS_APPEARANCE:-}
+typeset -gx ZDOTS_APPEARANCE=${ZDOTS_APPEARANCE:-}
 
 _zdots_resolve_appearance() {
   emulate -L zsh
