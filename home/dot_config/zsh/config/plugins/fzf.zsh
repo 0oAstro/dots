@@ -1,3 +1,6 @@
+# Apply the appearance-aware shell palette without replacing user fzf options.
+export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:+$FZF_DEFAULT_OPTS }${ZDOTS_FZF_THEME_OPTS:-}"
+
 # fzf environment and shell key bindings.
 #
 

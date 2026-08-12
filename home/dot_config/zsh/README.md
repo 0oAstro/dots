@@ -74,9 +74,11 @@ brew install --cask font-sauce-code-pro-nerd-font
 iTerm2 has some awesome [color schemes][iterm2-colors]. You can use them for more than
 just iTerm2.
 
-Syntax highlighting uses [zsh-patina](https://github.com/michel-kraemer/zsh-patina). Theme selection is centralized in `config/ui/theme.zsh` (with shared settings in `config/plugins/zsh-patina.toml.in`): light mode uses `kanagawa-lotus` and dark mode uses `kanagawa-dragon`. Change the two names at the top of that file to switch schemes; matching custom themes live in `config/themes/patina/`, and old themes remain available by name.
+The whole shell palette is selected in `config/ui/theme.zsh`: light mode uses `kanagawa-lotus` and dark mode uses `kanagawa-dragon`. Palette files in `config/themes/shell/` theme Powerlevel10k, fzf, autosuggestions, and bat (through its ANSI theme); other ANSI-colored tools inherit Ghostty's matching `theme = dark:Kanagawa Dragon,light:Kanagawa Lotus` terminal palette. Change the two names at the top of `theme.zsh` to switch schemes while keeping older palette files available by name.
 
-On macOS, the current appearance is cached in `$XDG_CACHE_HOME/zsh/macos-appearance`. Normal startup uses only zsh builtins (well below the 3 ms budget); `/usr/bin/plutil` runs only when the preferences plist changes. Set `ZDOTS_APPEARANCE=light` or `dark` to override detection. Ghostty already uses the matching `theme = dark:Kanagawa Dragon,light:Kanagawa Lotus` pair, but does not currently export the active half to its child shell.
+Syntax highlighting uses [zsh-patina](https://github.com/michel-kraemer/zsh-patina) and the official built-in `kanagawa` theme selected by each shell palette. Shared plugin settings live in `config/plugins/zsh-patina.toml.in`; the older custom `kanagawa-vivid` theme remains available as an explicit `ZDOTS_PATINA_THEME=kanagawa-vivid` override.
+
+On macOS, the current appearance is cached in `$XDG_CACHE_HOME/zsh/macos-appearance`. Normal startup uses only zsh builtins (well below the 3 ms budget); `/usr/bin/plutil` runs only when the preferences plist changes. Set `ZDOTS_APPEARANCE=light` or `dark` to override detection. Ghostty does not currently export the active half of a paired theme to its child shell.
 
 ## Resources
 
