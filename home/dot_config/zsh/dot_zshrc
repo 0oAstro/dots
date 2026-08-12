@@ -34,6 +34,7 @@ if [[ -z $SSH_CLIENT && -z $SSH_TTY && -z $SSH_CONNECTION ]]; then
 fi
 
 source "$ZDOTDIR/.zstyles"
+source "$ZDOTDIR/config/ui/theme.zsh"
 source "$ZDOTDIR/lib/antidote.zsh"
 
 source "$ZDOTDIR/config/core/options.zsh"

@@ -74,7 +74,9 @@ brew install --cask font-sauce-code-pro-nerd-font
 iTerm2 has some awesome [color schemes][iterm2-colors]. You can use them for more than
 just iTerm2.
 
-Syntax highlighting uses [zsh-patina](https://github.com/jdrouet/zsh-patina) with a custom Kanagawa Vivid theme in `config/plugins/kanagawa-vivid.toml` (referenced from `config/plugins/zsh-patina.toml`).
+Syntax highlighting uses [zsh-patina](https://github.com/michel-kraemer/zsh-patina). Theme selection is centralized in `config/ui/theme.zsh` (with shared settings in `config/plugins/zsh-patina.toml.in`): light mode uses `kanagawa-lotus` and dark mode uses `kanagawa-dragon`. Change the two names at the top of that file to switch schemes; matching custom themes live in `config/themes/patina/`, and old themes remain available by name.
+
+On macOS, the current appearance is cached in `$XDG_CACHE_HOME/zsh/macos-appearance`. Normal startup uses only zsh builtins (well below the 3 ms budget); `/usr/bin/plutil` runs only when the preferences plist changes. Set `ZDOTS_APPEARANCE=light` or `dark` to override detection. Ghostty already uses the matching `theme = dark:Kanagawa Dragon,light:Kanagawa Lotus` pair, but does not currently export the active half to its child shell.
 
 ## Resources
 
