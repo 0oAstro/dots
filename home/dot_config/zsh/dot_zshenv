@@ -63,6 +63,11 @@ export ADB_MDNS_AUTO_CONNECT=0
 # Terminal color defaults
 export COLORTERM=${COLORTERM:-truecolor}
 
+# Amazon Bedrock defaults for the global Anthropic inference profiles.
+# An explicit environment value still takes precedence.
+export AWS_PROFILE=${AWS_PROFILE:-personal}
+export AWS_REGION=${AWS_REGION:-us-east-1}
+
 
 # ── Antidote cache path ─────────────────────────────────────────
 export ANTIDOTE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/antidote
