@@ -76,7 +76,7 @@ just iTerm2.
 
 The whole shell palette is selected in `config/ui/theme.zsh`: light mode uses `kanagawa-lotus` and dark mode uses `kanagawa-dragon`. Palette files in `config/themes/shell/` theme Powerlevel10k, fzf, autosuggestions, and bat (through its ANSI theme); other ANSI-colored tools inherit Ghostty's matching `theme = dark:Kanagawa Dragon,light:Kanagawa Lotus` terminal palette. Change the two names at the top of `theme.zsh` to switch schemes while keeping older palette files available by name.
 
-Syntax highlighting uses [zsh-patina](https://github.com/michel-kraemer/zsh-patina) and its official built-in `simple` theme, whose ANSI colors inherit the active Kanagawa Lotus/Dragon terminal palette. Shared plugin settings live in `config/plugins/zsh-patina.toml.in`; the older custom `kanagawa-vivid` theme remains available as an explicit `ZDOTS_PATINA_THEME=kanagawa-vivid` override.
+Syntax highlighting uses official built-in [zsh-patina](https://github.com/michel-kraemer/zsh-patina) themes: `catppuccin-latte` in light mode and `kanagawa` in dark mode. zsh-patina does not ship a Kanagawa Lotus theme; Latte is its native light theme, while the rest of the shell remains Kanagawa Lotus. Shared plugin settings live in `config/plugins/zsh-patina.toml.in`; the older custom `kanagawa-vivid` theme remains available as an explicit `ZDOTS_PATINA_THEME=kanagawa-vivid` override.
 
 On macOS, the current appearance is cached in `$XDG_CACHE_HOME/zsh/macos-appearance`. Normal startup uses only zsh builtins (well below the 3 ms budget); `/usr/bin/plutil` runs only when the preferences plist changes. Set `ZDOTS_APPEARANCE=light` or `dark` to override detection. Ghostty does not currently export the active half of a paired theme to its child shell.
 

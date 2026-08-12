@@ -1,5 +1,5 @@
 # Kanagawa Dragon shell palette (official terminal palette colors).
-typeset -g ZDOTS_THEME_PATINA=simple
+typeset -g ZDOTS_THEME_PATINA=kanagawa
 typeset -g ZDOTS_COLOR_GREY='#a6a69c'
 typeset -g ZDOTS_COLOR_RED='#c4746e'
 typeset -g ZDOTS_COLOR_YELLOW='#c4b28a'
