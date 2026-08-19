@@ -19,6 +19,10 @@ export PROJECTS=${PROJECTS:-$HOME/Developer}
 export INPUTRC=$XDG_CONFIG_HOME/readline/inputrc
 export RIPGREP_CONFIG_PATH=$XDG_CONFIG_HOME/ripgrep/config
 
+# Pi: suppress startup version and package update notifications; updates are run manually.
+export PI_SKIP_VERSION_CHECK=1
+export PI_OFFLINE=1
+
 # XDG-aware tool homes
 export BUNDLE_USER_CONFIG=$XDG_CONFIG_HOME/bundle
 export BUNDLE_USER_CACHE=$XDG_CACHE_HOME/bundle
