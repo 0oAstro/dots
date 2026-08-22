@@ -9,13 +9,20 @@ typeset -gU path PATH fpath FPATH
 # -x is required: unlike PATH, INFOPATH is not a special exported parameter.
 typeset -gxUT INFOPATH infopath
 
+# Homebrew is a macOS-only path source. Keep its default prefix from
+# polluting Linux shells, and keep database client paths out once those tools
+# are managed by mise.
+if [[ -d $HOMEBREW_PREFIX ]]; then
+  path=(
+    $HOMEBREW_PREFIX/bin
+    $HOMEBREW_PREFIX/sbin
+    $HOMEBREW_PREFIX/opt/curl/bin
+    $HOMEBREW_PREFIX/opt/sqlite/bin
+    $path
+  )
+fi
+
 path=(
-  $HOMEBREW_PREFIX/bin
-  $HOMEBREW_PREFIX/sbin
-  $HOMEBREW_PREFIX/opt/curl/bin
-  $HOMEBREW_PREFIX/opt/libpq/bin
-  $HOMEBREW_PREFIX/opt/mysql-client/bin
-  $HOMEBREW_PREFIX/opt/sqlite/bin
   $HOME/.local/share/mise/shims
   $HOME/.local/bin
   $HOME/.local/share/pnpm/bin
@@ -25,4 +32,6 @@ path=(
   $path
 )
 
-infopath=($HOMEBREW_PREFIX/share/info $infopath)
+if [[ -d $HOMEBREW_PREFIX/share/info ]]; then
+  infopath=($HOMEBREW_PREFIX/share/info $infopath)
+fi

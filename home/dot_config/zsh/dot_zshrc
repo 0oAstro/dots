@@ -69,5 +69,12 @@ source "$ZDOTDIR/config/plugins/patina.zsh"
 # Keep mise after all plugins and PATH modifications so its shims win.
 if (( $+commands[mise] )); then
   eval "$(mise activate zsh)"
+  # Antidote's kind:path plugin prepends this directory; move it behind
+  # mise's active tool paths after every plugin has finished changing PATH.
+  typeset _mise_git_cmds="$HOME/.cache/antidote/github.com/mattmc3/git-cmds"
+  if [[ -d $_mise_git_cmds ]]; then
+    path=(${path:#$_mise_git_cmds} $_mise_git_cmds)
+  fi
+  unset _mise_git_cmds
 fi
 

@@ -83,3 +83,10 @@ export HOMEBREW_REPOSITORY=${HOMEBREW_REPOSITORY:-$HOMEBREW_PREFIX}
 [[ -d $ANTIDOTE_HOME ]] || command mkdir -p -- "$ANTIDOTE_HOME" 2>/dev/null
 
 source "$ZDOTDIR/lib/path.zsh"
+
+# Activate mise for every zsh, including non-interactive SSH commands. The
+# interactive setup re-runs activation after plugins have finished modifying
+# PATH, so the shims remain first in both kinds of shell.
+if [[ -x $HOME/.local/bin/mise && -z ${MISE_SHELL:-} ]]; then
+  eval "$($HOME/.local/bin/mise activate zsh)"
+fi
