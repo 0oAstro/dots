@@ -36,7 +36,36 @@ if [[ $_zdots_patina_active != $ZSH_PATINA_THEME\|$_zdots_patina_pid ||
     fi
   fi
 fi
-unset _zdots_patina_marker _zdots_patina_rundir _zdots_patina_pidfile \
-  _zdots_patina_active _zdots_patina_pid _zdots_patina_nextpid _zdots_patina_try
+# Fast path: reuse a cached activation script when it provably matches the
+# current install — same binary path (upgrades and reinstalls move it), same
+# runtime dir, same config, and a live daemon. Any mismatch falls back to a
+# fresh `zsh-patina activate`, which rewrites the cache, so this self-heals
+# after upgrades. On this host the fork costs ~95 ms; sourcing the validated
+# cache is ~1 ms.
+_zdots_patina_cache=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/patina-activate.zsh
+_zdots_patina_bin=${commands[zsh-patina]:-$(whence -p zsh-patina)}
+_zdots_patina_key="# key: $_zdots_patina_bin ${XDG_RUNTIME_DIR:-} $ZSH_PATINA_CONFIG_PATH"
+if [[ -r $_zdots_patina_cache && -n $_zdots_patina_bin ]] &&
+  IFS= read -r _zdots_patina_first < "$_zdots_patina_cache" &&
+  [[ $_zdots_patina_first == $_zdots_patina_key ]] &&
+  { [[ -n $_zdots_patina_pid ]] && kill -0 -- $_zdots_patina_pid 2>/dev/null }
+then
+  source "$_zdots_patina_cache"
+else
+  _zdots_patina_out=$(zsh-patina activate)
+  if [[ -n $_zdots_patina_out ]]; then
+    # Refresh the validated cache for future shells (atomic replace).
+    if _zdots_patina_tmp=$(command mktemp "$_zdots_patina_cache.XXXXXX" 2>/dev/null); then
+      { print -r -- "$_zdots_patina_key"
+        print -r -- "$_zdots_patina_out"
+      } >| "$_zdots_patina_tmp" && command mv -f -- "$_zdots_patina_tmp" "$_zdots_patina_cache"
+      [[ -n ${_zdots_patina_tmp:-} && -e $_zdots_patina_tmp ]] && command rm -f -- "$_zdots_patina_tmp"
+    fi
+    eval "$_zdots_patina_out"
+  fi
+fi
 
-eval "$(zsh-patina activate)"
+unset _zdots_patina_marker _zdots_patina_rundir _zdots_patina_pidfile \
+  _zdots_patina_active _zdots_patina_pid _zdots_patina_nextpid _zdots_patina_try \
+  _zdots_patina_cache _zdots_patina_bin _zdots_patina_key _zdots_patina_first \
+  _zdots_patina_out _zdots_patina_tmp

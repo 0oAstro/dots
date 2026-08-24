@@ -87,6 +87,13 @@ source "$ZDOTDIR/lib/path.zsh"
 # Activate mise for every zsh, including non-interactive SSH commands. The
 # interactive setup re-runs activation after plugins have finished modifying
 # PATH, so the shims remain first in both kinds of shell.
+source "$ZDOTDIR/lib/mise.zsh"
 if [[ -x $HOME/.local/bin/mise && -z ${MISE_SHELL:-} ]]; then
-  eval "$($HOME/.local/bin/mise activate zsh)"
+  # Non-interactive shells need synchronous env application (no precmd hooks);
+  # interactive shells defer the hook-env fork to the first precmd.
+  if [[ -o interactive ]]; then
+    _zdots_mise_source interactive
+  else
+    _zdots_mise_source full
+  fi
 fi

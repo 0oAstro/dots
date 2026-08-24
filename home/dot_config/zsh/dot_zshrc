@@ -66,15 +66,29 @@ source "$ZDOTDIR/lib/recompile.zsh"
 # Loads last: patina wraps ZLE widgets and must see the final set of them.
 source "$ZDOTDIR/config/plugins/patina.zsh"
 
-# Keep mise after all plugins and PATH modifications so its shims win.
-if (( $+commands[mise] )); then
-  eval "$(mise activate zsh)"
-  # Antidote's kind:path plugin prepends this directory; move it behind
-  # mise's active tool paths after every plugin has finished changing PATH.
-  typeset _mise_git_cmds="$HOME/.cache/antidote/github.com/mattmc3/git-cmds"
-  if [[ -d $_mise_git_cmds ]]; then
-    path=(${path:#$_mise_git_cmds} $_mise_git_cmds)
-  fi
-  unset _mise_git_cmds
+# Keep mise after plugins and PATH modifications so its shims win.
+#
+# Top-level interactive shells already activated mise in .zshenv (hooks are
+# installed). Nested interactive shells inherit MISE_SHELL, skipped .zshenv,
+# and source the cached interactive activation here instead. Either way the
+# expensive mise forks never run twice per shell chain.
+if (( $+commands[mise] )) && (( ! $+functions[_mise_hook_precmd] )); then
+  _zdots_mise_source interactive
 fi
+
+# Fork-free equivalent of the old unconditional `eval "$(mise activate zsh)"`:
+# make sure the shim directory wins over anything plugins prepended. The hooks
+# themselves come from the activation above or from .zshenv.
+_mise_shims=$HOME/.local/share/mise/shims
+if [[ -d $_mise_shims ]]; then
+  path=($_mise_shims ${path:#$_mise_shims})
+fi
+
+# Antidote's kind:path plugin prepends this directory; move it behind mise's
+# active tool paths after every plugin has finished changing PATH.
+typeset _mise_git_cmds="$HOME/.cache/antidote/github.com/mattmc3/git-cmds"
+if [[ -d $_mise_git_cmds ]]; then
+  path=(${path:#$_mise_git_cmds} $_mise_git_cmds)
+fi
+unset _mise_shims _mise_git_cmds
 
