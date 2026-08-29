@@ -16,7 +16,7 @@ export FZF_CTRL_T_COMMAND=$FZF_DEFAULT_COMMAND
 if [[ -t 0 && -t 1 && -z ${ZSH_EXECUTION_STRING:-} ]]; then
   local key_bindings
   for key_bindings in \
-    "$HOMEBREW_PREFIX/opt/fzf/shell/key-bindings.zsh" \
+    "${ZDOTDIR:-$HOME/.config/zsh}/config/plugins/fzf-key-bindings.zsh" \
     /usr/share/fzf/key-bindings.zsh \
     /usr/share/doc/fzf/examples/key-bindings.zsh; do
     [[ -r $key_bindings ]] && { source "$key_bindings"; break; }
