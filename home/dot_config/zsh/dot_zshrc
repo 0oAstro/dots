@@ -17,8 +17,6 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Interactive shell entry point.
-
 PROMPT_EOL_MARK=''
 
 # p10k falls back to forking `who -m` to detect SSH whenever SSH_* is unset.

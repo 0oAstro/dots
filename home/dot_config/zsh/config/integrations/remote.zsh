@@ -172,3 +172,32 @@ aardvark() {
   printf '\e]1337;SetUserVar=aardvark_dir\a'
   return $rc
 }
+# zmx session helpers for shells already running on aardvark.
+
+zls() {
+  zmx ls
+}
+
+zkill() {
+  local session="${1:-${ZMX_SESSION:-}}"
+  if [[ -z "$session" ]]; then
+    print -u2 "usage: zkill SESSION"
+    return 2
+  fi
+  zmx kill --force "$session"
+}
+
+zkillall() {
+  local -a sessions
+  sessions=("${(@f)$(zmx ls --short 2>/dev/null)}")
+  if (( ${#sessions} == 0 )); then
+    print "zmx: no sessions"
+    return 0
+  fi
+
+  print "sessions to terminate:"
+  printf '  %s\n' "${sessions[@]}"
+  read -q "REPLY?kill all zmx sessions? [y/N] " || { print; return 1; }
+  print
+  zmx kill --force "${sessions[@]}"
+}
