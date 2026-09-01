@@ -89,4 +89,3 @@ if [[ -d $_mise_git_cmds ]]; then
   path=(${path:#$_mise_git_cmds} $_mise_git_cmds)
 fi
 unset _mise_shims _mise_git_cmds
-
