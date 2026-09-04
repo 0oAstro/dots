@@ -1,7 +1,7 @@
-# Environment consumed by sourced plugins.
+# Settings consumed by sourced plugins.
 #
 
 # Skip autosuggestions widget rebinds on every precmd.
-export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
-export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-export ZSH_AUTOSUGGEST_USE_ASYNC=1
+typeset -g +x ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+typeset -g +x ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+unset ZSH_AUTOSUGGEST_USE_ASYNC  # Async is the plugin default on supported zsh versions.

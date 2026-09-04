@@ -1,1 +1,1 @@
-[[ "$OSTYPE" == darwin* ]]
+[[ ${ZDOTS_PLATFORM:-} == macos ]]

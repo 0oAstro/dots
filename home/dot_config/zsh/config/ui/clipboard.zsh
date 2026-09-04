@@ -1,7 +1,5 @@
 # Clipboard helpers.
 
-[[ $OSTYPE == darwin* ]] || return
-
 copyfile() {
   [[ -z $1 ]] && { echo "Usage: copyfile <file>"; return 1; }
   [[ -f $1 ]] || { echo "Error: '$1' is not a valid file."; return 1; }

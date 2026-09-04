@@ -20,7 +20,7 @@ _zdots_resolve_appearance() {
     # expose which half of a dark:...,light:... theme is active. Cache the
     # preference and use only zsh builtins on the normal startup path. plutil
     # runs once initially and again only when the preferences plist changes.
-    if [[ $OSTYPE == darwin* ]]; then
+    if [[ $ZDOTS_PLATFORM == macos ]]; then
       local plist=$HOME/Library/Preferences/.GlobalPreferences.plist
       local cache=$cache_dir/macos-appearance
       local cached
@@ -67,8 +67,8 @@ _zdots_resolve_appearance() {
 
   # Keep fzf and autosuggestions on the same palette as the prompt. Transparent
   # backgrounds allow Ghostty's matching Lotus/Dragon terminal theme through.
-  typeset -gx ZDOTS_FZF_THEME_OPTS="--color=fg:$ZDOTS_COLOR_FG,bg:-1,hl:$ZDOTS_COLOR_MAGENTA,fg+:$ZDOTS_COLOR_FG,bg+:$ZDOTS_COLOR_SELECTION,hl+:$ZDOTS_COLOR_MAGENTA,info:$ZDOTS_COLOR_CYAN,prompt:$ZDOTS_COLOR_BLUE,pointer:$ZDOTS_COLOR_RED,marker:$ZDOTS_COLOR_GREEN,spinner:$ZDOTS_COLOR_YELLOW,header:$ZDOTS_COLOR_CYAN,border:$ZDOTS_COLOR_GREY"
-  typeset -gx ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=$ZDOTS_COLOR_GREY"
+  typeset -g +x ZDOTS_FZF_THEME_OPTS="--color=fg:$ZDOTS_COLOR_FG,bg:-1,hl:$ZDOTS_COLOR_MAGENTA,fg+:$ZDOTS_COLOR_FG,bg+:$ZDOTS_COLOR_SELECTION,hl+:$ZDOTS_COLOR_MAGENTA,info:$ZDOTS_COLOR_CYAN,prompt:$ZDOTS_COLOR_BLUE,pointer:$ZDOTS_COLOR_RED,marker:$ZDOTS_COLOR_GREEN,spinner:$ZDOTS_COLOR_YELLOW,header:$ZDOTS_COLOR_CYAN,border:$ZDOTS_COLOR_GREY"
+  typeset -g +x ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=$ZDOTS_COLOR_GREY"
   typeset -gx BAT_THEME=ansi
 
   # zsh-patina does not expand arbitrary environment variables inside TOML.

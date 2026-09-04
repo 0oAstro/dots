@@ -13,7 +13,7 @@ typeset -gxUT INFOPATH infopath
 # polluting Linux shells.
 # Keg-link overrides (curl, sqlite) removed — those tools are no longer
 # brew-installed; system curl and mise-managed tooling take precedence.
-if [[ -d $HOMEBREW_PREFIX ]]; then
+if [[ -n ${HOMEBREW_PREFIX:-} && -d $HOMEBREW_PREFIX ]]; then
   path=(
     $HOMEBREW_PREFIX/bin
     $HOMEBREW_PREFIX/sbin
@@ -33,6 +33,6 @@ path=(
   $path
 )
 
-if [[ -d $HOMEBREW_PREFIX/share/info ]]; then
+if [[ -n ${HOMEBREW_PREFIX:-} && -d $HOMEBREW_PREFIX/share/info ]]; then
   infopath=($HOMEBREW_PREFIX/share/info $infopath)
 fi

@@ -24,7 +24,7 @@ romkatv/zsh-no-ps2
 # Extra git subcommands (sourced from mattmc3's repo)
 mattmc3/git-cmds kind:path
 
-# Autosuggestions (sync — works on first keystroke)
+# Autosuggestions (asynchronous by default on supported zsh versions)
 zsh-users/zsh-autosuggestions
 
 # History substring search (binds keys via post: hook)

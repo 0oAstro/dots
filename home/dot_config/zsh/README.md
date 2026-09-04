@@ -8,13 +8,13 @@ I like my Zsh to behave like [Fish][fish], so there's a lot of features that wil
 
 - `config/core/` — shell options, history, key bindings, and `fpath`
 - `config/plugins/` — antidote plugin wiring, fzf/zoxide, and zsh-patina theme toml
-- `config/integrations/` — platform hooks (macOS/Linux), age-encrypted secrets, `spa` mosh helper, terminal tweaks
+- `config/integrations/` — platform hooks, age-encrypted secrets, Aardvark mosh/Kitty helpers, terminal tweaks
 - `config/ui/` — aliases, clipboard helpers, fzf widgets, autosuggestions, editor keymaps
 - `config/local/` — placeholder for machine-local overrides (secrets live in `.zshrc.local.age`)
 - `lib/` — shared bootstrap (`antidote`, `path`, `compinit`, `prompt`, `recompile`)
 - `functions/` — autoloaded command helpers on `$fpath`
 
-Plugins are declared in `.zsh_plugins.txt` and bundled by [antidote][antidote] at startup (the `.antidote` checkout is gitignored and cloned on first use). Completion styles live in `.zstyles`; `lib/compinit.zsh` handles compdump freshness. `.zprofile` re-asserts `PATH` after macOS `path_helper` and runs a Linux-only `ssh-add` hook.
+Plugins are declared in `.zsh_plugins.txt` and bundled by [antidote][antidote] at startup (the `.antidote` checkout is gitignored and cloned on first use). Completion styles live in `.zstyles`; `lib/compinit.zsh` handles compdump freshness. `.zprofile` re-asserts `PATH` after macOS `path_helper`.
 
 ## Installation
 

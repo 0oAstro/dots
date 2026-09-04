@@ -3,7 +3,7 @@
 ##? Example:
 ##?   sleep 2 && lmk
 if (( $# )); then
-  say "$@"
+  command say "$@"
 else
-  say 'Process complete.'
+  command say 'Process complete.'
 fi

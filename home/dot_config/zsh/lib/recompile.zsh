@@ -23,9 +23,13 @@ recompile() {
     _zdots_build_secrets_cache && print "refreshed secrets cache"
   fi
 
-  # Recompile Antidote-managed plugin files too. This refreshes stale plugin
-  # bytecode after zsh upgrades without changing the normal startup path.
-  for file in "$ANTIDOTE_HOME"/**/*.zsh(N-.); do
+  # Recompile only plugin files that contributed functions to this shell. The
+  # cache can retain disabled plugins, so walking all of ANTIDOTE_HOME does
+  # needless work on fzf-tab, autopair, old prompts, and their test fixtures.
+  local -a plugin_files
+  typeset -U plugin_files
+  plugin_files=( ${(M)${(v)functions_source}:#${~ANTIDOTE_HOME}/*} )
+  for file in $plugin_files; do
     [[ -r $file ]] || continue
     zcompile "$file" && print "compiled antidote/${file#$ANTIDOTE_HOME/}"
   done

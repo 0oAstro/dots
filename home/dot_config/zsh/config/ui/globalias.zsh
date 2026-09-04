@@ -63,7 +63,7 @@ done
 bindkey -M isearch ' ' magic-space
 
 accept-line-plain() {
-  zle accept-line
+  zle .accept-line
 }
 zle -N accept-line-plain
 bindkey -M emacs '^[^M' accept-line-plain

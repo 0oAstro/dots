@@ -1,10 +1,8 @@
 # Optional sqlite/json history mirror. Enable with ZDOTS_HISTORY_AUX=1.
 
-[[ -n ${ZDOTS_HISTORY_AUX:-} ]] || return
-
 zmodload zsh/datetime
-export HISTDBFILE=$XDG_DATA_HOME/zsh/zsh_history.db
-export HISTJSFILE=$XDG_DATA_HOME/zsh/zsh_history.json
+typeset -g +x HISTDBFILE=${HISTDBFILE:-$XDG_DATA_HOME/zsh/zsh_history.db}
+typeset -g +x HISTJSFILE=${HISTJSFILE:-$XDG_DATA_HOME/zsh/zsh_history.json}
 typeset -gA _history_aux_state
 _history_aux_state[loaded]=1
 _history_aux_state[session]="${EPOCHREALTIME}-${RANDOM}-${RANDOM}-${TTY##*/}"
@@ -38,6 +36,7 @@ _history_aux_preexec() {
   [[ -z $cmd || $cmd[1] == ' ' ]] && return 0
   [[ $options[hist_reduce_blanks] == on ]] && cmd="${${${cmd//[[:blank:]][[:blank:]]##/ }##[[:blank:]]##}%%[[:blank:]]##}"
   _history_aux_state[cmd]=$cmd
+  _history_aux_state[cwd]=$PWD
   _history_aux_state[start_ts]=$EPOCHREALTIME
 }
 
@@ -49,12 +48,12 @@ _history_aux_precmd() {
 
   local cmd=${_history_aux_state[cmd]}
   if [[ ( $options[hist_ignore_dups] == on || $options[hist_ignore_all_dups] == on ) && $cmd == ${_history_aux_state[last_cmd]:-} ]]; then
-    unset '_history_aux_state[cmd]' '_history_aux_state[start_ts]'
+    unset '_history_aux_state[cmd]' '_history_aux_state[cwd]' '_history_aux_state[start_ts]'
     return 0
   fi
 
   local end_ts=$EPOCHREALTIME start_ts=${_history_aux_state[start_ts]:-0}
-  local cwd=$PWD sid=${_history_aux_state[session]}
+  local cwd=${_history_aux_state[cwd]:-$PWD} sid=${_history_aux_state[session]}
   local ret=${ps[-1]} my_pipestatus=${(j:,:)ps}
 
   if [[ ${_history_aux_state[sqlite_init]:-} != $HISTDBFILE ]]; then
@@ -68,7 +67,7 @@ _history_aux_precmd() {
   _history_aux_json_insert "$HISTJSFILE" "$sid" "$cwd" "$cmd" "$ret" "$my_pipestatus" "$start_ts" "$end_ts" &|
 
   _history_aux_state[last_cmd]=$cmd
-  unset '_history_aux_state[cmd]' '_history_aux_state[start_ts]'
+  unset '_history_aux_state[cmd]' '_history_aux_state[cwd]' '_history_aux_state[start_ts]'
 }
 
 _history_aux_sqlite_insert() {
@@ -79,7 +78,7 @@ _history_aux_sqlite_insert() {
   local -a vals=("$@")
   local i
   for i in {1..$#vals}; do vals[i]="'${vals[i]//$q/$q$q}'"; done
-  sqlite3 "$db" "INSERT INTO zsh_history(sid,cwd,cmd,ret,pipestatus,start_ts,end_ts) VALUES(${(j:,:)vals});" >/dev/null
+  sqlite3 "$db" "PRAGMA busy_timeout=5000; INSERT INTO zsh_history(sid,cwd,cmd,ret,pipestatus,start_ts,end_ts) VALUES(${(j:,:)vals});" >/dev/null
 }
 
 _history_aux_json_insert() {
@@ -106,6 +105,7 @@ histdb() {
   (( $#o_help )) && { print "usage: histdb [-d] [-f] [-s] [-S] [-r] [-n N] [pattern]"; return 0; }
 
   local limit=${o_limit[-1]:-50} pattern=${1:-''} order=ASC
+  [[ $limit == <-> && $limit -gt 0 ]] || { print -ru2 'histdb: limit must be a positive integer'; return 2; }
   (( $#o_reverse )) && order=DESC
   local -a where
   local q="'"

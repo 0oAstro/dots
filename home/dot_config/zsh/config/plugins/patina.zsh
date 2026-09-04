@@ -32,6 +32,7 @@ if [[ $_zdots_patina_active != $ZSH_PATINA_THEME\|$_zdots_patina_pid ||
       command sleep 0.01
     done
     if [[ -n $_zdots_patina_nextpid && $_zdots_patina_nextpid != $_zdots_patina_pid ]]; then
+      _zdots_patina_pid=$_zdots_patina_nextpid
       print -r -- "$ZSH_PATINA_THEME|$_zdots_patina_nextpid" >| $_zdots_patina_marker
     fi
   fi
@@ -43,7 +44,7 @@ fi
 # after upgrades. On this host the fork costs ~95 ms; sourcing the validated
 # cache is ~1 ms.
 _zdots_patina_cache=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/patina-activate.zsh
-_zdots_patina_bin=${commands[zsh-patina]:-$(whence -p zsh-patina)}
+_zdots_patina_bin=$commands[zsh-patina]
 _zdots_patina_key="# key: $_zdots_patina_bin ${XDG_RUNTIME_DIR:-} $ZSH_PATINA_CONFIG_PATH"
 if [[ -r $_zdots_patina_cache && -n $_zdots_patina_bin ]] &&
   IFS= read -r _zdots_patina_first < "$_zdots_patina_cache" &&

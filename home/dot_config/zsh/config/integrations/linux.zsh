@@ -1,5 +1,4 @@
 # Linux-only interactive integrations.
-[[ $OSTYPE == linux* ]] || return
 
 # Bind to the GNOME Keyring / gcr ssh-agent managed by systemd.
 # systemd knows this socket but doesn't export it into non-graphical

@@ -10,18 +10,21 @@ Usage: extract [-option] [file ...]
 Options:
     -r, --remove    Remove archive after unpacking.
 EOF
+    return 2
   fi
 
-  local remove_archive=1
+  local remove_archive=0
   if [[ "$1" == "-r" ]] || [[ "$1" == "--remove" ]]; then
-    remove_archive=0
+    remove_archive=1
     shift
   fi
+  (( $# )) || { print -ru2 'extract: no archive specified'; return 2; }
 
-  local pwd="$PWD"
+  local pwd="$PWD" overall=0
   while (( $# > 0 )); do
     if [[ ! -f "$1" ]]; then
       echo "extract: '$1' is not a valid file" >&2
+      overall=1
       shift
       continue
     fi
@@ -43,8 +46,8 @@ EOF
     fi
 
     # Create an extraction directory based on the file name
-    command mkdir -p "$extract_dir"
-    builtin cd -q "$extract_dir"
+    command mkdir -p "$extract_dir" || { overall=1; shift; continue; }
+    builtin cd -q "$extract_dir" || { overall=1; shift; continue; }
     echo "extract: extracting to $extract_dir" >&2
 
     case "${file:l}" in
@@ -70,12 +73,12 @@ EOF
       (*.tar.lz4) lz4 -c -d "$full_path" | tar xvf - ;;
       (*.tar.lrz) (( $+commands[lrzuntar] )) && lrzuntar "$full_path" ;;
       (*.gz) (( $+commands[pigz] )) && pigz -cdk "$full_path" > "${file:t:r}" || gunzip -ck "$full_path" > "${file:t:r}" ;;
-      (*.bz2) (( $+commands[pbzip2] )) && pbzip2 -d "$full_path" || bunzip2 "$full_path" ;;
-      (*.xz) unxz "$full_path" ;;
-      (*.lrz) (( $+commands[lrunzip] )) && lrunzip "$full_path" ;;
-      (*.lz4) lz4 -d "$full_path" ;;
-      (*.lzma) unlzma "$full_path" ;;
-      (*.z) uncompress "$full_path" ;;
+      (*.bz2) (( $+commands[pbzip2] )) && pbzip2 -dc "$full_path" > "${file:t:r}" || bunzip2 -c "$full_path" > "${file:t:r}" ;;
+      (*.xz) unxz -c "$full_path" > "${file:t:r}" ;;
+      (*.lrz) (( $+commands[lrunzip] )) && lrunzip -o "${file:t:r}" "$full_path" ;;
+      (*.lz4) lz4 -dc "$full_path" > "${file:t:r}" ;;
+      (*.lzma) unlzma -c "$full_path" > "${file:t:r}" ;;
+      (*.z) uncompress -c "$full_path" > "${file:t:r}" ;;
       (*.zip|*.war|*.jar|*.ear|*.sublime-package|*.ipa|*.ipsw|*.xpi|*.apk|*.aar|*.whl|*.vsix|*.crx|*.pk3|*.pk4) unzip "$full_path" ;;
       (*.rar)
         if (( $+commands[unrar] )); then
@@ -99,18 +102,28 @@ EOF
       (*.cab|*.exe) cabextract "$full_path" ;;
       (*.cpio|*.obscpio) cpio -idmvF "$full_path" ;;
       (*.zpaq) zpaq x "$full_path" ;;
-      (*.zlib) zlib-flate -uncompress < "$full_path" > "${file:r}" ;;
+      (*.zlib) zlib-flate -uncompress < "$full_path" > "${file:t:r}" ;;
       (*)
         echo "extract: '$file' cannot be extracted" >&2
         success=1 ;;
     esac
 
-    (( success = success > 0 ? success : $? ))
-    (( success == 0 && remove_archive == 0 )) && command rm "$full_path"
+    local command_status=$?
+    (( success = success > 0 ? success : command_status ))
     shift
 
     # Go back to original working directory
     builtin cd -q "$pwd"
+
+    if (( success != 0 )); then
+      print -ru2 -- "extract: failed to extract $file"
+      command rmdir -- "$extract_dir" 2>/dev/null
+      overall=1
+      continue
+    fi
+    if (( remove_archive )) && ! command rm -- "$full_path"; then
+      overall=1
+    fi
 
     # If content of extract dir is a single directory, move its contents up
     # Glob flags:
@@ -131,16 +144,19 @@ EOF
         local tmp_name==(:); tmp_name="${tmp_name:t}"
         command mv "${content[1]}" "$tmp_name" \
         && command rmdir "$extract_dir" \
-        && command mv "$tmp_name" "$extract_dir"
+        && command mv "$tmp_name" "$extract_dir" \
+        || overall=1
       # Otherwise, if the extracted folder name already exists in the current
       # directory (because of a previous file / folder), keep the extract_dir
       elif [[ ! -e "${content[1]:t}" ]]; then
         command mv "${content[1]}" . \
-        && command rmdir "$extract_dir"
+        && command rmdir "$extract_dir" \
+        || overall=1
       fi
     elif [[ ${#content} -eq 0 ]]; then
-      command rmdir "$extract_dir"
+      command rmdir "$extract_dir" || overall=1
     fi
   done
+  return $overall
 }
 extract "$@"

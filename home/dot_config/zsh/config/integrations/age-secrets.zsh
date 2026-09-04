@@ -94,7 +94,10 @@ edit-secrets() {
   plain=$(command mktemp "${tmpdir}/.zshrc.local.XXXXXX") || return 1
   before=$(command mktemp "${tmpdir}/.zshrc.local.before.XXXXXX") || { command rm -f -- "$plain"; return 1; }
   {
-    [[ -r $enc ]] && age -d -i "$key" -- "$enc" >| "$plain" 2>/dev/null
+    if [[ -r $enc ]] && ! age -d -i "$key" -- "$enc" >| "$plain"; then
+      print -ru2 -- 'edit-secrets: unable to decrypt existing secrets; encrypted file left unchanged'
+      return 1
+    fi
     command cp -- "$plain" "$before" || return
     _zdots_edit_secrets_invoke "$plain" || return
     command cmp -s -- "$before" "$plain" && { print 'edit-secrets: unchanged'; return 0; }

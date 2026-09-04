@@ -7,11 +7,11 @@ export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:+$FZF_DEFAULT_OPTS }${ZDOTS_FZF_THEM
 local preview_file='bat --color=always --style=numbers --line-range=:160 {}'
 local preview_dir='eza --all --color=always --tree --level=2 {}'
 
-export FZF_CTRL_T_OPTS="--preview '$preview_file'"
-export FZF_ALT_C_OPTS="--preview '$preview_dir'"
+typeset -g +x FZF_CTRL_T_OPTS="--preview '$preview_file'"
+typeset -g +x FZF_ALT_C_OPTS="--preview '$preview_dir'"
 
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
-export FZF_CTRL_T_COMMAND=$FZF_DEFAULT_COMMAND
+typeset -g +x FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
+typeset -g +x FZF_CTRL_T_COMMAND=$FZF_DEFAULT_COMMAND
 
 if [[ -t 0 && -t 1 && -z ${ZSH_EXECUTION_STRING:-} ]]; then
   local key_bindings

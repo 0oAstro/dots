@@ -2,7 +2,7 @@
 
 # Pokemon greeting. Run it before P10k captures terminal output so the art is
 # visible immediately and becomes part of the terminal state P10k saves.
-if [[ -o interactive && -z ${ZSH_EXECUTION_STRING:-} ]]; then
+if [[ -z ${ZSH_EXECUTION_STRING:-} ]]; then
   () {
     setopt localoptions noprompt_sp noprompt_cr
     pokeget random --hide-name 2>/dev/null
@@ -26,6 +26,7 @@ if [[ -z $SSH_CLIENT && -z $SSH_TTY && -z $SSH_CONNECTION ]]; then
   typeset -gx _P9K_SSH_TTY=$TTY
 fi
 
+typeset -g +x ANTIDOTE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/antidote
 source "$ZDOTDIR/.zstyles"
 source "$ZDOTDIR/config/ui/theme.zsh"
 source "$ZDOTDIR/lib/antidote.zsh"
@@ -42,16 +43,17 @@ source "$ZDOTDIR/config/plugins/zoxide.zsh"
 
 source "$ZDOTDIR/lib/prompt.zsh"
 
-source "$ZDOTDIR/config/integrations/macos.zsh"
-source "$ZDOTDIR/config/integrations/linux.zsh"
+_zdots_platform_file=$ZDOTDIR/config/integrations/$ZDOTS_PLATFORM.zsh
+[[ -r $_zdots_platform_file ]] && source "$_zdots_platform_file"
+unset _zdots_platform_file
 source "$ZDOTDIR/config/integrations/age-secrets.zsh"
 source "$ZDOTDIR/config/integrations/terminal.zsh"
+[[ -n ${ZMX_SESSION:-} ]] && source "$ZDOTDIR/config/integrations/terminal-title.zsh"
 source "$ZDOTDIR/config/integrations/remote.zsh"
-source "$ZDOTDIR/config/integrations/history-aux.zsh"
+[[ ${ZDOTS_HISTORY_AUX:-0} == 1 ]] && source "$ZDOTDIR/config/integrations/history-aux.zsh"
 
 source "$ZDOTDIR/config/ui/aliases.zsh"
 source "$ZDOTDIR/config/ui/functions.zsh"
-source "$ZDOTDIR/config/ui/clipboard.zsh"
 source "$ZDOTDIR/config/ui/editor.zsh"
 source "$ZDOTDIR/config/ui/globalias.zsh"
 source "$ZDOTDIR/config/ui/fzf-widgets.zsh"

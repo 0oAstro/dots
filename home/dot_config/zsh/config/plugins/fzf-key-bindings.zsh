@@ -52,9 +52,7 @@ __fzf_defaults() {
 __fzf_exec_awk() {
   if [[ -z ${__fzf_awk-} ]]; then
     __fzf_awk=awk
-    if [[ $OSTYPE == solaris* && -x /usr/xpg4/bin/awk ]]; then
-      __fzf_awk=/usr/xpg4/bin/awk
-    elif command -v mawk > /dev/null 2>&1; then
+    if command -v mawk > /dev/null 2>&1; then
       local n x y z d
       IFS=' .' read -r n x y z d <<< $(command mawk -W version 2> /dev/null)
       [[ $n == mawk ]] &&
