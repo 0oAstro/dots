@@ -6,7 +6,7 @@ if [[ -n ${_ZDOTS_FZF_UI_OPTS:-} ]]; then
   FZF_DEFAULT_OPTS=${FZF_DEFAULT_OPTS//"$_ZDOTS_FZF_UI_OPTS"/}
 fi
 # Nix layout: roomy reverse picker with the query at the top. Keep Kanagawa
-# semantic colors, including Lotus in light mode, rather than a separate theme.
+# semantic colors shared with the prompt rather than a separate theme.
 export _ZDOTS_FZF_UI_OPTS="--height=80% --layout=reverse --style=minimal --border=rounded --padding=0,1 --no-scrollbar --info=inline-right --separator='' --prompt='~ ' --pointer='› ' --marker='• ' --cycle --bind=ctrl-z:ignore $ZDOTS_FZF_THEME_OPTS --color=prompt:$ZDOTS_COLOR_YELLOW,pointer:$ZDOTS_COLOR_ORANGE,marker:$ZDOTS_COLOR_GREEN,header:$ZDOTS_COLOR_GREEN,info:$ZDOTS_COLOR_CYAN,spinner:$ZDOTS_COLOR_CYAN,fg+:$ZDOTS_COLOR_WHITE,hl:$ZDOTS_COLOR_BLUE,hl+:$ZDOTS_COLOR_MAGENTA,border:$ZDOTS_COLOR_BLUE,label:$ZDOTS_COLOR_MAGENTA,preview-fg:$ZDOTS_COLOR_FG,preview-bg:-1"
 export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:+${FZF_DEFAULT_OPTS% } }$_ZDOTS_FZF_UI_OPTS"
 
@@ -23,10 +23,12 @@ typeset -g FZF_ALT_C_OPTS="--border-label=' directories ' --ghost='find a direct
 typeset -g FZF_CTRL_R_OPTS="--border-label=' history ' --ghost='search commands' --bind=ctrl-u:clear-query,ctrl-k:kill-line,alt-j:clear-query --preview='printf %s {2..}' --preview-window='${preview_layout}:wrap'"
 typeset -g FZF_COMPLETION_OPTS="--border-label=' complete ' --tiebreak=chunk --bind=tab:accept"
 typeset -g FZF_TAB_COMPLETION_PROMPT='~ '
-zstyle ':completion:*' fzf-completion-secondary-color "$ZDOTS_COLOR_GREY"
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
+zstyle ':fzf-tab:*' fzf-flags '--border-label= complete ' '--tiebreak=begin' \
+  '--bind=tab:accept' '--height=40%' "--preview-window=$preview_layout"
 # Restrict previews to file-oriented commands; never evaluate a candidate.
-zstyle ':completion:*:*:(cd|z|__zoxide_z|ls|cat|bat|less|nvim|vim|e|cp|mv|rm):*' fzf-completion-opts \
-  --preview="$preview --quoted {1}" --preview-window="$preview_layout"
+zstyle ':fzf-tab:complete:(cd|z|__zoxide_z|ls|cat|bat|less|nvim|vim|e|cp|mv|rm):*' fzf-preview \
+  "$preview \"\$realpath\""
 
 # Alt-R reuses the native directory widget with zoxide as its input source.
 _zdots_fzf_dir_history() {

@@ -1,12 +1,11 @@
 # Fish-like alias expansion and magic-enter behavior.
 
 magic-enter-cmd() {
-  local cmd
-  zstyle -s ':zdots:magic-enter' command cmd || cmd=ls
   if command git rev-parse --is-inside-work-tree &>/dev/null; then
-    zstyle -s ':zdots:magic-enter' git-command cmd || cmd='git status -sb'
+    print -r -- 'git status -sb'
+  else
+    print -r -- ls
   fi
-  echo $cmd
 }
 
 _zdots_magic_enter() {
@@ -20,19 +19,9 @@ _zdots_accept_line() {
 }
 zle -N accept-line _zdots_accept_line
 
-typeset -gA _globalias_noexpand
-() {
-  local -a words
-  local word
-  zstyle -a ':zdots:globalias' noexpand words || words=(ls grep gpg vi e z 0 1 2 3 4 5 6 7 8 9)
-  for word in "${words[@]}"; do
-    _globalias_noexpand[$word]=1
-  done
-}
-
 _globalias_expand_word() {
   local word=${${(Az)LBUFFER}[-1]}
-  (( $+_globalias_noexpand[$word] )) && return
+  case $word in ls|grep|gpg|vi|e|z|[0-9]) return ;; esac
   (( $+galiases[$word] || ! $+commands[$word] )) && zle _expand_alias
 }
 

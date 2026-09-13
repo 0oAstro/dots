@@ -28,9 +28,10 @@ source "$ZDOTDIR/.zstyles"
 source "$ZDOTDIR/config/ui/theme.zsh"
 source "$ZDOTDIR/lib/antidote.zsh"
 source "$ZDOTDIR/config/core/options.zsh"
-typeset -g +x ZSH_AUTOSUGGEST_MANUAL_REBIND=1 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=200
-unset ZSH_AUTOSUGGEST_USE_ASYNC
+typeset -g +x ZSH_AUTOSUGGEST_MANUAL_REBIND=1 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 source "$ZDOTDIR/.zsh_plugins.zsh"
+# The plugin enables async while loading; keep the intended setting explicit.
+typeset -g +x ZSH_AUTOSUGGEST_USE_ASYNC=1
 # Plugins finish changing PATH first, avoiding a second mise hook at precmd.
 (( $+commands[mise] )) && eval "$(command mise activate zsh)"
 source "$ZDOTDIR/lib/generated.zsh"
@@ -49,7 +50,6 @@ source "$ZDOTDIR/config/integrations/herdr-shell.zsh"
 source "$ZDOTDIR/config/ui/aliases.zsh"
 source "$ZDOTDIR/config/ui/functions.zsh"
 source "$ZDOTDIR/config/ui/editor.zsh"
-source "$ZDOTDIR/config/ui/words.zsh"
 source "$ZDOTDIR/config/ui/globalias.zsh"
 source "$ZDOTDIR/config/ui/fzf-widgets.zsh"
 source "$ZDOTDIR/config/ui/autosuggestions.zsh"

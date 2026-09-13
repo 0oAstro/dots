@@ -9,7 +9,7 @@ alias gr="git rebase" gs="git status --short" gss="git status"
 alias md="mkdir -p" rrm="command rm"
 alias rm=trash
 alias ..="cd .."
-alias _=sudo l=ls g=git
+alias l=ls g=git
 alias grep='grep --exclude-dir={.git,.vscode}'
 alias ping='ping -c 5' vi=vim
 alias get=git quit=exit cd..='cd ..' zz=exit

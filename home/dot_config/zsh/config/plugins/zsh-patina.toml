@@ -1,7 +1,7 @@
 [highlighting]
 # Either the name of a built-in theme (e.g. `"simple"`, `"patina"`) or a string
 # in the form `"file:/path/mytheme.toml"` pointing to a custom theme toml file.
-theme = "@theme@"
+theme = "kanagawa"
 
 # Enable or disable dynamic highlighting. Can be `true` or `false` ...
 # Use partial path highlighting so existing file/directory prefixes are styled
@@ -31,26 +31,3 @@ max_line_length = 20000
 # be aborted in the middle of a line. If you often deal with long lines that
 # take longer to highlight than the timeout, consider reducing `max_line_length`.
 timeout_ms = 500
-
-# Treat our short sudo alias as a precommand too, so `_ nvim /etc/hosts` gets
-# the same downstream command/argument highlighting as `sudo nvim /etc/hosts`.
-[[highlighting.precommands]]
-name = "_"
-mode = "default"
-options = [
-  { short = "u", long = "user", arg = "required" },
-  { short = "g", long = "group", arg = "required" },
-  { short = "h", long = "host", arg = "required" },
-  { short = "C", long = "close-from", arg = "required" },
-  { short = "p", long = "prompt", arg = "required" },
-  { short = "A", long = "askpass", arg = "none" },
-  { short = "b", long = "background", arg = "none" },
-  { short = "E", long = "preserve-env", arg = "optional" },
-  { short = "H", long = "set-home", arg = "none" },
-  { short = "k", long = "reset-timestamp", arg = "none" },
-  { short = "n", long = "non-interactive", arg = "none" },
-  { short = "S", long = "stdin", arg = "none" },
-  { short = "v", long = "validate", arg = "none" },
-  { short = "l", long = "list", arg = "none", switch_to_mode = "arguments" },
-  { short = "e", long = "edit", arg = "none", switch_to_mode = "arguments" },
-]
