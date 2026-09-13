@@ -1,11 +1,4 @@
-# Terminal configs run herdr/launch; zsh only reports pane state and completions.
-# Map its short name onto whatever provider supplies Herdr's CLI completion.
-_zdots_complete_herdr_launcher() {
-  local -a words=(herdr "${words[@]:1}")
-  local service=herdr
-  "${_comps[herdr]:-_default}" "$@"
-}
-compdef _zdots_complete_herdr_launcher h
+# Terminal configs launch Herdr; zsh only reports pane state.
 
 [[ ${HERDR_ENV:-} == 1 ]] || return 0
 autoload -Uz add-zsh-hook

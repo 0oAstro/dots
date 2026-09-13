@@ -44,7 +44,6 @@ source "$ZDOTDIR/.p10k.zsh"
   source "$ZDOTDIR/config/integrations/$ZDOTS_PLATFORM.zsh"
 source "$ZDOTDIR/config/integrations/age-secrets.zsh"
 source "$ZDOTDIR/config/integrations/terminal.zsh"
-source "$ZDOTDIR/config/integrations/remote.zsh"
 source "$ZDOTDIR/config/integrations/herdr-shell.zsh"
 
 source "$ZDOTDIR/config/ui/aliases.zsh"
