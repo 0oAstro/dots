@@ -5,7 +5,8 @@
 # Completion sources. .zshrc runs compinit once after this bundle adds fpath.
 zsh-users/zsh-completions kind:fpath path:src
 zetlen/zsh-completion-generators kind:fpath
-Aloxaf/fzf-tab kind:fpath
+# Source-level fix for Aloxaf/fzf-tab#503; keep updates explicit via this pin.
+0oAstro/fzf-tab kind:fpath branch:fix/carapace-quoting pin:8e9d5714ac7a53f37f5ce17a7abd351b05a48189
 
 # Prompt
 romkatv/powerlevel10k path:powerlevel10k.zsh-theme

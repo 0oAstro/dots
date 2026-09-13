@@ -5,7 +5,7 @@
 [[ -z ${ZSH_EXECUTION_STRING:-} ]] || return 0
 _zdots_source_generated fzf --zsh
 
-# Keep fzf's ** trigger; Aloxaf supplies the ordinary Tab selector.
+# Keep fzf's ** trigger; the pinned fzf-tab dependency supplies ordinary Tab.
 local -a selectors=( ${^fpath}/fzf-tab.plugin.zsh(N) )
 if (( $#selectors )); then
   source "$selectors[1]"
