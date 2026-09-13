@@ -116,23 +116,3 @@ edit-secrets() {
     command rm -f -- "$plain" "$before"
   }
 }
-
-secrets-encrypt-age() {
-  emulate -L zsh
-  setopt no_aliases
-
-  local plain=$ZDOTDIR/.zshrc.local
-  local out=$_zdots_secrets_enc
-  local key=$_zdots_secrets_key
-  local cache=$_zdots_secrets_cache
-  local recipient
-
-  [[ -r $plain ]] || { print -ru2 "missing $plain"; return 1; }
-  [[ -r $key ]] || { print -ru2 "secrets-encrypt-age: age key $key not found"; return 1; }
-
-  recipient=$(age-keygen -y "$key") || return
-  age -r "$recipient" -o "$out" "$plain" && chmod 600 "$out" && {
-    command mkdir -p -- "${cache:h}" 2>/dev/null
-    command cp -- "$plain" "$cache" 2>/dev/null && command chmod 600 -- "$cache" 2>/dev/null
-  }
-}

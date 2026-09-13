@@ -2,23 +2,15 @@
 # .zsh_plugins.txt - antidote plugin list
 #
 
-# Completion system (must be first — before plugins that call compdef)
-mattmc3/ez-compinit
-
-# Completions (fpath only, loaded by compinit)
+# Completion sources. .zshrc runs compinit once after this bundle adds fpath.
 zsh-users/zsh-completions kind:fpath path:src
+zetlen/zsh-completion-generators kind:fpath
+lincheney/fzf-tab-completion kind:fpath path:zsh
 
 # Prompt
 romkatv/powerlevel10k path:powerlevel10k.zsh-theme
-# sindresorhus/pure  # disabled: using p10k pure-style prompt
-
-# zsh4humans-style fzf completion menu (loads after compinit, before autosuggest)
-# Aloxaf/fzf-tab  # disabled temporarily: enable-fzf-tab startup cost
 
 # Editor / typing
-# hlissner/zsh-autopair  # disabled: AUTOPAIR_INHIBIT_INIT was set and nothing
-# ever called autopair-init, so it bound nothing and only cost startup time.
-# It also wants the space key, which globalias already owns.
 romkatv/zsh-no-ps2
 
 # Extra git subcommands (sourced from mattmc3's repo)

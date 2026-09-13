@@ -1,148 +1,41 @@
-# zsh4humans-inspired fzf/history/directory widgets.
+# UI only: fzf itself owns history parsing, quoting, selection and cd.
+(( $+commands[fzf] )) || return 0
 
-_zfh_accept_autosuggest_full() {
-  if (( $+widgets[autosuggest-accept] )) && [[ -n $POSTDISPLAY ]]; then
-    zle autosuggest-accept
-  else
-    zle end-of-line
-  fi
+# Strip our previous suffix when a nested shell inherits FZF_DEFAULT_OPTS.
+if [[ -n ${_ZDOTS_FZF_UI_OPTS:-} ]]; then
+  FZF_DEFAULT_OPTS=${FZF_DEFAULT_OPTS//"$_ZDOTS_FZF_UI_OPTS"/}
+fi
+# Nix layout: roomy reverse picker with the query at the top. Keep Kanagawa
+# semantic colors, including Lotus in light mode, rather than a separate theme.
+export _ZDOTS_FZF_UI_OPTS="--height=80% --layout=reverse --style=minimal --border=rounded --padding=0,1 --no-scrollbar --info=inline-right --separator='' --prompt='~ ' --pointer='› ' --marker='• ' --cycle --bind=ctrl-z:ignore $ZDOTS_FZF_THEME_OPTS --color=prompt:$ZDOTS_COLOR_YELLOW,pointer:$ZDOTS_COLOR_ORANGE,marker:$ZDOTS_COLOR_GREEN,header:$ZDOTS_COLOR_GREEN,info:$ZDOTS_COLOR_CYAN,spinner:$ZDOTS_COLOR_CYAN,fg+:$ZDOTS_COLOR_WHITE,hl:$ZDOTS_COLOR_BLUE,hl+:$ZDOTS_COLOR_MAGENTA,border:$ZDOTS_COLOR_BLUE,label:$ZDOTS_COLOR_MAGENTA,preview-fg:$ZDOTS_COLOR_FG,preview-bg:-1"
+export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:+${FZF_DEFAULT_OPTS% } }$_ZDOTS_FZF_UI_OPTS"
+
+if (( $+commands[fd] )); then
+  export FZF_DEFAULT_COMMAND=${FZF_DEFAULT_COMMAND:-'fd --type f --hidden --exclude .git --strip-cwd-prefix'}
+  export FZF_CTRL_T_COMMAND=${FZF_CTRL_T_COMMAND-$FZF_DEFAULT_COMMAND}
+  export FZF_ALT_C_COMMAND=${FZF_ALT_C_COMMAND-'fd --type d --hidden --exclude .git --strip-cwd-prefix'}
+fi
+
+local preview="${(q)ZDOTDIR}/bin/fzf-preview"
+local preview_layout='right:50%:border-rounded:noinfo:nohidden'
+typeset -g FZF_CTRL_T_OPTS="--border-label=' files ' --ghost='find a file' --preview='${preview} {}' --preview-window='$preview_layout'"
+typeset -g FZF_ALT_C_OPTS="--border-label=' directories ' --ghost='find a directory' --preview='${preview} {}' --preview-window='$preview_layout'"
+typeset -g FZF_CTRL_R_OPTS="--border-label=' history ' --ghost='search commands' --bind=ctrl-u:clear-query,ctrl-k:kill-line,alt-j:clear-query --preview='printf %s {2..}' --preview-window='${preview_layout}:wrap'"
+typeset -g FZF_COMPLETION_OPTS="--border-label=' complete ' --tiebreak=chunk --bind=tab:accept"
+typeset -g FZF_TAB_COMPLETION_PROMPT='~ '
+zstyle ':completion:*' fzf-completion-secondary-color "$ZDOTS_COLOR_GREY"
+# Restrict previews to file-oriented commands; never evaluate a candidate.
+zstyle ':completion:*:*:(cd|z|__zoxide_z|ls|cat|bat|less|nvim|vim|e|cp|mv|rm):*' fzf-completion-opts \
+  --preview="$preview --quoted {1}" --preview-window="$preview_layout"
+
+# Alt-R reuses the native directory widget with zoxide as its input source.
+_zdots_fzf_dir_history() {
+  local FZF_ALT_C_COMMAND='zoxide query -l'
+  local FZF_ALT_C_OPTS="$FZF_ALT_C_OPTS --border-label=' visited directories ' --ghost='find a visited directory'"
+  zle fzf-cd-widget
 }
-zle -N _zfh_accept_autosuggest_full
-
-_zfh_accept_autosuggest_word() {
-  emulate -L zsh -o extended_glob
-  if [[ -n $POSTDISPLAY ]]; then
-    local rest=$POSTDISPLAY take
-    if [[ $rest == [[:space:]]##* ]]; then
-      take=${${rest%%[^[:space:]]*}:-$rest}
-      rest=${rest#$take}
-    fi
-    if [[ -n $rest ]]; then
-      local wordchars=${WORDCHARS//[[:space:][:alnum:]]}
-      if [[ $rest == [[:alnum:]$wordchars]##* ]]; then
-        take+=${rest%%[^[:alnum:]$wordchars]*}
-      else
-        take+=${rest[1]}
-      fi
-    fi
-    [[ -n $take ]] || take=${POSTDISPLAY[1]}
-    BUFFER+=$take
-    POSTDISPLAY=${POSTDISPLAY#$take}
-    CURSOR=${#BUFFER}
-    zle .reset-prompt
-  else
-    zle _zfh_forward_word
-  fi
-}
-zle -N _zfh_accept_autosuggest_word
-
-_zfh_forward_word() {
-  emulate -L zsh -o extended_glob
-  local buf w=${WORDCHARS//[[:space:][:alnum:]]}
-  repeat ${NUMERIC:-1}; do
-    buf=${RBUFFER##[[:space:]]#}
-    if (( $#buf < 2 )); then
-      buf=
-    elif [[ $buf == ?[[:space:]]* ]]; then
-      buf[1]=
-    elif [[ $buf[1,2] != *[[:alnum:]$w]* ]]; then
-      buf=${buf##[^[:space:][:alnum:]$w]#}
-    else
-      [[ $buf == [[:alnum:]$w]* ]] || buf[1]=
-      buf=${buf##[[:alnum:]$w]#}
-    fi
-    (( CURSOR += $#RBUFFER - $#buf ))
-  done
-}
-zle -N _zfh_forward_word
-
-_zfh_backward_word() {
-  emulate -L zsh -o extended_glob
-  local buf w=${WORDCHARS//[[:space:][:alnum:]]}
-  repeat ${NUMERIC:-1}; do
-    buf=${LBUFFER%%[[:space:]]#}
-    if (( $#buf < 2 )); then
-      buf=
-    elif [[ $buf == *[[:space:]]? ]]; then
-      buf[-1]=
-    elif [[ $buf[-2,-1] != *[[:alnum:]$w]* ]]; then
-      buf=${buf%%[^[:space:][:alnum:]$w]#}
-    else
-      [[ $buf == *[[:alnum:]$w] ]] || buf[-1]=
-      buf=${buf%%[[:alnum:]$w]#}
-    fi
-    (( CURSOR -= $#LBUFFER - $#buf ))
-  done
-}
-zle -N _zfh_backward_word
-
-_zfh_forward_zword() {
-  emulate -L zsh
-  local word buf
-  repeat ${NUMERIC:-1}; do
-    buf=$PREBUFFER$BUFFER
-    for word in ${(Z:n:)buf} ''; do
-      (( $#buf < $#RBUFFER )) && break
-      buf=${${buf##[[:space:]]#}:$#word}
-    done
-    CURSOR=$(($#BUFFER - $#buf))
-    (( CURSOR > $#BUFFER )) && CURSOR=$#BUFFER
-  done
-}
-zle -N _zfh_forward_zword
-
-_zfh_backward_zword() {
-  emulate -L zsh
-  local word buf tail
-  repeat ${NUMERIC:-1}; do
-    buf=$PREBUFFER$BUFFER
-    for word in '' ${(Z:n:)buf}; do
-      tail=${${buf:$#word}##[[:space:]]#}
-      (( $#tail <= $#RBUFFER )) && break
-      buf=$tail
-    done
-    CURSOR=$(($#buf <= $#BUFFER ? $#BUFFER - $#buf : 0))
-  done
-}
-zle -N _zfh_backward_zword
-
-_zfh_fzf_history() {
-  local selected
-  selected=$(fc -rl 1 2>/dev/null | awk '{$1=""; sub(/^ /,""); if (!seen[$0]++) print}' |
-    FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:-} --height=80% --layout=reverse --border --no-multi --exact --cycle --bind=ctrl-u:clear-query,ctrl-k:kill-line,alt-j:clear-query" \
-    fzf --query="$LBUFFER" --preview 'printf %s {}' --preview-window=wrap:3:down:noborder) || return
-  BUFFER=$selected
-  CURSOR=${#BUFFER}
-  zle -R
-}
-zle -N _zfh_fzf_history
-
-_zfh_fzf_dir_history() {
-  local selected
-  selected=$(zoxide query -l 2>/dev/null | awk 'NF && !seen[$0]++' |
-    FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:-} --height=80% --layout=reverse --border --no-multi --exact --cycle --bind=tab:down,btab:up,ctrl-u:clear-query" \
-    fzf --preview 'eza -la --color=always {}' --preview-window=right:50%) || return
-  cd -- "$selected" || return
-  zle reset-prompt
-}
-zle -N _zfh_fzf_dir_history
-
-_zdots_fzf_cd_down() {
-  setopt local_options no_aliases pipefail
-  local dir
-  dir=$(fd --type d --hidden --exclude .git --color=never . |
-    sed 's#^./##' |
-    fzf --height ${FZF_TMUX_HEIGHT:-40%} --reverse --scheme=path)
-  [[ -n $dir ]] || return
-  BUFFER="cd ${(q)dir}"
-  zle accept-line
-}
-zle -N _zdots_fzf_cd_down
-
-bindkey -M emacs '^[[1;5C' _zfh_forward_zword
-bindkey -M emacs '^[[1;3D' _zfh_backward_word
-bindkey -M emacs '^[b' _zfh_backward_word
-bindkey -M emacs '^[[1;5D' _zfh_backward_zword
-bindkey -M emacs '^R' _zfh_fzf_history
-bindkey -M emacs '^[r' _zfh_fzf_dir_history
-bindkey -M emacs '^[c' _zdots_fzf_cd_down
+zle -N _zdots_fzf_dir_history
+for keymap in emacs viins; do
+  bindkey -M "$keymap" '^[r' _zdots_fzf_dir_history
+done
+unset preview preview_layout keymap

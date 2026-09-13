@@ -1,6 +1,6 @@
 #
 # .zshenv — loaded for ALL zsh shells (interactive + non-interactive + scripts)
-# Keep the steady-state path builtin-only; cache/bootstrap work runs when stale.
+# Environment and shims only; interactive activation belongs in .zshrc.
 #
 
 export ZDOTDIR=${ZDOTDIR:-$HOME/.config/zsh}
@@ -35,9 +35,23 @@ case ${OSTYPE:-} in
     ;;
 esac
 
+# Make Bitwarden available to non-interactive SSH sessions too. Preserve a
+# working inherited/forwarded agent; fall back only when its socket is absent.
+if [[ $ZDOTS_PLATFORM == macos && ! -S ${SSH_AUTH_SOCK:-} ]]; then
+  for _zdots_agent_socket in \
+    "$HOME/.bitwarden-ssh-agent.sock" \
+    "$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"; do
+    if [[ -S $_zdots_agent_socket ]]; then
+      export SSH_AUTH_SOCK=$_zdots_agent_socket
+      break
+    fi
+  done
+  unset _zdots_agent_socket
+fi
+
 # Tool configuration needed by both interactive and noninteractive zsh.
 export PROJECTS=${PROJECTS:-$HOME/Developer}
-export INPUTRC=$XDG_CONFIG_HOME/readline/inputrc
+[[ -r $XDG_CONFIG_HOME/readline/inputrc ]] && export INPUTRC=$XDG_CONFIG_HOME/readline/inputrc
 export RIPGREP_CONFIG_PATH=$XDG_CONFIG_HOME/ripgrep/config
 
 # Pi: suppress startup version and package update notifications; updates are run manually.
@@ -47,7 +61,7 @@ export PI_SKIP_VERSION_CHECK=1
 export BUNDLE_USER_CONFIG=$XDG_CONFIG_HOME/bundle
 export BUNDLE_USER_CACHE=$XDG_CACHE_HOME/bundle
 export BUNDLE_USER_PLUGIN=$XDG_DATA_HOME/bundle
-export NPM_CONFIG_USERCONFIG=$XDG_CONFIG_HOME/npm/npmrc
+[[ -r $XDG_CONFIG_HOME/npm/npmrc ]] && export NPM_CONFIG_USERCONFIG=$XDG_CONFIG_HOME/npm/npmrc
 export NPM_CONFIG_CACHE=$XDG_CACHE_HOME/npm
 # npm 11 no longer supports NPM_CONFIG_TMP; discard stale inherited values.
 unset NPM_CONFIG_INIT_MODULE NPM_CONFIG_TMP
@@ -79,17 +93,3 @@ export AWS_PROFILE=${AWS_PROFILE:-personal}
 export AWS_REGION=${AWS_REGION:-us-east-1}
 
 source "$ZDOTDIR/lib/path.zsh"
-
-# Activate mise for every zsh, including non-interactive SSH commands. The
-# interactive setup re-runs activation after plugins have finished modifying
-# PATH, so the shims remain first in both kinds of shell.
-source "$ZDOTDIR/lib/mise.zsh"
-if (( $+commands[mise] )) && [[ -z ${MISE_SHELL:-} ]]; then
-  # Non-interactive shells need synchronous env application (no precmd hooks);
-  # interactive shells defer the hook-env fork to the first precmd.
-  if [[ -o interactive ]]; then
-    _zdots_mise_source interactive
-  else
-    _zdots_mise_source full
-  fi
-fi

@@ -1,0 +1,51 @@
+# Generic adapter for upstream generator metadata. No per-command recipes.
+setopt localoptions no_aliases
+local tool=${service:-$words[1]} binary dir file tmp
+local fallback=${_zdots_completion_fallbacks[$tool]:-_default}
+local -a generator=( ${(z)_zdots_completion_generators[$tool]} )
+local -A info
+binary=${commands[$generator[1]]:-}
+[[ -n $binary ]] || { "$fallback" "$@"; return; }
+if [[ $binary == */mise/shims/* ]]; then
+  binary=$(command mise which "$generator[1]" 2>/dev/null) || { "$fallback" "$@"; return; }
+fi
+binary=${binary:A}
+zmodload -F zsh/stat b:zstat
+zstat -H info -- "$binary" 2>/dev/null || { "$fallback" "$@"; return; }
+dir=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/native-completions/$tool-${_zdots_completion_catalog_versions[$tool]:-0}-$info[device]-$info[inode]-$info[mtime]-$info[size]
+file=$dir/_$tool
+
+if [[ ! -s $file && ! -e $dir/unavailable ]]; then
+  command mkdir -p -- "$dir" || return 1
+  tmp=$(command mktemp "$dir/.generate.XXXXXX") || return 1
+  generator[1]=$binary
+  {
+    if command "${generator[@]}" >| "$tmp" 2>/dev/null &&
+       [[ -s $tmp ]] && command zsh -fn "$tmp" 2>/dev/null; then
+      command mv -f -- "$tmp" "$file" || return 1
+      zcompile "$file"
+    else
+      # Retry automatically after a binary or upstream catalog update.
+      : > "$dir/unavailable"
+    fi
+  } always {
+    [[ -e $tmp ]] && command rm -f -- "$tmp"
+  }
+fi
+
+if [[ ! -s $file ]]; then
+  "$fallback" "$@"
+  return
+fi
+
+local -a fpath=("$dir" $fpath)
+if [[ ${functions_source[_$tool]:-} != $file ]]; then
+  unfunction "_$tool" 2>/dev/null || true
+  autoload -Uz +X "_$tool"
+fi
+{
+  "_$tool" "$@"
+} always {
+  # Some generators re-register themselves; retain automatic version checks.
+  compdef _zdots_native_completion "$tool"
+}

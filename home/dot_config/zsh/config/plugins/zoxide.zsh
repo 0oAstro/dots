@@ -1,7 +1,5 @@
-# Lazy zoxide init keeps startup cheap while preserving `z`, `zi`, and `cd`.
-#
-
-function z()      { unfunction z zoxide zi; eval "$(zoxide init zsh)"; z "$@"; }
-function zoxide() { unfunction z zoxide zi; eval "$(zoxide init zsh)"; zoxide "$@"; }
-function zi()     { unfunction z zoxide zi; eval "$(zoxide init zsh)"; zi "$@"; }
+# Install the real hooks at startup so builtin cd (including fzf's Alt-C)
+# participates in directory history before the first explicit `z` command.
+(( $+commands[zoxide] )) || return 0
+_zdots_source_generated zoxide init zsh
 alias cd=z

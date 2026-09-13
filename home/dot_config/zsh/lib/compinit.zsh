@@ -1,24 +1,61 @@
-# compinit prep. compinit itself is handled by mattmc3/ez-compinit.
-#
-# This has to run before config/plugins/load.zsh: ez-compinit calls compstyleinit
-# at plugin-load time, which pulls compinit in with it. Anything set afterwards
-# is too late, so $fpath here is still the pre-plugin one.
+# One completion init, after the complete fpath is assembled. No presets.
+ZSH_COMPDUMP=$XDG_CACHE_HOME/zsh/zcompdump-$HOST-$ZSH_VERSION
 
-_comp_options+=(globdots)
-ZSH_COMPDUMP=$XDG_CACHE_HOME/zsh/zcompdump-$HOST
-
-# Drop a stale dump so new completions show up on the next shell rather than
-# waiting out ez-compinit's 20h cache window. Plugin fpath entries do not exist
-# yet, so stand in for them with the antidote bundle and plugin root, both of
-# which change whenever the plugin set does.
 () {
   emulate -L zsh -o extended_glob
-  local dump=$ZSH_COMPDUMP
-  [[ -s $dump ]] || return 0
-  local -a newer=(
-    ${^fpath}(N/e:'[[ $REPLY -nt $dump ]]':)
-    $ZDOTDIR/.zsh_plugins.zsh(N.e:'[[ $REPLY -nt $dump ]]':)
-    $ANTIDOTE_HOME(N/e:'[[ $REPLY -nt $dump ]]':)
-  )
-  (( $#newer )) && command rm -f -- "$dump" "$dump".zwc
+  local dump=$ZSH_COMPDUMP key="$ZSH_VERSION:${(j.:.)fpath}"
+  local saved
+  [[ -r $dump.fpath ]] && saved=$(< "$dump.fpath")
+  local -a newer=( ${^fpath}(N/e:'[[ $REPLY -nt $dump ]]':) )
+  autoload -Uz compinit
+
+  if [[ -s $dump && $saved == $key && -n $dump(#qNmh-24) ]] && (( ! $#newer )); then
+    compinit -C -d "$dump"
+  else
+    # A changed fpath can have the same file count: do not reuse its old map.
+    command rm -f -- "$dump" "$dump.zwc"
+    compinit -i -d "$dump"
+    print -r -- "$key" >| "$dump.fpath"
+    [[ -s $dump ]] && zcompile "$dump"
+  fi
+}
+
+_comp_options+=(globdots)
+
+# Command-specific definitions belong to the provider, not a dotfiles registry.
+# It supplies candidates to zsh; the fzf selector only controls their display.
+if (( $+commands[carapace] )); then
+  # Native zsh completions are already present; avoid recursive bridge shells.
+  export CARAPACE_BRIDGES=''
+  () {
+    local -A native=( "${(@kv)_comps}" )
+    # Load completions without Carapace prepending its unused wrapper directory.
+    # Keep mise's PATH stable so its first precmd need not activate a second time.
+    local -a path=( "$path[@]" )
+    _zdots_source_generated carapace _carapace zsh
+    # Fill gaps without replacing working native definitions.
+    _comps+=( "${(@kv)native}" )
+  }
+fi
+
+# Prefer native generators where the upstream catalog has one. Loading the
+# catalog is builtin-only; generation happens automatically on first Tab.
+typeset -gA _zdots_completion_generators _zdots_completion_catalog_versions _zdots_completion_fallbacks
+autoload -Uz _zdots_native_completion
+() {
+  local catalog tool recipe
+  local -A info
+  zmodload -F zsh/stat b:zstat
+  for catalog in ${^fpath}/generators.csv(N); do
+    zstat -H info -- "$catalog" || continue
+    while IFS=, read -r tool recipe; do
+      [[ -n $tool && $tool != Tool && -n $recipe ]] || continue
+      _zdots_completion_generators[$tool]=$recipe
+      _zdots_completion_catalog_versions[$tool]=$info[mtime]-$info[size]
+      if [[ ${_comps[$tool]:-} != _zdots_native_completion ]]; then
+        _zdots_completion_fallbacks[$tool]=${_comps[$tool]:-_default}
+      fi
+      compdef _zdots_native_completion "$tool"
+    done < "$catalog"
+  done
 }

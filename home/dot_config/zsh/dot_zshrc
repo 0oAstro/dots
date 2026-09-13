@@ -1,93 +1,60 @@
 [[ ${ZPROFRC:-0} == 1 ]] && zmodload zsh/zprof
 
-# Pokemon greeting. Run it before P10k captures terminal output so the art is
-# visible immediately and becomes part of the terminal state P10k saves.
+if [[ ${HERDR_ENV:-} == 1 && -t 1 ]]; then
+  unset NO_COLOR
+  export COLORTERM=truecolor
+fi
+
 if [[ -z ${ZSH_EXECUTION_STRING:-} ]]; then
   () {
     setopt localoptions noprompt_sp noprompt_cr
-    pokeget random --hide-name 2>/dev/null
+    local pokemon=$XDG_DATA_HOME/mise/installs/cargo-pokeget/latest/bin/pokeget
+    [[ -x $pokemon ]] || pokemon=${commands[pokeget]:-}
+    [[ -n $pokemon ]] && "$pokemon" random --hide-name 2>/dev/null
     print
   }
 fi
-
-# Enable Powerlevel10k instant prompt. Should stay close to the top of .zshrc.
-# Initialization code that may require console input must go above this block;
-# everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+if [[ -r "$XDG_CACHE_HOME/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "$XDG_CACHE_HOME/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
-
 PROMPT_EOL_MARK=''
-
-# p10k falls back to forking `who -m` to detect SSH whenever SSH_* is unset.
-# Those variables are authoritative here, so answer the question up front.
 if [[ -z $SSH_CLIENT && -z $SSH_TTY && -z $SSH_CONNECTION ]]; then
   typeset -gix P9K_SSH=0
   typeset -gx _P9K_SSH_TTY=$TTY
 fi
 
-typeset -g +x ANTIDOTE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/antidote
+typeset -g +x ANTIDOTE_HOME=$XDG_CACHE_HOME/antidote
 source "$ZDOTDIR/.zstyles"
 source "$ZDOTDIR/config/ui/theme.zsh"
 source "$ZDOTDIR/lib/antidote.zsh"
-
 source "$ZDOTDIR/config/core/options.zsh"
-# Must precede load.zsh: ez-compinit pulls compinit in at plugin-load time, so
-# ZSH_COMPDUMP and the staleness check both have to be settled before then.
+typeset -g +x ZSH_AUTOSUGGEST_MANUAL_REBIND=1 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=200
+unset ZSH_AUTOSUGGEST_USE_ASYNC
+source "$ZDOTDIR/.zsh_plugins.zsh"
+# Plugins finish changing PATH first, avoiding a second mise hook at precmd.
+(( $+commands[mise] )) && eval "$(command mise activate zsh)"
+source "$ZDOTDIR/lib/generated.zsh"
 source "$ZDOTDIR/lib/compinit.zsh"
-
-source "$ZDOTDIR/config/plugins/env.zsh"
-source "$ZDOTDIR/config/plugins/load.zsh"
 source "$ZDOTDIR/config/plugins/fzf.zsh"
 source "$ZDOTDIR/config/plugins/zoxide.zsh"
+source "$ZDOTDIR/.p10k.zsh"
 
-source "$ZDOTDIR/lib/prompt.zsh"
-
-_zdots_platform_file=$ZDOTDIR/config/integrations/$ZDOTS_PLATFORM.zsh
-[[ -r $_zdots_platform_file ]] && source "$_zdots_platform_file"
-unset _zdots_platform_file
+[[ -r "$ZDOTDIR/config/integrations/$ZDOTS_PLATFORM.zsh" ]] &&
+  source "$ZDOTDIR/config/integrations/$ZDOTS_PLATFORM.zsh"
 source "$ZDOTDIR/config/integrations/age-secrets.zsh"
 source "$ZDOTDIR/config/integrations/terminal.zsh"
-[[ -n ${ZMX_SESSION:-} ]] && source "$ZDOTDIR/config/integrations/terminal-title.zsh"
 source "$ZDOTDIR/config/integrations/remote.zsh"
-[[ ${ZDOTS_HISTORY_AUX:-0} == 1 ]] && source "$ZDOTDIR/config/integrations/history-aux.zsh"
+source "$ZDOTDIR/config/integrations/herdr-shell.zsh"
 
 source "$ZDOTDIR/config/ui/aliases.zsh"
 source "$ZDOTDIR/config/ui/functions.zsh"
 source "$ZDOTDIR/config/ui/editor.zsh"
+source "$ZDOTDIR/config/ui/words.zsh"
 source "$ZDOTDIR/config/ui/globalias.zsh"
 source "$ZDOTDIR/config/ui/fzf-widgets.zsh"
 source "$ZDOTDIR/config/ui/autosuggestions.zsh"
-
 source "$ZDOTDIR/lib/recompile.zsh"
 
-[[ ${ZPROFRC:-0} == 1 ]] && zprof
-
-# Loads last: patina wraps ZLE widgets and must see the final set of them.
+# Patina must see the final widgets. Its activation manages its daemon.
 source "$ZDOTDIR/config/plugins/patina.zsh"
-
-# Keep mise after plugins and PATH modifications so its shims win.
-#
-# Top-level interactive shells already activated mise in .zshenv (hooks are
-# installed). Nested interactive shells inherit MISE_SHELL, skipped .zshenv,
-# and source the cached interactive activation here instead. Either way the
-# expensive mise forks never run twice per shell chain.
-if (( $+commands[mise] )) && (( ! $+functions[_mise_hook_precmd] )); then
-  _zdots_mise_source interactive
-fi
-
-# Fork-free equivalent of the old unconditional `eval "$(mise activate zsh)"`:
-# make sure the shim directory wins over anything plugins prepended. The hooks
-# themselves come from the activation above or from .zshenv.
-_mise_shims=$HOME/.local/share/mise/shims
-if [[ -d $_mise_shims ]]; then
-  path=($_mise_shims ${path:#$_mise_shims})
-fi
-
-# Antidote's kind:path plugin prepends this directory; move it behind mise's
-# active tool paths after every plugin has finished changing PATH.
-typeset _mise_git_cmds="$HOME/.cache/antidote/github.com/mattmc3/git-cmds"
-if [[ -d $_mise_git_cmds ]]; then
-  path=(${path:#$_mise_git_cmds} $_mise_git_cmds)
-fi
-unset _mise_shims _mise_git_cmds
+if [[ ${ZPROFRC:-0} == 1 ]]; then zprof; fi

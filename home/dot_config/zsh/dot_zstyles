@@ -7,28 +7,20 @@ zstyle ':antidote:home'  path "$ANTIDOTE_HOME"
 zstyle ':antidote:repo'  path "$ZDOTDIR/.antidote"
 zstyle ':antidote:*'     zcompile 'yes'
 
-# ── ez-compinit ──────────────────────────────────────────────────
-zstyle ':plugin:ez-compinit' 'compstyle' 'zshzoo'
-# use-cache yes: warm path uses compinit -C; cold path uses -i (no insecure-dir prompt).
-# lib/compinit.zsh deletes the dump when $fpath changes, so new completions appear immediately.
-zstyle ':plugin:ez-compinit' 'use-cache' yes
-
 # ── completion ───────────────────────────────────────────────────
-zstyle ':completion:*' menu select=2
-zstyle ':completion:*' group-name '' verbose yes
+zstyle ':completion:*' menu no
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' verbose yes
 zstyle ':completion:*:descriptions' format '[%d]'
-zstyle ':completion:*' completer _complete _ignored _approximate
+zstyle ':completion:*' completer _complete _ignored
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/.zcompcache"
 
-# ── fzf-tab: disabled pending plugin re-enable ───────────────────
-# disabled temporarily in .zsh_plugins.txt (enable-fzf-tab startup cost).
-# Re-enabling fzf-tab also needs `menu no`, which conflicts with menu select=2 above.
-# zstyle ':completion:*' menu no
-zstyle ':fzf-tab:*' fzf-command fzf
-zstyle ':fzf-tab:*' fzf-flags --height=40% --min-height=12 --layout=reverse --border --cycle --bind=tab:accept --bind=ctrl-z:ignore
-zstyle ':fzf-tab:*' switch-group '<' '>'
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza -1 --color=always $realpath'
-zstyle ':fzf-tab:complete:*:*' fzf-preview 'if [[ -d $realpath ]]; then eza -1 --color=always $realpath; else bat --color=always --style=numbers --line-range=:160 $realpath; fi'
+zstyle ':completion:*' squeeze-slashes true
+zstyle ':completion:*' special-dirs ..
+zstyle ':completion:*:git-checkout:*' sort false
+
+# fzf-tab-completion shows descriptions without changing zsh's candidates.
+zstyle ':completion:*' fzf-search-display false
+zstyle ':completion:*' fzf-completion-keybindings 'right:accept:repeat-fzf-completion'

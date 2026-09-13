@@ -9,6 +9,7 @@ typeset -gx ZDOTS_APPEARANCE=${ZDOTS_APPEARANCE:-}
 
 _zdots_resolve_appearance() {
   emulate -L zsh
+  typeset -g ZDOTS_PATINA_RELOAD=0
 
   local cache_dir=${XDG_CACHE_HOME:-$HOME/.cache}/zsh
   [[ -d $cache_dir ]] || command mkdir -p -- $cache_dir || return 1
@@ -84,7 +85,9 @@ _zdots_resolve_appearance() {
     content=${content//@theme@/$ZSH_PATINA_THEME}
     print -r -- $content >| $config
     print -r -- $ZSH_PATINA_THEME >| $selection
+    ZDOTS_PATINA_RELOAD=1
   fi
+  [[ -n $ZDOTS_THEME_FILE && $ZDOTS_THEME_FILE -nt $selection ]] && ZDOTS_PATINA_RELOAD=1
 
   typeset -gx ZSH_PATINA_CONFIG_PATH=$config
   typeset -g ZDOTS_THEME=$name

@@ -14,14 +14,8 @@ _zdots_magic_enter() {
   BUFFER=$(magic-enter-cmd)
 }
 
-typeset -ga _zdots_accept_line_hook
-_zdots_accept_line_hook=(_zdots_magic_enter)
-
 _zdots_accept_line() {
-  local hook
-  for hook in $_zdots_accept_line_hook; do
-    $hook
-  done
+  _zdots_magic_enter
   zle .accept-line
 }
 zle -N accept-line _zdots_accept_line

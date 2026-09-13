@@ -11,14 +11,10 @@ typeset -gxUT INFOPATH infopath
 
 # Homebrew is a macOS-only path source. Keep its default prefix from
 # polluting Linux shells.
-# Keg-link overrides (curl, sqlite) removed — those tools are no longer
-# brew-installed; system curl and mise-managed tooling take precedence.
 if [[ -n ${HOMEBREW_PREFIX:-} && -d $HOMEBREW_PREFIX ]]; then
   path=(
     $HOMEBREW_PREFIX/bin
     $HOMEBREW_PREFIX/sbin
-    # $HOMEBREW_PREFIX/opt/curl/bin    # removed: curl uninstalled from brew
-    # $HOMEBREW_PREFIX/opt/sqlite/bin  # removed: sqlite uninstalled from brew
     $path
   )
 fi
@@ -27,7 +23,6 @@ path=(
   $HOME/.local/share/mise/shims
   $HOME/.local/bin
   $HOME/.local/share/pnpm/bin
-  $HOME/.bun/bin
   $CARGO_HOME/bin
   $GOPATH/bin
   $path

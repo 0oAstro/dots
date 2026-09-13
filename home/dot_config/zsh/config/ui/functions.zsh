@@ -1,9 +1,5 @@
 # Small interactive helper functions.
 
-die()  { warn "$@"; return "${ERR:-1}"; }
-say()  { printf '%s\n' "$@"; }
-warn() { say "$@" >&2; }
-
 bak() {
   local now f
   now=$(date +"%Y%m%d-%H%M%S")
@@ -23,16 +19,6 @@ up() {
   local i dotdot=".."
   for ((i = 1; i < parents; i++)); do dotdot+="/.."; done
   cd $dotdot
-}
-
-weather() {
-  curl "http://wttr.in/$1"
-}
-
-colormap() {
-  for i in {0..255}; do
-    print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$'\n'}
-  done
 }
 
 # `ls` may already be an alias (for example, from a system profile). The
