@@ -3,7 +3,6 @@
 ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(
   globalias-accept
   globalias-space
-  accept-full-suggestion
   accept-line-plain
 )
 

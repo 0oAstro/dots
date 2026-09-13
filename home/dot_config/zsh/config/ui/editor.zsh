@@ -12,18 +12,9 @@ function fancy-ctrl-z {
 zle -N fancy-ctrl-z
 bindkey '^Z' fancy-ctrl-z
 
-accept-full-suggestion() {
-  if [[ -n $POSTDISPLAY ]]; then
-    BUFFER="$BUFFER$POSTDISPLAY"
-    POSTDISPLAY=""
-    zle end-of-line
-  else
-    zle forward-char
-  fi
-}
-zle -N accept-full-suggestion
-bindkey -M emacs '^[[C' accept-full-suggestion
-bindkey -M emacs '^[OC' accept-full-suggestion
+# Autosuggestions wraps forward-char: accept only at EOL, otherwise move right.
+bindkey -M emacs '^[[C' forward-char
+bindkey -M emacs '^[OC' forward-char
 bindkey -M emacs '^E' end-of-line
 
 _pokeget_clear() {
