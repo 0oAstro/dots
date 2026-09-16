@@ -28,6 +28,14 @@ path=(
   $path
 )
 
+# Git's shell helpers source `gettext.sh` by name. Mise creates shims for every
+# executable in every installed tool version, including an inactive Anaconda
+# gettext.sh; sourcing that binary shim produces Mach-O garbage as shell code.
+# Prefer Homebrew's real shell library while leaving Mise ahead for other tools.
+if [[ $ZDOTS_PLATFORM == macos && -x $HOMEBREW_PREFIX/opt/gettext/bin/gettext.sh ]]; then
+  path=($HOMEBREW_PREFIX/opt/gettext/bin $path)
+fi
+
 if [[ -n ${HOMEBREW_PREFIX:-} && -d $HOMEBREW_PREFIX/share/info ]]; then
   infopath=($HOMEBREW_PREFIX/share/info $infopath)
 fi
