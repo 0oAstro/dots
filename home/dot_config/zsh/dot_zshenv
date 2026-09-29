@@ -57,6 +57,11 @@ export RIPGREP_CONFIG_PATH=$XDG_CONFIG_HOME/ripgrep/config
 # Pi: suppress startup version and package update notifications; updates are run manually.
 export PI_SKIP_VERSION_CHECK=1
 
+# mise: skip aardvark's NFS-mounted $HOME config (targets the remote box).
+# Must be an env var; the global [settings] key is applied too late to suppress
+# the untrusted-config error.
+export MISE_IGNORED_CONFIG_PATHS=$HOME/aardvark
+
 # XDG-aware tool homes
 export BUNDLE_USER_CONFIG=$XDG_CONFIG_HOME/bundle
 export BUNDLE_USER_CACHE=$XDG_CACHE_HOME/bundle
