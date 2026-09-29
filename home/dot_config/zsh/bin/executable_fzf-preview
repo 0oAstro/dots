@@ -1,11 +1,4 @@
 #!/bin/sh
-# fzf supplies a quoted argument. Completion fields have one additional zsh
-# quoting layer; remove it as data, never with eval.
-if [ "${1-}" = --quoted ]; then
-  shift
-  exec zsh -fc 'exec "$1" "${(Q)2}"' -- "$0" "${1-}"
-fi
-
 target=${1:-.}
 if [ -d "$target" ]; then
   if command -v eza >/dev/null 2>&1; then

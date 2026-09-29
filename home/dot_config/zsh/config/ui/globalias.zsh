@@ -1,20 +1,13 @@
 # Fish-like alias expansion and magic-enter behavior.
 
-magic-enter-cmd() {
-  if command git rev-parse --is-inside-work-tree &>/dev/null; then
-    print -r -- 'git status -sb'
-  else
-    print -r -- ls
-  fi
-}
-
-_zdots_magic_enter() {
-  [[ -n $BUFFER || $CONTEXT != start ]] && return
-  BUFFER=$(magic-enter-cmd)
-}
-
 _zdots_accept_line() {
-  _zdots_magic_enter
+  if [[ -z $BUFFER && $CONTEXT == start ]]; then
+    if command git rev-parse --is-inside-work-tree &>/dev/null; then
+      BUFFER='git status -sb'
+    else
+      BUFFER=ls
+    fi
+  fi
   zle .accept-line
 }
 zle -N accept-line _zdots_accept_line

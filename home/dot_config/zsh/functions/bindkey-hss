@@ -10,7 +10,7 @@ bindkey -M vicmd "j" history-substring-search-down
 
 # Up and down (guard against empty terminfo on non-standard terminals)
 local keymap
-for keymap in 'main' 'emacs' 'viins'; do
+for keymap in emacs viins; do
   [[ -n "$terminfo[kcuu1]" ]] && bindkey -M "$keymap" "$terminfo[kcuu1]" history-substring-search-up
   [[ -n "$terminfo[kcud1]" ]] && bindkey -M "$keymap" "$terminfo[kcud1]" history-substring-search-down
   bindkey -M "$keymap" '^[[A' history-substring-search-up
