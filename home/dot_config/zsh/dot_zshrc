@@ -43,6 +43,7 @@ source "$ZDOTDIR/.p10k.zsh"
 [[ -r "$ZDOTDIR/config/integrations/$ZDOTS_PLATFORM.zsh" ]] &&
   source "$ZDOTDIR/config/integrations/$ZDOTS_PLATFORM.zsh"
 source "$ZDOTDIR/config/integrations/age-secrets.zsh"
+source "$ZDOTDIR/config/integrations/ai-gateway.zsh"
 source "$ZDOTDIR/config/integrations/terminal.zsh"
 source "$ZDOTDIR/config/integrations/herdr-shell.zsh"
 
