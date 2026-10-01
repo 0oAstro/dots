@@ -1,0 +1,37 @@
+# Managed by chezmoi (0oAstro/dots). Each machine's hosts live in
+# config.d/<hostname>, age-encrypted in the repo because it is public.
+# ssh uses the first value it finds, so host blocks win over the defaults below.
+Include config.d/*
+
+Host *
+  # Reuse one connection per host. Short persist so a master left over from
+  # an old network dies quickly instead of hanging new sessions.
+  ControlMaster auto
+  ControlPath ~/.ssh/cm-%C
+  ControlPersist 10m
+
+  # Drop a dead link after ~1 min of silence, but ride out short roams.
+  # TCPKeepAlive off: kernel probes kill sessions on brief packet loss.
+  ServerAliveInterval 15
+  ServerAliveCountMax 4
+  TCPKeepAlive no
+  ConnectTimeout 10
+
+  # Trust new hosts on first use, refuse changed keys, learn rotated keys.
+  StrictHostKeyChecking accept-new
+  UpdateHostKeys yes
+  HashKnownHosts yes
+
+  PreferredAuthentications publickey,keyboard-interactive,password
+  # Fastest cipher first, rest of the default list kept as fallback.
+  Ciphers ^aes128-gcm@openssh.com
+  # Tailscale links are fast; git and rsync compress on their own.
+  # herdr passes -C itself for its screen stream.
+  Compression no
+  SendEnv ZDOTS_APPEARANCE
+{{- if eq .chezmoi.os "darwin" }}
+  IdentityAgent ~/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock
+  SetEnv TERM=xterm-ghostty
+{{- else }}
+  AddKeysToAgent yes
+{{- end }}
