@@ -56,5 +56,5 @@ vercel = { version = "latest", allow_builds = ["esbuild"], trust_policy_excludes
 
 "aqua:rclone/rclone" = "latest"
 "aqua:FiloSottile/age" = "latest"
-"aqua:bitwarden/clients" = "latest"
+"aqua:bitwarden/clients" = "2026.8.0"  # 2026.9 key-id backfill 404s on Vaultwarden 1.37.3
 "github:pimalaya/himalaya" = "latest"
