@@ -41,7 +41,9 @@ for p in "${profiles[@]}"; do
   # Rendered scripts must be valid shell for the interpreter they name.
   while IFS= read -r script; do
     rendered=$work/$host.script
-    "${cz[@]}" execute-template <"$script" >"$rendered"
+    if ! "${cz[@]}" execute-template <"$script" >"$rendered" 2>"$work/err"; then
+      printf '  FAIL render %s\n' "${script##*/}"; sed 's/^/    /' "$work/err"; fail=1; continue
+    fi
     grep -q '[^[:space:]]' "$rendered" || continue # chezmoi skips empty scripts
     shell=$(head -1 "$rendered" | sed -E 's|^#!(/usr/bin/env )?||; s| .*||')
     check "${script##*/}" "${shell##*/}" -n "$rendered"
