@@ -2,11 +2,13 @@
 # Set up a new machine from 0oAstro/dots:
 #   sh -c "$(curl -fsSL https://raw.githubusercontent.com/0oAstro/dots/master/install.sh)"
 # Safe to rerun. Extra arguments go to `chezmoi init`, for example --branch.
+# DOTS_REPO overrides the repo, for example a file:// URL when testing a checkout.
 set -eu
 
 bin=$HOME/.local/bin
 mise=$bin/mise
 key=$HOME/.config/age/keys.txt
+repo=${DOTS_REPO:-0oAstro/dots}
 
 say() { printf '\033[1;34mdots:\033[0m %s\n' "$*"; }
 
@@ -39,5 +41,5 @@ if [ ! -f "$key" ] && : </dev/tty 2>/dev/null; then
   esac
 fi
 
-say "applying 0oAstro/dots"
-exec "$mise" exec chezmoi@latest -- chezmoi init --apply "$@" 0oAstro/dots
+say "applying $repo"
+exec "$mise" exec chezmoi@latest -- chezmoi init --apply "$@" "$repo"
