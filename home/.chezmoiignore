@@ -27,6 +27,9 @@
 {{- else }}
 # ── macOS only ──
 Library
+.local/bin/routerctl
+.local/bin/airtel-routerctl
+.local/bin/routerctl_credentials.py
 .config/homebrew
 .config/herdr/launch
 .config/lazysql

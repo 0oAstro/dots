@@ -8,7 +8,7 @@ gitleaks = "latest"
 description = "Render every profile, parse every config, lint scripts, scan for secrets"
 run = [
   "tests/render.sh",
-  "shellcheck --severity=warning install.sh tests/*.sh home/dot_local/bin/executable_git-identity",
+  "shellcheck --severity=warning install.sh tests/*.sh",
   "gitleaks dir --no-banner --redact .",
 ]
 

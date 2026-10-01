@@ -16,6 +16,6 @@ jobs:
       - run: sudo apt-get install -y zsh
         if: runner.os == 'Linux'
       - run: mise run smoke
-      - run: shellcheck --severity=warning install.sh tests/*.sh home/dot_local/bin/executable_git-identity
+      - run: shellcheck --severity=warning install.sh tests/*.sh
       - run: gitleaks dir --no-banner --redact .
         if: runner.os == 'Linux'

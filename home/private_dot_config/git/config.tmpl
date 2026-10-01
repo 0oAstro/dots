@@ -123,17 +123,16 @@
 	helper =
 {{- end }}
 
-# GitHub HTTPS credentials follow the repository's identity.account (default
-# 0oAstro); see IDENTITIES.md. `gh auth setup-git` rewrites these to a pinned gh
-# path that breaks after mise prunes that version, so do not run it.
+# GitHub HTTPS credentials come from mise's gh (its active login). Not
+# `gh auth setup-git`: that pins a versioned gh path mise later prunes.
 [credential "https://github.com"]
 	helper =
-	helper = !$HOME/.local/bin/git-identity --credential
+	helper = !$HOME/.local/share/mise/shims/gh auth git-credential
 [credential "https://gist.github.com"]
 	helper =
-	helper = !$HOME/.local/bin/git-identity --credential
+	helper = !$HOME/.local/share/mise/shims/gh auth git-credential
 
-# Route GitHub SSH remotes through account-aware HTTPS credentials.
+# Route GitHub SSH remotes through those HTTPS credentials.
 [url "https://github.com/"]
 	insteadOf = git@github.com:
 	insteadOf = ssh://git@github.com/

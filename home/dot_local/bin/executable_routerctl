@@ -1,0 +1,705 @@
+#!/usr/bin/env python3
+"""CLI for the Syrotech SY-GPON-2010-WADONT web interface.
+
+Read operations are the default. Mutating commands require --apply.
+The device uses Boa ASP pages plus /boaform/* handlers rather than JSON APIs.
+"""
+from __future__ import annotations
+
+import argparse
+from collections import deque
+import getpass
+import html
+import ipaddress
+import json
+import os
+import re
+import subprocess
+import sys
+import time
+from datetime import datetime
+from html.parser import HTMLParser
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from routerctl_credentials import CredentialError, credentials_path, load_credentials, stored
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode, urljoin, urlparse
+from urllib.request import HTTPCookieProcessor, Request, build_opener
+import http.cookiejar
+
+DEFAULT_HOST = os.environ.get(
+    "FUSIONNET_ROUTER_HOST", os.environ.get("ROUTER_HOST", "http://192.168.1.1")
+).rstrip("/")
+DEFAULT_USER = os.environ.get(
+    "FUSIONNET_ROUTER_USER", os.environ.get("ROUTER_USER", "admin")
+)
+
+
+def data_root() -> Path:
+    """Return routerctl's XDG data directory and migrate the legacy root once."""
+    override = os.environ.get("ROUTERCTL_DATA_DIR")
+    if override:
+        root = Path(override).expanduser()
+    else:
+        base = Path(os.environ.get("XDG_DATA_HOME", "~/.local/share")).expanduser()
+        root = base / "routerctl"
+    legacy = Path.home() / ".routerctl"
+    if legacy.exists() and not root.exists():
+        root.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        legacy.rename(root)
+        print(f"Migrated {legacy} to {root}", file=sys.stderr)
+    elif legacy.exists() and root.exists() and legacy != root:
+        print(f"Warning: both legacy {legacy} and XDG {root} exist; legacy data was not merged.", file=sys.stderr)
+    root.mkdir(parents=True, exist_ok=True, mode=0o700)
+    root.chmod(0o700)
+    return root
+
+
+class RouterError(RuntimeError):
+    pass
+
+
+class TextParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.parts: list[str] = []
+
+    def handle_data(self, data: str) -> None:
+        data = " ".join(data.split())
+        if data:
+            self.parts.append(data)
+
+
+class Router:
+    def __init__(self, host: str, username: str, password: str, timeout: float = 10):
+        self.host = host.rstrip("/")
+        self.username = username
+        self.password = password
+        self.timeout = timeout
+        jar = http.cookiejar.CookieJar()
+        self.opener = build_opener(HTTPCookieProcessor(jar))
+        self.opener.addheaders = [("User-Agent", "routerctl/1.0")]
+
+    def request(self, path: str, data: dict[str, str] | None = None) -> tuple[str, str]:
+        url = path if path.startswith("http") else self.host + (path if path.startswith("/") else "/" + path)
+        body = urlencode(data).encode() if data is not None else None
+        req = Request(url, data=body, method="POST" if body is not None else "GET")
+        if body is not None:
+            req.add_header("Content-Type", "application/x-www-form-urlencoded")
+        try:
+            with self.opener.open(req, timeout=self.timeout) as response:
+                raw = response.read()
+                return raw.decode("utf-8", "replace"), response.geturl()
+        except (HTTPError, URLError, TimeoutError) as exc:
+            raise RouterError(f"request failed: {url}: {exc}") from exc
+
+    @staticmethod
+    def csrf(page: str) -> str:
+        match = re.search(r"name=['\"]csrftoken['\"][^>]*value=['\"]([^'\"]+)", page, re.I)
+        if not match:
+            match = re.search(r"value=['\"]([^'\"]+)['\"][^>]*name=['\"]csrftoken", page, re.I)
+        if not match:
+            raise RouterError("CSRF token not found")
+        return html.unescape(match.group(1))
+
+    def login(self) -> None:
+        top, url = self.request("/top.asp")
+        if "var mnroot" in top and "login.asp" not in url:
+            return
+        login, _ = self.request("/admin/login.asp")
+        payload = {
+            "username1": self.username,
+            "psd1": self.password,
+            "username": self.username,
+            "psd": self.password,
+            "sec_lang": "0",
+            "loginSelinit": "",
+            "ismobile": "",
+            "csrftoken": self.csrf(login),
+        }
+        result, url = self.request("/boaform/admin/formLogin", payload)
+        if "login.asp" in url or "incorrect" in result.lower() or "invalid" in result.lower():
+            raise RouterError("router login failed")
+        top, _ = self.request("/top.asp")
+        if "var mnroot" not in top:
+            raise RouterError("login did not expose the admin menu")
+
+    def get(self, path: str) -> str:
+        page, url = self.request(path)
+        if "login.asp" in url:
+            self.login()
+            page, _ = self.request(path)
+        return page
+
+    def select_radio(self, index: int, target: str = "/wlbasic.asp") -> str:
+        page, _ = self.request(f"/boaform/formWlanRedirect?redirect-url={target}&wlan_idx={index}")
+        return page
+
+    def post(self, endpoint: str, payload: dict[str, str]) -> str:
+        result, url = self.request(endpoint, payload)
+        if "login.asp" in url:
+            raise RouterError("session expired during write; nothing else was attempted")
+        return result
+
+
+def js_value(page: str, expression: str, default: str = "?") -> str:
+    m = re.search(expression, page, re.I | re.M)
+    return html.unescape(m.group(1)) if m else default
+
+
+def strip_tags(fragment: str) -> str:
+    return html.unescape(re.sub(r"<[^>]+>", "", fragment)).strip()
+
+
+def input_value(page: str, name: str, default: str = "") -> str:
+    patterns = [
+        rf"<input[^>]*name=['\"]?{re.escape(name)}['\"]?[^>]*value=['\"]([^'\"]*)",
+        rf"<input[^>]*name=['\"]?{re.escape(name)}['\"]?[^>]*value=([^\s>]*)",
+        rf"<input[^>]*value=['\"]([^'\"]*)['\"][^>]*name=['\"]?{re.escape(name)}",
+    ]
+    for pattern in patterns:
+        m = re.search(pattern, page, re.I)
+        if m:
+            return html.unescape(m.group(1))
+    return default
+
+
+def checked_script(page: str, group: str, values: list[str], default: str = "?") -> str:
+    m = re.search(rf"advanceSetup\.{re.escape(group)}\[(\d+)\]\.checked\s*=\s*true", page)
+    if not m:
+        return default
+    i = int(m.group(1))
+    return values[i] if i < len(values) else default
+
+
+def status(router: Router, as_json: bool = False) -> None:
+    wlan = router.get("/status_wlan_info_11n.asp")
+    gpon = router.get("/status_gpon.asp")
+    eth = router.get("/status_ethernet_info.asp")
+    data = {
+        "gpon": {
+            "state": js_value(gpon, r"Connect state\s*</th>\s*<td[^>]*>([^<]+)"),
+            "rx_power_dbm": js_value(gpon, r"Rx Power\s*</th>\s*<td[^>]*>\s*([^ <]+)"),
+            "tx_power_dbm": js_value(gpon, r"Tx Power\s*</th>\s*<td[^>]*>\s*([^ <]+)"),
+            "temperature_c": js_value(gpon, r"Temperature\s*</th>\s*<td[^>]*>\s*([^ <]+)"),
+            "fec_errors": js_value(gpon, r"FEC Errors\s*</th>\s*<td[^>]*>([^<]+)"),
+            "packets_dropped": js_value(gpon, r"Packets Dropped\s*</th>\s*<td[^>]*>([^<]+)"),
+        },
+        "wifi": [],
+        "ethernet": [],
+    }
+    for i, band_name in ((0, "5GHz"), (1, "2.4GHz")):
+        def arr(name: str) -> str:
+            return js_value(wlan, rf"{name}\[{i}\]\s*=\s*['\"]?([^;'\"]+)")
+        data["wifi"].append({
+            "band": band_name,
+            "ssid": arr("ssid_drv"),
+            "channel": arr("channel_drv"),
+            "bssid": arr("bssid_drv"),
+            "enabled": arr("wlanDisabled") == "0",
+            "encryption": arr("encryptState"),
+        })
+    eth_rows = re.findall(r"<tr[^>]*>(.*?)</tr>", eth, re.I | re.S)
+    for port in (1, 2):
+        cells = []
+        for row in eth_rows:
+            candidate = [strip_tags(x) for x in re.findall(r"<td[^>]*>(.*?)</td>", row, re.I | re.S)]
+            if candidate and candidate[0] == f"Port_{port}":
+                cells = candidate
+                break
+        state = cells[1] if len(cells) > 1 else "?"
+        speed = cells[2] if len(cells) > 2 else "?"
+        data["ethernet"].append({"port": port, "state": state, "speed": speed})
+    if as_json:
+        print(json.dumps(data, indent=2))
+        return
+    g = data["gpon"]
+    print(f"GPON  {g['state']}  RX {g['rx_power_dbm']} dBm  TX {g['tx_power_dbm']} dBm  {g['temperature_c']} °C")
+    print(f"      FEC errors {g['fec_errors']}  dropped {g['packets_dropped']}")
+    for w in data["wifi"]:
+        print(f"Wi-Fi {w['band']:>6}  ch {w['channel']:>3}  {w['ssid']}  encryption {w['encryption']}")
+    for e in data["ethernet"]:
+        print(f"LAN   port {e['port']}  {e['state']}  {e['speed']}")
+
+
+def clients(router: Router, as_json: bool = False) -> None:
+    page = router.get("/status_wlan_info_11n.asp")
+    # Current firmware nests obsolete <font> tags inside each table cell.
+    rows = []
+    for tr in re.findall(r"<tr[^>]*class=['\"]?tbl_body['\"]?[^>]*>(.*?)</tr>", page, re.I | re.S):
+        cells = [strip_tags(x) for x in re.findall(r"<td[^>]*>(.*?)</td>", tr, re.I | re.S)]
+        if len(cells) < 8 or not re.fullmatch(r"[0-9a-f:]{17}", cells[2], re.I):
+            continue
+        rows.append({"hostname": cells[0], "ssid": cells[1], "mac": cells[2],
+                     "tx_packets": int(cells[3]), "rx_packets": int(cells[4]),
+                     "tx_rate_mbps": int(cells[5]), "rssi_dbm": int(cells[6]),
+                     "power_saving": cells[7]})
+    if as_json:
+        print(json.dumps(rows, indent=2))
+        return
+    if not rows:
+        print("No associated clients found.")
+        return
+    for c in rows:
+        quality = "excellent" if c["rssi_dbm"] >= -55 else "good" if c["rssi_dbm"] >= -67 else "weak" if c["rssi_dbm"] >= -75 else "very weak"
+        print(f"{c['mac']}  {c['ssid']:<16} PHY {c['tx_rate_mbps']:>4} Mbps  RSSI {c['rssi_dbm']:>4} dBm ({quality})  PS {c['power_saving']}")
+
+
+def wifi(router: Router, as_json: bool = False) -> None:
+    out = []
+    for idx, name in ((0, "5GHz"), (1, "2.4GHz")):
+        router.select_radio(idx, "/wlbasic.asp")
+        basic = router.get("/wlbasic.asp")
+        advanced = router.get("/wladvanced.asp")
+        out.append({
+            "index": idx,
+            "band": name,
+            "ssid": input_value(basic, "ssid"),
+            "channel_config": js_value(basic, r"defaultChan\s*=\s*(\d+)"),
+            "channel_width": js_value(basic, r"wlanSetup\.chanwid\.value\s*=\s*(\d+)"),
+            "radio_power": "100%" if "wlanSetup.txpower.selectedIndex = 0" in basic else "custom",
+            "wmm": "name='wl_wmm_func'" in basic and re.search(r"name=['\"]wl_wmm_func['\"][^>]*checked", basic, re.I) is not None,
+            "power_saving": re.search(r"name=['\"]powersaving['\"][^>]*checked", basic, re.I) is not None,
+            "aggregation": checked_script(advanced, "aggregation", ["on", "off"]),
+            "short_gi": checked_script(advanced, "shortGI0", ["on", "off"]),
+            "tx_beamforming": checked_script(advanced, "txbf", ["on", "off"]),
+            "mu_mimo": checked_script(advanced, "txbf_mu", ["on", "off"]),
+            "802.11r": checked_script(advanced, "dot11r_enable", ["on", "off"]),
+            "802.11k": checked_script(advanced, "dot11kEnabled", ["on", "off"]),
+        })
+    if as_json:
+        print(json.dumps(out, indent=2))
+    else:
+        width_names = {"0": "20", "1": "40", "2": "80", "3": "20/40", "4": "20/40/80"}
+        for r in out:
+            print(f"{r['band']}  SSID {r['ssid']}  width {width_names.get(r['channel_width'], r['channel_width'])} MHz  channel-config {r['channel_config']}")
+            print(f"  WMM {r['wmm']}  power-saving {r['power_saving']}  aggregation {r['aggregation']}  short-GI {r['short_gi']}")
+            print(f"  beamforming {r['tx_beamforming']}  MU-MIMO {r['mu_mimo']}  11r {r['802.11r']}  11k {r['802.11k']}")
+
+
+def advanced_payload(page: str, *, mu_mimo: str) -> dict[str, str]:
+    return {
+        "wlanDisabled": input_value(page, "wlanDisabled", "OFF"),
+        "fragThreshold": input_value(page, "fragThreshold", "2346"),
+        "rtsThreshold": input_value(page, "rtsThreshold", "2347"),
+        "beaconInterval": input_value(page, "beaconInterval", "100"),
+        "rssiThreshold": input_value(page, "rssiThreshold", "0"),
+        "RmThreshold": input_value(page, "RmThreshold", "0"),
+        "txRate": "0",
+        "preamble": checked_script(page, "preamble", ["long", "short"], "short"),
+        "hiddenSSID": checked_script(page, "hiddenSSID", ["no", "yes"], "no"),
+        "block": checked_script(page, "block", ["1", "0"], "0"),
+        "protection": checked_script(page, "protection", ["yes", "no"], "no"),
+        "aggregation": checked_script(page, "aggregation", ["enable", "disable"], "enable"),
+        "shortGI0": checked_script(page, "shortGI0", ["on", "off"], "on"),
+        "radar_enable": checked_script(page, "radar_enable", ["1", "0"], "1"),
+        "txbf": checked_script(page, "txbf", ["1", "0"], "1"),
+        "txbf_mu": "1" if mu_mimo == "on" else "0",
+        "dot11r_enable": checked_script(page, "dot11r_enable", ["1", "0"], "1"),
+        "RssiThHigh": input_value(page, "RssiThHigh", "-50"),
+        "RssiThLow": input_value(page, "RssiThLow", "-65"),
+        "dot11kEnabled": checked_script(page, "dot11kEnabled", ["1", "0"], "0"),
+        "dot11vEnabled": checked_script(page, "dot11vEnabled", ["1", "0"], "0"),
+        "submit-url": "/admin/wladvanced.asp",
+        "wlan_idx": "0",
+        "csrftoken": router_csrf(page),
+    }
+
+
+def router_csrf(page: str) -> str:
+    return Router.csrf(page)
+
+
+def basic_5g_payload(page: str, *, width: str, channel: str, power_saving: str) -> dict[str, str]:
+    band = js_value(page, r"var defaultBand\s*=\s*(\d+)", "75")
+    ssid = input_value(page, "ssid")
+    payload = {
+        "band": band,
+        "mode": "0",
+        "ssid": ssid,
+        "wl_wmm_func": "ON",
+        "powerincrease": "ON",
+        "chanwid": {"auto": "4", "80": "2"}[width],
+        "ctlband": "0",
+        "chan": "20" if channel == "auto" else channel,
+        "txpower": "0",
+        "wl_limitstanum": "0",
+        "wl_stanum": "",
+        "regdomain_demo": "1",
+        "submit-url": "/admin/wlbasic.asp",
+        "basicrates": "15",
+        "operrates": "4095",
+        "wlan_idx": "0",
+        "Band2G5GSupport": "2",
+        "wlanBand2G5GSelect": "",
+        "dfs_enable": "1",
+        "regDomain": "1",
+        "csrftoken": router_csrf(page),
+    }
+    if power_saving == "on":
+        payload["powersaving"] = "ON"
+    return payload
+
+
+def redact_html(content: str) -> str:
+    """Redact password-like input values from HTML configuration snapshots."""
+    secret = re.compile(r"password|passwd|passphrase|pres?haredkey|wep[_-]?key|secret|credential", re.I)
+
+    def redact_input(match: re.Match[str]) -> str:
+        tag = match.group(0)
+        name = re.search(r"\bname\s*=\s*(['\"]?)([^\s>\"']+)\1", tag, re.I)
+        typ = re.search(r"\btype\s*=\s*(['\"]?)([^\s>\"']+)\1", tag, re.I)
+        if (name and secret.search(name.group(2))) or (typ and typ.group(2).lower() == "password"):
+            tag = re.sub(r"(\bvalue\s*=\s*)(['\"])[^'\"]*\2", r"\1\2[REDACTED]\2", tag, flags=re.I)
+        return tag
+
+    content = re.sub(r"<input\b[^>]*>", redact_input, content, flags=re.I)
+    lines = []
+    for line in content.splitlines():
+        if secret.search(line):
+            line = re.sub(r"(decodeURIComponent\(\s*)(['\"])[^'\"]*\2", r"\1\2[REDACTED]\2", line)
+        lines.append(line)
+    return "\n".join(lines)
+
+
+def write_private(path: Path, content: str, *, redact: bool = False) -> None:
+    parent_missing = not path.parent.exists()
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    if parent_missing:
+        path.parent.chmod(0o700)
+    if redact:
+        content = redact_html(content)
+    path.write_text(content)
+    path.chmod(0o600)
+
+
+def backup(router: Router) -> Path:
+    root = data_root() / "backups" / datetime.now().strftime("%Y%m%d-%H%M%S")
+    root.mkdir(parents=True, mode=0o700, exist_ok=False)
+    for idx, label in ((0, "5g"), (1, "2g")):
+        router.select_radio(idx, "/wlbasic.asp")
+        write_private(root / f"{label}-basic.html", router.get("/wlbasic.asp"), redact=True)
+        write_private(root / f"{label}-advanced.html", router.get("/wladvanced.asp"), redact=True)
+    for page in ("status_wlan_info_11n.asp", "status_gpon.asp", "top.asp"):
+        write_private(root / page, router.get("/" + page), redact=True)
+    return root
+
+
+def tune(router: Router, args: argparse.Namespace) -> None:
+    plan = {
+        "5GHz channel width": args.width,
+        "5GHz channel": args.channel,
+        "5GHz AP power saving": args.power_saving,
+        "5GHz MU-MIMO": args.mu_mimo,
+        "unchanged": "WMM, aggregation, Short GI, TX beamforming, 100% radio power, SSIDs/security",
+    }
+    print(json.dumps(plan, indent=2))
+    if not args.apply:
+        print("Dry run only. Re-run with --apply to write settings (Wi-Fi may drop briefly).")
+        return
+    if args.channel != "auto" and int(args.channel) not in (36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 136, 140, 149, 153, 157, 161):
+        raise RouterError("unsupported 5GHz channel")
+    saved = backup(router)
+    print(f"Backup: {saved}")
+    router.select_radio(0, "/wlbasic.asp")
+    basic = router.get("/wlbasic.asp")
+    try:
+        router.post("/boaform/admin/formWlanSetup", basic_5g_payload(
+            basic, width=args.width, channel=args.channel, power_saving=args.power_saving))
+    except RouterError as exc:
+        # The router can reset the radio before returning the HTTP response.
+        print(f"Basic-settings response interrupted ({exc}); waiting for Wi-Fi to return.", file=sys.stderr)
+
+    deadline = time.monotonic() + 120
+    while True:
+        time.sleep(5)
+        try:
+            router.login()
+            router.select_radio(0, "/wladvanced.asp")
+            advanced = router.get("/wladvanced.asp")
+            break
+        except RouterError as exc:
+            if time.monotonic() >= deadline:
+                raise RouterError(f"router did not return after basic-settings write: {exc}") from exc
+            print("Waiting for router after radio restart...", file=sys.stderr)
+
+    try:
+        router.post("/boaform/admin/formAdvanceSetup", advanced_payload(advanced, mu_mimo=args.mu_mimo))
+    except RouterError as exc:
+        # As above, an interrupted response commonly means the write took effect.
+        print(f"Advanced-settings response interrupted ({exc}); verify after reconnect.", file=sys.stderr)
+    print("Applied. The 5GHz radio may take 10–30 seconds to settle; reconnect if necessary.")
+
+
+def dns_config(page: str) -> dict[str, str]:
+    return {
+        "mode": js_value(page, r"dhcpd\.ipv4landnsmode\.value\s*=\s*(\d+)", "?"),
+        "primary": input_value(page, "Ipv4Dns1", "?"),
+        "secondary": input_value(page, "Ipv4Dns2", "?"),
+        "lan_ip": input_value(page, "uIp", "?"),
+        "dhcp_start": input_value(page, "dhcpRangeStart", "?"),
+        "dhcp_end": input_value(page, "dhcpRangeEnd", "?"),
+        "lease_seconds": js_value(page, r"var lease_time\s*=\s*(\d+)", "86400"),
+    }
+
+
+def dns(router: Router, args: argparse.Namespace) -> None:
+    page = router.get("/net_dhcpd.asp")
+    before = dns_config(page)
+    mode_names = {"0": "router proxy", "1": "static", "2": "from ISP"}
+    if not args.apply:
+        print(json.dumps({**before, "mode_name": mode_names.get(before["mode"], "unknown")}, indent=2))
+        if args.primary or args.secondary:
+            print("Dry run only. Re-run with --apply to write DNS settings.")
+        return
+    primary = args.primary or before["primary"]
+    secondary = args.secondary or before["secondary"]
+    try:
+        for address in (primary, secondary):
+            if ipaddress.ip_address(address).version != 4:
+                raise ValueError
+    except ValueError as exc:
+        raise RouterError("this firmware accepts IPv4 DNS addresses only") from exc
+    root = data_root() / "backups" / (datetime.now().strftime("%Y%m%d-%H%M%S") + "-dns")
+    root.mkdir(parents=True, mode=0o700, exist_ok=False)
+    write_private(root / "net_dhcpd-before.html", page)
+    dhcp_type = js_value(page, r"dhcpd\.uDhcpType\[(\d+)\]\.checked\s*=\s*true", "1")
+    payload = {
+        "uIp": input_value(page, "uIp", "192.168.1.1"),
+        "uMask": input_value(page, "uMask", "255.255.255.0"),
+        "uDhcpType": dhcp_type,
+        "dhcpRangeStart": input_value(page, "dhcpRangeStart", "192.168.1.33"),
+        "dhcpRangeEnd": input_value(page, "dhcpRangeEnd", "192.168.1.254"),
+        "ipMaskMode": "0",
+        "ulTime": before["lease_seconds"],
+        "ipv4landnsmode": "1",
+        "Ipv4Dns1": primary,
+        "Ipv4Dns2": secondary,
+        "submit-url": "/net_dhcpd.asp",
+        "csrftoken": router_csrf(page),
+    }
+    router.post("/boaform/formDhcpServer", payload)
+    time.sleep(1)
+    after_page = router.get("/net_dhcpd.asp")
+    after = dns_config(after_page)
+    write_private(root / "net_dhcpd-after.html", after_page)
+    if after["mode"] != "1" or after["primary"] != primary or after["secondary"] != secondary:
+        raise RouterError(f"DNS verification failed; backup is {root}")
+    print(json.dumps({"applied": True, "primary": primary, "secondary": secondary, "backup": str(root)}, indent=2))
+    print("Verified in router configuration. Clients receive it after DHCP renewal/reconnect.")
+
+
+def endpoint_audit(router: Router, args: argparse.Namespace) -> None:
+    top = router.get("/top.asp")
+    menu_entries = re.findall(r'mnpage\.add\("([^"]+)","([^"]+)"\)', top)
+    menu_paths = {urljoin(router.host + "/top.asp", path).replace(router.host, "", 1) for path, _ in menu_entries}
+    seeds = ["/top.asp", "/left.html", "/common.js", "/share.js", "/net_dhcpd.asp"]
+    seeds += [path for path in menu_paths if not path.startswith("/boaform/")]
+    queue = deque(seeds)
+    seen: set[str] = set()
+    pages: list[dict[str, object]] = []
+    forms: set[str] = set()
+    allowed_suffixes = (".asp", ".html", ".js")
+    while queue and len(seen) < args.limit:
+        path = queue.popleft().split("#", 1)[0]
+        if path in seen or path.startswith("/admin/login"):
+            continue
+        parsed = urlparse(path)
+        clean_path = parsed.path
+        if not clean_path.lower().endswith(allowed_suffixes):
+            continue
+        seen.add(path)
+        try:
+            body, final_url = router.request(path)
+        except RouterError:
+            continue
+        if "login.asp" in final_url:
+            continue
+        title = js_value(body, r"<title[^>]*>(.*?)</title>", "")
+        page_forms = re.findall(r"<form[^>]+action\s*=\s*['\"]?([^'\"\s>]+)", body, re.I)
+        forms.update(page_forms)
+        hidden_ids = sorted(set(re.findall(r"getElementById\(['\"]([^'\"]+)['\"]\)\.style\.display\s*=\s*['\"]none", body)))
+        hidden_inputs = sorted(set(re.findall(r"<input[^>]+type=['\"]hidden['\"][^>]+name=['\"]?([^'\"\s>]+)", body, re.I)))
+        final_path = urlparse(final_url).path
+        pages.append({
+            "path": path,
+            "final_path": final_path,
+            "title": strip_tags(title),
+            "bytes": len(body.encode()),
+            "in_menu": path in menu_paths or final_path in {urlparse(x).path for x in menu_paths},
+            "forms": sorted(page_forms),
+            "hidden_sections": hidden_ids,
+            "hidden_inputs": hidden_inputs,
+        })
+        refs = re.findall(r"[A-Za-z0-9_./-]+\.(?:asp|html|js)(?:\?[^'\"\s<>]*)?", body, re.I)
+        base = final_url if final_url.startswith("http") else router.host + path
+        for ref in refs:
+            absolute = urljoin(base, ref)
+            if not absolute.startswith(router.host + "/"):
+                continue
+            candidate = absolute[len(router.host):]
+            if not candidate.startswith("/boaform/") and candidate not in seen:
+                queue.append(candidate)
+    report = {
+        "router": router.host,
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "read_only": True,
+        "pages_checked": len(pages),
+        "menu_entries": [{"label": label, "path": path} for path, label in menu_entries],
+        "forms": sorted(forms),
+        "hidden_pages": sorted([p["path"] for p in pages if not p["in_menu"]]),
+        "pages": sorted(pages, key=lambda p: str(p["path"])),
+    }
+    output = Path(args.save).expanduser() if args.save else data_root() / f"endpoints-{datetime.now().strftime('%Y%m%d-%H%M%S')}.json"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    write_private(output, json.dumps(report, indent=2))
+    if args.json:
+        print(json.dumps(report, indent=2))
+    else:
+        print(f"Checked {len(pages)} read-only pages; report: {output}")
+        print("Form handlers:")
+        for form in sorted(forms):
+            print(f"  {form}")
+        print("Hidden/unlisted pages:")
+        for path in report["hidden_pages"]:
+            print(f"  {path}")
+
+
+def speedtest() -> None:
+    if not subprocess.call(["sh", "-c", "command -v fast >/dev/null 2>&1"]):
+        # fast expects a TTY; macOS script(1) supplies one in non-interactive agents too.
+        command = ["script", "-q", "/dev/null", "fast", "--upload"] if not sys.stdout.isatty() else ["fast", "--upload"]
+        raise SystemExit(subprocess.call(command))
+    raise RouterError("fast CLI is not installed")
+
+
+def menu(router: Router) -> None:
+    page = router.get("/top.asp")
+    entries = re.findall(r'mnpage\.add\("([^"]+)","([^"]+)"\)', page)
+    for path, label in entries:
+        print(f"{label:<30} {path}")
+
+
+def credentials_command(args: argparse.Namespace) -> None:
+    profiles = load_credentials()
+    safe_profiles = []
+    for provider, profile in profiles.items():
+        if not isinstance(profile, dict):
+            continue
+        safe_profiles.append(
+            {
+                "provider": provider,
+                "host": profile.get("host"),
+                "username": profile.get("username"),
+                "password_configured": bool(profile.get("password")),
+            }
+        )
+    result = {"path": str(credentials_path()), "profiles": safe_profiles}
+    if args.json:
+        print(json.dumps(result, indent=2))
+    else:
+        print(f"Credential file: {result['path']}")
+        if not safe_profiles:
+            print("No credential profiles configured.")
+        for profile in safe_profiles:
+            print(f"  {profile['provider']}: {profile['username'] or '?'} @ {profile['host'] or '?'}")
+
+
+def select_provider(argv: list[str]) -> str:
+    """Extract provider selection while preserving the old command syntax."""
+    provider = os.environ.get("ROUTERCTL_PROVIDER", "fusionnet").lower()
+    args = list(argv)
+    if args and args[0].lower() in {"airtel", "fusionnet"}:
+        provider = args.pop(0).lower()
+
+    index = 0
+    while index < len(args):
+        arg = args[index]
+        if arg == "--provider":
+            if index + 1 >= len(args):
+                raise RouterError("--provider requires airtel or fusionnet")
+            provider = args[index + 1].lower()
+            del args[index : index + 2]
+            continue
+        if arg.startswith("--provider="):
+            provider = arg.split("=", 1)[1].lower()
+            del args[index]
+            continue
+        index += 1
+
+    if provider not in {"airtel", "fusionnet"}:
+        raise RouterError(f"unknown router provider {provider!r}; choose airtel or fusionnet")
+    sys.argv = [sys.argv[0], *args]
+    return provider
+
+
+def main() -> int:
+    provider = select_provider(sys.argv[1:])
+    if sys.argv[1:] and sys.argv[1] == "credentials":
+        credentials_command(argparse.Namespace(json="--json" in sys.argv[2:]))
+        return 0
+    if provider == "airtel":
+        driver = Path(__file__).with_name("airtel-routerctl")
+        os.execv(sys.executable, [sys.executable, str(driver), *sys.argv[1:]])
+    parser = argparse.ArgumentParser(
+        prog="routerctl",
+        description="Router CLI for Fusionnet/Syrotech and Airtel drivers (writes require --apply)",
+    )
+    parser.add_argument("--provider", choices=("fusionnet", "airtel"), default="fusionnet", help="router driver; airtel is dispatched to its CGI client")
+    parser.add_argument("--host", default=stored("fusionnet", "host", DEFAULT_HOST))
+    parser.add_argument("--username", default=stored("fusionnet", "username", DEFAULT_USER))
+    parser.add_argument("--password", default=os.environ.get("FUSIONNET_ROUTER_PASSWORD", os.environ.get("ROUTER_PASSWORD", stored("fusionnet", "password"))), help="avoid this in shell history; use FUSIONNET_ROUTER_PASSWORD or ROUTER_PASSWORD")
+    sub = parser.add_subparsers(dest="command", required=True)
+    for name in ("status", "clients", "wifi"):
+        p = sub.add_parser(name)
+        p.add_argument("--json", action="store_true")
+    sub.add_parser("menu")
+    p = sub.add_parser("credentials", help="show configured provider profiles without printing secrets")
+    p.add_argument("--json", action="store_true")
+    sub.add_parser("speedtest")
+    sub.add_parser("backup")
+    p = sub.add_parser("dns", help="show or set router-advertised LAN DNS")
+    p.add_argument("--primary")
+    p.add_argument("--secondary")
+    p.add_argument("--apply", action="store_true")
+    p = sub.add_parser("endpoints", help="read-only audit of linked and hidden router pages")
+    p.add_argument("--limit", type=int, default=120)
+    p.add_argument("--save")
+    p.add_argument("--json", action="store_true")
+    p = sub.add_parser("tune5g", help="set performance-oriented 5GHz options")
+    p.add_argument("--width", choices=("auto", "80"), default="80")
+    p.add_argument("--channel", default="auto", help="auto or a 5GHz channel such as 149")
+    p.add_argument("--power-saving", choices=("on", "off"), default="off")
+    p.add_argument("--mu-mimo", choices=("on", "off"), default="on")
+    p.add_argument("--apply", action="store_true")
+    args = parser.parse_args()
+    if args.command == "speedtest":
+        speedtest()
+        return 0
+    password = args.password
+    if password is None:
+        if not sys.stdin.isatty():
+            raise RouterError("set FUSIONNET_ROUTER_PASSWORD (or ROUTER_PASSWORD) for non-interactive use")
+        password = getpass.getpass("Fusionnet router password: ")
+    router = Router(args.host, args.username, password)
+    router.login()
+    if args.command == "status": status(router, args.json)
+    elif args.command == "clients": clients(router, args.json)
+    elif args.command == "wifi": wifi(router, args.json)
+    elif args.command == "menu": menu(router)
+    elif args.command == "backup": print(backup(router))
+    elif args.command == "dns": dns(router, args)
+    elif args.command == "endpoints": endpoint_audit(router, args)
+    elif args.command == "tune5g": tune(router, args)
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except KeyboardInterrupt:
+        print("Interrupted", file=sys.stderr)
+        raise SystemExit(130)
+    except (RouterError, CredentialError) as exc:
+        print(f"routerctl: {exc}", file=sys.stderr)
+        raise SystemExit(1)

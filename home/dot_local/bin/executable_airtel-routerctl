@@ -1,0 +1,1167 @@
+#!/usr/bin/env python3
+"""Read-only CLI for the Zyxel/Airtel AOT5221ZY router interface.
+
+The router exposes a CGI/HTML interface rather than a JSON API.  This client
+keeps the transport and parsers specific to that interface and deliberately
+never submits forms.  The ``--apply`` options are accepted only so a future
+write-capable driver can use the same command shape; they currently fail
+closed.
+"""
+from __future__ import annotations
+
+import argparse
+import getpass
+import hashlib
+import html
+import ipaddress
+import json
+import os
+import re
+import subprocess
+import sys
+from datetime import datetime
+from html.parser import HTMLParser
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from routerctl_credentials import CredentialError, stored
+from urllib.error import HTTPError, URLError
+from urllib.parse import quote, urlencode, urljoin, urlparse
+from urllib.request import HTTPCookieProcessor, Request, build_opener
+import http.cookiejar
+
+
+DEFAULT_HOST = os.environ.get("AIRTEL_ROUTER_HOST", "http://192.168.1.1").rstrip("/")
+DEFAULT_USER = os.environ.get(
+    "AIRTEL_ROUTER_USER", os.environ.get("ROUTER_USER", "admin")
+)
+
+
+class RouterError(RuntimeError):
+    """A user-facing router or parser failure."""
+
+
+class ControlParser(HTMLParser):
+    """Collect safe form state without executing the router's JavaScript."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.controls: list[dict[str, object]] = []
+        self._select: dict[str, object] | None = None
+        self._option: dict[str, object] | None = None
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attrs_dict = {key.lower(): value or "" for key, value in attrs}
+        tag = tag.lower()
+        if tag == "input" and attrs_dict.get("name"):
+            self.controls.append(
+                {
+                    "kind": "input",
+                    "name": attrs_dict["name"],
+                    "type": attrs_dict.get("type", "text").lower(),
+                    "value": attrs_dict.get("value", ""),
+                    "checked": "checked" in attrs_dict,
+                }
+            )
+        elif tag == "select" and attrs_dict.get("name"):
+            self._select = {
+                "kind": "select",
+                "name": attrs_dict["name"],
+                "options": [],
+            }
+        elif tag == "option" and self._select is not None:
+            self._option = {
+                "value": attrs_dict.get("value", ""),
+                "selected": "selected" in attrs_dict,
+                "text": [],
+            }
+
+    def handle_data(self, data: str) -> None:
+        if self._option is not None:
+            self._option["text"].append(data)  # type: ignore[union-attr]
+
+    def handle_endtag(self, tag: str) -> None:
+        tag = tag.lower()
+        if tag == "option" and self._option is not None and self._select is not None:
+            option = self._option
+            option["text"] = " ".join("".join(option["text"]).split())  # type: ignore[index]
+            self._select["options"].append(option)  # type: ignore[union-attr]
+            self._option = None
+        elif tag == "select" and self._select is not None:
+            self.controls.append(self._select)
+            self._select = None
+
+
+def controls(page: str) -> list[dict[str, object]]:
+    parser = ControlParser()
+    parser.feed(page)
+    return parser.controls
+
+
+def input_value(page: str, name: str, default: str = "") -> str:
+    for control in controls(page):
+        if control.get("kind") == "input" and control.get("name") == name:
+            return str(control.get("value", ""))
+    return default
+
+
+def input_checked(page: str, name: str, default: bool = False) -> bool:
+    found = False
+    for control in controls(page):
+        if control.get("kind") == "input" and control.get("name") == name:
+            found = True
+            if bool(control.get("checked")):
+                return True
+    return False if found else default
+
+
+def selected_option(page: str, name: str, default: str = "") -> str:
+    for control in controls(page):
+        if control.get("kind") != "select" or control.get("name") != name:
+            continue
+        options = control.get("options", [])
+        for option in options:  # type: ignore[union-attr]
+            if option.get("selected"):
+                return str(option.get("value", "") or option.get("text", ""))
+        if options:
+            return str(options[0].get("value", ""))  # type: ignore[union-attr]
+    return default
+
+
+def select_options(page: str, name: str) -> list[dict[str, str]]:
+    for control in controls(page):
+        if control.get("kind") == "select" and control.get("name") == name:
+            return [
+                {"value": str(option.get("value", "")), "text": str(option.get("text", ""))}
+                for option in control.get("options", [])  # type: ignore[union-attr]
+            ]
+    return []
+
+
+def clean_text(fragment: str) -> str:
+    fragment = re.sub(r"<script\b[^>]*>.*?</script\s*>", " ", fragment, flags=re.I | re.S)
+    fragment = re.sub(r"<style\b[^>]*>.*?</style\s*>", " ", fragment, flags=re.I | re.S)
+    fragment = re.sub(r"<br\s*/?>", " ", fragment, flags=re.I)
+    fragment = re.sub(r"<[^>]+>", " ", fragment)
+    return " ".join(html.unescape(fragment).split())
+
+
+def direct_rows(page: str) -> list[list[str]]:
+    """Return table rows that do not themselves contain a nested table row."""
+    row_re = re.compile(r"<tr\b[^>]*>(?:(?!<tr\b).)*?</tr\s*>", re.I | re.S)
+    cell_re = re.compile(r"<t[dh]\b[^>]*>(?:(?!<t[dh]\b).)*?</t[dh]\s*>", re.I | re.S)
+    rows: list[list[str]] = []
+    for row in row_re.findall(page):
+        cells = [clean_text(cell) for cell in cell_re.findall(row)]
+        cells = [cell for cell in cells if cell]
+        if cells:
+            rows.append(cells)
+    return rows
+
+
+def javascript_labels(page: str) -> dict[str, str]:
+    labels: dict[str, str] = {}
+    pattern = re.compile(
+        r"getElementById\(\s*['\"]([^'\"]+)['\"]\s*\)\.innerHTML\s*=\s*(['\"])(.*?)\2\s*;",
+        re.I | re.S,
+    )
+    for match in pattern.finditer(page):
+        value = match.group(3).replace("\\'", "'").replace('\\"', '"')
+        labels[match.group(1)] = html.unescape(value)
+    return labels
+
+
+def replace_label_spans(page: str) -> str:
+    labels = javascript_labels(page)
+    span_re = re.compile(
+        r"<span\b(?=[^>]*\bid\s*=\s*['\"]([^'\"]+)['\"])[^>]*>.*?</span\s*>",
+        re.I | re.S,
+    )
+
+    def replace(match: re.Match[str]) -> str:
+        return labels.get(match.group(1), match.group(0))
+
+    return span_re.sub(replace, page)
+
+
+def normalize_label(value: str) -> str:
+    value = re.sub(r"\s+", " ", value).strip()
+    return value.strip(" :-\u00a0").lower()
+
+
+def dynamic_value(page: str, name: str, default: str = "") -> str:
+    escaped = re.escape(name)
+    patterns = (
+        rf"(?:var\s+)?{escaped}\s*=\s*['\"]([^'\"]*)['\"]",
+        rf"(?:var\s+)?{escaped}\s*=\s*([^;\s]+)",
+    )
+    for pattern in patterns:
+        match = re.search(pattern, page, re.I)
+        if match:
+            return html.unescape(match.group(1))
+    return default
+
+
+def redact_html(page: str) -> str:
+    """Remove credentials from a raw HTML backup before it reaches disk."""
+    secret_name = re.compile(
+        r"password|passwd|passphrase|pres?haredkey|oldwlancfgpsk|wep[_-]?key|secret|credential",
+        re.I,
+    )
+    input_re = re.compile(r"<input\b[^>]*>", re.I)
+
+    def redact_input(match: re.Match[str]) -> str:
+        tag = match.group(0)
+        name = re.search(r"\bname\s*=\s*(['\"]?)([^\s>\"']+)\1", tag, re.I)
+        typ = re.search(r"\btype\s*=\s*(['\"]?)([^\s>\"']+)\1", tag, re.I)
+        if (name and secret_name.search(name.group(2))) or (typ and typ.group(2).lower() == "password"):
+            tag = re.sub(r"(\bvalue\s*=\s*)(['\"])[^'\"]*\2", r"\1\2[REDACTED]\2", tag, flags=re.I)
+        return tag
+
+    page = input_re.sub(redact_input, page)
+    # Some firmware versions put the PSK in JavaScript rather than an input.
+    lines: list[str] = []
+    for line in page.splitlines():
+        if secret_name.search(line) and re.search(r"(?:\.value\s*=|=)", line):
+            line = re.sub(
+                r"(decodeURIComponent\(\s*)(['\"])[^'\"]*\2",
+                r"\1\2[REDACTED]\2",
+                line,
+            )
+            line = re.sub(
+                r"((?:value|password|psk)\s*[,=]\s*)(['\"])[^'\"]*\2",
+                r"\1\2[REDACTED]\2",
+                line,
+                flags=re.I,
+            )
+        lines.append(line)
+    return "\n".join(lines)
+
+
+def private_dir(path: Path) -> Path:
+    path.mkdir(parents=True, exist_ok=True, mode=0o700)
+    path.chmod(0o700)
+    return path
+
+
+def write_private(path: Path, content: str) -> None:
+    parent_missing = not path.parent.exists()
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    if parent_missing:
+        path.parent.chmod(0o700)
+    path.write_text(content, encoding="utf-8")
+    path.chmod(0o600)
+
+
+def data_root() -> Path:
+    """Return the XDG data root, migrating an untouched legacy directory."""
+    override = os.environ.get("ROUTERCTL_DATA_DIR")
+    if override:
+        root = Path(override).expanduser()
+    else:
+        base = Path(os.environ.get("XDG_DATA_HOME", "~/.local/share")).expanduser()
+        root = base / "routerctl"
+
+    legacy = Path.home() / ".routerctl"
+    if legacy.exists() and not root.exists():
+        root.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        legacy.rename(root)
+        print(f"Migrated {legacy} to {root}", file=sys.stderr)
+    elif legacy.exists() and root.exists() and legacy != root:
+        print(f"Warning: both legacy {legacy} and XDG {root} exist; legacy data was not merged.", file=sys.stderr)
+    return private_dir(root)
+
+
+def safe_filename(path: str) -> str:
+    parsed = urlparse(path)
+    name = Path(parsed.path).name or "root"
+    if parsed.query:
+        name += "-" + re.sub(r"[^A-Za-z0-9._=-]+", "_", parsed.query)
+    return name
+
+
+class AirtelRouter:
+    def __init__(self, host: str, username: str, password: str, timeout: float = 12.0):
+        self.host = host.rstrip("/")
+        self.username = username
+        self.password = password
+        self.timeout = timeout
+        self.jar = http.cookiejar.CookieJar()
+        self.opener = build_opener(HTTPCookieProcessor(self.jar))
+        self.logged_in = False
+
+    def _url(self, path: str) -> str:
+        if path.startswith("http://") or path.startswith("https://"):
+            return path
+        if path.startswith("/"):
+            return self.host + path
+        return urljoin(self.host + "/cgi-bin/indexmain.cgi", path)
+
+    def request(
+        self,
+        path: str,
+        data: dict[str, str] | None = None,
+        referer: str | None = None,
+    ) -> tuple[str, str, int, str]:
+        url = self._url(path)
+        body = urlencode(data).encode() if data is not None else None
+        request = Request(url, data=body, method="POST" if body is not None else "GET")
+        request.add_header("User-Agent", "airtel-routerctl/1.0")
+        request.add_header("Accept", "text/html,application/xhtml+xml,application/json,*/*;q=0.8")
+        request.add_header("Cache-Control", "no-cache")
+        request.add_header("Pragma", "no-cache")
+        if referer:
+            request.add_header("Referer", self._url(referer))
+        if body is not None:
+            request.add_header("Content-Type", "application/x-www-form-urlencoded")
+        try:
+            with self.opener.open(request, timeout=self.timeout) as response:
+                raw = response.read()
+                content_type = response.headers.get("Content-Type", "")
+                encoding = "utf-8" if "utf-8" in content_type.lower() else "latin1"
+                return raw.decode(encoding, "replace"), response.geturl(), response.status, content_type
+        except HTTPError as exc:
+            raise RouterError(f"HTTP {exc.code} from {url}") from exc
+        except (URLError, TimeoutError) as exc:
+            raise RouterError(f"request failed for {url}: {exc}") from exc
+
+    @staticmethod
+    def _js_encode_uri_component(value: str) -> str:
+        # JavaScript encodeURIComponent leaves these characters unescaped.
+        encoded = quote(value, safe="-_.!~*'()")
+        return re.sub(r"%[0-9A-F]{2}", lambda match: match.group(0).lower(), encoded)
+
+    def login(self) -> None:
+        page, _, _, _ = self.request("/cgi-bin/login_advance.cgi")
+        match = re.search(r"\b(?:var\s+)?sid\s*=\s*['\"]([^'\"]+)['\"]", page, re.I)
+        if not match:
+            raise RouterError("Airtel login page did not contain a session id")
+        sid = match.group(1)
+        digest_input = self._js_encode_uri_component(self.password) + ":" + sid
+        digest = hashlib.md5(digest_input.encode("utf-8")).hexdigest()
+        payload = {
+            "Loginuser": self.username,
+            "LoginPasswordValue": digest,
+            "submitValue": "1",
+            "LoginSidValue": sid,
+            "Prestige_Login": "Login",
+        }
+        result, final_url, _, _ = self.request(
+            "/cgi-bin/login_advance.cgi", payload, referer="/cgi-bin/login_advance.cgi"
+        )
+        if "Authorization failed" in result or "incorrect" in result.lower():
+            raise RouterError("router login failed")
+        if "login_advance.cgi" not in final_url:
+            # A future firmware may redirect directly to indexmain.cgi.
+            self.logged_in = True
+            return
+        index, index_url, _, _ = self.request("/cgi-bin/indexmain.cgi", referer="/cgi-bin/login_advance.cgi")
+        if "login_advance.cgi" in index_url or "name=\"Loginuser\"" in index:
+            raise RouterError("router login failed")
+        self.logged_in = True
+
+    def get_raw(self, path: str, referer: str | None = None, retry: bool = True) -> tuple[str, str]:
+        body, final_url, _, _ = self.request(path, referer=referer)
+        if retry and ("login_advance.cgi" in final_url or 'name="Loginuser"' in body):
+            self.login()
+            return self.get_raw(path, referer=referer, retry=False)
+        return body, final_url
+
+    def get(self, path: str, referer: str | None = None) -> str:
+        return self.get_raw(path, referer=referer)[0]
+
+    def optional_get(self, path: str, referer: str | None = None) -> str | None:
+        try:
+            return self.get(path, referer=referer)
+        except RouterError as exc:
+            if str(exc).startswith("HTTP 404") or str(exc).startswith("HTTP 403"):
+                return None
+            raise
+
+
+def password_from_environment_or_prompt(explicit: str | None = None) -> str:
+    value = explicit or os.environ.get("AIRTEL_ROUTER_PASSWORD") or os.environ.get("ROUTER_PASSWORD") or stored("airtel", "password")
+    if value is not None:
+        return value
+    if not sys.stdin.isatty():
+        raise RouterError("set AIRTEL_ROUTER_PASSWORD (or ROUTER_PASSWORD) for non-interactive use")
+    return getpass.getpass("Airtel router password: ")
+
+
+def parse_status(page: str) -> dict[str, object]:
+    """Parse statusview.cgi, whose visible labels are injected by JavaScript."""
+    raw_page = page
+    page = replace_label_spans(page)
+    rows = direct_rows(page)
+    result: dict[str, object] = {
+        "device": {},
+        "wan": [],
+        "lan": {},
+        "wifi": [],
+        "system": {},
+        "ports": [],
+        "connection": {},
+    }
+    section = "device"
+    current_wan: dict[str, str] | None = None
+    current_wifi: dict[str, str] | None = None
+
+    def value(cells: list[str]) -> str:
+        return cells[-1].strip() if cells else ""
+
+    def set_device(label: str, val: str) -> bool:
+        mapping = (
+            ("country code", "country"),
+            ("host name", "hostname"),
+            ("model name", "model"),
+            ("firmware version", "firmware"),
+            ("gpon serial number", "gpon_serial_number"),
+            ("serial number", "serial_number"),
+            ("mac address", "mac"),
+        )
+        for needle, key in mapping:
+            if needle in label:
+                if val:
+                    result["device"][key] = val  # type: ignore[index]
+                return True
+        return False
+
+    def field_key(label: str) -> str | None:
+        if "encapsulation" in label:
+            return "encapsulation"
+        if "ipv6/ipv4" in label or "dual stack" in label:
+            return "ip_version"
+        if "ip address" in label and "ipv6" not in label and "link-local" not in label:
+            return "ipv4"
+        if "subnet mask" in label:
+            return "subnet_mask"
+        if "default gateway" in label:
+            return "gateway"
+        if "primary dns" in label:
+            return "primary_dns"
+        if "secondary dns" in label:
+            return "secondary_dns"
+        if "ipv6 global ip" in label:
+            return "ipv6_global"
+        if "ipv6 prefix length" in label:
+            return "ipv6_prefix_length"
+        if "ipv6 gateway" in label:
+            return "ipv6_gateway"
+        if "ipv6 wan dns1" in label:
+            return "ipv6_primary_dns"
+        if "ipv6 wan dns2" in label:
+            return "ipv6_secondary_dns"
+        if "link-local address" in label:
+            return "ipv6_link_local"
+        if label == "ip address" or label.endswith("ip address"):
+            return "ip_address"
+        if "ip subnet mask" in label:
+            return "subnet_mask"
+        if label == "dhcp" or label.endswith("dhcp"):
+            return "dhcp"
+        if "dhcpv6" in label:
+            return "dhcpv6"
+        if "radvd state" in label:
+            return "radvd"
+        if "preferred/valid" in label:
+            return "preferred_valid_time"
+        return None
+
+    def wifi_key(label: str) -> str | None:
+        if label == "status":
+            return "status"
+        if label == "ssid":
+            return "ssid"
+        if label == "channel":
+            return "channel"
+        if "operating bandwidth" in label:
+            return "bandwidth"
+        if "802.11 mode" in label:
+            return "mode"
+        if "security mode" in label:
+            return "security"
+        if "scheduling" in label:
+            return "scheduling"
+        if "wifi mac" in label:
+            return "mac"
+        return None
+
+    for cells in rows:
+        if not cells:
+            continue
+        label = normalize_label(cells[0])
+        val = value(cells)
+        if not label:
+            continue
+
+        if "wan information" in label:
+            section = "wan"
+            continue
+        if "wan name" in label:
+            if current_wan:
+                result["wan"].append(current_wan)  # type: ignore[union-attr]
+            current_wan = {"name": val}
+            section = "wan"
+            continue
+        # Check WLAN headings before LAN: “wlan information” contains
+        # “lan information” as a substring.
+        if "2.4g wlan information" in label:
+            current_wifi = {"band": "2.4GHz"}
+            result["wifi"].append(current_wifi)  # type: ignore[union-attr]
+            section = "wifi"
+            continue
+        if "5g wlan information" in label:
+            current_wifi = {"band": "5GHz"}
+            result["wifi"].append(current_wifi)  # type: ignore[union-attr]
+            section = "wifi"
+            continue
+        if "lan information" in label:
+            if current_wan:
+                result["wan"].append(current_wan)
+                current_wan = None
+            section = "lan"
+            continue
+        if "system status" in label:
+            section = "system"
+            continue
+        if "interface status" in label:
+            section = "ports"
+            continue
+        if label == "wan status":
+            section = "connection"
+            continue
+
+        if label.startswith("wan mode") or label.startswith("wan link status") or label.startswith("pppoe connection status") or label.startswith("pppoe last"):
+            key = re.sub(r"[^a-z0-9]+", "_", label).strip("_")
+            if val:
+                result["connection"][key] = val  # type: ignore[index]
+            continue
+
+        if section == "device":
+            set_device(label, val)
+        elif section == "wan" and current_wan is not None:
+            key = field_key(label)
+            # PPP user names are intentionally not retained in command output.
+            if key and val and "ppp user" not in label and "mac address" not in label:
+                current_wan[key] = val
+        elif section == "lan":
+            key = field_key(label)
+            if key and val:
+                result["lan"][key] = val  # type: ignore[index]
+        elif section == "wifi" and current_wifi is not None:
+            key = wifi_key(label)
+            if key and val:
+                current_wifi[key] = val
+        elif section == "system":
+            if "system up" in label:
+                result["system"]["uptime"] = val  # type: ignore[index]
+            elif "pon up" in label:
+                result["system"]["pon_uptime"] = val  # type: ignore[index]
+            elif "current date/time" in label:
+                result["system"]["current_time"] = val  # type: ignore[index]
+            elif "pppoe up" in label:
+                result["system"]["pppoe_uptime"] = val  # type: ignore[index]
+            elif "cpu usage" in label:
+                result["system"]["cpu_usage"] = val  # type: ignore[index]
+            elif "memory free" in label:
+                result["system"]["memory_free"] = val  # type: ignore[index]
+        elif section == "ports" and len(cells) >= 2:
+            if re.fullmatch(r"(?:LAN[1-4]|2\.4G WLAN|5G WLAN)", cells[0], re.I):
+                entry = {"interface": cells[0], "status": cells[1]}
+                if len(cells) >= 3:
+                    entry["rate"] = cells[2]
+                result["ports"].append(entry)  # type: ignore[union-attr]
+
+    if current_wan:
+        result["wan"].append(current_wan)  # type: ignore[union-attr]
+
+    # The stock page omits one closing </td> for LAN4.  Recover all interface
+    # rows with a small tolerant pass instead of dropping that port.
+    interface_re = re.compile(
+        r"<td[^>]*>\s*(LAN[1-4]|2\.4G WLAN|5G WLAN)\s*</td>\s*"
+        r"<td[^>]*>\s*([^<]+?)\s*</td>\s*<td[^>]*>\s*([^<]+)",
+        re.I | re.S,
+    )
+    ports_by_name = {str(port.get("interface")): port for port in result["ports"]}
+    for interface, port_status, rate in interface_re.findall(page):
+        entry = ports_by_name.get(interface)
+        if entry is None:
+            entry = {"interface": interface, "status": " ".join(port_status.split()), "rate": " ".join(rate.split())}
+            result["ports"].append(entry)  # type: ignore[union-attr]
+        else:
+            entry.setdefault("rate", " ".join(rate.split()))
+
+    # CPU/memory values sit beside nested percentage tables, so they are not
+    # direct rows.  Read the first blue value after each stable label id.
+    for label_id, key in (("MLG_Home_CPU", "cpu_usage"), ("MLG_Home_MemFree", "memory_free")):
+        markers = list(re.finditer(rf"id=['\"]{label_id}['\"]", raw_page, re.I))
+        if markers:
+            marker = markers[-1]
+            tail = raw_page[marker.end() : marker.end() + 2200]
+            values = re.findall(r"class=['\"]table_font\s+w_blue['\"]\s*>([^<]+)", tail, re.I)
+            if values:
+                result["system"][key] = " ".join(values[0].split())  # type: ignore[index]
+    return result
+
+
+def status(router: AirtelRouter, as_json: bool = False) -> None:
+    page = router.get("/cgi-bin/statusview.cgi", referer="/cgi-bin/naviView_partialLoad.cgi")
+    data = parse_status(page)
+    if as_json:
+        print(json.dumps(data, indent=2))
+        return
+
+    device = data["device"]
+    print(f"{device.get('model', '?')}  firmware {device.get('firmware', '?')}  MAC {device.get('mac', '?')}")
+    for wan in data["wan"]:
+        fields = [wan.get("name", "?"), wan.get("ip_version", "?"), wan.get("ipv4", "?")]
+        if wan.get("encapsulation"):
+            fields.insert(1, str(wan["encapsulation"]))
+        print("WAN   " + "  ".join(fields))
+    lan = data["lan"]
+    print(f"LAN   {lan.get('ipv4', lan.get('ip_address', '?'))}  {lan.get('subnet_mask', '?')}  DHCP {lan.get('dhcp', '?')}")
+    for wireless in data["wifi"]:
+        print(
+            f"Wi-Fi {wireless.get('band', '?'):>6}  {wireless.get('status', '?'):<3}  "
+            f"ch {wireless.get('channel', '?'):>3}  {wireless.get('bandwidth', '?'):<6}  "
+            f"{wireless.get('ssid', '?')}  {wireless.get('security', '?')}"
+        )
+    system = data["system"]
+    if system:
+        print(f"System uptime {system.get('uptime', '?')}  PON {system.get('pon_uptime', '?')}  CPU {system.get('cpu_usage', '?')}")
+    for port in data["ports"]:
+        print(f"Port  {port.get('interface', '?'):<8} {port.get('status', '?'):<8} {port.get('rate', '?')}")
+    connection = data["connection"]
+    if connection:
+        print(
+            f"WAN status {connection.get('wan_link_status', '?')}  "
+            f"PPPoE {connection.get('pppoe_connection_status', '?')}"
+        )
+
+
+def parse_wifi_band(
+    status_entry: dict[str, str],
+    basic: str,
+    advanced: str,
+    band: str,
+) -> dict[str, object]:
+    radio_name = "wlRadio"
+    if band == "5GHz":
+        wlan_enabled = input_checked(basic, "WlEnbl", True)
+        config_channel = dynamic_value(basic, "Channel", "0")
+        mode = dynamic_value(advanced, "Wirelessband", "") or status_entry.get("mode", "")
+        bandwidth = dynamic_value(advanced, "Bandwidth", "") or status_entry.get("bandwidth", "")
+    else:
+        wlan_enabled = input_checked(basic, "APOn", True)
+        config_channel = dynamic_value(basic, "Channel", "0")
+        mode = selected_option(advanced, "wlMode") or status_entry.get("mode", "")
+        bandwidth = selected_option(advanced, "wlHT_BW") or status_entry.get("bandwidth", "")
+
+    tx_power = selected_option(advanced, "wlTxPwrPcnt")
+    if not tx_power:
+        tx_power = dynamic_value(advanced, "selectedVal", "")
+    result: dict[str, object] = {
+        "band": band,
+        "radio_enabled": input_checked(basic, radio_name, True),
+        "wlan_enabled": wlan_enabled,
+        "ssid": status_entry.get("ssid") or input_value(basic, "SSID", "?"),
+        "hidden_ssid": input_checked(basic, "HideSSID", False),
+        "channel_config": "auto" if config_channel in ("", "0", "auto") else config_channel,
+        "channel": status_entry.get("channel", "?"),
+        "bandwidth": bandwidth or status_entry.get("bandwidth", "?"),
+        "mode": mode or status_entry.get("mode", "?"),
+        "security": status_entry.get("security", "?"),
+        "status": status_entry.get("status", "?"),
+        "mac": status_entry.get("mac", "?"),
+    }
+    if tx_power:
+        result["tx_power_percent"] = tx_power
+    if band == "5GHz":
+        result["beamforming"] = input_checked(advanced, "Beamforming", False)
+        result["band_steering"] = input_checked(advanced, "BandSteering", False)
+        result["pmf"] = selected_option(advanced, "wlPmf")
+        result["short_gi"] = selected_option(advanced, "ShortGI")
+    else:
+        result["wmm"] = selected_option(advanced, "WMM")
+        result["short_gi"] = selected_option(advanced, "wlShortGI")
+        result["pmf"] = selected_option(advanced, "wlPmf")
+    return result
+
+
+def wifi(router: AirtelRouter, as_json: bool = False) -> None:
+    status_page = router.get("/cgi-bin/statusview.cgi", referer="/cgi-bin/naviView_partialLoad.cgi")
+    status_data = parse_status(status_page)
+    by_band = {str(item.get("band")): item for item in status_data["wifi"]}
+    pages = {
+        "2.4GHz": (
+            "/cgi-bin/wlan_general.cgi?SSID_INDEX=0",
+            "/cgi-bin/wlan_others.cgi",
+        ),
+        "5GHz": (
+            "/cgi-bin/wlan5_general.cgi?SSID_INDEX=0",
+            "/cgi-bin/wlan5_others.cgi?SSID_INDEX=0",
+        ),
+    }
+    result = []
+    for band, (basic_path, advanced_path) in pages.items():
+        basic = router.get(basic_path, referer="/cgi-bin/indexmain.cgi")
+        advanced = router.get(advanced_path, referer=basic_path)
+        result.append(parse_wifi_band(by_band.get(band, {}), basic, advanced, band))
+    if as_json:
+        print(json.dumps(result, indent=2))
+        return
+    for item in result:
+        extras = []
+        for key in ("wmm", "short_gi", "beamforming", "band_steering", "pmf"):
+            if key in item:
+                extras.append(f"{key}={item[key]}")
+        print(
+            f"{item['band']}  SSID {item['ssid']}  status {item['status']}  "
+            f"channel {item['channel']} ({item['channel_config']})  width {item['bandwidth']}  "
+            f"mode {item['mode']}  security {item['security']}"
+        )
+        print("  " + "  ".join(extras))
+
+
+def parse_connection_table(page: str) -> list[dict[str, str]]:
+    records: list[dict[str, str]] = []
+    mac_re = re.compile(r"\b[0-9a-f]{2}(?::[0-9a-f]{2}){5}\b", re.I)
+    ipv4_re = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
+    for cells in direct_rows(page):
+        mac_match = next((match for cell in cells if (match := mac_re.search(cell))), None)
+        if not mac_match:
+            continue
+        mac = mac_match.group(0).upper()
+        ip_match = next((match for cell in cells if (match := ipv4_re.search(cell))), None)
+        without_addresses = [
+            cell for cell in cells if not mac_re.search(cell) and not ipv4_re.fullmatch(cell.strip())
+        ]
+        name = without_addresses[0] if without_addresses else "?"
+        records.append({"hostname": name, "ip": ip_match.group(0) if ip_match else "?", "mac": mac})
+    return records
+
+
+def parse_station_list(page: str) -> list[dict[str, object]]:
+    records: list[dict[str, object]] = []
+    mac_re = re.compile(r"\b[0-9a-f]{2}(?::[0-9a-f]{2}){5}\b", re.I)
+    for cells in direct_rows(page):
+        mac_match = next((match for cell in cells if (match := mac_re.search(cell))), None)
+        if not mac_match:
+            continue
+        rssi: int | None = None
+        for cell in cells:
+            try:
+                candidate = int(cell)
+            except ValueError:
+                continue
+            if -120 <= candidate < 0:
+                rssi = candidate
+                break
+        associated = next((cell for cell in cells if cell.lower() in {"yes", "no"}), "?")
+        records.append(
+            {
+                "mac": mac_match.group(0).upper(),
+                "rssi_dbm": rssi,
+                "associated": associated.lower() == "yes" if associated != "?" else None,
+            }
+        )
+    return records
+
+
+def station_ssids(router: AirtelRouter, path: str) -> list[str]:
+    page = router.optional_get(path, referer="/cgi-bin/indexmain.cgi")
+    if not page:
+        return []
+    names: list[str] = []
+    for option in select_options(page, "wlSsidIdx"):
+        text = option["text"] or option["value"]
+        if text:
+            names.append(text)
+    return names
+
+
+def clients(router: AirtelRouter, as_json: bool = False) -> None:
+    status_page = router.get("/cgi-bin/statusview.cgi", referer="/cgi-bin/naviView_partialLoad.cgi")
+    status_data = parse_status(status_page)
+    network_page = router.get("/cgi-bin/connection_table_list.cgi", referer="/cgi-bin/naviView_partialLoad.cgi")
+    merged: dict[str, dict[str, object]] = {}
+    for record in parse_connection_table(network_page):
+        merged[record["mac"].lower()] = record
+
+    bands = (
+        ("2.4GHz", "/cgi-bin/wlan_staionInfo_list", "/cgi-bin/wlan_staionInfo.cgi", False),
+        ("5GHz", "/cgi-bin/wlan5_staionInfo_list", "/cgi-bin/wlan5_staionInfo.cgi", True),
+    )
+    for band, list_base, info_path, five_ghz in bands:
+        ssids = station_ssids(router, info_path)
+        if not ssids:
+            status_ssid = next((x.get("ssid") for x in status_data["wifi"] if x.get("band") == band), None)
+            ssids = [str(status_ssid or band)]
+        for index in range(4):
+            suffix = "" if index == 0 else str(index)
+            path = list_base + suffix + ".cgi"
+            fragment = router.optional_get(path, referer=info_path)
+            if fragment is None:
+                continue
+            for station in parse_station_list(fragment):
+                key = str(station["mac"]).lower()
+                record = merged.setdefault(key, {"mac": station["mac"], "hostname": "?", "ip": "?"})
+                record["band"] = band
+                record["ssid"] = ssids[index] if index < len(ssids) else ssids[0]
+                record["rssi_dbm"] = station["rssi_dbm"]
+                record["associated"] = station["associated"]
+                if five_ghz:
+                    record["radio"] = "5GHz"
+
+    rows = sorted(merged.values(), key=lambda item: str(item.get("mac", "")))
+    if as_json:
+        print(json.dumps(rows, indent=2))
+        return
+    if not rows:
+        print("No connected clients found.")
+        return
+    for record in rows:
+        rssi = record.get("rssi_dbm")
+        rssi_text = f"RSSI {rssi:>4} dBm" if isinstance(rssi, int) else "RSSI ?"
+        wireless = f"{record.get('band', 'LAN')} {record.get('ssid', '')}".strip()
+        print(
+            f"{record.get('mac', '?')}  {wireless:<32}  "
+            f"{record.get('ip', '?'):<15}  {rssi_text}  {record.get('hostname', '?')}"
+        )
+
+
+def parse_menu(text: str) -> dict[str, object]:
+    # menuJson.cgi is JSON with a trailing comma on the stock firmware.
+    cleaned = re.sub(r",(\s*[}\]])", r"\1", text)
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError as exc:
+        raise RouterError(f"could not parse Airtel menu JSON: {exc}") from exc
+
+
+def menu_entries(menu: dict[str, object], prefix: tuple[str, ...] = ()) -> list[dict[str, str]]:
+    entries: list[dict[str, str]] = []
+    for key, value in menu.items():
+        if key == "defaultPage" or not isinstance(value, dict):
+            continue
+        title = str(value.get("title", key))
+        current = prefix + (key,)
+        if value.get("url"):
+            entries.append({"id": "-".join(current), "title": title, "url": str(value["url"])})
+        submenu = value.get("submenu")
+        if isinstance(submenu, dict):
+            entries.extend(menu_entries(submenu, current))
+    return entries
+
+
+def normalized_router_path(router: AirtelRouter, path: str, base: str = "/cgi-bin/indexmain.cgi") -> str:
+    url = urljoin(router.host + base, path)
+    parsed = urlparse(url)
+    return parsed.path + (("?" + parsed.query) if parsed.query else "")
+
+
+def menu(router: AirtelRouter, as_json: bool = False) -> None:
+    raw = router.get("/cgi-bin/menuJson.cgi", referer="/cgi-bin/indexmain.cgi")
+    parsed = parse_menu(raw)
+    entries = []
+    for entry in menu_entries(parsed):
+        entry = dict(entry)
+        entry["path"] = normalized_router_path(router, entry.pop("url"))
+        entries.append(entry)
+    output = {"default_page": parsed.get("defaultPage"), "entries": entries}
+    if as_json:
+        print(json.dumps(output, indent=2))
+        return
+    for entry in entries:
+        print(f"{entry['id']:<38} {entry['title']:<28} {entry['path']}")
+
+
+def form_summary(page: str) -> dict[str, object]:
+    forms = []
+    for tag in re.findall(r"<form\b[^>]*>", page, re.I):
+        action = re.search(r"\baction\s*=\s*(['\"]?)([^\s>\"']+)\1", tag, re.I)
+        method = re.search(r"\bmethod\s*=\s*(['\"]?)([^\s>\"']+)\1", tag, re.I)
+        forms.append({"action": action.group(2) if action else "", "method": (method.group(2) if method else "GET").upper()})
+    hidden = sorted(
+        set(
+            re.findall(
+                r"<input\b(?=[^>]*\btype\s*=\s*['\"]?hidden)(?=[^>]*\bname\s*=\s*['\"]?([^\s>\"']+))[^>]*>",
+                page,
+                re.I,
+            )
+        )
+    )
+    title_match = re.search(r"<title\b[^>]*>(.*?)</title>", page, re.I | re.S)
+    return {
+        "title": clean_text(title_match.group(1)) if title_match else "",
+        "forms": forms,
+        "hidden_inputs": hidden,
+        "bytes": len(page.encode("utf-8", "replace")),
+    }
+
+
+def endpoint_audit(router: AirtelRouter, args: argparse.Namespace) -> None:
+    raw_menu = router.get("/cgi-bin/menuJson.cgi", referer="/cgi-bin/indexmain.cgi")
+    parsed_menu = parse_menu(raw_menu)
+    menu_paths: set[str] = set()
+    targets: list[tuple[str, str]] = [("/cgi-bin/menuJson.cgi", "menuJson")]
+    for entry in menu_entries(parsed_menu):
+        menu_url = entry["url"]
+        normalized = normalized_router_path(router, menu_url)
+        menu_paths.add(normalized)
+        if "tabJson=" not in menu_url:
+            targets.append((normalized, entry["title"]))
+            continue
+        tab_ref = re.search(r"tabJson=([^&]+)", menu_url)
+        if not tab_ref:
+            continue
+        tab_ref_value = tab_ref.group(1)
+        tab_json_path = normalized_router_path(router, tab_ref_value, "/cgi-bin/tabFW.cgi")
+        try:
+            tab_page = router.get(tab_json_path, referer="/cgi-bin/indexmain.cgi")
+        except RouterError:
+            continue
+        for relative in re.findall(r'"url"\s*:\s*"([^"]+)"', tab_page):
+            target = normalized_router_path(router, relative, "/cgi-bin/tabFW.cgi")
+            targets.append((target, entry["title"]))
+
+    unique: list[tuple[str, str]] = []
+    seen: set[str] = set()
+    for path, source in targets:
+        if path in seen:
+            continue
+        seen.add(path)
+        unique.append((path, source))
+        if len(unique) >= max(1, args.limit):
+            break
+
+    pages: list[dict[str, object]] = []
+    for path, source in unique:
+        try:
+            body, final_url = router.get_raw(path, referer="/cgi-bin/indexmain.cgi")
+            final_path = urlparse(final_url).path
+            if urlparse(final_url).query:
+                final_path += "?" + urlparse(final_url).query
+            info = form_summary(body)
+            pages.append(
+                {
+                    "path": path,
+                    "final_path": final_path,
+                    "source": source,
+                    "in_menu": path in menu_paths,
+                    **info,
+                }
+            )
+        except RouterError as exc:
+            pages.append({"path": path, "source": source, "error": str(exc), "in_menu": path in menu_paths})
+
+    report: dict[str, object] = {
+        "router": router.host,
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "read_only": True,
+        "menu_entries": menu_entries(parsed_menu),
+        "pages_checked": len(pages),
+        "pages": pages,
+    }
+    output = Path(args.save).expanduser() if args.save else data_root() / f"endpoints-{datetime.now():%Y%m%d-%H%M%S}-airtel.json"
+    write_private(output, json.dumps(report, indent=2))
+    if args.json:
+        print(json.dumps(report, indent=2))
+    else:
+        print(f"Checked {len(pages)} read-only pages; report: {output}")
+        for page in pages:
+            if "error" in page:
+                print(f"  {page['path']}: {page['error']}")
+            else:
+                print(f"  {page['path']}  {page.get('bytes', 0)} bytes")
+
+
+def backup(router: AirtelRouter) -> None:
+    root = private_dir(data_root() / "backups" / f"{datetime.now():%Y%m%d-%H%M%S}-airtel")
+    paths = [
+        "/cgi-bin/statusview.cgi",
+        "/cgi-bin/connection_table_list.cgi",
+        "/cgi-bin/broadband.cgi",
+        "/cgi-bin/wlan_general.cgi?SSID_INDEX=0",
+        "/cgi-bin/wlan5_general.cgi?SSID_INDEX=0",
+        "/cgi-bin/wlan_others.cgi",
+        "/cgi-bin/wlan5_others.cgi?SSID_INDEX=0",
+        "/cgi-bin/lanSetup.cgi",
+        "/cgi-bin/menuJson.cgi",
+    ]
+    # Include all primary and guest station fragments, but tolerate absent VAPs.
+    paths.extend(f"/cgi-bin/wlan_staionInfo_list{'' if i == 0 else i}.cgi" for i in range(4))
+    paths.extend(f"/cgi-bin/wlan5_staionInfo_list{'' if i == 0 else i}.cgi" for i in range(4))
+    fetched: list[str] = []
+    errors: dict[str, str] = {}
+    for path in paths:
+        try:
+            body = router.get(path, referer="/cgi-bin/indexmain.cgi")
+            write_private(root / (safe_filename(path) + ".html"), redact_html(body))
+            fetched.append(path)
+        except RouterError as exc:
+            errors[path] = str(exc)
+
+    status_path = "/cgi-bin/statusview.cgi"
+    status_file = root / (safe_filename(status_path) + ".html")
+    if status_file.exists():
+        write_private(root / "status.json", json.dumps(parse_status(status_file.read_text(encoding="utf-8")), indent=2))
+    metadata = {
+        "router": router.host,
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "read_only": True,
+        "fetched": fetched,
+        "errors": errors,
+    }
+    write_private(root / "metadata.json", json.dumps(metadata, indent=2))
+    print(root)
+    if errors:
+        print(f"Skipped {len(errors)} unavailable optional pages.", file=sys.stderr)
+
+
+def dns_dry_run(router: AirtelRouter, args: argparse.Namespace) -> None:
+    if args.apply:
+        raise RouterError("Airtel write operations are disabled; dns is read-only/dry-run only")
+    page = router.get("/cgi-bin/lanSetup.cgi", referer="/cgi-bin/indexmain.cgi")
+    current = {
+        "lan_ip": input_value(page, "uiViewIPAddr", "?"),
+        "subnet_mask": input_value(page, "uiViewNetMask", "?"),
+        "dhcp": {"mode": selected_option(page, "dhcpTypeRadio", "") or "see status"},
+        "primary_mode": selected_option(page, "MLG_DNSServer1_LANSetup", "?"),
+        "primary": input_value(page, "PrimaryDns", "?"),
+        "secondary_mode": selected_option(page, "MLG_DNSServer2_LANSetup", "?"),
+        "secondary": input_value(page, "SecondDns", "?"),
+        "endpoint": "/cgi-bin/lanSetup.cgi",
+    }
+    proposed = dict(current)
+    for name, value in (("primary", args.primary), ("secondary", args.secondary)):
+        if value:
+            try:
+                if ipaddress.ip_address(value).version != 4:
+                    raise ValueError
+            except ValueError as exc:
+                raise RouterError(f"{name} must be an IPv4 address") from exc
+            proposed[name] = value
+            proposed[f"{name}_mode"] = "1 (UserDefined)"
+    output = {
+        "dry_run": True,
+        "write_enabled": False,
+        "current": current,
+        "proposed": proposed,
+        "would_post": False,
+        "note": "The Airtel driver does not submit the hidden LAN form yet.",
+    }
+    print(json.dumps(output, indent=2))
+
+
+def tune5g_dry_run(router: AirtelRouter, args: argparse.Namespace) -> None:
+    if args.apply:
+        raise RouterError("Airtel write operations are disabled; tune5g is read-only/dry-run only")
+    status_page = router.get("/cgi-bin/statusview.cgi", referer="/cgi-bin/naviView_partialLoad.cgi")
+    status_data = parse_status(status_page)
+    status_entry = next((x for x in status_data["wifi"] if x.get("band") == "5GHz"), {})
+    basic_path = "/cgi-bin/wlan5_general.cgi?SSID_INDEX=0"
+    advanced_path = "/cgi-bin/wlan5_others.cgi?SSID_INDEX=0"
+    basic = router.get(basic_path, referer="/cgi-bin/indexmain.cgi")
+    advanced = router.get(advanced_path, referer=basic_path)
+    current = parse_wifi_band(status_entry, basic, advanced, "5GHz")
+    proposed = dict(current)
+    if args.width and args.width != "auto":
+        proposed["bandwidth"] = f"{args.width}MHz"
+    if args.channel is not None:
+        proposed["channel_config"] = "auto" if args.channel == "auto" else args.channel
+    if args.beamforming:
+        proposed["beamforming"] = args.beamforming == "on"
+    if args.band_steering:
+        proposed["band_steering"] = args.band_steering == "on"
+    print(
+        json.dumps(
+            {
+                "dry_run": True,
+                "write_enabled": False,
+                "current": current,
+                "proposed": proposed,
+                "sources": {"basic": basic_path, "advanced": advanced_path},
+                "would_post": False,
+            },
+            indent=2,
+        )
+    )
+
+
+def speedtest() -> None:
+    if subprocess.call(["sh", "-c", "command -v fast >/dev/null 2>&1"]):
+        raise RouterError("fast CLI is not installed")
+    command = ["fast", "--upload"] if sys.stdout.isatty() else ["script", "-q", "/dev/null", "fast", "--upload"]
+    raise SystemExit(subprocess.call(command))
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="airtel-routerctl", description="Read-only Airtel AOT5221ZY router CLI")
+    parser.add_argument("--host", default=stored("airtel", "host", DEFAULT_HOST))
+    parser.add_argument("--username", default=stored("airtel", "username", DEFAULT_USER))
+    parser.add_argument("--password", help="avoid this in shell history; use AIRTEL_ROUTER_PASSWORD or ROUTER_PASSWORD")
+    parser.add_argument("--timeout", type=float, default=12.0)
+    sub = parser.add_subparsers(dest="command", required=True)
+    for name in ("status", "clients", "wifi"):
+        command = sub.add_parser(name)
+        command.add_argument("--json", action="store_true")
+    command = sub.add_parser("menu")
+    command.add_argument("--json", action="store_true")
+    sub.add_parser("backup")
+    command = sub.add_parser("endpoints", help="read-only audit of menu-linked CGI pages")
+    command.add_argument("--limit", type=int, default=120)
+    command.add_argument("--save")
+    command.add_argument("--json", action="store_true")
+    command = sub.add_parser("dns", help="show or plan LAN DNS changes without writing")
+    command.add_argument("--primary")
+    command.add_argument("--secondary")
+    command.add_argument("--dry-run", action="store_true", help="accepted for explicitness; this command is always dry-run")
+    command.add_argument("--apply", action="store_true")
+    command = sub.add_parser("tune5g", help="show or plan 5GHz changes without writing")
+    command.add_argument("--width", choices=("auto", "20", "40", "80", "160"), default="auto")
+    command.add_argument("--channel", default=None, help="auto or a channel number")
+    command.add_argument("--beamforming", choices=("on", "off"))
+    command.add_argument("--band-steering", choices=("on", "off"))
+    command.add_argument("--dry-run", action="store_true", help="accepted for explicitness; this command is always dry-run")
+    command.add_argument("--apply", action="store_true")
+    sub.add_parser("speedtest")
+    return parser
+
+
+def main() -> int:
+    parser = build_parser()
+    args = parser.parse_args()
+    if args.command == "speedtest":
+        speedtest()
+        return 0
+    password = password_from_environment_or_prompt(args.password)
+    router = AirtelRouter(args.host, args.username, password, args.timeout)
+    router.login()
+    if args.command == "status":
+        status(router, args.json)
+    elif args.command == "clients":
+        clients(router, args.json)
+    elif args.command == "wifi":
+        wifi(router, args.json)
+    elif args.command == "menu":
+        menu(router, args.json)
+    elif args.command == "backup":
+        backup(router)
+    elif args.command == "endpoints":
+        endpoint_audit(router, args)
+    elif args.command == "dns":
+        dns_dry_run(router, args)
+    elif args.command == "tune5g":
+        tune5g_dry_run(router, args)
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except KeyboardInterrupt:
+        print("Interrupted", file=sys.stderr)
+        raise SystemExit(130)
+    except (RouterError, CredentialError) as exc:
+        print(f"airtel-routerctl: {exc}", file=sys.stderr)
+        raise SystemExit(1)
