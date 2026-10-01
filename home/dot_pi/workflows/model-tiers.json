@@ -1,0 +1,7 @@
+{
+  "tiers": {
+    "small": "bifrost/azure/gpt-6-luna:xhigh",
+    "medium": "bifrost/azure/gpt-6.1-sol:medium",
+    "big": "bifrost/azure/gpt-6.1-sol:xhigh"
+  }
+}

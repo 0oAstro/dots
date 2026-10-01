@@ -1,0 +1,7 @@
+{
+  "name": "pi-processes-fast",
+  "private": true,
+  "type": "module",
+  "pi": { "extensions": ["./index.ts"] },
+  "scripts": { "build": "bun ./build.ts" }
+}

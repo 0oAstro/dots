@@ -1,0 +1,96 @@
+#!/usr/bin/env node
+// Thin Pi JSON adapter. Worktrunk owns traversal, copying, reflinks and symlinks.
+import * as fs from 'node:fs/promises';
+import path from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { fileURLToPath } from 'node:url';
+const exec = promisify(execFile);
+// mise's shim, so the hook works without an interactive shell PATH.
+const wt = '{{ .chezmoi.homeDir }}/.local/share/mise/shims/wt';
+async function stat(file) {
+  try { return await fs.lstat(file); }
+  catch (error) { if (error.code === 'ENOENT') return undefined; throw error; }
+}
+async function git(root, ...args) {
+  return (await exec('git', ['-C', root, ...args], { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 })).stdout;
+}
+export async function setupWorktree(input) {
+  if (!path.isAbsolute(input?.repoRoot ?? '') || !path.isAbsolute(input?.worktreePath ?? '')) {
+    throw new Error('Expected absolute worktree paths');
+  }
+  const repoRoot = await fs.realpath(input.repoRoot);
+  const worktreePath = await fs.realpath(input.worktreePath);
+  const common = async root => (await git(root, 'rev-parse', '--path-format=absolute', '--git-common-dir')).trim();
+  if (repoRoot === worktreePath || await fs.realpath(await common(repoRoot)) !== await fs.realpath(await common(worktreePath))) {
+    throw new Error('Expected separate worktrees in the same Git repository');
+  }
+  if ((await fs.stat(repoRoot)).dev !== (await fs.stat(worktreePath)).dev) {
+    throw new Error('Worktrees must be on the same filesystem');
+  }
+  // Remove only pi-subagents' automatic shared root node_modules link.
+  const nodeModules = path.join(worktreePath, 'node_modules');
+  if ((await stat(nodeModules))?.isSymbolicLink()) {
+    if ((await git(worktreePath, 'ls-files', '--', 'node_modules')).trim()
+      || path.resolve(worktreePath, await fs.readlink(nodeModules)) !== path.join(repoRoot, 'node_modules')) {
+      throw new Error('Unexpected destination node_modules symlink');
+    }
+    await fs.unlink(nodeModules); // Never remove its source target.
+  }
+  const include = await stat(path.join(repoRoot, '.worktreeinclude'));
+  if (!include) return { syntheticPaths: [] }; // Explicit project opt-in only.
+  if (!include.isFile() || include.isSymbolicLink()) throw new Error('Allowlist must be a real file');
+  const branch = (await git(repoRoot, 'symbolic-ref', '--quiet', '--short', 'HEAD')).trim();
+  const args = ['-C', worktreePath, 'step', 'copy-ignored', '--from', branch, '--require-include', '--format', 'json'];
+  const run = async extra => JSON.parse((await exec(wt, [...args, ...extra], {
+    encoding: 'utf8', maxBuffer: 16 * 1024 * 1024,
+    env: { ...process.env, WORKTRUNK_VERBOSE: '0', WORKTRUNK_TEST_REFLINK: '' },
+  })).stdout);
+  const plan = await run(['--dry-run']);
+  if (plan.outcome !== 'planned' || plan.from !== repoRoot || plan.to !== worktreePath || !Array.isArray(plan.entries)) {
+    throw new Error('Unexpected Worktrunk plan');
+  }
+  const tracked = (await git(repoRoot, 'ls-files', '-z') + await git(worktreePath, 'ls-files', '-z')).split('\0').filter(Boolean);
+  const syntheticPaths = plan.entries.map(entry => {
+    const parts = entry.path?.split('/') ?? [];
+    if (entry.kind !== 'dir' || parts.some(part => !part || part === '.' || part === '..')
+      || !/^(?:[^/]+\/)*(?:node_modules|target|\.next(?:\/cache)?)$/.test(entry.path)
+      || parts.some(part => /^(?:\.env.*|\.git|\.pi|\.agents|secrets?|credentials)$/i.test(part))
+      || tracked.some(file => file === entry.path || file.startsWith(`${entry.path}/`))) {
+      throw new Error('Allowlist selected a non-cache directory or tracked paths');
+    }
+    return entry.path;
+  });
+  for (const relative of syntheticPaths) {
+    // No custom walk: check only the planned cache root and its ancestry.
+    for (const root of [repoRoot, worktreePath]) {
+      let current = root;
+      for (const part of relative.split('/')) {
+        current = path.join(current, part);
+        const info = await stat(current);
+        if (info && (!info.isDirectory() || info.isSymbolicLink())) throw new Error('Cache path contains a symlink or non-directory');
+      }
+    }
+    if (await stat(path.join(worktreePath, relative))) throw new Error('Destination cache already exists; setup is create-only');
+    try { await git(worktreePath, 'check-ignore', '-q', '--', `${relative}/`); }
+    catch { throw new Error('Destination must ignore selected cache'); }
+  }
+  const result = await run([]); // No --force. Worktrunk performs all copying.
+  if (result.outcome !== 'copied' || result.from !== repoRoot || result.to !== worktreePath
+    || JSON.stringify(result.entries) !== JSON.stringify(plan.entries)) throw new Error('Worktrunk selection changed during setup');
+  if (result.written !== 0) throw new Error('Worktrunk fell back to full copies; stop before starting a writer');
+  return { syntheticPaths };
+}
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  try {
+    let raw = '';
+    for await (const chunk of process.stdin) {
+      raw += chunk;
+      if (Buffer.byteLength(raw) > 65536) throw new Error('Setup input too large');
+    }
+    process.stdout.write(`${JSON.stringify(await setupWorktree(JSON.parse(raw)))}\n`);
+  } catch {
+    process.stderr.write('Worktrunk cache setup failed. Check the reviewed allowlist, cache paths, source branch and filesystem.\n');
+    process.exitCode = 1;
+  }
+}

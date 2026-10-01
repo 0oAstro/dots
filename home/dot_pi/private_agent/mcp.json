@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "executor": {
+      "url": "https://executor.shau.me/mcp",
+      "exposure": "codemode-deferred"
+    }
+  }
+}

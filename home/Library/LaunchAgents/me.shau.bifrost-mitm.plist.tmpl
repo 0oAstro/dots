@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>me.shau.bifrost-mitm</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>{{ .chezmoi.homeDir }}/.local/bin/mitmdump</string>
+    <string>--listen-host</string><string>127.0.0.1</string>
+    <string>--listen-port</string><string>18899</string>
+    <string>--allow-hosts</string><string>^api\.anthropic\.com(:443)?$</string>
+    <string>--set</string><string>stream_large_bodies=1m</string>
+    <string>--set</string><string>flow_detail=0</string>
+    <string>--set</string><string>termlog_verbosity=warn</string>
+    <string>-s</string><string>{{ .chezmoi.homeDir }}/.config/bifrost-mitm/addon.py</string>
+  </array>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><dict><key>SuccessfulExit</key><false/></dict>
+  <key>ThrottleInterval</key><integer>2</integer>
+  <key>StandardErrorPath</key><string>{{ .chezmoi.homeDir }}/Library/Logs/bifrost-mitm.log</string>
+  <key>StandardOutPath</key><string>{{ .chezmoi.homeDir }}/Library/Logs/bifrost-mitm.log</string>
+</dict>
+</plist>

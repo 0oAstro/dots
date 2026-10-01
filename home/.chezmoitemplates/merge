@@ -1,0 +1,26 @@
+{{- /*
+  Overlay .managed onto .current, two levels deep, and print the result in
+  .format ("json" or "toml"). modify_ files use this for app-owned configs:
+  keys from the repo win; keys the app writes for itself (trusted projects,
+  last-seen versions, model picks) survive. Managed values replace outright,
+  so false and "" apply too.
+*/ -}}
+{{- $toml := eq .format "toml" -}}
+{{- $cur := dict -}}
+{{- $managed := dict -}}
+{{- if $toml -}}
+{{-   if .current }}{{ $cur = fromToml .current }}{{ end -}}
+{{-   $managed = fromToml .managed -}}
+{{- else -}}
+{{-   if .current }}{{ $cur = fromJson .current }}{{ end -}}
+{{-   $managed = fromJson .managed -}}
+{{- end -}}
+{{- range $k, $v := $managed -}}
+{{-   $old := get $cur $k -}}
+{{-   if and (kindIs "map" $v) (kindIs "map" $old) -}}
+{{-     range $sk, $sv := $v }}{{ $_ := set $old $sk $sv }}{{ end -}}
+{{-   else -}}
+{{-     $_ := set $cur $k $v -}}
+{{-   end -}}
+{{- end -}}
+{{- if $toml }}{{ toToml $cur }}{{ else }}{{ toPrettyJson "  " $cur }}{{ "\n" }}{{ end -}}

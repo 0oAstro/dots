@@ -1,0 +1,5 @@
+{
+  "providerMiddlewareExtensions": [
+    "anthropic-sub-prompt"
+  ]
+}

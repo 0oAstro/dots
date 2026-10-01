@@ -1,0 +1,121 @@
+{
+  "theme": "dark",
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-opus-5-5",
+  "defaultThinkingLevel": "high",
+  "enabledModels": [
+    "bifrost/azure/gpt-6-luna",
+    "anthropic/claude-sonnet-5-5",
+    "bifrost/azure/gpt-6.1-sol",
+    "anthropic/claude-opus-5-5",
+    "anthropic/claude-fable-5-1",
+    "bifrost/azure/gpt-6-astra"
+  ],
+  "packages": [
+    {
+      "source": "git:github.com/tmustier/pi-extensions@09706a7448d1715796d4d849e75ae2abe9be1f86",
+      "extensions": [
+        "session-recap/index.ts",
+        "usage-extension/index.ts"
+      ],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    "local/pi-single-line-footer",
+    "local/pi-herdr-state",
+    "npm:@sting8k/pi-vcc@0.7.0",
+    "npm:@juicesharp/rpiv-ask-user-question",
+    {
+      "source": "npm:@aliou/pi-processes",
+      "extensions": []
+    },
+    "local/pi-processes-fast",
+    {
+      "source": "git:github.com/mitsuhiko/agent-stuff@0865c849befd2021490679f96a8dee58c84ac857",
+      "extensions": [
+        "extensions/todos.ts"
+      ],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:pi-subagents@0.73.1",
+      "extensions": []
+    },
+    "local/pi-nico-eager"
+  ],
+  "subagents": {
+    "defaultModel": "bifrost/azure/gpt-6.1-sol",
+    "defaultThinking": "medium",
+    "defaultSubagentOnlyExtensions": [
+      "{{ .chezmoi.homeDir }}/.pi/agent/extensions/anthropic-sub-prompt.ts"
+    ],
+    "agentOverrides": {
+      "scout": {
+        "model": "bifrost/azure/gpt-6-luna",
+        "thinking": "xhigh"
+      },
+      "delegate": {
+        "thinking": "medium"
+      },
+      "worker": {
+        "thinking": "medium"
+      },
+      "reviewer": {
+        "thinking": "medium"
+      },
+      "researcher": {
+        "thinking": "medium"
+      },
+      "evidence-auditor": {
+        "thinking": "medium"
+      },
+      "oracle": {
+        "model": "anthropic/claude-opus-5-5",
+        "thinking": "high"
+      }
+    }
+  },
+  "warnings": {
+    "anthropicExtraUsage": false
+  },
+  "firecrawl-web": {
+    "fetchModel": "bifrost/azure/gpt-6-luna"
+  },
+  "terminal": {
+    "showTerminalProgress": true
+  },
+  "showCacheMissNotices": true,
+  "cacheWarming": "idle",
+  "quietStartup": true,
+  "enableInstallTelemetry": false,
+  "defaultProjectTrust": "always",
+  "hideThinkingBlock": false,
+  "modelThinkingLevels": {
+    "bifrost/azure/gpt-6-luna": "xhigh",
+    "bifrost/azure/gpt-6.1-sol": "high",
+    "bifrost/azure/gpt-6-astra": "medium",
+    "anthropic/claude-opus-5-5": "medium",
+    "anthropic/claude-fable-5-1": "medium",
+    "anthropic/claude-sonnet-5-5": "high"
+  },
+  "httpIdleTimeoutMs": 900000,
+  "retry": {
+    "provider": {
+      "timeoutMs": 960000
+    }
+  },
+  "extensions": [
+    "-extensions/herdr-agent-state.ts"
+  ],
+  "skills": [
+    "~/.pi/agent/pstack-src/pstack/skills"
+  ],
+  "tuiMode": "fullscreen",
+  "defaultTools": [
+    "+codemode",
+    "+tool_search"
+  ]
+}

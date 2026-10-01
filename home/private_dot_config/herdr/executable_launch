@@ -1,0 +1,20 @@
+#!/bin/zsh -f
+
+# Ghostty may inherit these when launched from an agent or an existing Herdr pane.
+unset NO_COLOR HERDR_ENV
+
+# Keep Ghostty's drop-down quick terminal as a normal login shell.
+if [[ -n ${GHOSTTY_QUICK_TERMINAL:-} ]]; then
+  exec "$SHELL" -l
+fi
+
+# GUI apps have a minimal PATH; Herdr needs its notification helper here.
+export PATH="$HOME/.local/bin:$PATH"
+
+herdr_bin=$HOME/.local/share/mise/installs/herdr/latest/herdr
+if [[ ! -x $herdr_bin ]]; then
+  print -ru2 'herdr: executable not found'
+  exit 127
+fi
+
+exec "$herdr_bin" --session work

@@ -1,0 +1,148 @@
+onboarding = false
+
+# Cmd-first shortcuts; Option+Space is the fallback leader.
+[keys]
+prefix = "alt+space"
+detach = ["prefix+d", "prefix+q"]
+help = ["cmd+/", "prefix+?"]
+reload_config = ["cmd+r", "prefix+r"]
+resize_mode = "prefix+shift+r"
+
+# The all-machine switcher: j/k move, / searches, Enter opens, Esc closes.
+# 0.9.0 has no dedicated machine-toggle action; never fake this by cycling workspaces.
+workspace_picker = ""
+goto = ["cmd+shift+o", "prefix+w", "prefix+g"]
+toggle_sidebar = ["cmd+b", "prefix+b"]
+new_workspace = ["cmd+shift+n", "prefix+shift+n"]
+rename_workspace = ["cmd+shift+e", "prefix+shift+w"]
+
+new_tab = ["cmd+t", "prefix+c"]
+rename_tab = ["cmd+shift+t", "prefix+comma", "prefix+shift+t"]
+previous_tab = ["cmd+shift+[", "ctrl+shift+tab", "prefix+p"]
+next_tab = ["cmd+shift+]", "ctrl+tab", "prefix+n"]
+switch_tab = ["cmd+1..9", "prefix+1..9"]
+close_tab = ["cmd+alt+w", "prefix+ampersand"]
+
+split_vertical = ["cmd+d", "prefix+|"]
+split_horizontal = ["cmd+shift+d", "prefix+minus"]
+close_pane = ["cmd+w", "prefix+x"]
+zoom = ["cmd+shift+enter", "prefix+z"]
+cycle_pane_previous = "cmd+["
+cycle_pane_next = "cmd+]"
+focus_pane_left = ["cmd+alt+left", "prefix+left"]
+focus_pane_down = ["cmd+alt+down", "prefix+down"]
+focus_pane_up = ["cmd+alt+up", "prefix+up"]
+focus_pane_right = ["cmd+alt+right", "prefix+right"]
+resize_pane_left = "cmd+ctrl+left"
+resize_pane_down = "cmd+ctrl+down"
+resize_pane_up = "cmd+ctrl+up"
+resize_pane_right = "cmd+ctrl+right"
+copy_mode = ["cmd+f", "prefix+["]
+
+# Copy mode: / search, v select, y copy, Esc/q leave.
+# Cmd+C/V, fonts, fullscreen, Cmd+N and Cmd+Shift+W stay terminal-native.
+
+[[keys.command]]
+key = "cmd+shift+p"
+type = "popup"
+description = "pick project as named workspace"
+width = "70%"
+height = "60%"
+command = '''
+[ -z "${ZSH_VERSION:-}" ] || setopt NULL_GLOB
+export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:/opt/homebrew/bin:$PATH"
+command -v fzf >/dev/null || { printf 'Project picker needs fzf. Press Enter.'; read -r answer; exit 1; }
+scan_projects() (
+  folder=$1
+  remaining=$2
+  [ -d "$folder" ] || exit 0
+  printf '%s\t%s\n' "$folder" "$folder"
+  [ ! -e "$folder/.git" ] || exit 0
+  [ "$remaining" -gt 0 ] || exit 0
+  for child in "$folder"/*; do
+    [ -d "$child" ] && [ ! -L "$child" ] || continue
+    case "${child##*/}" in node_modules|vendor|target|__pycache__|dist) continue ;; esac
+    scan_projects "$child" "$((remaining - 1))"
+  done
+)
+dir=$(
+  {
+  for root in "$HOME/Developer" "/opt/docker"; do
+    depth=3
+    [ "$root" != /opt/docker ] || depth=1
+    [ -d "$root" ] || continue
+    for project in "$root"/*; do
+      [ ! -L "$project" ] || continue
+      scan_projects "$project" "$((depth - 1))"
+    done
+  done
+  course_cache="${XDG_CONFIG_HOME:-$HOME/.config}/herdr/acad-fall-2026.txt"
+  if [ -r "$course_cache" ]; then
+    while IFS= read -r course_dir; do
+      course_name=${course_dir##*/}
+      printf '%s\t%s\n' "${course_name%% - *}" "$course_dir"
+    done < "$course_cache"
+  fi
+  } | FZF_DEFAULT_OPTS= fzf --delimiter='\t' --with-nth=1 --nth=1 --no-preview --prompt='Project > ' --header='Enter: create named workspace | Esc: cancel'
+)
+[ -n "$dir" ] || exit 0
+tab_char=$(printf '\t')
+dir=${dir#*"$tab_char"}
+dir=${dir%/}
+label=${dir##*/}
+case "$dir" in */acad/fall_2026/*) label=${label%% - *} ;; esac
+"${HERDR_BIN_PATH:-herdr}" workspace create --cwd "$dir" --label "$label" --focus
+'''
+
+[theme]
+name = "kanagawa"
+auto_switch = false
+
+[theme.custom]
+# Kanagawa Dragon-inspired chrome; accent also colors other UI highlights.
+# Use Ghostty's default background/opacity for the bar and other panels.
+panel_bg = "reset"
+surface0 = "#282727"
+accent = "#8a9a7b"
+text = "#c5c9c5"
+overlay0 = "#c5c9c5"
+overlay1 = "#c8c093"
+
+[terminal]
+new_cwd = "follow"
+shell_mode = "auto"
+kitty_graphics = true
+
+[ui]
+prompt_new_tab_name = false
+prompt_new_workspace_name = true
+confirm_close = false
+sidebar_start_collapsed = true
+sidebar_width = 28
+sidebar_min_width = 18
+sidebar_max_width = 36
+sidebar_collapsed_mode = "hidden"
+pane_borders = "auto"
+pane_outer_borders = false
+pane_gaps = false
+pane_scrollbars = false
+show_agent_labels_on_pane_borders = true
+status_indicators = "dots"
+agent_panel_sort = "spaces"
+tab_bar_right = [{ type = "zoom" }, { type = "hostname" }]
+window_title = "{hostname}: {workspace} / {tab}"
+mouse_capture = true
+copy_on_select = true
+
+[ui.sidebar.agents]
+rows = [
+  ["state_icon", { token = "machine", fg = "#DCD7BA", bold = true, dim = false }, "workspace", "tab"],
+  ["agent"],
+]
+
+[ui.toast]
+# macOS shows native notifications; headless Linux hosts ring the terminal.
+delivery = {{ if eq .chezmoi.os "darwin" }}"system"{{ else }}"terminal"{{ end }}
+
+[ui.sound]
+enabled = true
