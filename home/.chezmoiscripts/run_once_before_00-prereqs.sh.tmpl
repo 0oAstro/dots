@@ -1,0 +1,20 @@
+#!/bin/sh
+# Base packages the rest of the setup assumes: zsh, git, curl, and Homebrew on macOS.
+set -eu
+{{- if eq .chezmoi.os "darwin" }}
+if ! command -v brew >/dev/null 2>&1 && [ ! -x /opt/homebrew/bin/brew ]; then
+  echo "dots: installing Homebrew"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+{{- else }}
+missing=
+for cmd in zsh git curl; do command -v "$cmd" >/dev/null 2>&1 || missing="$missing $cmd"; done
+[ -z "$missing" ] && exit 0
+sudo=; [ "$(id -u)" -eq 0 ] || sudo=sudo
+echo "dots: installing$missing"
+if command -v dnf >/dev/null 2>&1; then $sudo dnf install -y $missing
+elif command -v apt-get >/dev/null 2>&1; then $sudo apt-get update -qq && $sudo apt-get install -y $missing
+elif command -v pacman >/dev/null 2>&1; then $sudo pacman -S --needed --noconfirm $missing
+else echo "dots: install$missing with your package manager" >&2
+fi
+{{- end }}

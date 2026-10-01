@@ -1,0 +1,7 @@
+{{- if and (eq .chezmoi.os "darwin") .modules.gui -}}
+#!/bin/sh
+# Brewfile hash: {{ include "private_dot_config/homebrew/Brewfile" | sha256sum }}
+set -eu
+brew=$(command -v brew || echo /opt/homebrew/bin/brew)
+"$brew" bundle --file="$HOME/.config/homebrew/Brewfile"
+{{- end }}

@@ -1,0 +1,50 @@
+{{- if .modules.ai -}}
+#!/bin/bash
+# Agent harness setup that is state, not config: the pstack skill repos (each
+# with its own history and sync tool), their skill links, extension deps and
+# the mitmproxy that routes Claude Code through Bifrost.
+# firecrawl-web lockfile: {{ include "dot_pi/private_agent/extensions/firecrawl-web/package-lock.json" | sha256sum }}
+set -euo pipefail
+export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"
+
+clone() { # repo dir [git clone args...]
+  local repo=$1 dir=$2; shift 2
+  [[ -d $dir/.git ]] && return
+  echo "dots: cloning $repo into $dir"
+  git clone --quiet "$@" "https://github.com/$repo.git" "$dir"
+}
+
+link_skills() { # pstack checkout, skills dir
+  local src=$1/skills dst=$2 skill link
+  mkdir -p "$dst"
+  for skill in "$src"/*/; do
+    skill=$(basename "$skill")
+    link=$dst/$skill
+    [[ -e $link && ! -L $link ]] && continue
+    ln -sfn "../pstack/skills/$skill" "$link"
+  done
+  # Drop links to skills pstack no longer ships.
+  for link in "$dst"/*; do
+    [[ -L $link && ! -e $link && $(readlink "$link") == ../pstack/skills/* ]] && rm -f "$link"
+  done
+  return 0
+}
+
+clone 0oAstro/pstack-claude "$HOME/.claude/pstack"
+clone 0oAstro/pstack-codex "$HOME/.codex/pstack"
+link_skills "$HOME/.claude/pstack" "$HOME/.claude/skills"
+link_skills "$HOME/.codex/pstack" "$HOME/.codex/skills"
+
+# Pi tracks cursor/plugins upstream; local edits live on 0oAstro/pstack-pi's portable branch.
+pi_src=$HOME/.pi/agent/pstack-src
+if [[ ! -d $pi_src/.git ]]; then
+  clone 0oAstro/pstack-pi "$pi_src" --filter=blob:none --sparse --branch portable --origin preserve
+  git -C "$pi_src" sparse-checkout set pstack
+  git -C "$pi_src" remote add origin https://github.com/cursor/plugins.git
+fi
+
+ext=$HOME/.pi/agent/extensions/firecrawl-web
+[[ -f $ext/package-lock.json ]] && (cd "$ext" && npm ci --silent --no-audit --no-fund)
+
+command -v mitmdump >/dev/null || uv tool install --quiet mitmproxy
+{{- end }}

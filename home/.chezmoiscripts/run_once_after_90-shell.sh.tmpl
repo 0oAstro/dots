@@ -1,0 +1,7 @@
+#!/bin/sh
+# Point the login shell at zsh (prompts for a password, so only once).
+zsh=$(command -v zsh || true)
+[ -n "$zsh" ] || exit 0
+case "${SHELL:-}" in */zsh) exit 0 ;; esac
+grep -qx "$zsh" /etc/shells 2>/dev/null || echo "$zsh" | sudo tee -a /etc/shells >/dev/null
+chsh -s "$zsh" || echo "dots: run 'chsh -s $zsh' to make zsh your login shell" >&2

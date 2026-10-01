@@ -1,0 +1,35 @@
+{{- if .modules.ai -}}
+#!/bin/sh
+# Starts the Bifrost proxy (and, on servers, Claude Remote Control); restarts
+# them when their definitions change.
+{{- if eq .chezmoi.os "darwin" }}
+# plist: {{ includeTemplate "Library/LaunchAgents/me.shau.bifrost-mitm.plist.tmpl" . | sha256sum }}
+set -eu
+plist=$HOME/Library/LaunchAgents/me.shau.bifrost-mitm.plist
+domain=gui/$(id -u)
+# launchd only rereads a plist on bootstrap, so a changed one means a restart.
+launchctl bootout "$domain/me.shau.bifrost-mitm" 2>/dev/null || true
+launchctl bootstrap "$domain" "$plist"
+{{- else }}
+# bifrost-mitm: {{ include "private_dot_config/systemd/user/bifrost-mitm.service" | sha256sum }}
+# claude-rc: {{ include "private_dot_config/systemd/user/claude-rc.service" | sha256sum }}
+set -eu
+command -v systemctl >/dev/null 2>&1 && systemctl --user show-environment >/dev/null 2>&1 || {
+  echo "dots: no systemd user session; start bifrost-mitm yourself" >&2
+  exit 0
+}
+units=bifrost-mitm.service
+{{- if .modules.server }}
+units="$units claude-rc.service"
+{{- end }}
+# Restart only units whose files changed (systemd flags them before a reload),
+# so a first apply on a configured machine leaves running services alone.
+changed=
+for unit in $units; do
+  [ "$(systemctl --user show -p NeedDaemonReload --value "$unit")" = yes ] && changed="$changed $unit"
+done
+systemctl --user daemon-reload
+systemctl --user enable --now $units
+[ -z "$changed" ] || systemctl --user restart $changed
+{{- end }}
+{{- end }}

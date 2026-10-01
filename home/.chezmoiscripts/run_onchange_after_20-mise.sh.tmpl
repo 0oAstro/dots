@@ -1,0 +1,13 @@
+#!/bin/sh
+# Re-runs whenever a rendered mise module changes.
+{{- range (glob (joinPath .chezmoi.sourceDir "private_dot_config/mise/conf.d/*")) }}
+# {{ base . }}: {{ include . | sha256sum }}
+{{- end }}
+# {{ .modules | toJson | sha256sum }}
+set -eu
+mise=$HOME/.local/bin/mise
+if [ ! -x "$mise" ]; then
+  echo "dots: installing mise"
+  curl -fsSL https://mise.run | MISE_INSTALL_PATH="$mise" sh
+fi
+"$mise" install --yes || echo "dots: some mise tools failed; rerun 'mise install'" >&2
