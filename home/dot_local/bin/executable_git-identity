@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+account=$(git config --get identity.account || printf '0oAstro')
+case "$account" in
+  0oAstro|merak-max) ;;
+  *) printf 'Unknown identity.account: %s\n' "$account" >&2; exit 1 ;;
+esac
+
+real_gh() { "$HOME/.local/bin/mise" exec -- gh "$@"; }
+account_token() {
+  env -u GH_TOKEN -u GITHUB_TOKEN "$HOME/.local/bin/mise" exec -- \
+    gh auth token --hostname github.com --user "$account"
+}
+profile() {
+  case "$account" in
+    0oAstro)
+      email=79555780+0oAstro@users.noreply.github.com
+      key=$HOME/.ssh/id_ed25519 ;;
+    merak-max)
+      email=181515478+merak-max@users.noreply.github.com
+      key=$HOME/.ssh/id_ed25519_merak_signing ;;
+  esac
+}
+check_key() {
+  printf 'git identity readiness check\n' | ssh-keygen -Y sign -n git -f "$key" >/dev/null
+}
+
+case "${1:-}" in
+  --gh)
+    shift
+    # Account-management commands must retain access to the stored logins.
+    if [[ ${1:-} == auth || -n ${GH_TOKEN:-} || -n ${GITHUB_TOKEN:-} || ${GH_HOST:-github.com} != github.com ]]; then
+      real_gh "$@"
+    else
+      GH_TOKEN=$(account_token) real_gh "$@"
+    fi
+    exit ;;
+  --credential)
+    shift
+    GH_TOKEN=$(account_token) real_gh auth git-credential "$@"
+    exit ;;
+  --register-key)
+    profile
+    GH_TOKEN=$(account_token) real_gh ssh-key add "$key.pub" --type signing --title "$(hostname) git signing ($account)"
+    exit ;;
+  --help|-h)
+    printf '%s\n' 'git identity [astro|hemant]  Select an identity for this repository, or show status.' \
+      'Unconfigured repositories default to Astro. Existing local Git overrides are preserved until selection.' \
+      'git identity --register-key  Register the selected signing key with GitHub.' \
+      'gh auth commands manage stored logins; other gh commands follow the repository.'
+    exit ;;
+  '') ;;
+  astro|0oAstro|hemant|merak-max)
+    [[ $# == 1 ]] || { printf 'Usage: git identity [astro|hemant]\n' >&2; exit 1; }
+    git rev-parse --git-dir >/dev/null
+    case "$1" in astro|0oAstro) account=0oAstro ;; *) account=merak-max ;; esac
+    profile
+    check_key
+    account_token >/dev/null
+    git config --local user.name "$account"
+    git config --local user.email "$email"
+    git config --local user.signingKey "$key"
+    git config --local gpg.format ssh
+    git config --local commit.gpgSign true
+    git config --local tag.gpgSign true
+    git config --local identity.account "$account"
+    ;;
+  *) printf 'Usage: git identity [astro|hemant]\n' >&2; exit 1 ;;
+esac
+
+printf 'GitHub account: %s\n' "$account"
+printf 'Commit author: %s <%s>\n' "$(git config user.name)" "$(git config user.email)"
+key=$(git config --path user.signingkey)
+printf 'Signing key: %s\n' "$key"
+printf 'Commit signing: %s\n' "$(git config commit.gpgsign)"
+check_key
+printf 'Local signing: ready\n'
+if ! account_token >/dev/null; then
+  printf 'GitHub credentials: unavailable\n' >&2
+  exit 1
+fi
+printf 'GitHub credentials: available\n'

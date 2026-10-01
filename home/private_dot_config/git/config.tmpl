@@ -1,0 +1,142 @@
+[user]
+	name = 0oAstro
+	email = 79555780+0oAstro@users.noreply.github.com
+	signingKey = {{ .git.signingKey }}
+
+[commit]
+	gpgSign = true
+	verbose = true
+
+[tap]
+	gpgSign = true
+
+[tag]
+	gpgSign = true
+	sort = version:refname
+
+[gpg]
+	format = ssh
+
+[gpg "ssh"]
+	allowedSignersFile = ~/.config/git/allowed_signers
+
+[core]
+	excludesFile = ~/.config/git/ignore
+	pager = delta --dark
+
+[interactive]
+	diffFilter = delta --color-only --dark
+
+[diff]
+	algorithm = histogram
+
+[merge]
+	tool = diffview
+	conflictstyle = diff3
+
+[mergetool]
+	prompt = false
+	keepBackup = false
+
+[mergetool "diffview"]
+	cmd = nvim -n -c "DiffviewOpen" "$MERGE"
+
+[pull]
+	rebase = true
+	ff = only
+
+[push]
+	autoSetupRemote = true
+
+[fetch]
+	prune = true
+
+[rebase]
+	autosquash = true
+	autostash = true
+
+[rerere]
+	enabled = true
+
+[help]
+	autocorrect = prompt
+
+[init]
+	defaultBranch = master
+
+[branch]
+	sort = -committerdate
+
+[log]
+	date = iso
+
+[transfer]
+	fsckObjects = true
+
+[receive]
+	fsckObjects = true
+
+[color]
+	ui = auto
+
+[delta]
+	navigate = true
+	side-by-side = true
+	line-numbers = true
+
+{{- if .modules.server }}
+[safe]
+	directory = /opt/git/repos/polymarket.git
+	directory = /opt/git/repos/zdots.git
+{{- end }}
+
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+
+[alias]
+	a = add
+	b = branch
+	c = commit
+	ca = commit --amend
+	cm = commit -m
+	co = checkout
+	d = diff
+	ds = diff --staged
+	p = push
+	pf = push --force-with-lease
+	pl = pull
+	l = log
+	r = rebase
+	s = status --short
+	ss = status
+	forgor = commit --amend --no-edit
+	graph = log --all --decorate --graph --oneline
+	oops = checkout --
+
+{{- if eq .chezmoi.os "darwin" }}
+
+# Drop the system osxkeychain helper; GitHub credentials come from gh below.
+[credential]
+	helper =
+{{- end }}
+
+# GitHub HTTPS credentials follow the repository's identity.account (default
+# 0oAstro); see IDENTITIES.md. `gh auth setup-git` rewrites these to a pinned gh
+# path that breaks after mise prunes that version, so do not run it.
+[credential "https://github.com"]
+	helper =
+	helper = !$HOME/.local/bin/git-identity --credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !$HOME/.local/bin/git-identity --credential
+
+# Route GitHub SSH remotes through account-aware HTTPS credentials.
+[url "https://github.com/"]
+	insteadOf = git@github.com:
+	insteadOf = ssh://git@github.com/
+[url "https://gist.github.com/"]
+	insteadOf = git@gist.github.com:
+	insteadOf = ssh://git@gist.github.com/
