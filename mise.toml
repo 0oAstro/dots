@@ -1,0 +1,17 @@
+# Tasks for working on this repo (run `mise trust` once in the checkout).
+[tools]
+chezmoi = "latest"
+shellcheck = "latest"
+gitleaks = "latest"
+
+[tasks.check]
+description = "Render every profile, parse every config, lint scripts, scan for secrets"
+run = [
+  "tests/render.sh",
+  "shellcheck --severity=warning install.sh tests/*.sh home/dot_local/bin/executable_git-identity",
+  "gitleaks dir --no-banner --redact .",
+]
+
+[tasks.smoke]
+description = "check, plus an interactive zsh start in a scratch home"
+run = "tests/render.sh --smoke"
