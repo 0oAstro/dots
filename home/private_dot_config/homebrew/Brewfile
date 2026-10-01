@@ -6,6 +6,7 @@ tap "sozercan/repo", trusted: { casks: ["kaset"] }
 
 # ── Formulae ──
 brew "gcc"
+brew "btop"
 brew "mole"  # deep clean and optimize the Mac
 brew "zsh"
 

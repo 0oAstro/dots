@@ -37,7 +37,6 @@ herdr = "latest"
 "aqua:sharkdp/hyperfine" = "latest"
 # aqua's dust entry picks the Intel build on Apple silicon.
 "github:bootandy/dust" = "latest"
-"aqua:aristocratos/btop" = "latest"
 "aqua:amir20/dtop" = "latest"
 "aqua:fastfetch-cli/fastfetch" = "latest"
 "go:github.com/maaslalani/fast" = "latest"
