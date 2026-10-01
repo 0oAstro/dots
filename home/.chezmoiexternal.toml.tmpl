@@ -1,0 +1,19 @@
+# Third-party repos chezmoi clones on first apply and updates with
+# `chezmoi update --refresh-externals` (fast-forward only).
+
+{{- range $name, $url := dict "tpm" "tmux-plugins/tpm" "tmux-smooth-scroll" "azorng/tmux-smooth-scroll" "kanagawa-tmux" "obergodmar/kanagawa-tmux" }}
+
+[".config/tmux/plugins/{{ $name }}"]
+    type = "git-repo"
+    url = "https://github.com/{{ $url }}.git"
+    clone.args = ["--depth", "1"]
+    pull.args = ["--ff-only"]
+{{- end }}
+{{- if .modules.gui }}
+
+[".config/ghostty/shaders"]
+    type = "git-repo"
+    url = "https://github.com/sahaj-b/ghostty-cursor-shaders.git"
+    clone.args = ["--depth", "1"]
+    pull.args = ["--ff-only"]
+{{- end }}

@@ -1,0 +1,54 @@
+{{- /*
+  Machine profile. Known hosts get their modules without prompts; any other
+  machine is asked once and the answers are stored in ~/.config/chezmoi/chezmoi.toml.
+  Re-run `chezmoi init` to change them.
+*/ -}}
+{{- $os := .chezmoi.os -}}
+{{- /* Not .chezmoi.hostname: it resolves through /etc/hosts, where blocklists remap 127.0.0.1. */ -}}
+{{- $host := output "uname" "-n" | trim | lower | splitList "." | first -}}
+
+{{- $allModules := list "ai" "cloud" "docker" "db" "sync" "ml" "media" "apple" "gui" "server" "identities" -}}
+{{- $known := dict
+  "aardvark"     (list "ai" "cloud" "docker" "db" "sync" "ml" "server" "identities")
+  "thunderchief" (list "ai" "cloud" "docker" "db" "sync" "media" "apple" "gui")
+-}}
+{{- $defaults := list "ai" "cloud" "docker" "db" "sync" -}}
+{{- if eq $os "darwin" }}{{ $defaults = concat $defaults (list "media" "gui") }}{{ else }}{{ $defaults = append $defaults "server" }}{{ end -}}
+
+{{- $modules := list -}}
+{{- if hasKey $known $host -}}
+{{-   $modules = get $known $host -}}
+{{- else -}}
+{{-   $modules = promptMultichoiceOnce . "modules" "Modules to enable" $allModules $defaults -}}
+{{- end -}}
+
+encryption = "age"
+
+[age]
+    useBuiltin = true
+    identity = {{ joinPath .chezmoi.homeDir ".config/age/keys.txt" | quote }}
+    recipient = "age1vk7hgt7l9zhatyepgyfwkwss3phz3xt76r2xag0q4afyhf46zp6qn7xr6p"
+
+[diff]
+    pager = "delta"
+    exclude = ["scripts"]
+
+[git]
+    autoCommit = false
+    autoPush = false
+
+[data]
+    host = {{ $host | quote }}
+
+[data.modules]
+{{- range $allModules }}
+    {{ . }} = {{ has . $modules }}
+{{- end }}
+
+[data.git]
+{{- if eq $os "darwin" }}
+    # Bitwarden's SSH agent holds the private key; git signs with the public half.
+    signingKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJfml6YGLlOvm7VICn5K/G05N6JkHVLtWtpDL7ejvlvB shaurya@aki"
+{{- else }}
+    signingKey = "~/.ssh/id_ed25519"
+{{- end }}
