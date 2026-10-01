@@ -3,7 +3,7 @@
 
 [settings]
 # Hold new releases for 24h as a supply-chain safety window, except for
-# fast-moving agent CLIs, which should update immediately.
+# agent harnesses, which should update immediately.
 minimum_release_age = "24h"
 minimum_release_age_excludes = [
   "claude-code",
@@ -11,6 +11,8 @@ minimum_release_age_excludes = [
   "aqua:earendil-works/pi",
   "http:prime-agent",
   "http:cursor",
+  "npm:t3",
+  "herdr",
 ]
 
 [settings.npm]
