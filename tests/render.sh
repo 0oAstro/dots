@@ -30,6 +30,14 @@ check() { # label command...
   fi
 }
 
+# chezmoi ignores unknown config keys, so check the age setting by name: without
+# it, decrypting needs an age binary that a fresh machine does not have yet.
+if ! chezmoi execute-template --init --promptBool ai=true --promptBool server=false \
+  <"$repo/home/.chezmoi.toml.tmpl" | grep -qx 'useBuiltinAge = true'; then
+  echo "FAIL .chezmoi.toml.tmpl must set useBuiltinAge = true"
+  fail=1
+fi
+
 for p in "${profiles[@]}"; do
   IFS='|' read -r host os arch switches <<<"$p"
   home=$work/$host

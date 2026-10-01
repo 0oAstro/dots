@@ -16,9 +16,10 @@
 {{- end -}}
 
 encryption = "age"
+# chezmoi's own age, so decrypting never depends on an installed age binary.
+useBuiltinAge = true
 
 [age]
-    useBuiltin = true
     identity = {{ joinPath .chezmoi.homeDir ".config/age/keys.txt" | quote }}
     recipient = "age1vk7hgt7l9zhatyepgyfwkwss3phz3xt76r2xag0q4afyhf46zp6qn7xr6p"
 
