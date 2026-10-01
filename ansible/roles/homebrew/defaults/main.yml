@@ -1,0 +1,5 @@
+homebrew_bin: /opt/homebrew/bin/brew
+homebrew_brewfile: "{{ ansible_facts.env.HOME }}/.config/homebrew/Brewfile"
+homebrew_env:
+  HOMEBREW_NO_AUTO_UPDATE: "1"
+  HOMEBREW_NO_ENV_HINTS: "1"

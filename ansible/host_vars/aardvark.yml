@@ -1,0 +1,105 @@
+# Amazon Linux 2023, arm64 EC2. SSH arrives over Tailscale (tailscale0 is trusted).
+
+server_packages:
+  - spal-release # repo for mosh, chromium, ffmpeg, tesseract, poppler-utils
+  - docker
+  - firewalld
+  - rclone
+  - fuse3
+  - ethtool
+  - nfs-utils
+  - dnf-automatic
+  - sysstat
+  - mosh
+  - zsh
+  - git
+  - jq
+  - fio
+  - chromium
+  - ffmpeg
+  - tesseract
+  - poppler-utils
+
+# Paths under roles/server/files/systemd, copied to /etc/systemd/system.
+server_unit_files:
+  - algochat-ads-monitor.service
+  - algochat-ads-monitor.timer
+  - beszel-status.service
+  - beszel-status.timer
+  - claude-usage.service
+  - claude-usage.timer
+  - cloudflare-ip-sync.service
+  - cloudflare-ip-sync.timer
+  - docker-backup-status.service
+  - docker-backup-status.timer
+  - docker-backup.service
+  - docker-backup.timer
+  - ebs-cloudwatch-exporter.service
+  - ebs-cloudwatch-exporter.timer
+  - rclone-dropbox.service
+  - rclone-dropbox.service.d/10-live-dropbox.conf
+  - rclone-gdrive.service
+  - rclone-gdrive.service.d/10-live-drive.conf
+  - tailscale-udp-gro.service
+  - tailscaled.service
+  - user-1000.slice.d/memory.conf
+
+# Enabled and running. Timer-driven oneshot services stay static.
+server_units_enabled:
+  - docker.service
+  - nfs-server.service
+  - dnf-automatic.timer
+  - tailscaled.service
+  - tailscale-udp-gro.service
+  - rclone-dropbox.service
+  - rclone-gdrive.service
+  - algochat-ads-monitor.timer
+  - beszel-status.timer
+  - claude-usage.timer
+  - cloudflare-ip-sync.timer
+  - docker-backup-status.timer
+  - docker-backup.timer
+  - ebs-cloudwatch-exporter.timer
+
+# Restarted when their unit or drop-in changes. Left out: tailscaled (carries
+# this SSH session) and the rclone mounts (containers hold files open on them).
+server_units_restart_on_change:
+  - tailscale-udp-gro.service
+  - algochat-ads-monitor.timer
+  - beszel-status.timer
+  - claude-usage.timer
+  - cloudflare-ip-sync.timer
+  - docker-backup-status.timer
+  - docker-backup.timer
+  - ebs-cloudwatch-exporter.timer
+
+firewalld_default_zone: public
+# Each zone's services, ports and rich rules are exclusive: extras get removed.
+# The docker zone is docker's own and stays unmanaged.
+firewalld_zones:
+  public:
+    target: DROP
+    interfaces: [ens34]
+    forward: true
+    masquerade: false
+    services: [dhcpv6-client, ssh]
+    ports:
+      - 80/tcp
+      - 443/tcp
+      - 443/udp
+      - 25565/tcp # minecraft
+      - 41641/udp # tailscale direct
+      - 60000-61000/udp # mosh
+    rich_rules:
+      # Tailscale subnet-router traffic leaves through ens34.
+      - rule family="ipv4" source address="100.64.0.0/10" masquerade
+      - rule family="ipv6" source address="fd7a:115c:a1e0::/48" masquerade
+  trusted:
+    interfaces: [tailscale0]
+    forward: true
+    services: []
+    ports: []
+    rich_rules: []
+
+user_units:
+  - claude-rc.service

@@ -1,0 +1,94 @@
+# One zone: zone.key is its name, zone.value the desired state.
+- name: "{{ zone.key }}: target"
+  ansible.posix.firewalld:
+    zone: "{{ zone.key }}"
+    target: "{{ zone.value.target }}"
+    state: present
+    permanent: true
+  when: zone.value.target is defined
+  notify: Reload firewalld
+
+- name: "{{ zone.key }}: interfaces"
+  ansible.posix.firewalld:
+    zone: "{{ zone.key }}"
+    interface: "{{ item }}"
+    state: enabled
+    permanent: true
+    immediate: true
+  loop: "{{ zone.value.interfaces | default([]) }}"
+
+- name: "{{ zone.key }}: forward"
+  ansible.posix.firewalld:
+    zone: "{{ zone.key }}"
+    forward: true
+    state: "{{ 'enabled' if zone.value.forward else 'disabled' }}"
+    permanent: true
+    immediate: true
+  when: zone.value.forward is defined
+
+- name: "{{ zone.key }}: masquerade"
+  ansible.posix.firewalld:
+    zone: "{{ zone.key }}"
+    masquerade: true
+    state: "{{ 'enabled' if zone.value.masquerade else 'disabled' }}"
+    permanent: true
+    immediate: true
+  when: zone.value.masquerade is defined
+
+- name: "{{ zone.key }}: read current services, ports and rich rules"
+  ansible.builtin.command: firewall-cmd --permanent --zone={{ zone.key }} --list-{{ item }}
+  loop: [services, ports, rich-rules]
+  register: firewalld_current
+  changed_when: false
+  check_mode: false
+
+- name: "{{ zone.key }}: services"
+  ansible.posix.firewalld:
+    zone: "{{ zone.key }}"
+    service: "{{ item.name }}"
+    state: "{{ item.state }}"
+    permanent: true
+    immediate: true
+  loop: "{{ firewalld_wanted.services }}"
+  vars:
+    firewalld_wanted: &wanted
+      services: >-
+        {{ (zone.value.services | default([]) | map('community.general.dict_kv', 'name') | map('combine', {'state': 'enabled'}))
+           + (firewalld_current.results[0].stdout.split() | difference(zone.value.services | default([]))
+              | map('community.general.dict_kv', 'name') | map('combine', {'state': 'disabled'})) }}
+      ports: >-
+        {{ (zone.value.ports | default([]) | map('community.general.dict_kv', 'name') | map('combine', {'state': 'enabled'}))
+           + (firewalld_current.results[1].stdout.split() | difference(zone.value.ports | default([]))
+              | map('community.general.dict_kv', 'name') | map('combine', {'state': 'disabled'})) }}
+      rich_rules: >-
+        {{ (zone.value.rich_rules | default([]) | map('community.general.dict_kv', 'name') | map('combine', {'state': 'enabled'}))
+           + (firewalld_current.results[2].stdout_lines | difference(zone.value.rich_rules | default([]))
+              | map('community.general.dict_kv', 'name') | map('combine', {'state': 'disabled'})) }}
+  loop_control:
+    label: "{{ item.state }} {{ item.name }}"
+
+- name: "{{ zone.key }}: ports"
+  ansible.posix.firewalld:
+    zone: "{{ zone.key }}"
+    port: "{{ item.name }}"
+    state: "{{ item.state }}"
+    permanent: true
+    immediate: true
+  loop: "{{ firewalld_wanted.ports }}"
+  vars:
+    firewalld_wanted: *wanted
+  loop_control:
+    label: "{{ item.state }} {{ item.name }}"
+
+- name: "{{ zone.key }}: rich rules"
+  ansible.posix.firewalld:
+    zone: "{{ zone.key }}"
+    rich_rule: "{{ item.name }}"
+    state: "{{ item.state }}"
+    permanent: true
+    immediate: true
+  loop: "{{ firewalld_wanted.rich_rules }}"
+  vars:
+    firewalld_wanted: *wanted
+  loop_control:
+    label: "{{ item.state }} {{ item.name }}"

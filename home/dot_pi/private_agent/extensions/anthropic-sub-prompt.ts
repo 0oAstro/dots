@@ -17,7 +17,7 @@ const SDK_VERSION = "0.112.1";
 // Claude Code 2.1.284 sends the model's full max_tokens ceiling, so there is no output clamp.
 // omp main: packages/ai/src/providers/anthropic.ts claudeCodeAgentBetaDefaults, same entries and
 // order. omp appends fallback-credit at request time (buildCoworkBetas), so it stays separate.
-const CC_BETAS = ["claude-code-20250219", "oauth-2025-04-20", "interleaved-thinking-2025-05-14",
+const CC_BETAS = ["claude-code-20250219", "oauth-2025-04-20", "interleaved-thinking-2025-05-14", // gitleaks:allow (beta header names)
  "thinking-token-count-2026-05-13", "context-management-2025-06-27", "prompt-caching-scope-2026-01-05",
  "mid-conversation-system-2026-04-07"];
 const FALLBACK_CREDIT_BETA = "fallback-credit-2026-06-01";

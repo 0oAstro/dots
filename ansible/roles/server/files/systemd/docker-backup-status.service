@@ -1,0 +1,17 @@
+[Unit]
+Description=Publish sanitized docker-backup status for Dynacat
+After=docker-backup.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/docker/glance/ops/publish-backup-status.py
+User=root
+Group=docker
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadOnlyPaths=/var/lib/docker-backup/last-run.json
+ReadWritePaths=/opt/docker/glance/assets /var/lib/node_exporter/textfile_collector
+RestrictAddressFamilies=AF_UNIX
+CapabilityBoundingSet=

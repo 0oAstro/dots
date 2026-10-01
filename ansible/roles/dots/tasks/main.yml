@@ -1,0 +1,20 @@
+# chezmoi owns the home directory; this only runs it, so one playbook covers both layers.
+- name: Pull the dotfiles repo
+  ansible.builtin.command: chezmoi git -- pull --ff-only
+  register: dots_pulled
+  changed_when: "'Already up to date' not in dots_pulled.stdout"
+  when: dots_pull and not ansible_check_mode
+  environment: "{{ dots_env }}"
+
+- name: Check for drift
+  ansible.builtin.command: chezmoi status
+  register: dots_status
+  changed_when: ansible_check_mode and dots_status.stdout | length > 0
+  check_mode: false
+  environment: "{{ dots_env }}"
+
+- name: Apply
+  ansible.builtin.command: chezmoi apply --no-tty
+  when: dots_status.stdout | length > 0
+  changed_when: true
+  environment: "{{ dots_env }}"

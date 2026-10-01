@@ -1,0 +1,30 @@
+[Unit]
+Description=Publish Claude subscription usage pace for Glance and node-exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/docker/glance/ops/publish-claude-usage.py
+User=root
+Group=docker
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+# Only Claude Code's credentials file is visible under /home, read-only; the
+# publisher never refreshes or writes the token.
+ProtectHome=tmpfs
+BindReadOnlyPaths=/home/ec2-user/.claude/.credentials.json
+ReadWritePaths=/opt/docker/glance/assets /var/lib/node_exporter/textfile_collector
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+# Root needs to read the 0600 ec2-user credentials file; nothing else.
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+TimeoutStartSec=60

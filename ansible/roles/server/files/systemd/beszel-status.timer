@@ -1,0 +1,12 @@
+[Unit]
+Description=Refresh sanitized Beszel resource status for Glance
+
+[Timer]
+OnBootSec=45s
+OnUnitActiveSec=1m
+AccuracySec=10s
+Persistent=true
+Unit=beszel-status.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,15 @@
+[Unit]
+Description=Sync Cloudflare edge ranges into the security group and Caddyfile
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+Environment=AWS_EC2_METADATA_DISABLED=false
+ExecStart=/opt/docker/caddy/cloudflare-ip-sync.py --region ap-south-1 --security-group sg-0bf3f8a63f58526e0 --caddyfile /opt/docker/caddy/Caddyfile --metric /var/lib/node_exporter/textfile_collector/cloudflare_ip_sync.prom
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/docker/caddy/Caddyfile /var/lib/node_exporter/textfile_collector

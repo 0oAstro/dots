@@ -22,7 +22,6 @@
 .bashrc
 .bash_profile
 .config/bash
-.config/systemd
 .config/mise/conf.d/linux.toml
 .codex/packages
 {{- else }}
@@ -30,7 +29,6 @@
 Library
 .config/zsh/.zprofile
 .config/zsh/config/ui/clipboard.zsh
-.config/homebrew
 .config/ghostty
 .config/karabiner
 .config/herdr/launch
@@ -46,7 +44,4 @@ Library
 .codex
 .pi
 .config/mise/conf.d/ai.toml
-{{- end }}
-{{- if not (and .ai .server) }}
-.config/systemd/user/claude-rc.service
 {{- end }}

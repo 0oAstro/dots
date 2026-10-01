@@ -1,0 +1,13 @@
+[Unit]
+Description=Enable UDP GRO forwarding for Tailscale subnet routing
+Documentation=https://tailscale.com/docs/reference/best-practices/performance
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/ethtool -K ens34 rx-udp-gro-forwarding on rx-gro-list off
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,3 @@
+dots_pull: false
+dots_env:
+  PATH: "{{ ansible_facts.env.HOME }}/.local/share/mise/shims:{{ ansible_facts.env.HOME }}/.local/bin:{{ ansible_facts.env.PATH }}"

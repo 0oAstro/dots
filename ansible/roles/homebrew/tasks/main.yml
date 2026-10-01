@@ -1,0 +1,34 @@
+# Installs what the Brewfile lists and never removes anything; upgrades stay
+# with homebrew-autoupdate. Homebrew itself comes from chezmoi's prereqs script.
+- name: Brewfile
+  ansible.builtin.copy:
+    src: Brewfile
+    dest: "{{ homebrew_brewfile }}"
+    mode: "0644"
+
+- name: Check the Brewfile
+  ansible.builtin.command: "{{ homebrew_bin }} bundle check --no-upgrade --file={{ homebrew_brewfile }}"
+  register: homebrew_check
+  changed_when: ansible_check_mode and homebrew_check.rc != 0
+  failed_when: homebrew_check.rc not in [0, 1]
+  check_mode: false
+  environment: "{{ homebrew_env }}"
+
+- name: Install what is missing
+  ansible.builtin.command: "{{ homebrew_bin }} bundle install --no-upgrade --file={{ homebrew_brewfile }}"
+  when: homebrew_check.rc != 0
+  changed_when: true
+  environment: "{{ homebrew_env }}"
+
+- name: Find packages the Brewfile does not list
+  ansible.builtin.command: "{{ homebrew_bin }} bundle cleanup --file={{ homebrew_brewfile }}"
+  register: homebrew_extra
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  environment: "{{ homebrew_env }}"
+
+- name: Report them (add to the Brewfile or uninstall by hand)
+  ansible.builtin.debug:
+    msg: "{{ homebrew_extra.stdout_lines }}"
+  when: homebrew_extra.stdout | trim | length > 0

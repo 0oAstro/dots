@@ -1,0 +1,12 @@
+[Unit]
+Description=Refresh Claude subscription usage pace every two minutes
+
+[Timer]
+OnBootSec=60s
+OnUnitActiveSec=2m
+AccuracySec=15s
+Persistent=true
+Unit=claude-usage.service
+
+[Install]
+WantedBy=timers.target

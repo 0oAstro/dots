@@ -1,0 +1,33 @@
+# systemd --user units for the login user, kept running without a session.
+- name: Linger
+  ansible.builtin.command: loginctl enable-linger {{ ansible_facts.user_id }}
+  args:
+    creates: /var/lib/systemd/linger/{{ ansible_facts.user_id }}
+  become: true
+
+- name: Unit directory
+  ansible.builtin.file:
+    path: "{{ ansible_facts.env.HOME }}/.config/systemd/user"
+    state: directory
+    mode: "0755"
+
+- name: Units
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ ansible_facts.env.HOME }}/.config/systemd/user/{{ item }}"
+    mode: "0644"
+  loop: "{{ user_units }}"
+  register: user_units_copied
+
+- name: Reload, enable and start
+  ansible.builtin.systemd_service:
+    name: "{{ item.item }}"
+    scope: user
+    daemon_reload: "{{ item is changed }}"
+    enabled: true
+    state: "{{ 'restarted' if item is changed else 'started' }}"
+  loop: "{{ user_units_copied.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  environment:
+    XDG_RUNTIME_DIR: /run/user/{{ ansible_facts.user_uid }}

@@ -5,15 +5,31 @@ shellcheck = "latest"
 shfmt = "latest"
 gitleaks = "latest"
 python = "3.14"
+"pipx:ansible-core" = "latest"
 
 [tasks.fmt]
 description = "Format every shell script, chezmoi templates included"
 run = "tests/fmt.py"
 
+[tasks."ansible:deps"]
+description = "Install the Ansible collections into ansible/collections"
+dir = "ansible"
+run = "ansible-galaxy collection install -r requirements.yml -p collections"
+sources = ["requirements.yml"]
+outputs = ["collections/ansible_collections"]
+
+[tasks.provision]
+description = "Apply the system layer, then chezmoi, on every host (pass --check --diff, --limit)"
+depends = ["ansible:deps"]
+dir = "ansible"
+run = "ansible-playbook site.yml"
+
 [tasks.check]
-description = "Format check, lint, secret scan, render every profile, start zsh"
+description = "Format check, lint, secret scan, playbook syntax, render every profile, start zsh"
+depends = ["ansible:deps"]
 run = [
   "tests/fmt.py --check",
+  "cd ansible && ansible-playbook --syntax-check site.yml",
   "shellcheck --severity=warning install.sh tests/*.sh",
   "gitleaks dir --no-banner --redact .",
   "tests/render.sh --smoke",

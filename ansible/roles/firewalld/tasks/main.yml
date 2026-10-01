@@ -1,0 +1,23 @@
+- name: firewalld runs
+  ansible.builtin.systemd_service:
+    name: firewalld
+    enabled: true
+    state: started
+
+- name: Read the default zone
+  ansible.builtin.command: firewall-cmd --get-default-zone
+  register: firewalld_current_default
+  changed_when: false
+  check_mode: false
+
+- name: Set the default zone
+  ansible.builtin.command: firewall-cmd --set-default-zone={{ firewalld_default_zone }}
+  when: firewalld_current_default.stdout != firewalld_default_zone
+  changed_when: true
+
+- name: Zones
+  ansible.builtin.include_tasks: zone.yml
+  loop: "{{ firewalld_zones | dict2items }}"
+  loop_control:
+    loop_var: zone
+    label: "{{ zone.key }}"

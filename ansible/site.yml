@@ -1,0 +1,16 @@
+# System layer. chezmoi still owns the home directory; the dots role applies it last.
+- name: Servers
+  hosts: servers
+  roles:
+    - role: server
+      become: true
+    - role: firewalld
+      become: true
+    - role: user_units
+    - role: dots
+
+- name: Macs
+  hosts: macs
+  roles:
+    - role: homebrew
+    - role: dots

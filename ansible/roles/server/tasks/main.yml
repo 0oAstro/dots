@@ -1,0 +1,87 @@
+- name: Packages
+  ansible.builtin.dnf:
+    name: "{{ server_packages }}"
+    state: present
+
+- name: Config files
+  ansible.builtin.copy:
+    src: "etc/{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - { src: sysctl-90-ebs-io-tuning.conf, dest: /etc/sysctl.d/90-ebs-io-tuning.conf }
+    - { src: sysctl-99-tailscale.conf, dest: /etc/sysctl.d/99-tailscale.conf }
+    - { src: docker-daemon.json, dest: /etc/docker/daemon.json }
+    - { src: tailscaled.default, dest: /etc/default/tailscaled }
+    - { src: aardvark-mac.exports, dest: /etc/exports.d/aardvark-mac.exports }
+  loop_control:
+    label: "{{ item.dest }}"
+  register: server_config
+  notify:
+    - Apply sysctl
+    - Re-export NFS
+
+- name: SSH hardening drop-in
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/00-ansible.conf
+    content: |
+      # Managed by ansible (dots/ansible). First match wins in sshd.
+      PasswordAuthentication no
+      PermitEmptyPasswords no
+      KbdInteractiveAuthentication no
+    owner: root
+    group: root
+    mode: "0600"
+    validate: /usr/sbin/sshd -t -f %s
+  notify: Reload sshd
+
+- name: dnf-automatic downloads security updates and never applies them
+  community.general.ini_file:
+    path: /etc/dnf/automatic.conf
+    section: commands
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    mode: "0644"
+  loop: "{{ {'upgrade_type': 'security', 'download_updates': 'yes', 'apply_updates': 'no'} | dict2items }}"
+
+- name: Drop-in directories
+  ansible.builtin.file:
+    path: "/etc/systemd/system/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop: "{{ server_unit_files | map('dirname') | select | unique }}"
+
+- name: Units and drop-ins
+  ansible.builtin.copy:
+    src: "systemd/{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ server_unit_files }}"
+  register: server_units
+
+- name: Reload systemd
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  when: server_units is changed
+
+- name: Enable and start units
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop: "{{ server_units_enabled }}"
+
+- name: Restart units whose files changed
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: restarted
+  loop: >-
+    {{ server_units.results | default([]) | selectattr('changed') | map(attribute='item')
+       | map('regex_replace', '\\.d/.*$', '') | unique
+       | intersect(server_units_restart_on_change) }}

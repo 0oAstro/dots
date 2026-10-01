@@ -1,0 +1,72 @@
+[Unit]
+Description=rclone FUSE mount of Google Drive at /mnt/gdrive (stream-optimized)
+Documentation=https://rclone.org/drive/
+Wants=network-online.target
+After=network-online.target
+Before=umount.target
+
+[Service]
+Type=notify
+User=root
+Group=root
+
+# Stale-mount cleanup before start and after stop
+ExecStartPre=/bin/sh -c '/usr/bin/fusermount3 -uz /mnt/gdrive 2>/dev/null || true'
+ExecStop=/usr/bin/fusermount3 -uz /mnt/gdrive
+
+ExecStart=/usr/bin/rclone mount gdrive: /mnt/gdrive \
+  --uid=1000 \
+  --gid=1000 \
+  --allow-other \
+  --allow-non-empty \
+  --umask 022 \
+  \
+  --vfs-cache-mode=full \
+  --vfs-cache-max-size=30G \
+  --vfs-cache-max-age=72h \
+  --vfs-cache-min-free-space=10G \
+  --vfs-cache-poll-interval=5m \
+  --cache-dir=/cache \
+  \
+  --vfs-read-chunk-size=4M \
+  --vfs-read-chunk-size-limit=off \
+  --vfs-read-chunk-streams=8 \
+  --vfs-read-ahead=128M \
+  \
+  --buffer-size=64M \
+  --max-read-ahead=256M \
+  \
+  --dir-cache-time=72h \
+  --attr-timeout=10s \
+  --poll-interval=5m \
+  --vfs-handle-caching=60s \
+  --vfs-refresh \
+  \
+  --tpslimit=40 \
+  --tpslimit-burst=20 \
+  --transfers=16 \
+  --multi-thread-streams=8 \
+  --multi-thread-cutoff=16M \
+  \
+  --no-checksum \
+  --no-modtime \
+  --drive-use-trash=false \
+  \
+  --contimeout=15s \
+  --timeout=60s \
+  --retries=5 \
+  --low-level-retries=10 \
+  \
+  --daemon-timeout=60s \
+  --log-level=INFO \
+  --log-file=/var/log/rclone-gdrive.log
+
+
+Restart=on-failure
+RestartSec=10
+
+AmbientCapabilities=CAP_SYS_ADMIN CAP_SYS_NICE
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

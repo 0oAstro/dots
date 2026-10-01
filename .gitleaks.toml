@@ -1,0 +1,6 @@
+# Default rules, minus Ansible collections that `mise run ansible:deps` downloads.
+[extend]
+useDefault = true
+
+[allowlist]
+paths = ['''^ansible/collections/''']

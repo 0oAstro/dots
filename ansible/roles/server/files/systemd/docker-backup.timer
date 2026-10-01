@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily encrypted Docker backups
+
+[Timer]
+OnCalendar=*-*-* 00:30:00 UTC
+RandomizedDelaySec=10m
+Persistent=true
+Unit=docker-backup.service
+
+[Install]
+WantedBy=timers.target

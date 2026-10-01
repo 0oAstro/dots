@@ -1,0 +1,13 @@
+# Hosts by role. SSH settings come from ~/.ssh/config (chezmoi's config.d).
+all:
+  children:
+    macs:
+      hosts:
+        thunderchief:
+          ansible_connection: local
+          ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    servers:
+      hosts:
+        aardvark:
+          # System python: dnf and firewalld bindings live there, not in mise's.
+          ansible_python_interpreter: /usr/bin/python3
