@@ -1,0 +1,88 @@
+name: provision
+# Runs the playbook for real. The distro containers run when the playbook or
+# install.sh changes. The fresh machines run weekly and on demand
+# (Actions > provision > Run workflow): their inputs (latest tools, distro
+# repos, Homebrew) move without a commit, so the schedule catches upstream
+# breakage before a new machine does.
+on:
+  push:
+    paths: [ansible/**, install.sh, mise.toml, .github/workflows/provision.yml]
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1" # Mondays
+
+defaults:
+  run:
+    shell: bash # with pipefail
+
+jobs:
+  # A machine from nothing: install.sh bootstraps, Ansible provisions the
+  # runner as a host it has never seen, chezmoi applies. A second run must
+  # change nothing. ai is off: the agent repos are private.
+  fresh-linux:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env: &fresh-env
+      DOTS_REPO: file://${{ github.workspace }}
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+      SWITCHES: '{"chezmoi_data": {"ai": false, "server": false}}'
+    steps: &fresh-steps
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: First run
+        run: sh install.sh -e "$SWITCHES" 2>&1 | tee first.log
+      - name: Second run changes nothing
+        run: |
+          sh install.sh -e "$SWITCHES" 2>&1 | tee second.log
+          grep -E 'changed=0 +unreachable=0 +failed=0' second.log
+      - name: The machine ended up as configured
+        run: |
+          if [ "$RUNNER_OS" = macOS ]; then shell=$(dscl . -read ~ UserShell | cut -d' ' -f2); else shell=$(getent passwd "$USER" | cut -d: -f7); fi
+          echo "login shell: $shell"
+          case $shell in */zsh) ;; *) exit 1 ;; esac
+          ~/.local/bin/mise exec chezmoi@latest -- chezmoi status | tee status.log
+          [ ! -s status.log ]
+
+  # The same on a Mac (installs every cask in the Brewfile).
+  fresh-mac:
+    if: github.event_name != 'push'
+    runs-on: macos-latest
+    timeout-minutes: 120
+    env: *fresh-env
+    steps: *fresh-steps
+
+  # Each distro's package names, repos and login shell, installed for real.
+  # Containers have no systemd, so tasks tagged service are skipped.
+  distros:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {image: "amazonlinux:2023", prep: "dnf -y install python3 sudo"}
+          - {image: "fedora:latest", prep: "dnf -y install python3 python3-libdnf5 sudo"}
+          - {image: "debian:stable", prep: "apt-get update && apt-get install -y python3 sudo"}
+          - {image: "archlinux:latest", prep: "pacman -Sy --noconfirm python sudo"}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+      - name: Start ${{ matrix.image }}
+        run: |
+          docker run -d --name ci-target "${{ matrix.image }}" sleep infinity
+          docker exec ci-target sh -c "${{ matrix.prep }}"
+      - run: mise run ansible:deps
+      - name: Provision twice; the second run must change nothing
+        working-directory: ansible
+        run: |
+          printf 'all:\n  children:\n    desktops:\n      hosts:\n        ci-target:\n          ansible_connection: community.docker.docker\n' >ci-inventory.yml
+          run() {
+            mise exec -- ansible-playbook site.yml -i inventory.yml -i ci-inventory.yml --limit ci-target \
+              --tags packages,login_shell,overlay,tailscale,docker --skip-tags service \
+              -e '{"docker_users": ["root"]}'
+          }
+          run
+          run | tee second.log
+          grep -E 'changed=0 +unreachable=0 +failed=0' second.log

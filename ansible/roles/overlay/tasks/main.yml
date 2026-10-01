@@ -32,7 +32,8 @@
     owner: root
     group: root
     mode: "{{ overlay_modes['/' ~ item.key] | default('0644') }}"
-    validate: "{{ '/usr/sbin/sshd -t -f %s' if item.key.startswith('etc/ssh/') else omit }}"
+    # Debian's sshd -t needs /run/sshd, which only exists while sshd runs.
+    validate: "{{ 'sh -c \"mkdir -p /run/sshd && exec /usr/sbin/sshd -t -f $0\" %s' if item.key.startswith('etc/ssh/') else omit }}"
   loop: "{{ overlay_files | dict2items }}"
   loop_control:
     label: "/{{ item.key }}"
