@@ -8,14 +8,12 @@ repo=$(cd "$(dirname "$0")/.." && pwd)
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 fail=0
-all='"ai":true,"cloud":true,"docker":true,"db":true,"sync":true'
-
-# name|os|arch|modules json (the rest of a profile is shared)
+# name|os|arch|switches json
 profiles=(
-  "aardvark|linux|arm64|{$all,\"ml\":true,\"media\":false,\"apple\":false,\"gui\":false,\"server\":true}"
-  "thunderchief|darwin|arm64|{$all,\"ml\":false,\"media\":true,\"apple\":true,\"gui\":true,\"server\":false}"
-  "newbox|linux|amd64|{\"ai\":false,\"cloud\":false,\"docker\":false,\"db\":false,\"sync\":false,\"ml\":false,\"media\":false,\"apple\":false,\"gui\":false,\"server\":false}"
-  "newmac|darwin|arm64|{$all,\"ml\":true,\"media\":true,\"apple\":true,\"gui\":true,\"server\":true}"
+  'aardvark|linux|arm64|"ai":true,"server":true'
+  'thunderchief|darwin|arm64|"ai":true,"server":false'
+  'newbox|linux|amd64|"ai":false,"server":false'
+  'newmac|darwin|arm64|"ai":false,"server":true'
 )
 
 check() { # label command...
@@ -27,11 +25,11 @@ check() { # label command...
 }
 
 for p in "${profiles[@]}"; do
-  IFS='|' read -r host os arch modules <<<"$p"
+  IFS='|' read -r host os arch switches <<<"$p"
   home=$work/$host
   mkdir -p "$home"
   printf '%s\n' "{\"chezmoi\":{\"os\":\"$os\",\"arch\":\"$arch\",\"homeDir\":\"$home\",\"hostname\":\"$host\"},
-    \"host\":\"$host\",\"modules\":$modules,\"git\":{\"signingKey\":\"~/.ssh/id_ed25519\"}}" >"$work/$host.json"
+    \"host\":\"$host\",$switches}" >"$work/$host.json"
   printf '[diff]\n  pager = "cat"\n' >"$work/$host.toml"
   cz=(chezmoi --source "$repo/home" --destination "$home" --config "$work/$host.toml"
       --override-data-file "$work/$host.json" --no-tty --keep-going)
@@ -48,6 +46,12 @@ for p in "${profiles[@]}"; do
     shell=$(head -1 "$rendered" | sed -E 's|^#!(/usr/bin/env )?||; s| .*||')
     check "${script##*/}" "${shell##*/}" -n "$rendered"
   done < <(find "$repo/home/.chezmoiscripts" -type f)
+
+  # mise's GitHub credential must not go through a shim: the shim runs mise,
+  # which needs that credential, so a cold cache forks without limit.
+  if grep -q 'credential_command.*shims' "$home/.config/mise/config.toml"; then
+    echo "  FAIL mise credential_command uses a shim"; fail=1
+  fi
 
   while IFS= read -r f; do
     case $f in

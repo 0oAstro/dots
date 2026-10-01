@@ -1,7 +1,7 @@
 [user]
 	name = 0oAstro
 	email = 79555780+0oAstro@users.noreply.github.com
-	signingKey = {{ .git.signingKey }}
+	signingKey = {{ if eq .chezmoi.os "darwin" }}ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJfml6YGLlOvm7VICn5K/G05N6JkHVLtWtpDL7ejvlvB shaurya@aki{{ else }}~/.ssh/id_ed25519{{ end }}
 
 [commit]
 	gpgSign = true
@@ -84,7 +84,7 @@
 	side-by-side = true
 	line-numbers = true
 
-{{- if .modules.server }}
+{{- if .server }}
 [safe]
 	directory = /opt/git/repos/polymarket.git
 	directory = /opt/git/repos/zdots.git

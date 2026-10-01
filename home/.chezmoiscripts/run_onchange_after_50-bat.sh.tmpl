@@ -1,6 +1,0 @@
-#!/bin/sh
-# Rebuild bat's syntax cache when custom syntaxes change.
-{{- range (glob (joinPath .chezmoi.sourceDir "private_dot_config/bat/syntaxes/*")) }}
-# {{ base . }}: {{ include . | sha256sum }}
-{{- end }}
-command -v bat >/dev/null 2>&1 && bat cache --build >/dev/null || true

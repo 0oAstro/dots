@@ -1,4 +1,4 @@
-{{- if and .modules.ai .modules.server (ne .chezmoi.os "darwin") -}}
+{{- if and .ai .server (ne .chezmoi.os "darwin") -}}
 #!/bin/sh
 # Starts Claude Remote Control on servers; restarts it when its unit changes.
 # claude-rc: {{ include "private_dot_config/systemd/user/claude-rc.service" | sha256sum }}

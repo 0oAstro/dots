@@ -1,16 +1,16 @@
-# Target paths chezmoi leaves alone on this machine. Gated by OS and by the
-# modules chosen in ~/.config/chezmoi/chezmoi.toml (see .chezmoi.toml.tmpl).
+# Target paths chezmoi leaves alone on this machine: by OS, by the `ai` and
+# `server` switches (.chezmoi.toml.tmpl), and by whether the age key exists.
 
 .config/zsh/README.md
 
-{{- /* Secrets decrypt only once the age key is in place (see README). */}}
 {{- if not (stat (joinPath .chezmoi.homeDir ".config/age/keys.txt")) }}
+# No age key yet: skip the encrypted files.
 .config/zsh/.zshrc.local
 .ssh/config.d/*
 .config/lazysql/config.toml
 {{- end }}
 
-{{- /* Per-host SSH config: only this host's file is deployed. */}}
+# Only this host's SSH config.
 {{- range $h := list "aardvark" "thunderchief" }}
 {{-   if ne $h $.host }}
 .ssh/config.d/{{ $h }}
@@ -18,65 +18,33 @@
 {{- end }}
 
 {{- if eq .chezmoi.os "darwin" }}
-# ── Linux only ──
+# Linux only
 .bashrc
 .bash_profile
 .config/bash
 .config/systemd
-.local/bin/termius-zmx
+.config/mise/conf.d/linux.toml
+.codex/packages
 {{- else }}
-# ── macOS only ──
+# macOS only
 Library
+.config/homebrew
+.config/ghostty
+.config/karabiner
+.config/herdr/launch
+.config/lazysql
+.config/mise/conf.d/macos.toml
 .local/bin/routerctl
 .local/bin/airtel-routerctl
 .local/bin/routerctl_credentials.py
-.config/homebrew
-.config/herdr/launch
-.config/lazysql
-.config/lazydocker
 {{- end }}
 
-{{- if not .modules.ai }}
+{{- if not .ai }}
 .claude
 .codex
 .pi
-.agents
-.config/herdr/agent-detection
-.config/mise/conf.d/20-ai.toml
+.config/mise/conf.d/ai.toml
+{{- end }}
+{{- if not (and .ai .server) }}
 .config/systemd/user/claude-rc.service
-{{- end }}
-{{- if not .modules.cloud }}
-.config/mise/conf.d/30-cloud.toml
-{{- end }}
-{{- if not .modules.docker }}
-.config/mise/conf.d/40-docker.toml
-.config/lazydocker
-{{- end }}
-{{- if not .modules.db }}
-.config/mise/conf.d/50-db.toml
-.config/lazysql
-{{- end }}
-{{- if not .modules.sync }}
-.config/mise/conf.d/60-sync.toml
-{{- end }}
-{{- if not .modules.ml }}
-.config/mise/conf.d/70-ml.toml
-{{- end }}
-{{- if not .modules.media }}
-.config/mise/conf.d/80-media.toml
-{{- end }}
-{{- if not .modules.apple }}
-.config/mise/conf.d/90-apple.toml
-{{- end }}
-{{- if not .modules.gui }}
-.config/ghostty
-.config/kitty
-.config/karabiner
-.config/zed
-.config/homebrew
-.config/herdr/launch
-{{- end }}
-{{- if not .modules.server }}
-.config/systemd/user/claude-rc.service
-.local/bin/termius-zmx
 {{- end }}

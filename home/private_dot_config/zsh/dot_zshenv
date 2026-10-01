@@ -66,7 +66,6 @@ export MISE_IGNORED_CONFIG_PATHS=$HOME/aardvark
 export BUNDLE_USER_CONFIG=$XDG_CONFIG_HOME/bundle
 export BUNDLE_USER_CACHE=$XDG_CACHE_HOME/bundle
 export BUNDLE_USER_PLUGIN=$XDG_DATA_HOME/bundle
-[[ -r $XDG_CONFIG_HOME/npm/npmrc ]] && export NPM_CONFIG_USERCONFIG=$XDG_CONFIG_HOME/npm/npmrc
 export NPM_CONFIG_CACHE=$XDG_CACHE_HOME/npm
 # npm 11 no longer supports NPM_CONFIG_TMP; discard stale inherited values.
 unset NPM_CONFIG_INIT_MODULE NPM_CONFIG_TMP

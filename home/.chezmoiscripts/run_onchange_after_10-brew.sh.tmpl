@@ -1,4 +1,4 @@
-{{- if and (eq .chezmoi.os "darwin") .modules.gui -}}
+{{- if eq .chezmoi.os "darwin" -}}
 #!/bin/sh
 # Brewfile hash: {{ include "private_dot_config/homebrew/Brewfile" | sha256sum }}
 set -eu

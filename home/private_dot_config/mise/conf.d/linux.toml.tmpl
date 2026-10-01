@@ -1,0 +1,16 @@
+# Linux only.
+
+[tools]
+tmux = "latest"
+# Backs the rm=trash alias.
+"pipx:trash-cli" = "latest"
+"npm:t3" = "latest"
+
+# Cursor's CLI stays only because its login feeds the Bifrost cursor proxy.
+[tools."http:cursor"]
+version = "latest"
+url = "https://downloads.cursor.com/lab/{{ "{{" }} version {{ "}}" }}/linux/{{ if eq .chezmoi.arch "arm64" }}arm64{{ else }}x64{{ end }}/agent-cli-package.tar.gz"
+version_list_url = "https://cursor.com/install"
+version_regex = 'lab/(\d{4}\.\d{2}\.\d{2}-[0-9A-Za-z]+)'
+bin_path = "dist-package/bin"
+postinstall = 'mkdir -p "$MISE_TOOL_INSTALL_PATH/dist-package/bin" && ln -sf ../cursor-agent "$MISE_TOOL_INSTALL_PATH/dist-package/bin/cursor"'

@@ -9,7 +9,7 @@
     clone.args = ["--depth", "1"]
     pull.args = ["--ff-only"]
 {{- end }}
-{{- if .modules.gui }}
+{{- if eq .chezmoi.os "darwin" }}
 
 [".config/ghostty/shaders"]
     type = "git-repo"

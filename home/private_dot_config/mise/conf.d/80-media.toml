@@ -1,7 +1,0 @@
-# media — video, audio and downloads.
-
-[tools]
-ffmpeg = "9"
-"github:yt-dlp/yt-dlp" = "latest"
-# Native Apple-silicon parallel HTTP downloader; replaces Homebrew's axel.
-"github:Code-Hex/pget" = "latest"

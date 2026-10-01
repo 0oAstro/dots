@@ -1,25 +1,18 @@
 {{- /*
-  Machine profile. Known hosts get their modules without prompts; any other
-  machine is asked once and the answers are stored in ~/.config/chezmoi/chezmoi.toml.
-  Re-run `chezmoi init` to change them.
+  Machine profile. Answers are stored in ~/.config/chezmoi/chezmoi.toml;
+  rerun `chezmoi init` to change them.
 */ -}}
-{{- $os := .chezmoi.os -}}
 {{- /* Not .chezmoi.hostname: it resolves through /etc/hosts, where blocklists remap 127.0.0.1. */ -}}
 {{- $host := output "uname" "-n" | trim | lower | splitList "." | first -}}
 
-{{- $allModules := list "ai" "cloud" "docker" "db" "sync" "ml" "media" "apple" "gui" "server" -}}
-{{- $known := dict
-  "aardvark"     (list "ai" "cloud" "docker" "db" "sync" "ml" "server")
-  "thunderchief" (list "ai" "cloud" "docker" "db" "sync" "media" "apple" "gui")
--}}
-{{- $defaults := list "ai" "cloud" "docker" "db" "sync" -}}
-{{- if eq $os "darwin" }}{{ $defaults = concat $defaults (list "media" "gui") }}{{ else }}{{ $defaults = append $defaults "server" }}{{ end -}}
-
-{{- $modules := list -}}
-{{- if hasKey $known $host -}}
-{{-   $modules = get $known $host -}}
-{{- else -}}
-{{-   $modules = promptMultichoiceOnce . "modules" "Modules to enable" $allModules $defaults -}}
+{{- /* Two switches; everything else follows the OS. Known hosts skip the prompts. */ -}}
+{{- $ai := true -}}
+{{- $server := false -}}
+{{- if eq $host "aardvark" -}}
+{{-   $server = true -}}
+{{- else if ne $host "thunderchief" -}}
+{{-   $ai = promptBoolOnce . "ai" "Set up the coding agents (Claude Code, Codex, Pi)" true -}}
+{{-   $server = promptBoolOnce . "server" "Always-on server (Claude Remote Control service)" false -}}
 {{- end -}}
 
 encryption = "age"
@@ -39,16 +32,6 @@ encryption = "age"
 
 [data]
     host = {{ $host | quote }}
+    ai = {{ $ai }}
+    server = {{ $server }}
 
-[data.modules]
-{{- range $allModules }}
-    {{ . }} = {{ has . $modules }}
-{{- end }}
-
-[data.git]
-{{- if eq $os "darwin" }}
-    # Bitwarden's SSH agent holds the private key; git signs with the public half.
-    signingKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJfml6YGLlOvm7VICn5K/G05N6JkHVLtWtpDL7ejvlvB shaurya@aki"
-{{- else }}
-    signingKey = "~/.ssh/id_ed25519"
-{{- end }}

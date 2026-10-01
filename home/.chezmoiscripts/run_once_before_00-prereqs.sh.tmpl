@@ -7,23 +7,22 @@ if ! command -v brew >/dev/null 2>&1 && [ ! -x /opt/homebrew/bin/brew ]; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 {{- else }}
-# mise builds the cargo: tools from source, so a C toolchain comes too. The
-# gcloud installer runs `python` outside mise, so a system Python comes too.
+# mise builds the cargo: tools from source, so a C toolchain comes too.
 missing=
-for cmd in zsh git curl unzip cc ar make python3; do
+for cmd in zsh git curl unzip cc ar make; do
   command -v "$cmd" >/dev/null 2>&1 || missing="$missing $cmd"
 done
 [ -z "$missing" ] && exit 0
 sudo=; [ "$(id -u)" -eq 0 ] || sudo=sudo
 echo "dots: installing base packages (missing:$missing)"
 if command -v dnf >/dev/null 2>&1; then
-  $sudo dnf install -y zsh git curl unzip gcc gcc-c++ make pkgconf zlib-devel openssl-devel python3 python-unversioned-command
+  $sudo dnf install -y zsh git curl unzip gcc gcc-c++ make pkgconf zlib-devel openssl-devel
 elif command -v apt-get >/dev/null 2>&1; then
   $sudo apt-get update -qq
-  $sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y zsh git curl unzip build-essential pkg-config zlib1g-dev libssl-dev python-is-python3
+  $sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y zsh git curl unzip build-essential pkg-config zlib1g-dev libssl-dev
 elif command -v pacman >/dev/null 2>&1; then
-  $sudo pacman -S --needed --noconfirm zsh git curl unzip base-devel zlib openssl python
+  $sudo pacman -S --needed --noconfirm zsh git curl unzip base-devel zlib openssl
 else
-  echo "dots: install zsh, git, curl, unzip, a C toolchain, zlib headers and python yourself" >&2
+  echo "dots: install zsh, git, curl, unzip, a C toolchain and zlib headers yourself" >&2
 fi
 {{- end }}

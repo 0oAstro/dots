@@ -1,6 +1,6 @@
 # dots
 
-One [chezmoi](https://chezmoi.io) repo for every machine: zsh, git, agent harnesses, terminal, and the tool list. It replaces `0oAstro/zdots`, whose history lives on under `home/dot_config/zsh`.
+One [chezmoi](https://chezmoi.io) repo for every machine: zsh, git, the agent harnesses, and the tool list. The zsh config came from `0oAstro/zdots` with its history.
 
 ## Set up a machine
 
@@ -8,73 +8,51 @@ One [chezmoi](https://chezmoi.io) repo for every machine: zsh, git, agent harnes
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/0oAstro/dots/master/install.sh)"
 ```
 
-`install.sh` installs [mise](https://mise.jdx.dev), logs in to GitHub, asks for the age key, then runs `chezmoi init --apply 0oAstro/dots`. Known hosts (`aardvark`, `thunderchief`) get their modules without questions. Any other host is asked which modules to enable.
+`install.sh` installs [mise](https://mise.jdx.dev), logs in to GitHub, and asks for the age key. It then runs `chezmoi init --apply 0oAstro/dots`. On a new host, chezmoi asks two questions: set up the coding agents (`ai`), and is this an always-on server (`server`)? Everything else follows the OS.
 
-The first apply then:
-
-1. installs zsh, git, and curl (Linux) or Homebrew (macOS),
-2. writes every config file,
-3. runs `brew bundle` (macOS with `gui`) and `mise install`,
-4. clones the pstack repos and links their skills (`ai`),
-5. starts Claude Remote Control as a systemd user unit (`ai` + `server`),
-6. offers to make zsh the login shell.
-
-To apply without prompts, for example in a container, pass `--promptDefaults` to `install.sh`.
+The first apply installs base packages or Homebrew, writes the configs, and runs `brew bundle` (macOS) and `mise install`. With `ai`, it also clones the pstack repos and starts the Bifrost proxy. To apply without prompts, pass `--promptDefaults` to `install.sh`.
 
 ## Change something
 
-Edit the file where it lives, then copy the change into the repo:
-
 ```sh
-chezmoi re-add ~/.config/ghostty/config     # plain files
-chezmoi edit --apply ~/.config/git/config   # templates (.tmpl in the repo)
-chezmoi cd                                  # then commit and push
+chezmoi edit --apply ~/.config/git/config   # edit the repo copy, then apply it
+chezmoi re-add ~/.config/ghostty/config     # or copy an in-place edit back
+chezmoi cd                                  # commit and push from here
+chezmoi update                              # on the other machines
 ```
-
-On the other machines, run `chezmoi update`. Run `chezmoi diff` first to see what an apply would change.
 
 | To change | Edit |
 | --- | --- |
-| API keys | `edit-secrets` (zsh function; re-encrypts and applies) |
-| Tools | `~/.config/mise/conf.d/<module>.toml` via `chezmoi edit` |
+| Tools | `~/.config/mise/conf.d/core.toml` (both OSes), `macos.toml`, `linux.toml`, `ai.toml` |
 | macOS apps | `~/.config/homebrew/Brewfile` |
+| API keys | `edit-secrets` (re-encrypts and applies) |
 | SSH hosts | `chezmoi edit ~/.ssh/config.d/$(uname -n)` |
-| Modules for this machine | `chezmoi init` (asks again on unknown hosts), or edit `.chezmoi.toml.tmpl` |
 
-`mise use -g tool` still writes to `~/.config/mise/config.toml`. Move anything worth keeping into a module file.
+Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new releases for 24 hours, except for the agent CLIs. `mise use -g` writes to `~/.config/mise/config.toml`; move anything worth keeping into `conf.d`.
 
-## Modules
+## What goes where
 
-`core` always applies: zsh, git, bash (Linux), tmux, zellij, herdr, bat, ripgrep, languages, and the CLI tools in `conf.d/10-core.toml`.
-
-| Module | Adds |
+| | Files |
 | --- | --- |
-| `ai` | Claude Code, Codex, and Pi configs; pstack; agent CLIs in `conf.d/20-ai.toml` |
-| `cloud` | AWS, Azure, gcloud, Vercel, Neon, Firebase CLIs |
-| `docker` | Docker CLI with buildx and compose; lazydocker config |
-| `db` | psql, mysql; lazysql config (macOS) |
-| `sync` | rclone, age, Bitwarden; Maestral and himalaya (Linux) |
-| `ml` | Hugging Face, Kaggle, whisper.cpp |
-| `media` | ffmpeg, yt-dlp, pget |
-| `apple` | CocoaPods, SwiftFormat, SwiftLint, Tuist |
-| `gui` | Ghostty, kitty, Karabiner, Zed, herdr launcher, Brewfile |
-| `server` | Claude Remote Control unit, `termius-zmx` |
+| every machine | zsh, git, herdr, tmux, bat, ripgrep, glow, dtop, btop; `conf.d/core.toml` |
+| `ai` | Claude Code, Codex, and Pi settings; pstack; bifrost-mitm; `conf.d/ai.toml` |
+| `server` (with `ai`) | `claude-rc.service` (Claude Remote Control) |
+| macOS | Brewfile, Ghostty, Karabiner, herdr launcher, lazysql, routerctl, the bifrost-mitm LaunchAgent; `conf.d/macos.toml` |
+| Linux | bash, systemd user units; `conf.d/linux.toml` |
 
-`home/.chezmoi.toml.tmpl` holds the host table. `home/.chezmoiignore` maps modules and operating systems to files.
+`home/.chezmoiignore` holds these rules.
 
 ## Secrets
 
-Secrets are age-encrypted in the repo (`encrypted_*.age`) with chezmoi's built-in age. The key is `~/.config/age/keys.txt`. It is the same key on every machine. Keep a copy outside the repo, for example in Bitwarden.
+Secrets are age-encrypted in the repo (`encrypted_*.age`), using chezmoi's built-in age. Every machine uses the same key, `~/.config/age/keys.txt`. Keep a copy outside the repo, for example in Bitwarden. Without the key, chezmoi skips the encrypted files and applies everything else. To add the key later, save it with mode `600` and run `chezmoi apply`.
 
-Without the key, chezmoi skips the encrypted files and applies everything else. To add the key later, save it to `~/.config/age/keys.txt` with mode `600`, then run `chezmoi apply`.
-
-On apply, chezmoi decrypts the API keys to `~/.config/zsh/.zshrc.local` (mode `600`). Both zsh and bash source that file. Per-host SSH config is decrypted to `~/.ssh/config.d/<host>`.
+chezmoi decrypts the API keys to `~/.config/zsh/.zshrc.local` (mode `600`), which zsh and bash both source. Each host's SSH config goes to `~/.ssh/config.d/<host>`.
 
 ## Files the apps also write
 
-Claude Code, Codex, and Pi rewrite their own settings files. `modify_` templates merge the keys this repo manages into the current file and keep the keys the app owns. Codex's trusted projects, Pi's last-seen version, and a model picked with `/model` survive an apply. The managed keys are in `home/.chezmoitemplates/`.
+Claude Code, Codex, and Pi rewrite their own settings. `modify_` templates merge the keys kept in `home/.chezmoitemplates/` into the live file. Keys the app owns survive: Codex's trusted projects, Pi's last-seen version, a model picked with `/model`. `btop.conf` is written only when missing, because btop saves its settings on exit.
 
-`btop.conf` is written only when missing, because btop saves its settings on exit.
+Symlinks that must survive tool upgrades point at mise's `latest` folder: the Docker CLI plugins and Codex's app-server binary.
 
 ## Check the repo
 

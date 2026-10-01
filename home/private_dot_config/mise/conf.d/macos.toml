@@ -1,0 +1,24 @@
+# macOS only.
+
+[tools]
+java = ["zulu-25", "zulu-21"]
+# Finder Trash with Put Back; backs the rm=trash alias.
+"github:sindresorhus/macos-trash" = { version = "latest", asset_pattern = "trash.zip" }
+# Completions for zsh (lib/compinit.zsh); pinned for fzf-tab's quoting fix.
+carapace = "1.7.3"
+"github:vercel-labs/fx" = "latest"
+"npm:@ytspar/hctl" = "latest"
+"npm:bitwarden-cli-bio" = "latest"
+"github:bitwarden/agent-access" = "latest"
+
+# ── Media ────────────────────────────────────────────────────────────────────
+ffmpeg = "latest"
+"github:yt-dlp/yt-dlp" = "latest"
+"github:Code-Hex/pget" = "latest"
+
+# ── iOS ──────────────────────────────────────────────────────────────────────
+ruby = "4.0"
+cocoapods = "latest"
+swiftformat = { version = "latest", no_app = true, rename_exe = "swiftformat" }
+swiftlint = "latest"
+tuist = "latest"
