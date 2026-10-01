@@ -1,5 +1,9 @@
 # Small interactive helper functions.
 
+# Mise's shims lead PATH, so route gh through the repository-identity wrapper
+# explicitly (identities module; see ~/.config/git/IDENTITIES.md).
+[[ -x $HOME/.local/bin/gh ]] && gh() { "$HOME/.local/bin/gh" "$@"; }
+
 bak() {
   local now f
   now=$(date +"%Y%m%d-%H%M%S")
