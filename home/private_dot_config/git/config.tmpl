@@ -1,7 +1,7 @@
 [user]
 	name = 0oAstro
 	email = 79555780+0oAstro@users.noreply.github.com
-	signingKey = {{ if eq .chezmoi.os "darwin" }}ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJfml6YGLlOvm7VICn5K/G05N6JkHVLtWtpDL7ejvlvB shaurya@aki{{ else }}~/.ssh/id_ed25519{{ end }}
+	signingKey = {{ if eq .chezmoi.os "darwin" }}ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJfml6YGLlOvm7VICn5K/G05N6JkHVLtWtpDL7ejvlvB shaurya@aki{{ else }}~/.ssh/github{{ end }}
 
 [commit]
 	gpgSign = true
