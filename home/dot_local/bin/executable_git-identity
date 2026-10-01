@@ -27,15 +27,6 @@ check_key() {
 }
 
 case "${1:-}" in
-  --gh)
-    shift
-    # Account-management commands must retain access to the stored logins.
-    if [[ ${1:-} == auth || -n ${GH_TOKEN:-} || -n ${GITHUB_TOKEN:-} || ${GH_HOST:-github.com} != github.com ]]; then
-      real_gh "$@"
-    else
-      GH_TOKEN=$(account_token) real_gh "$@"
-    fi
-    exit ;;
   --credential)
     shift
     GH_TOKEN=$(account_token) real_gh auth git-credential "$@"
@@ -47,8 +38,7 @@ case "${1:-}" in
   --help|-h)
     printf '%s\n' 'git identity [astro|hemant]  Select an identity for this repository, or show status.' \
       'Unconfigured repositories default to Astro. Existing local Git overrides are preserved until selection.' \
-      'git identity --register-key  Register the selected signing key with GitHub.' \
-      'gh auth commands manage stored logins; other gh commands follow the repository.'
+      'git identity --register-key  Register the selected signing key with GitHub.'
     exit ;;
   '') ;;
   astro|0oAstro|hemant|merak-max)

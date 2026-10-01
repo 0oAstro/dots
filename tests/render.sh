@@ -12,10 +12,10 @@ all='"ai":true,"cloud":true,"docker":true,"db":true,"sync":true'
 
 # name|os|arch|modules json (the rest of a profile is shared)
 profiles=(
-  "aardvark|linux|arm64|{$all,\"ml\":true,\"media\":false,\"apple\":false,\"gui\":false,\"server\":true,\"identities\":true}"
-  "thunderchief|darwin|arm64|{$all,\"ml\":false,\"media\":true,\"apple\":true,\"gui\":true,\"server\":false,\"identities\":false}"
-  "newbox|linux|amd64|{\"ai\":false,\"cloud\":false,\"docker\":false,\"db\":false,\"sync\":false,\"ml\":false,\"media\":false,\"apple\":false,\"gui\":false,\"server\":false,\"identities\":false}"
-  "newmac|darwin|arm64|{$all,\"ml\":true,\"media\":true,\"apple\":true,\"gui\":true,\"server\":true,\"identities\":true}"
+  "aardvark|linux|arm64|{$all,\"ml\":true,\"media\":false,\"apple\":false,\"gui\":false,\"server\":true}"
+  "thunderchief|darwin|arm64|{$all,\"ml\":false,\"media\":true,\"apple\":true,\"gui\":true,\"server\":false}"
+  "newbox|linux|amd64|{\"ai\":false,\"cloud\":false,\"docker\":false,\"db\":false,\"sync\":false,\"ml\":false,\"media\":false,\"apple\":false,\"gui\":false,\"server\":false}"
+  "newmac|darwin|arm64|{$all,\"ml\":true,\"media\":true,\"apple\":true,\"gui\":true,\"server\":true}"
 )
 
 check() { # label command...

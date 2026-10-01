@@ -7,9 +7,9 @@
 {{- /* Not .chezmoi.hostname: it resolves through /etc/hosts, where blocklists remap 127.0.0.1. */ -}}
 {{- $host := output "uname" "-n" | trim | lower | splitList "." | first -}}
 
-{{- $allModules := list "ai" "cloud" "docker" "db" "sync" "ml" "media" "apple" "gui" "server" "identities" -}}
+{{- $allModules := list "ai" "cloud" "docker" "db" "sync" "ml" "media" "apple" "gui" "server" -}}
 {{- $known := dict
-  "aardvark"     (list "ai" "cloud" "docker" "db" "sync" "ml" "server" "identities")
+  "aardvark"     (list "ai" "cloud" "docker" "db" "sync" "ml" "server")
   "thunderchief" (list "ai" "cloud" "docker" "db" "sync" "media" "apple" "gui")
 -}}
 {{- $defaults := list "ai" "cloud" "docker" "db" "sync" -}}

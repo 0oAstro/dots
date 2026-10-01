@@ -80,6 +80,3 @@ Library/LaunchAgents/me.shau.bifrost-mitm.plist
 .config/systemd/user/claude-rc.service
 .local/bin/termius-zmx
 {{- end }}
-{{- if not .modules.identities }}
-.local/bin/gh
-{{- end }}

@@ -19,21 +19,9 @@ linked worktrees. It does not change the globally active GitHub CLI login.
 GitHub HTTPS credentials follow `identity.account`, defaulting to 0oAstro.
 GitHub SSH-style remote URLs are transparently rewritten to HTTPS.
 
-New zsh sessions wrap `gh` to use the repository account. To enable this in an
-already-open shell:
-
-```sh
-gh() { "$HOME/.local/bin/gh" "$@"; }
-```
-
-Scripts that bypass shell functions and resolve mise's `gh` shim should invoke
-`$HOME/.local/bin/gh` explicitly to get account selection. Explicit GH_TOKEN or
-GITHUB_TOKEN values override selection. `gh auth ...` commands bypass selection
-so that stored logins can still be managed. Consequently `gh auth status` shows
-the stored global active account; use `git identity` or `gh api user --jq .login`
-to inspect repository selection. Outside a repository, the wrapper uses Astro.
-Use `gh auth token --hostname github.com --user ACCOUNT` when requesting a token
-explicitly; bare `gh auth token` follows the globally active login.
+`gh` itself is mise's and follows the globally active login. Switch it with
+`gh auth switch --hostname github.com --user ACCOUNT`, or request a token with
+`gh auth token --hostname github.com --user ACCOUNT`.
 
 ## Hemant signing-key registration
 

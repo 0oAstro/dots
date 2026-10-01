@@ -59,7 +59,6 @@ On the other machines, run `chezmoi update`. Run `chezmoi diff` first to see wha
 | `apple` | CocoaPods, SwiftFormat, SwiftLint, Tuist |
 | `gui` | Ghostty, kitty, Karabiner, Zed, herdr launcher, Brewfile |
 | `server` | Claude Remote Control unit, `termius-zmx` |
-| `identities` | `gh` wrapper that follows `git identity` (see `IDENTITIES.md`) |
 
 `home/.chezmoi.toml.tmpl` holds the host table. `home/.chezmoiignore` maps modules and operating systems to files.
 
