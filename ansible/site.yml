@@ -1,40 +1,45 @@
-# System layer. chezmoi owns the home directory; the dots role runs it.
+# System layer, then chezmoi (the dots role) for the home directory.
 # Roles with a `when` are opt-in: a host gets them by defining their variables.
+# Each role is tagged with its name; tasks that need a running systemd carry
+# the `service` tag, so containers can skip them (see .github/workflows/ci.yml).
 
 - name: macOS
   hosts: macs
   roles:
-    - role: homebrew
-    - role: login_shell
-    - role: macos_defaults
-    - role: macos_firewall
-    - role: launchd_agents
-    - role: dots
+    - {role: homebrew, tags: [homebrew]}
+    - {role: login_shell, tags: [login_shell]}
+    - {role: macos_defaults, tags: [macos_defaults]}
+    - {role: macos_firewall, tags: [macos_firewall]}
+    - {role: launchd_agents, tags: [launchd_agents]}
+    - {role: dots, tags: [dots]}
 
 - name: Linux
   hosts: linux
   roles:
-    - role: packages
-      become: true
-    - role: login_shell
-    - role: overlay
-      become: true
+    - {role: packages, become: true, tags: [packages]}
+    - {role: login_shell, tags: [login_shell]}
+    - {role: overlay, become: true, tags: [overlay]}
     - role: tailscale
       become: true
       when: tailscale_enabled | default(false)
+      tags: [tailscale]
     - role: firewalld
       become: true
       when: firewalld_zones is defined
+      tags: [firewalld]
     - role: docker
       become: true
       when: docker_users is defined
+      tags: [docker]
     - role: backup_tools
       become: true
       when: backup_tools_dir is defined
-    - role: dots
+      tags: [backup_tools]
+    - {role: dots, tags: [dots]}
     - role: docker_stacks
       when: docker_stacks_repo is defined
-    - role: systemd_units
-      become: true
+      tags: [docker_stacks]
+    - {role: systemd_units, become: true, tags: [systemd_units]}
     - role: user_units
       when: user_units | default([]) | length > 0
+      tags: [user_units]

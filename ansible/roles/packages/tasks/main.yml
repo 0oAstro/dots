@@ -1,4 +1,16 @@
 # Installs every list named packages_* in scope (group and host vars merge).
+- name: Refresh apt
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_facts.pkg_mgr == 'apt'
+
+- name: Refresh pacman
+  community.general.pacman:
+    update_cache: true
+  changed_when: false # a cache refresh is not a state change
+  when: ansible_facts.pkg_mgr == 'pacman'
+
 - name: Packages
   ansible.builtin.package:
     name: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^packages_.+')) | flatten | unique }}"

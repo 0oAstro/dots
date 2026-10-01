@@ -1,4 +1,7 @@
+# By distribution first, then OS family.
 docker_package:
-  RedHat: docker # Amazon Linux; Fedora would want moby-engine
+  Amazon: docker
+  Fedora: moby-engine
+  RedHat: docker
   Debian: docker.io
   Archlinux: docker

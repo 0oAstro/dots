@@ -7,6 +7,7 @@
 # from another machine: add them to ansible/inventory.yml and run
 # `mise run provision -- --limit <host>` there.
 #
+# Arguments go to ansible-playbook, for example -e to override variables.
 # DOTS_REPO overrides the repo, for example a file:// URL when testing.
 # DOTS_GROUP is the inventory group for a host not yet listed in
 # ansible/inventory.yml (default: macs on macOS, desktops on Linux).
@@ -73,7 +74,7 @@ cd "$src"
 "$mise" trust --quiet mise.toml
 "$mise" run ansible:deps
 
-set -- --limit "$host"
+set -- --limit "$host" "$@"
 if ! "$mise" exec -- ansible-inventory -i ansible/inventory.yml --host "$host" >/dev/null 2>&1; then
   case $(uname -s) in Darwin) group=${DOTS_GROUP:-macs} ;; *) group=${DOTS_GROUP:-desktops} ;; esac
   extra=$(mktemp -d)/inventory.yml # the yaml plugin needs the extension

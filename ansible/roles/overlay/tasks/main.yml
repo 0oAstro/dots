@@ -9,6 +9,16 @@
            | items2dict(key_name='path', value_name='src')) }}
   loop: "{{ overlay_layers }}"
 
+- name: Is sshd installed?
+  ansible.builtin.stat:
+    path: /usr/sbin/sshd
+  register: overlay_sshd
+
+- name: Skip sshd settings where there is no sshd
+  ansible.builtin.set_fact:
+    overlay_files: "{{ overlay_files | dict2items | rejectattr('key', 'match', 'etc/ssh/') | items2dict }}"
+  when: not overlay_sshd.stat.exists
+
 - name: Parent directories
   ansible.builtin.file:
     path: "/{{ item }}"
@@ -44,6 +54,7 @@
 
 - name: Reload sshd
   ansible.builtin.systemd_service:
-    name: sshd
+    name: "{{ 'ssh' if ansible_facts.os_family == 'Debian' else 'sshd' }}"
     state: reloaded
+  tags: [service]
   when: overlay_changed | select('match', '/etc/ssh/') | list | length > 0

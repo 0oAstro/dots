@@ -1,7 +1,7 @@
 # Tailscale from its official repo. Joining the tailnet (tailscale up) stays
 # manual: it needs an auth key or a browser login.
 - name: Repo (dnf)
-  when: ansible_facts.pkg_mgr == 'dnf'
+  when: ansible_facts.pkg_mgr in ['dnf', 'dnf5']
   block:
     - name: Repo file
       ansible.builtin.get_url:
@@ -44,3 +44,4 @@
     name: tailscaled
     enabled: true
     state: started
+  tags: [service]
