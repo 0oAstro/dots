@@ -16,7 +16,7 @@ The first apply then:
 2. writes every config file,
 3. runs `brew bundle` (macOS with `gui`) and `mise install`,
 4. clones the pstack repos and links their skills (`ai`),
-5. starts the Bifrost proxy as a systemd user unit or a LaunchAgent (`ai`),
+5. starts Claude Remote Control as a systemd user unit (`ai` + `server`),
 6. offers to make zsh the login shell.
 
 To apply without prompts, for example in a container, pass `--promptDefaults` to `install.sh`.
@@ -49,7 +49,7 @@ On the other machines, run `chezmoi update`. Run `chezmoi diff` first to see wha
 
 | Module | Adds |
 | --- | --- |
-| `ai` | Claude Code, Codex, and Pi configs; pstack; bifrost-mitm; agent CLIs in `conf.d/20-ai.toml` |
+| `ai` | Claude Code, Codex, and Pi configs; pstack; agent CLIs in `conf.d/20-ai.toml` |
 | `cloud` | AWS, Azure, gcloud, Vercel, Neon, Firebase CLIs |
 | `docker` | Docker CLI with buildx and compose; lazydocker config |
 | `db` | psql, mysql; lazysql config (macOS) |

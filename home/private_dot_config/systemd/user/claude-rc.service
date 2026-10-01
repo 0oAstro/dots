@@ -1,11 +1,10 @@
 [Unit]
 Description=Claude Code Remote Control in the home directory
-Wants=bifrost-mitm.service
-After=bifrost-mitm.service network-online.target
+After=network-online.target
 
 [Service]
 WorkingDirectory=%h
-# Interactive zsh loads the Bifrost key and the claude() proxy wrapper from ai-gateway.zsh.
+# Interactive zsh puts the mise-managed claude on PATH.
 ExecStart=/usr/bin/zsh -ic 'claude remote-control --name home'
 KillSignal=SIGINT
 TimeoutStopSec=20

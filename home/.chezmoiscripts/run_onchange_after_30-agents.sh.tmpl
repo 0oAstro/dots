@@ -1,8 +1,7 @@
 {{- if .modules.ai -}}
 #!/bin/bash
 # Agent harness setup that is state, not config: the pstack skill repos (each
-# with its own history and sync tool), their skill links, extension deps and
-# the mitmproxy that routes Claude Code through Bifrost.
+# with its own history and sync tool), their skill links and extension deps.
 # firecrawl-web lockfile: {{ include "dot_pi/private_agent/extensions/firecrawl-web/package-lock.json" | sha256sum }}
 set -euo pipefail
 export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"
@@ -50,6 +49,5 @@ fi
 ext=$HOME/.pi/agent/extensions/firecrawl-web
 [[ -f $ext/package-lock.json ]] && (cd "$ext" && npm ci --silent --no-audit --no-fund)
 
-command -v mitmdump >/dev/null || uv tool install --quiet mitmproxy
 exit $status
 {{- end }}

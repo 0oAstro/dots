@@ -41,12 +41,9 @@ Library
 .codex
 .pi
 .agents
-.config/bifrost-mitm
 .config/herdr/agent-detection
 .config/mise/conf.d/20-ai.toml
-.config/systemd/user/bifrost-mitm.service
 .config/systemd/user/claude-rc.service
-Library/LaunchAgents/me.shau.bifrost-mitm.plist
 {{- end }}
 {{- if not .modules.cloud }}
 .config/mise/conf.d/30-cloud.toml
