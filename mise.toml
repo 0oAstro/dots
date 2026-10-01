@@ -16,7 +16,8 @@ run = "tests/fmt.py"
 [tasks."ansible:deps"]
 description = "Install the Ansible collections into ansible/collections"
 dir = "ansible"
-run = "ansible-galaxy collection install -r requirements.yml -p collections"
+# Galaxy drops connections now and then; retry before failing.
+run = "for i in 1 2 3; do ansible-galaxy collection install -r requirements.yml -p collections && exit 0; sleep 10; done; exit 1"
 sources = ["requirements.yml"]
 outputs = ["collections/ansible_collections"]
 

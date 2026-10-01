@@ -1,0 +1,7 @@
+macos_defaults_all: "{{ macos_defaults | default([]) + macos_defaults_host | default([]) }}"
+# osx_defaults type -> what `defaults read-type` prints
+macos_defaults_type_names:
+  bool: boolean
+  int: integer
+  float: float
+  string: string
