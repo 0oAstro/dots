@@ -1,0 +1,19 @@
+# Docker Engine from the distro. The compose plugin comes from mise via
+# chezmoi (~/.docker/cli-plugins), so it matches on every host.
+- name: Engine
+  ansible.builtin.package:
+    name: "{{ docker_package[ansible_facts.os_family] | default('docker') }}"
+    state: present
+
+- name: Service
+  ansible.builtin.systemd_service:
+    name: docker
+    enabled: true
+    state: started
+
+- name: Users in the docker group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  loop: "{{ docker_users }}"

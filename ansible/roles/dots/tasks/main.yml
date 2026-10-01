@@ -1,4 +1,5 @@
-# chezmoi owns the home directory; this only runs it, so one playbook covers both layers.
+# chezmoi owns the home directory; this only runs it, so one playbook covers
+# both layers. dots_pull: false where the source repo is a working checkout.
 - name: Pull the dotfiles repo
   ansible.builtin.command: chezmoi git -- pull --ff-only
   register: dots_pulled

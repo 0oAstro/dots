@@ -1,0 +1,11 @@
+# The machine running the playbook manages itself locally; others over SSH.
+ansible_connection: "{{ 'local' if inventory_hostname == (lookup('pipe', 'uname -n') | lower | split('.') | first) else 'ssh' }}"
+
+# Overlay layers, lowest first: files/overlays/<layer>/ is copied onto /.
+overlay_layers: "{{ group_names | select('in', ['linux', 'servers', 'desktops']) | list + [inventory_hostname] }}"
+
+dots_pull: true
+
+# PATH for tools mise installs (chezmoi, gh, the compose plugin).
+dots_env:
+  PATH: "{{ ansible_facts.env.HOME }}/.local/share/mise/shims:{{ ansible_facts.env.HOME }}/.local/bin:{{ ansible_facts.env.PATH }}"

@@ -1,0 +1,4 @@
+docker_package:
+  RedHat: docker # Amazon Linux; Fedora would want moby-engine
+  Debian: docker.io
+  Archlinux: docker

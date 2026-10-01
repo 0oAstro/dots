@@ -1,0 +1,7 @@
+# How to read each setting, and the output that means "on".
+macos_firewall_settings:
+  globalstate: {flag: getglobalstate, on_output: "State = [12]"}
+  stealthmode: {flag: getstealthmode, on_output: "stealth mode is on"}
+  blockall: {flag: getblockall, on_output: "block all state set to enabled"}
+  allowsigned: {flag: getallowsigned, on_output: "built-in signed software ENABLED"}
+  allowsignedapp: {flag: getallowsigned, on_output: "downloaded signed software ENABLED"}

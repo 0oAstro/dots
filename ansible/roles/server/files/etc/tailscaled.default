@@ -1,3 +1,0 @@
-# Tailscale daemon config
-PORT=41641
-TAILSCALE_FLAGS=""

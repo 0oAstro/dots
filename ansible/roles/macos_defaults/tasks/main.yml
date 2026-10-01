@@ -1,0 +1,18 @@
+# macos_defaults (group) plus macos_defaults_host (host). Each item:
+# {domain, key, type, value, kill}. kill restarts that process after a change.
+- name: Defaults
+  community.general.osx_defaults:
+    domain: "{{ item.domain }}"
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+  loop: "{{ macos_defaults | default([]) + macos_defaults_host | default([]) }}"
+  loop_control:
+    label: "{{ item.domain }} {{ item.key }} = {{ item.value }}"
+  register: macos_defaults_set
+
+- name: Restart what reads them
+  ansible.builtin.command: killall {{ item }}
+  loop: "{{ macos_defaults_set.results | selectattr('changed') | map(attribute='item.kill') | select('defined') | select | unique }}"
+  changed_when: true
+  failed_when: false

@@ -1,1 +1,98 @@
-dots_pull: false # the source repo here is the working checkout
+ansible_python_interpreter: "{{ ansible_playbook_python if ansible_connection == 'local' else 'auto_silent' }}"
+
+homebrew_brewfile_src: brewfiles/Brewfile
+
+# Every Mac gets these. Values match thunderchief on 2026-10-01.
+# kill: the process to restart after a change so it rereads its defaults.
+macos_defaults:
+  # Keyboard and text
+  - {domain: NSGlobalDomain, key: KeyRepeat, type: int, value: 1}
+  - {domain: NSGlobalDomain, key: InitialKeyRepeat, type: int, value: 10}
+  - {domain: NSGlobalDomain, key: ApplePressAndHoldEnabled, type: bool, value: false}
+  - {domain: NSGlobalDomain, key: AppleKeyboardUIMode, type: int, value: 3}
+  - {domain: NSGlobalDomain, key: com.apple.keyboard.fnState, type: bool, value: false}
+  - {domain: NSGlobalDomain, key: NSAutomaticSpellingCorrectionEnabled, type: bool, value: false}
+  - {domain: NSGlobalDomain, key: NSAutomaticCapitalizationEnabled, type: bool, value: false}
+  - {domain: NSGlobalDomain, key: NSAutomaticPeriodSubstitutionEnabled, type: bool, value: false}
+  - {domain: NSGlobalDomain, key: NSAutomaticQuoteSubstitutionEnabled, type: bool, value: false}
+  - {domain: NSGlobalDomain, key: NSAutomaticDashSubstitutionEnabled, type: bool, value: false}
+  # Look and windows
+  - {domain: NSGlobalDomain, key: AppleInterfaceStyle, type: string, value: Dark}
+  - {domain: NSGlobalDomain, key: AppleShowScrollBars, type: string, value: Automatic}
+  - {domain: NSGlobalDomain, key: NSWindowShouldDragOnGesture, type: bool, value: true}
+  - {domain: NSGlobalDomain, key: NSTableViewDefaultSizeMode, type: int, value: 2}
+  - {domain: NSGlobalDomain, key: NSNavPanelExpandedStateForSaveMode, type: bool, value: true}
+  - {domain: NSGlobalDomain, key: NSDocumentSaveNewDocumentsToCloud, type: bool, value: false}
+  - {domain: com.apple.WindowManager, key: EnableTiledWindowMargins, type: bool, value: false}
+  - {domain: com.apple.universalaccess, key: reduceMotion, type: bool, value: false}
+  # Trackpad
+  - {domain: NSGlobalDomain, key: com.apple.swipescrolldirection, type: bool, value: true}
+  - {domain: NSGlobalDomain, key: com.apple.trackpad.scaling, type: float, value: 8}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: Clicking, type: bool, value: true}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadRightClick, type: bool, value: true}
+  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadThreeFingerDrag, type: bool, value: false}
+  # Dock and Mission Control
+  - {domain: com.apple.dock, key: autohide, type: bool, value: true, kill: Dock}
+  - {domain: com.apple.dock, key: autohide-delay, type: float, value: 0, kill: Dock}
+  # Dock stores this as a 32-bit float; 0.3 would never compare equal.
+  - {domain: com.apple.dock, key: autohide-time-modifier, type: float, value: 0.300000011920929, kill: Dock}
+  - {domain: com.apple.dock, key: tilesize, type: float, value: 51, kill: Dock}
+  - {domain: com.apple.dock, key: show-recents, type: bool, value: false, kill: Dock}
+  - {domain: com.apple.dock, key: mru-spaces, type: bool, value: false, kill: Dock}
+  - {domain: com.apple.dock, key: minimize-to-application, type: bool, value: true, kill: Dock}
+  - {domain: com.apple.dock, key: mineffect, type: string, value: scale, kill: Dock}
+  - {domain: com.apple.dock, key: magnification, type: bool, value: false, kill: Dock}
+  - {domain: com.apple.dock, key: launchanim, type: bool, value: false, kill: Dock}
+  - {domain: com.apple.dock, key: expose-group-apps, type: bool, value: true, kill: Dock}
+  - {domain: com.apple.dock, key: wvous-br-corner, type: int, value: 14, kill: Dock} # Quick Note
+  # Finder
+  - {domain: com.apple.finder, key: ShowPathbar, type: bool, value: true, kill: Finder}
+  - {domain: com.apple.finder, key: ShowStatusBar, type: bool, value: true, kill: Finder}
+  - {domain: com.apple.finder, key: FXPreferredViewStyle, type: string, value: icnv, kill: Finder}
+  - {domain: com.apple.finder, key: FXDefaultSearchScope, type: string, value: SCcf, kill: Finder}
+  - {domain: com.apple.finder, key: FXEnableExtensionChangeWarning, type: bool, value: false, kill: Finder}
+  - {domain: com.apple.finder, key: _FXSortFoldersFirst, type: bool, value: true, kill: Finder}
+  - {domain: com.apple.finder, key: NewWindowTarget, type: string, value: PfHm, kill: Finder}
+  - {domain: com.apple.finder, key: ShowExternalHardDrivesOnDesktop, type: bool, value: false, kill: Finder}
+  - {domain: com.apple.finder, key: ShowHardDrivesOnDesktop, type: bool, value: false, kill: Finder}
+  - {domain: com.apple.finder, key: ShowRemovableMediaOnDesktop, type: bool, value: true, kill: Finder}
+  - {domain: com.apple.finder, key: QuitMenuItem, type: bool, value: true, kill: Finder}
+  - {domain: com.apple.finder, key: AppleShowAllFiles, type: bool, value: false, kill: Finder}
+  - {domain: NSGlobalDomain, key: AppleShowAllExtensions, type: bool, value: false, kill: Finder}
+  - {domain: com.apple.desktopservices, key: DSDontWriteNetworkStores, type: bool, value: true}
+  - {domain: com.apple.desktopservices, key: DSDontWriteUSBStores, type: bool, value: true}
+  # Screenshots (location is per host)
+  - {domain: com.apple.screencapture, key: type, type: string, value: png, kill: SystemUIServer}
+  - {domain: com.apple.screencapture, key: disable-shadow, type: bool, value: true, kill: SystemUIServer}
+  # Misc
+  - {domain: com.apple.menuextra.clock, key: ShowSeconds, type: bool, value: false}
+  - {domain: com.apple.TextEdit, key: RichText, type: int, value: 0}
+  - {domain: com.apple.ActivityMonitor, key: ShowCategory, type: int, value: 100}
+  - {domain: com.apple.LaunchServices, key: LSQuarantine, type: bool, value: false}
+
+macos_firewall:
+  globalstate: true
+  stealthmode: true
+  blockall: false
+  allowsigned: false
+  allowsignedapp: false
+
+# Replaces the domt4/homebrew-autoupdate agent (its tap is gone).
+launchd_agents:
+  - label: dev.dots.brew-upgrade
+    start_interval: 43200
+    command: >-
+      /bin/date &&
+      /opt/homebrew/bin/brew update &&
+      /opt/homebrew/bin/brew upgrade --formula &&
+      /opt/homebrew/bin/brew upgrade --cask &&
+      /opt/homebrew/bin/brew cleanup
+    env:
+      HOMEBREW_NO_ENV_HINTS: "1"
+      HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK: "1"
+      PATH: /opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin
+launchd_agents_absent:
+  - label: com.github.domt4.homebrew-autoupdate
+    files:
+      - "~/Library/Application Support/com.github.domt4.homebrew-autoupdate"
+      - "~/Library/Logs/com.github.domt4.homebrew-autoupdate"

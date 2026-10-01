@@ -1,13 +1,16 @@
-# Hosts by role. SSH settings come from ~/.ssh/config (chezmoi's config.d).
+# Hosts by kind. Groups carry the shared settings (group_vars/), hosts add
+# their own (host_vars/<host>.yml, files/overlays/<host>/). SSH settings come
+# from ~/.ssh/config. Whichever host runs the playbook connects to itself
+# locally (group_vars/all.yml), so any machine can be the controller.
 all:
   children:
     macs:
       hosts:
         thunderchief:
-          ansible_connection: local
-          ansible_python_interpreter: "{{ ansible_playbook_python }}"
-    servers:
-      hosts:
-        aardvark:
-          # System python: dnf and firewalld bindings live there, not in mise's.
-          ansible_python_interpreter: /usr/bin/python3
+    linux:
+      children:
+        servers:
+          hosts:
+            aardvark:
+        desktops:
+          hosts: {}

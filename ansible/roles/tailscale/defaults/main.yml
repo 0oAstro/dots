@@ -1,0 +1,4 @@
+tailscale_dnf_path: >-
+  {{ {'Amazon': 'amazon-linux/' ~ ansible_facts.distribution_major_version,
+      'Fedora': 'fedora'}.get(ansible_facts.distribution,
+      'rhel/' ~ ansible_facts.distribution_major_version) }}

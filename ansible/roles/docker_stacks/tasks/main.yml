@@ -1,0 +1,98 @@
+# A git repo of Compose stacks (one directory each) checked out on the host:
+# fast-forward it, write its secrets, install the units it owns, create the
+# shared networks, and bring up every stack without a DISABLED file.
+# Local edits in the checkout are kept; a diverged branch fails the merge.
+- name: Checkout exists?
+  ansible.builtin.stat:
+    path: "{{ docker_stacks_dir }}/.git"
+  register: docker_stacks_git
+
+- name: Clone
+  when: not docker_stacks_git.stat.exists
+  block:
+    - name: Directory
+      ansible.builtin.file:
+        path: "{{ docker_stacks_dir }}"
+        state: directory
+        owner: "{{ docker_stacks_owner }}"
+        group: "{{ docker_stacks_owner }}"
+        mode: "0755"
+      become: true
+    - name: Clone the repo
+      ansible.builtin.git:
+        repo: "{{ docker_stacks_repo }}"
+        dest: "{{ docker_stacks_dir }}"
+        version: main
+      environment: "{{ dots_env }}"
+
+- name: Update
+  when: docker_stacks_git.stat.exists
+  environment: "{{ dots_env }}"
+  block:
+    - name: Fetch
+      ansible.builtin.command: git -C {{ docker_stacks_dir }} fetch --quiet origin
+      changed_when: false
+      check_mode: false
+    - name: Commits behind upstream
+      ansible.builtin.command: git -C {{ docker_stacks_dir }} rev-list --count HEAD..@{upstream}
+      register: docker_stacks_behind
+      changed_when: ansible_check_mode and docker_stacks_behind.stdout | int > 0
+      check_mode: false
+    - name: Fast-forward
+      ansible.builtin.command: git -C {{ docker_stacks_dir }} merge --ff-only --quiet @{upstream}
+      when: docker_stacks_behind.stdout | int > 0
+      changed_when: true
+
+- name: Secrets
+  ansible.builtin.include_role:
+    name: secrets
+  vars:
+    secrets_repo_dir: "{{ docker_stacks_dir }}"
+
+- name: Units the stacks own
+  ansible.builtin.copy:
+    src: "{{ docker_stacks_dir }}/{{ item }}"
+    dest: /etc/systemd/system/{{ item | basename }}
+    remote_src: true
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ docker_stacks_units | default([]) }}"
+  register: docker_stacks_units_copied
+  become: true
+
+- name: Remember changed units
+  ansible.builtin.set_fact:
+    docker_stacks_units_changed: "{{ docker_stacks_units_copied.results | default([]) | selectattr('changed') | map(attribute='dest') | list }}"
+    systemd_enabled_docker_stacks: "{{ (docker_stacks_units | default([]) | map('basename') | select('match', '.*\\.timer$') | list) + ['docker.service'] }}"
+
+- name: Shared networks
+  ansible.builtin.command: sh networks.sh
+  args:
+    chdir: "{{ docker_stacks_dir }}"
+    removes: "{{ docker_stacks_dir }}/networks.sh"
+  register: docker_stacks_networks
+  changed_when: "'created' in docker_stacks_networks.stdout"
+
+- name: Find stacks
+  ansible.builtin.find:
+    paths: "{{ docker_stacks_dir }}"
+    patterns: [compose.yaml, compose.yml, docker-compose.yaml, docker-compose.yml, DISABLED]
+    depth: 2
+    recurse: true
+  register: docker_stacks_found
+
+- name: Bring stacks up
+  community.docker.docker_compose_v2:
+    project_src: "{{ item }}"
+    state: present
+    build: policy
+    pull: missing
+  loop: "{{ docker_stacks_enabled }}"
+  loop_control:
+    label: "{{ item | basename }}"
+  vars:
+    docker_stacks_disabled: "{{ docker_stacks_found.files | map(attribute='path') | select('match', '.*/DISABLED$') | map('dirname') | list }}"
+    docker_stacks_enabled: >-
+      {{ docker_stacks_found.files | map(attribute='path') | reject('match', '.*/DISABLED$')
+         | map('dirname') | unique | difference(docker_stacks_disabled) | sort }}

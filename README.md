@@ -12,7 +12,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/0oAstro/dots/master/instal
 
 The first apply installs base packages or Homebrew, writes the configs, and runs `mise install`. With `ai`, it also clones the pstack repos. To apply without prompts, pass `--promptDefaults` to `install.sh`.
 
-Then add the host to `ansible/inventory.yml` and run the system layer from the checkout (`chezmoi cd`):
+Then add the host to a group in `ansible/inventory.yml` (`macs`, `servers` or `desktops`) and run the system layer from any checkout (`chezmoi cd`). The host running the playbook manages itself locally and the rest over SSH:
 
 ```sh
 mise run provision -- --check --diff   # dry run on every host
@@ -20,7 +20,21 @@ mise run provision                      # apply; ends with chezmoi on each host
 mise run provision -- --limit aardvark  # one host
 ```
 
-The playbook is idempotent: a second run reports `changed=0`. Firewall services, ports, and rich rules are exclusive, so hand-added ones get removed. Homebrew installs what the Brewfile lists, never removes anything, and reports installed packages the Brewfile does not mention.
+## System layer (Ansible)
+
+Roles are generic; groups and hosts hold the data. A second run reports `changed=0`.
+
+| Where | What |
+| --- | --- |
+| `group_vars/macs.yml` | macOS defaults, application firewall, the `dev.dots.brew-upgrade` launchd agent |
+| `files/brewfiles/Brewfile` | Homebrew. The Brewfile is the whole truth: anything installed but unlisted is uninstalled |
+| `group_vars/linux.yml`, `servers.yml`, `desktops.yml` | Base packages, Tailscale (official repo), Claude Remote Control on servers |
+| `host_vars/<host>.yml` | That host's packages, enabled units, firewalld zones, Docker stacks |
+| `files/overlays/<layer>/` | Files copied onto `/`, layered `linux`, then `servers` or `desktops`, then the host. sysctl, exports, sshd and systemd units reload when they change |
+
+Lists named `packages_*` and `systemd_enabled_*` merge across groups and hosts. Firewalld services, ports and rich rules are exclusive, so hand-added ones get removed.
+
+aardvark's `/opt/docker` is the private repo `0oAstro/aardvark-docker`. The `docker_stacks` role fast-forwards it, writes its secrets, installs the units the stacks own, creates the shared networks, and runs `docker compose up` for every stack without a `DISABLED` file. Secrets there are age-encrypted copies (`sealed/`, same key as this repo) listed in `secrets.yml`. The `secrets` role creates missing ones and fails, without writing, when a live secret differs from its copy: run `bin/seal` there to keep the live one, or pass `-e secrets_take_sealed=true` to restore the copy.
 
 ## Change something
 
@@ -34,8 +48,8 @@ chezmoi update                              # on the other machines
 | To change | Edit |
 | --- | --- |
 | Tools | `~/.config/mise/conf.d/core.toml` (both OSes), `macos.toml`, `linux.toml`, `ai.toml` |
-| macOS apps | `ansible/roles/homebrew/files/Brewfile` |
-| Server firewall, units, packages | `ansible/host_vars/<host>.yml`, `ansible/roles/server/files/` |
+| macOS apps | `ansible/files/brewfiles/Brewfile` |
+| Machine settings, packages, firewall, units | `ansible/` (see System layer) |
 | API keys | `edit-secrets` (re-encrypts and applies) |
 | SSH hosts | `chezmoi edit ~/.ssh/config.d/$(uname -n)` |
 

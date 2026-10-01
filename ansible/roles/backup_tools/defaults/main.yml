@@ -1,0 +1,1 @@
+backup_tools_arch: "{{ {'aarch64': 'arm64', 'x86_64': 'amd64'}[ansible_facts.architecture] }}"

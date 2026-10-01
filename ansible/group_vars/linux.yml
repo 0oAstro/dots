@@ -1,0 +1,14 @@
+# System python: dnf, apt and firewalld bindings live there, not in mise's.
+ansible_python_interpreter: /usr/bin/python3
+
+# Lists named packages_* or systemd_enabled_* anywhere (group or host vars)
+# are merged, so each layer adds its own.
+packages_linux:
+  - zsh
+  - git
+  - unzip
+  - tar
+
+# Overlay files that are not 0644.
+overlay_modes:
+  /etc/ssh/sshd_config.d/00-ansible.conf: "0600"

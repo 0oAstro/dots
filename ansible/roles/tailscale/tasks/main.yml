@@ -1,0 +1,46 @@
+# Tailscale from its official repo. Joining the tailnet (tailscale up) stays
+# manual: it needs an auth key or a browser login.
+- name: Repo (dnf)
+  when: ansible_facts.pkg_mgr == 'dnf'
+  block:
+    - name: Repo file
+      ansible.builtin.get_url:
+        url: "https://pkgs.tailscale.com/stable/{{ tailscale_dnf_path }}/tailscale.repo"
+        dest: /etc/yum.repos.d/tailscale.repo
+        mode: "0644"
+    - name: Signing key
+      ansible.builtin.rpm_key:
+        key: "https://pkgs.tailscale.com/stable/{{ tailscale_dnf_path }}/repo.gpg"
+    - name: Trust the repo metadata key
+      ansible.builtin.command: dnf -y -q --repo tailscale-stable makecache
+      changed_when: false
+
+- name: Repo (apt)
+  when: ansible_facts.pkg_mgr == 'apt'
+  block:
+    - name: Keyring
+      ansible.builtin.get_url:
+        url: "https://pkgs.tailscale.com/stable/{{ ansible_facts.distribution | lower }}/{{ ansible_facts.distribution_release }}.noarmor.gpg"
+        dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+        mode: "0644"
+    - name: Source list
+      ansible.builtin.get_url:
+        url: "https://pkgs.tailscale.com/stable/{{ ansible_facts.distribution | lower }}/{{ ansible_facts.distribution_release }}.tailscale-keyring.list"
+        dest: /etc/apt/sources.list.d/tailscale.list
+        mode: "0644"
+      register: tailscale_apt_list
+    - name: Refresh apt
+      ansible.builtin.apt:
+        update_cache: true
+      when: tailscale_apt_list is changed
+
+- name: Package
+  ansible.builtin.package:
+    name: tailscale
+    state: present
+
+- name: Service
+  ansible.builtin.systemd_service:
+    name: tailscaled
+    enabled: true
+    state: started

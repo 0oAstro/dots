@@ -1,0 +1,52 @@
+# Pinned restic and rclone for docker-backup, kept apart from the system
+# rclone so a distro upgrade cannot change the backup format.
+- name: Directory
+  ansible.builtin.file:
+    path: "{{ backup_tools_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Installed versions
+  ansible.builtin.shell: |
+    {{ backup_tools_dir }}/restic version 2>/dev/null | awk '{print $2}'
+    {{ backup_tools_dir }}/rclone version 2>/dev/null | awk 'NR==1 {sub(/^v/, "", $2); print $2}'
+  register: backup_tools_installed
+  changed_when: false
+  check_mode: false
+
+- name: restic {{ backup_tools_restic_version }}
+  when: (backup_tools_installed.stdout_lines + ['', ''])[0] != backup_tools_restic_version
+  block:
+    - name: Download restic
+      ansible.builtin.get_url:
+        url: "https://github.com/restic/restic/releases/download/v{{ backup_tools_restic_version }}/restic_{{ backup_tools_restic_version }}_linux_{{ backup_tools_arch }}.bz2"
+        checksum: "sha256:https://github.com/restic/restic/releases/download/v{{ backup_tools_restic_version }}/SHA256SUMS"
+        dest: /tmp/restic.bz2
+        mode: "0600"
+    - name: Install restic
+      ansible.builtin.shell: bunzip2 -c /tmp/restic.bz2 > {{ backup_tools_dir }}/restic.new && chmod 755 {{ backup_tools_dir }}/restic.new && mv {{ backup_tools_dir }}/restic.new {{ backup_tools_dir }}/restic && rm /tmp/restic.bz2
+      changed_when: true
+
+- name: rclone {{ backup_tools_rclone_version }}
+  when: (backup_tools_installed.stdout_lines + ['', ''])[1] != backup_tools_rclone_version
+  block:
+    - name: Download rclone
+      ansible.builtin.unarchive:
+        src: "https://github.com/rclone/rclone/releases/download/v{{ backup_tools_rclone_version }}/rclone-v{{ backup_tools_rclone_version }}-linux-{{ backup_tools_arch }}.zip"
+        dest: /tmp
+        remote_src: true
+    - name: Install rclone
+      ansible.builtin.copy:
+        src: "/tmp/rclone-v{{ backup_tools_rclone_version }}-linux-{{ backup_tools_arch }}/rclone"
+        dest: "{{ backup_tools_dir }}/rclone"
+        remote_src: true
+        mode: "0755"
+
+- name: Python for backup.py
+  ansible.builtin.file:
+    src: "{{ backup_tools_python }}"
+    dest: "{{ backup_tools_dir }}/python3"
+    state: link
+    force: true

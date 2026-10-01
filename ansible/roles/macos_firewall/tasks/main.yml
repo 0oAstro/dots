@@ -1,0 +1,17 @@
+# Application firewall (socketfilterfw). Reads without sudo; sets with it.
+# macos_firewall: {setting: true|false}; settings are listed in defaults/.
+- name: Current state
+  ansible.builtin.command: /usr/libexec/ApplicationFirewall/socketfilterfw --{{ macos_firewall_settings[item].flag }}
+  loop: "{{ macos_firewall.keys() | list }}"
+  register: macos_firewall_current
+  changed_when: false
+  check_mode: false
+
+- name: Set what differs
+  ansible.builtin.command: /usr/libexec/ApplicationFirewall/socketfilterfw --set{{ item.item }} {{ 'on' if macos_firewall[item.item] else 'off' }}
+  loop: "{{ macos_firewall_current.results }}"
+  loop_control:
+    label: "{{ item.item }} {{ 'on' if macos_firewall[item.item] else 'off' }}"
+  when: (item.stdout is search(macos_firewall_settings[item.item].on_output)) != (macos_firewall[item.item] | bool)
+  changed_when: true
+  become: true

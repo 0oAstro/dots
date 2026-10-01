@@ -1,0 +1,27 @@
+# Reloads systemd after unit changes (overlay or stack units), enables every
+# unit listed in a systemd_enabled_* list, and restarts changed units that are
+# in systemd_restart_on_change.
+- name: Units that changed this run
+  ansible.builtin.set_fact:
+    systemd_changed: >-
+      {{ (overlay_changed | default([]) + docker_stacks_units_changed | default([]))
+         | select('match', '/etc/systemd/system/') | map('regex_replace', '^/etc/systemd/system/', '')
+         | map('regex_replace', '\\.d/.*$', '') | unique }}
+
+- name: Reload systemd
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  when: systemd_changed | length > 0
+
+- name: Enable and start
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^systemd_enabled_.+')) | flatten | unique }}"
+
+- name: Restart changed units
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: restarted
+  loop: "{{ systemd_changed | intersect(systemd_restart_on_change | default([])) }}"

@@ -1,16 +1,38 @@
-# System layer. chezmoi still owns the home directory; the dots role applies it last.
-- name: Servers
-  hosts: servers
-  roles:
-    - role: server
-      become: true
-    - role: firewalld
-      become: true
-    - role: user_units
-    - role: dots
+# System layer. chezmoi owns the home directory; the dots role runs it.
+# Roles with a `when` are opt-in: a host gets them by defining their variables.
 
-- name: Macs
+- name: macOS
   hosts: macs
   roles:
     - role: homebrew
+    - role: macos_defaults
+    - role: macos_firewall
+    - role: launchd_agents
     - role: dots
+
+- name: Linux
+  hosts: linux
+  roles:
+    - role: packages
+      become: true
+    - role: overlay
+      become: true
+    - role: tailscale
+      become: true
+      when: tailscale_enabled | default(false)
+    - role: firewalld
+      become: true
+      when: firewalld_zones is defined
+    - role: docker
+      become: true
+      when: docker_users is defined
+    - role: backup_tools
+      become: true
+      when: backup_tools_dir is defined
+    - role: dots
+    - role: docker_stacks
+      when: docker_stacks_repo is defined
+    - role: systemd_units
+      become: true
+    - role: user_units
+      when: user_units | default([]) | length > 0

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Managed by ansible (dots): roles/launchd_agents -->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>{{ item.label }}</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/sh</string>
+    <string>-c</string>
+    <string>{{ item.command | e }}</string>
+  </array>
+{% if item.env is defined %}
+  <key>EnvironmentVariables</key>
+  <dict>
+{% for k, v in item.env.items() %}
+    <key>{{ k }}</key>
+    <string>{{ v | e }}</string>
+{% endfor %}
+  </dict>
+{% endif %}
+  <key>StartInterval</key>
+  <integer>{{ item.start_interval }}</integer>
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>LowPriorityIO</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>{{ ansible_facts.env.HOME }}/Library/Logs/{{ item.label }}.log</string>
+  <key>StandardErrorPath</key>
+  <string>{{ ansible_facts.env.HOME }}/Library/Logs/{{ item.label }}.log</string>
+</dict>
+</plist>

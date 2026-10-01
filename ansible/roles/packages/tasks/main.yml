@@ -1,0 +1,5 @@
+# Installs every list named packages_* in scope (group and host vars merge).
+- name: Packages
+  ansible.builtin.package:
+    name: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^packages_.+')) | flatten | unique }}"
+    state: present

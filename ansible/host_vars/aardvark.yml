@@ -1,8 +1,8 @@
-# Amazon Linux 2023, arm64 EC2. SSH arrives over Tailscale (tailscale0 is trusted).
+# Amazon Linux 2023, arm64 EC2 (ap-south-1). SSH arrives over Tailscale only:
+# the security group has no public SSH. Files: files/overlays/aardvark/.
 
-server_packages:
-  - spal-release # repo for mosh, chromium, ffmpeg, tesseract, poppler-utils
-  - docker
+packages_aardvark:
+  - spal-release # Amazon's extra repo: mosh, chromium, ffmpeg, tesseract, poppler-utils
   - firewalld
   - rclone
   - fuse3
@@ -11,8 +11,6 @@ server_packages:
   - dnf-automatic
   - sysstat
   - mosh
-  - zsh
-  - git
   - jq
   - fio
   - chromium
@@ -20,39 +18,17 @@ server_packages:
   - tesseract
   - poppler-utils
 
-# Paths under roles/server/files/systemd, copied to /etc/systemd/system.
-server_unit_files:
-  - algochat-ads-monitor.service
-  - algochat-ads-monitor.timer
-  - beszel-status.service
-  - beszel-status.timer
-  - claude-usage.service
-  - claude-usage.timer
-  - cloudflare-ip-sync.service
-  - cloudflare-ip-sync.timer
-  - docker-backup-status.service
-  - docker-backup-status.timer
-  - docker-backup.service
-  - docker-backup.timer
-  - ebs-cloudwatch-exporter.service
-  - ebs-cloudwatch-exporter.timer
-  - rclone-dropbox.service
-  - rclone-dropbox.service.d/10-live-dropbox.conf
-  - rclone-gdrive.service
-  - rclone-gdrive.service.d/10-live-drive.conf
-  - tailscale-udp-gro.service
-  - tailscaled.service
-  - user-1000.slice.d/memory.conf
-
-# Enabled and running. Timer-driven oneshot services stay static.
-server_units_enabled:
-  - docker.service
+systemd_enabled_aardvark:
   - nfs-server.service
   - dnf-automatic.timer
-  - tailscaled.service
   - tailscale-udp-gro.service
   - rclone-dropbox.service
   - rclone-gdrive.service
+
+# Restarted when their unit, drop-in or (for stack units) repo copy changes.
+# Left out: the rclone mounts, because containers hold files open on them.
+systemd_restart_on_change:
+  - tailscale-udp-gro.service
   - algochat-ads-monitor.timer
   - beszel-status.timer
   - claude-usage.timer
@@ -61,17 +37,34 @@ server_units_enabled:
   - docker-backup.timer
   - ebs-cloudwatch-exporter.timer
 
-# Restarted when their unit or drop-in changes. Left out: tailscaled (carries
-# this SSH session) and the rclone mounts (containers hold files open on them).
-server_units_restart_on_change:
-  - tailscale-udp-gro.service
-  - algochat-ads-monitor.timer
-  - beszel-status.timer
-  - claude-usage.timer
-  - cloudflare-ip-sync.timer
-  - docker-backup-status.timer
-  - docker-backup.timer
-  - ebs-cloudwatch-exporter.timer
+docker_users: [ec2-user]
+
+docker_stacks_repo: https://github.com/0oAstro/aardvark-docker.git
+docker_stacks_dir: /opt/docker
+docker_stacks_owner: ec2-user
+# Units the stacks own, by repo path; installed to /etc/systemd/system.
+# Timers are enabled; their oneshot services stay static.
+docker_stacks_units:
+  - backup/docker-backup.service
+  - backup/docker-backup.timer
+  - caddy/systemd/cloudflare-ip-sync.service
+  - caddy/systemd/cloudflare-ip-sync.timer
+  - glance/ops/beszel-status.service
+  - glance/ops/beszel-status.timer
+  - glance/ops/claude-usage.service
+  - glance/ops/claude-usage.timer
+  - glance/ops/docker-backup-status.service
+  - glance/ops/docker-backup-status.timer
+  - prometheus/systemd/algochat-ads-monitor.service
+  - prometheus/systemd/algochat-ads-monitor.timer
+  - prometheus/systemd/ebs-cloudwatch-exporter.service
+  - prometheus/systemd/ebs-cloudwatch-exporter.timer
+
+# docker-backup's pinned tools (backup/README.md).
+backup_tools_dir: /usr/local/lib/docker-backup
+backup_tools_restic_version: 0.19.1
+backup_tools_rclone_version: 1.75.1
+backup_tools_python: /home/ec2-user/.local/share/mise/installs/python/3.14/bin/python3
 
 firewalld_default_zone: public
 # Each zone's services, ports and rich rules are exclusive: extras get removed.
@@ -91,7 +84,7 @@ firewalld_zones:
       - 41641/udp # tailscale direct
       - 60000-61000/udp # mosh
     rich_rules:
-      # Tailscale subnet-router traffic leaves through ens34.
+      # Exit-node traffic from the tailnet leaves through ens34.
       - rule family="ipv4" source address="100.64.0.0/10" masquerade
       - rule family="ipv6" source address="fd7a:115c:a1e0::/48" masquerade
   trusted:
@@ -100,6 +93,3 @@ firewalld_zones:
     services: []
     ports: []
     rich_rules: []
-
-user_units:
-  - claude-rc.service

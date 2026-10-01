@@ -1,0 +1,4 @@
+dots_pull: false # the source repo here is the working checkout
+
+macos_defaults_host:
+  - {domain: com.apple.screencapture, key: location, type: string, value: "~/Library/CloudStorage/GoogleDrive-shaurya.singh10102006@gmail.com/My Drive/captures", kill: SystemUIServer}

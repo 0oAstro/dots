@@ -1,0 +1,49 @@
+# Copies files/overlays/<layer>/ onto / for each layer in overlay_layers.
+# A later layer wins for the same path. Existing directories keep their modes.
+- name: Collect overlay files
+  ansible.builtin.set_fact:
+    overlay_files: >-
+      {{ overlay_files | default({}) | combine(
+           query('community.general.filetree', playbook_dir ~ '/files/overlays/' ~ item)
+           | selectattr('state', 'eq', 'file')
+           | items2dict(key_name='path', value_name='src')) }}
+  loop: "{{ overlay_layers }}"
+
+- name: Parent directories
+  ansible.builtin.file:
+    path: "/{{ item }}"
+    state: directory
+  loop: "{{ overlay_files.keys() | map('dirname') | unique | sort }}"
+
+- name: Files
+  ansible.builtin.copy:
+    src: "{{ item.value }}"
+    dest: "/{{ item.key }}"
+    owner: root
+    group: root
+    mode: "{{ overlay_modes['/' ~ item.key] | default('0644') }}"
+    validate: "{{ '/usr/sbin/sshd -t -f %s' if item.key.startswith('etc/ssh/') else omit }}"
+  loop: "{{ overlay_files | dict2items }}"
+  loop_control:
+    label: "/{{ item.key }}"
+  register: overlay_copied
+
+- name: Remember what changed
+  ansible.builtin.set_fact:
+    overlay_changed: "{{ overlay_copied.results | selectattr('changed') | map(attribute='item.key') | map('regex_replace', '^', '/') | list }}"
+
+- name: Apply sysctl
+  ansible.builtin.command: sysctl --system
+  when: overlay_changed | select('match', '/etc/sysctl.d/') | list | length > 0
+  changed_when: true
+
+- name: Re-export NFS
+  ansible.builtin.command: exportfs -ra
+  when: overlay_changed | select('match', '/etc/exports') | list | length > 0
+  changed_when: true
+
+- name: Reload sshd
+  ansible.builtin.systemd_service:
+    name: sshd
+    state: reloaded
+  when: overlay_changed | select('match', '/etc/ssh/') | list | length > 0

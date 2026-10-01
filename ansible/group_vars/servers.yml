@@ -1,1 +1,5 @@
-dots_pull: true
+tailscale_enabled: true
+
+# Login user's systemd units keep running without a session (claude-rc).
+user_units:
+  - claude-rc.service
