@@ -1,0 +1,7 @@
+# apple — iOS and macOS development.
+
+[tools]
+cocoapods = "latest"
+swiftformat = { version = "latest", no_app = true, rename_exe = "swiftformat" }
+swiftlint = "latest"
+tuist = "latest"

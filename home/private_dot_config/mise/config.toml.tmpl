@@ -1,0 +1,36 @@
+# chezmoi:template:left-delimiter="{%" right-delimiter="%}"
+# ~/.config/mise/config.toml — global settings only.
+# Tools live in conf.d/*.toml, one file per chezmoi module (see 0oAstro/dots).
+# `mise use -g` still writes here; move anything worth keeping into a module.
+
+[settings]
+# Hold new releases for 24h as a supply-chain safety window, except for
+# fast-moving AI agent CLIs, which should update immediately.
+minimum_release_age = "24h"
+minimum_release_age_excludes = [
+  "claude-code",
+  "aqua:openai/codex",
+  "aqua:earendil-works/pi",
+{%- if eq .chezmoi.os "linux" %}
+  "http:cursor",
+  "http:devin",
+{%- end %}
+  "http:prime-agent",
+]
+
+[settings.npm]
+package_manager = "npm"
+
+[settings.github]
+{%- if eq .chezmoi.os "darwin" %}
+credential_command = "{% .chezmoi.homeDir %}/.local/share/mise/shims/gh auth token -h github.com"
+{%- else %}
+# Glob over the gh version dir so this doesn't break every time gh updates.
+credential_command = "sh -c '$HOME/.local/share/mise/installs/aqua-cli-cli/latest/gh_*/bin/gh auth token -h github.com'"
+{%- end %}
+{%- if eq .chezmoi.os "darwin" %}
+
+[env]
+MISE_RUSTUP_HOME = "{{env.HOME}}/.local/share/rustup"
+MISE_CARGO_HOME = "{{env.HOME}}/.local/share/cargo"
+{%- end %}

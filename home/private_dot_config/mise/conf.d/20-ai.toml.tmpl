@@ -1,0 +1,77 @@
+# chezmoi:template:left-delimiter="{%" right-delimiter="%}"
+{%- $mac := eq .chezmoi.os "darwin" -%}
+{%- $arm := eq .chezmoi.arch "arm64" -%}
+# ai — coding agents. Their configs live under ~/.claude, ~/.codex and ~/.pi.
+
+[tools]
+claude-code = "latest"
+# Pi's subagent worktree hook (~/.pi/agent/scripts/setup-worktree-cow.mjs) runs `wt`.
+"aqua:max-sixty/worktrunk" = "latest"
+{%- if $mac %}
+"aqua:openai/codex" = "latest"
+"aqua:earendil-works/pi" = "0.99.1"
+{%- else %}
+"aqua:earendil-works/pi" = "latest"
+"aqua:vercel-labs/agent-browser" = "latest"
+"npm:t3" = "latest"
+{%- end %}
+{%- if not $mac %}
+
+# Codex ≥0.159 runs a background app-server daemon from
+# ~/.codex/packages/standalone/current/codex. Point that at this mise install
+# (instead of letting codex download its own copy) and restart the daemon so
+# it picks up the new version. Restarting may interrupt running codex work.
+[tools."aqua:openai/codex"]
+version = "latest"
+postinstall = '''
+mkdir -p "$HOME/.codex/packages/standalone" \
+  && ln -sfn "$MISE_TOOL_INSTALL_PATH/bin" "$HOME/.codex/packages/standalone/current" \
+  && { "$MISE_TOOL_INSTALL_PATH/bin/codex" app-server daemon restart >/dev/null 2>&1 \
+       || "$MISE_TOOL_INSTALL_PATH/bin/codex" app-server daemon start >/dev/null 2>&1 \
+       || true; }
+'''
+{%- end %}
+
+# Prime agent — installed as `prime`.
+# The tarball ships cli.js without the exec bit, hence the chmod.
+[tools."http:prime-agent"]
+version = "latest"
+url = "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/releases/v{{ version }}/prime-agent-{{ version }}.tgz"
+version_list_url = "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/stable"
+version_regex = 'v?([0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?)'
+checksum_url = "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/releases/v{{ version }}/SHA256SUMS"
+strip_components = 1
+bin_path = "bin"
+postinstall = '''
+cd "$MISE_TOOL_INSTALL_PATH" \
+  && npm install --omit=dev --min-release-age=1 \
+  && chmod +x dist/bundle/cli.js \
+  && mkdir -p bin \
+  && rm -f bin/prime-agent \
+  && ln -sf ../dist/bundle/cli.js bin/prime
+'''
+{%- if not $mac %}
+
+# Cursor's CLI stays only because its login feeds the Bifrost cursor proxy.
+[tools."http:cursor"]
+version = "latest"
+url = "https://downloads.cursor.com/lab/{{ version }}/linux/{% if $arm %}arm64{% else %}x64{% end %}/agent-cli-package.tar.gz"
+version_list_url = "https://cursor.com/install"
+version_regex = 'lab/(\d{4}\.\d{2}\.\d{2}-[0-9A-Za-z]+)'
+bin_path = "dist-package/bin"
+postinstall = 'mkdir -p "$MISE_TOOL_INSTALL_PATH/dist-package/bin" && ln -sf ../cursor-agent "$MISE_TOOL_INSTALL_PATH/dist-package/bin/cursor"'
+
+[tools."http:devin"]
+version = "latest"
+version_list_url = "https://static.devin.ai/cli/current/manifest.json"
+version_expr = '[fromJSON(body).version]'
+checksum_url = "https://static.devin.ai/cli/{{ version }}/manifest.json"
+checksum_expr = '"sha256:" + filter(values(fromJSON(body).platforms), { #.url == url })[0].sha256'
+bin_path = "bin"
+
+[tools."http:devin".platforms]
+linux-arm64 = { url = "https://static.devin.ai/cli/{{ version }}/devin-{{ version }}-aarch64-unknown-linux.tar.gz" }
+linux-x64 = { url = "https://static.devin.ai/cli/{{ version }}/devin-{{ version }}-x86_64-unknown-linux.tar.gz" }
+macos-arm64 = { url = "https://static.devin.ai/cli/{{ version }}/devin-{{ version }}-aarch64-apple-darwin.tar.gz" }
+macos-x64 = { url = "https://static.devin.ai/cli/{{ version }}/devin-{{ version }}-x86_64-apple-darwin.tar.gz" }
+{%- end %}

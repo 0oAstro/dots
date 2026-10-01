@@ -1,0 +1,30 @@
+# chezmoi:template:left-delimiter="{%" right-delimiter="%}"
+{%- $mac := eq .chezmoi.os "darwin" -%}
+{%- $arm := eq .chezmoi.arch "arm64" -%}
+# docker — the CLI and its buildx/compose plugins (the engine runs elsewhere).
+{%- if $mac %}
+
+[tools]
+"aqua:docker/cli" = "latest"
+{%- else %}
+
+[tools."http:docker-cli"]
+version = "latest"
+url = "https://download.docker.com/linux/static/stable/{% if $arm %}aarch64{% else %}x86_64{% end %}/docker-{{ version }}.tgz"
+version_list_url = "https://download.docker.com/linux/static/stable/{% if $arm %}aarch64{% else %}x86_64{% end %}/"
+version_regex = 'docker-([0-9]+\.[0-9]+\.[0-9]+)\.tgz'
+bin_path = "docker/bin"
+postinstall = 'mkdir -p "$MISE_TOOL_INSTALL_PATH/docker/bin" && ln -sf ../docker "$MISE_TOOL_INSTALL_PATH/docker/bin/docker"'
+{%- end %}
+
+[tools."github:docker/buildx"]
+version = "latest"
+asset_pattern = "buildx-v{{ version }}.{% if $mac %}darwin{% else %}linux{% end %}-{% if $arm %}arm64{% else %}amd64{% end %}"
+bin = "docker-buildx"
+postinstall = 'mkdir -p "$HOME/.docker/cli-plugins" && ln -sf "$MISE_TOOL_INSTALL_PATH/docker-buildx" "$HOME/.docker/cli-plugins/docker-buildx"'
+
+[tools."github:docker/compose"]
+version = "latest"
+asset_pattern = "docker-compose-{% if $mac %}darwin{% else %}linux{% end %}-{% if $arm %}aarch64{% else %}x86_64{% end %}"
+bin = "docker-compose"
+postinstall = 'mkdir -p "$HOME/.docker/cli-plugins" && ln -sf "$MISE_TOOL_INSTALL_PATH/docker-compose" "$HOME/.docker/cli-plugins/docker-compose"'
