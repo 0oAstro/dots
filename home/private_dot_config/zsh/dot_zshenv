@@ -33,8 +33,10 @@ case ${OSTYPE:-} in
 esac
 
 # Bitwarden's agent here reaches non-interactive SSH sessions too. A working
-# inherited or forwarded agent wins.
-if [[ $ZDOTS_PLATFORM == macos && ! -S ${SSH_AUTH_SOCK:-} ]]; then
+# inherited or forwarded agent wins, but macOS's launchd agent (often reached
+# through Herdr's herdr.sock.agent symlink) holds no keys, so it doesn't count.
+if [[ $ZDOTS_PLATFORM == macos ]] &&
+  [[ ! -S ${SSH_AUTH_SOCK:-} || ${SSH_AUTH_SOCK:A} == */com.apple.launchd.*/Listeners ]]; then
   for _zdots_agent_socket in \
     "$HOME/.bitwarden-ssh-agent.sock" \
     "$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"; do
