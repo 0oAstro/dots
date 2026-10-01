@@ -35,8 +35,9 @@ macos_defaults:
   # Dock and Mission Control
   - {domain: com.apple.dock, key: autohide, type: bool, value: true, kill: Dock}
   - {domain: com.apple.dock, key: autohide-delay, type: float, value: 0, kill: Dock}
-  # Dock stores this as a 32-bit float; 0.3 would never compare equal.
-  - {domain: com.apple.dock, key: autohide-time-modifier, type: float, value: 0.300000011920929, kill: Dock}
+  # A binary fraction (19/64, about 0.3): the Dock keeps 32-bit floats and
+  # defaults reads doubles, so a value like 0.3 rounds differently each side.
+  - {domain: com.apple.dock, key: autohide-time-modifier, type: float, value: 0.296875, kill: Dock}
   - {domain: com.apple.dock, key: tilesize, type: float, value: 51, kill: Dock}
   - {domain: com.apple.dock, key: show-recents, type: bool, value: false, kill: Dock}
   - {domain: com.apple.dock, key: mru-spaces, type: bool, value: false, kill: Dock}
