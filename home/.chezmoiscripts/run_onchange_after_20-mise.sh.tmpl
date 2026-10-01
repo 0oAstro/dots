@@ -10,6 +10,8 @@ if [ ! -x "$mise" ]; then
   echo "dots: installing mise"
   curl -fsSL https://mise.run | MISE_INSTALL_PATH="$mise" sh
 fi
-# Runtimes first: other installs (prime-agent's npm postinstall) need them.
+# Runtimes first, then the rest with their shims on PATH: postinstall hooks
+# (prime-agent runs npm) see this PATH, not the toolset's.
+export PATH="$HOME/.local/share/mise/shims:$PATH"
 "$mise" install --yes node python &&
   "$mise" install --yes || echo "dots: some mise tools failed; rerun 'mise install'" >&2
