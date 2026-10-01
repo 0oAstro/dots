@@ -57,8 +57,8 @@ Symlinks that must survive tool upgrades point at mise's `latest` folder: the Do
 ## Check the repo
 
 ```sh
-mise run check   # render every profile, parse every config, lint, scan for secrets
-mise run smoke   # also start zsh in a scratch home
+mise run fmt     # format every shell script (shfmt, templates included)
+mise run check   # format check, lint, secret scan, render every profile, start zsh
 ```
 
 CI runs the same checks on Linux and macOS.

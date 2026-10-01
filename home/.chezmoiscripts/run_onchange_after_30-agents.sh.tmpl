@@ -9,7 +9,8 @@ export GIT_TERMINAL_PROMPT=0
 status=0 # nonzero makes chezmoi rerun this script on the next apply
 
 clone() { # repo dir [git clone args...]
-  local repo=$1 dir=$2; shift 2
+  local repo=$1 dir=$2
+  shift 2
   [[ -d $dir/.git ]] && return
   echo "dots: cloning $repo into $dir"
   git clone --quiet "$@" "https://github.com/$repo.git" "$dir" && return

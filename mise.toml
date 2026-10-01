@@ -2,16 +2,19 @@
 [tools]
 chezmoi = "latest"
 shellcheck = "latest"
+shfmt = "latest"
 gitleaks = "latest"
+python = "3.14"
+
+[tasks.fmt]
+description = "Format every shell script, chezmoi templates included"
+run = "tests/fmt.py"
 
 [tasks.check]
-description = "Render every profile, parse every config, lint scripts, scan for secrets"
+description = "Format check, lint, secret scan, render every profile, start zsh"
 run = [
-  "tests/render.sh",
+  "tests/fmt.py --check",
   "shellcheck --severity=warning install.sh tests/*.sh",
   "gitleaks dir --no-banner --redact .",
+  "tests/render.sh --smoke",
 ]
-
-[tasks.smoke]
-description = "check, plus an interactive zsh start in a scratch home"
-run = "tests/render.sh --smoke"

@@ -32,9 +32,9 @@ _zdots_zshenv_build() {
   tmp=$(command mktemp "$cache.XXXXXX") || return 1
   # Clean environment: the cache must not capture whatever this caller had.
   if command env -i HOME="$HOME" USER="${USER:-}" LOGNAME="${LOGNAME:-${USER:-}}" \
-      PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin \
-      ZDOTS_DEFAULTS="$defaults" ZDOTS_UNSETS="$unsets" \
-      zsh -fc '
+    PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin \
+    ZDOTS_DEFAULTS="$defaults" ZDOTS_UNSETS="$unsets" \
+    zsh -fc '
         typeset -A before
         local k
         for k in ${(k)parameters[(R)*export*]}; do before[$k]=${(P)k}; done
@@ -58,7 +58,7 @@ _zdots_zshenv_build() {
         # PATH entries .zshenv added, in order; lib/path.bash applies them.
         local -a added=(${path:|base_path})
         print -r -- "_zdots_path_dirs=(${(j: :)${(@qq)added}})"
-      ' > "$tmp" && command bash -n "$tmp"; then
+      ' >"$tmp" && command bash -n "$tmp"; then
     command mv -f -- "$tmp" "$cache"
   else
     command rm -f -- "$tmp"
@@ -70,7 +70,7 @@ _zdots_zshenv_stale() {
   local zdotdir=${ZDOTDIR:-$HOME/.config/zsh} f
   [[ -r $_zdots_zshenv_cache ]] || return 0
   for f in "$HOME/.zshenv" "$zdotdir/.zshenv" "$zdotdir/lib/path.zsh" \
-           "$HOME/.cargo/env" "$BASHDOTDIR/env.bash"; do
+    "$HOME/.cargo/env" "$BASHDOTDIR/env.bash"; do
     [[ $f -nt $_zdots_zshenv_cache ]] && return 0
   done
   return 1

@@ -13,7 +13,8 @@ for cmd in zsh git curl unzip cc ar make; do
   command -v "$cmd" >/dev/null 2>&1 || missing="$missing $cmd"
 done
 [ -z "$missing" ] && exit 0
-sudo=; [ "$(id -u)" -eq 0 ] || sudo=sudo
+sudo=
+[ "$(id -u)" -eq 0 ] || sudo=sudo
 echo "dots: installing base packages (missing:$missing)"
 if command -v dnf >/dev/null 2>&1; then
   $sudo dnf install -y zsh git curl unzip gcc gcc-c++ make pkgconf zlib-devel openssl-devel

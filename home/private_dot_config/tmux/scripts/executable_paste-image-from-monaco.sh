@@ -19,7 +19,7 @@ else
 fi
 cat "$tmp"'
 
-if ! ssh -o BatchMode=yes -o ConnectTimeout=5 "$REMOTE_HOST" "$remote_cmd" > "$file_path"; then
+if ! ssh -o BatchMode=yes -o ConnectTimeout=5 "$REMOTE_HOST" "$remote_cmd" >"$file_path"; then
   rm -f "$file_path"
   tmux display-message "[paste-image] No PNG image in $REMOTE_HOST clipboard, or pngpaste/ssh failed"
   exit 1

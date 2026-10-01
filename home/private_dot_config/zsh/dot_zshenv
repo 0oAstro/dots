@@ -4,6 +4,9 @@
 #
 
 export ZDOTDIR=${ZDOTDIR:-$HOME/.config/zsh}
+# Ubuntu's /etc/zsh/zshrc runs a bare compinit unless this is set; .zshrc runs
+# its own (lib/compinit.zsh), so skip the duplicate and its insecure-dir prompt.
+skip_global_compinit=1
 export EDITOR=${EDITOR:-nvim}
 export VISUAL=${VISUAL:-nvim}
 
