@@ -62,7 +62,8 @@
   register: dots_config_current
 
 - name: Template changed since the last init?
-  ansible.builtin.command: "{{ dots_chezmoi }} data --format json"
+  # Only commands that read the target state print this warning.
+  ansible.builtin.command: "{{ dots_chezmoi }} status"
   register: dots_data
   changed_when: false
   check_mode: false
