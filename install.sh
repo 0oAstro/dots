@@ -11,6 +11,8 @@ key=$HOME/.config/age/keys.txt
 repo=${DOTS_REPO:-0oAstro/dots}
 
 say() { printf '\033[1;34mdots:\033[0m %s\n' "$*"; }
+# Piped installs have no stdin, so prompts read the terminal when there is one.
+if (: </dev/tty) 2>/dev/null; then tty=/dev/tty; else tty=; fi
 
 if [ ! -x "$mise" ]; then
   say "installing mise to $mise"
@@ -21,16 +23,20 @@ fi
 # from GitHub. Both use this login, so do it before the first apply.
 gh() { "$mise" exec aqua:cli/cli@latest -- gh "$@"; }
 if ! gh auth status --hostname github.com >/dev/null 2>&1; then
-  say "logging in to GitHub"
-  gh auth login --hostname github.com --git-protocol https --web </dev/tty ||
+  if [ -n "$tty" ]; then
+    say "logging in to GitHub"
+    gh auth login --hostname github.com --git-protocol https --web <"$tty" ||
+      say "GitHub login failed; private agent repos will fail to clone"
+  else
     say "not logged in to GitHub; private agent repos will fail to clone"
+  fi
 fi
 
 # The age key decrypts API keys and SSH host lists. Without it, everything
 # else still applies; add the key later and run `chezmoi apply`.
-if [ ! -f "$key" ] && : </dev/tty 2>/dev/null; then
+if [ ! -f "$key" ] && [ -n "$tty" ]; then
   say "paste the age key (AGE-SECRET-KEY-...), or press Enter to skip"
-  IFS= read -r secret </dev/tty || secret=
+  IFS= read -r secret <"$tty" || secret=
   case $secret in
     AGE-SECRET-KEY-*)
       mkdir -p "${key%/*}"
