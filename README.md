@@ -10,7 +10,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/0oAstro/dots/master/instal
 
 `install.sh` installs [mise](https://mise.jdx.dev), logs in to GitHub, and asks for the age key. It then runs `chezmoi init --apply 0oAstro/dots`. On a new host, chezmoi asks two questions: set up the coding agents (`ai`), and is this an always-on server (`server`)? Everything else follows the OS.
 
-The first apply installs base packages or Homebrew, writes the configs, and runs `brew bundle` (macOS) and `mise install`. With `ai`, it also clones the pstack repos and starts the Bifrost proxy. To apply without prompts, pass `--promptDefaults` to `install.sh`.
+The first apply installs base packages or Homebrew, writes the configs, and runs `brew bundle` (macOS) and `mise install`. With `ai`, it also clones the pstack repos; with `server`, it starts Claude Remote Control. To apply without prompts, pass `--promptDefaults` to `install.sh`.
 
 ## Change something
 
@@ -35,9 +35,9 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 | | Files |
 | --- | --- |
 | every machine | zsh, git, herdr, tmux, bat, ripgrep, glow, dtop, btop; `conf.d/core.toml` |
-| `ai` | Claude Code, Codex, and Pi settings; pstack; bifrost-mitm; `conf.d/ai.toml` |
+| `ai` | Claude Code, Codex, and Pi settings; pstack; `conf.d/ai.toml` |
 | `server` (with `ai`) | `claude-rc.service` (Claude Remote Control) |
-| macOS | Brewfile, Ghostty, Karabiner, herdr launcher, lazysql, routerctl, the bifrost-mitm LaunchAgent; `conf.d/macos.toml` |
+| macOS | Brewfile, Ghostty, Karabiner, herdr launcher, lazysql, routerctl; `conf.d/macos.toml` |
 | Linux | bash, systemd user units; `conf.d/linux.toml` |
 
 `home/.chezmoiignore` holds these rules.
