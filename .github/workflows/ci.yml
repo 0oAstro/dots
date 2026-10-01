@@ -23,24 +23,15 @@ jobs:
   # A machine from nothing: install.sh bootstraps, Ansible provisions the
   # runner as a host it has never seen, chezmoi applies. A second run must
   # change nothing. ai is off: the agent repos are private.
-  fresh:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - {os: ubuntu-latest, group: desktops}
-          - {os: macos-latest, group: macs}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
-    # The Mac installs every cask in the Brewfile, so it runs weekly or on demand.
-    if: matrix.os != 'macos-latest' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    env:
+  fresh-linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env: &fresh-env
       DOTS_REPO: file://${{ github.workspace }}
-      DOTS_GROUP: ${{ matrix.group }}
       GH_TOKEN: ${{ github.token }}
       GITHUB_TOKEN: ${{ github.token }}
       SWITCHES: '{"chezmoi_data": {"ai": false, "server": false}}'
-    steps:
+    steps: &fresh-steps
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -52,10 +43,20 @@ jobs:
           grep -E 'changed=0 +unreachable=0 +failed=0' second.log
       - name: The machine ended up as configured
         run: |
-          shell=$( [ "$RUNNER_OS" = macOS ] && dscl . -read ~ UserShell | cut -d' ' -f2 || getent passwd "$USER" | cut -d: -f7 )
-          echo "login shell: $shell"; case $shell in */zsh) ;; *) exit 1 ;; esac
+          if [ "$RUNNER_OS" = macOS ]; then shell=$(dscl . -read ~ UserShell | cut -d' ' -f2); else shell=$(getent passwd "$USER" | cut -d: -f7); fi
+          echo "login shell: $shell"
+          case $shell in */zsh) ;; *) exit 1 ;; esac
           ~/.local/bin/mise exec chezmoi@latest -- chezmoi status | tee status.log
           [ ! -s status.log ]
+
+  # The same on a Mac. It installs every cask in the Brewfile, so it runs
+  # weekly and on demand (Actions > ci > Run workflow).
+  fresh-mac:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: macos-latest
+    timeout-minutes: 120
+    env: *fresh-env
+    steps: *fresh-steps
 
   # Each distro's package names, repos and login shell, installed for real.
   # Containers have no systemd, so tasks tagged service are skipped.

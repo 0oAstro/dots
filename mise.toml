@@ -4,6 +4,7 @@ chezmoi = "latest"
 shellcheck = "latest"
 shfmt = "latest"
 gitleaks = "latest"
+actionlint = "latest"
 python = "3.14"
 uv = "latest" # the pipx backend installs ansible-core with uvx
 "pipx:ansible-core" = "latest"
@@ -26,12 +27,13 @@ dir = "ansible"
 run = "ansible-playbook site.yml"
 
 [tasks.check]
-description = "Format check, lint, secret scan, playbook syntax, render every profile, start zsh"
+description = "Format check, lint (shell, workflows), secret scan, playbook syntax, render every profile, start zsh"
 depends = ["ansible:deps"]
 run = [
   "tests/fmt.py --check",
   "cd ansible && ansible-playbook --syntax-check site.yml",
   "shellcheck --severity=warning install.sh tests/*.sh",
+  "actionlint",
   "gitleaks dir --no-banner --redact .",
   "tests/render.sh --smoke",
 ]
