@@ -15,7 +15,7 @@ local marker first_line
 marker="# ANTIDOTE_HOME=$ANTIDOTE_HOME"
 if [[ -r $plugins_zsh ]]; then IFS= read -r first_line < "$plugins_zsh"; fi
 
-if [[ -r $plugins_txt && (! -f $plugins_zsh || $plugins_txt -nt $plugins_zsh || $first_line != $marker) ]]; then
+if [[ ! -f $plugins_zsh || $plugins_txt -nt $plugins_zsh || $first_line != $marker ]]; then
   fpath=("$antidote_repo/functions" "$antidote_repo" $fpath)
   autoload -Uz antidote
   local tmp

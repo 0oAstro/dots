@@ -1,0 +1,24 @@
+{{- if eq .chezmoi.os "darwin" -}}
+# Sourced by .zshenv and again by .zprofile: macOS path_helper (/etc/zprofile)
+# hoists the system bindirs above Homebrew's in between. `typeset -U` keeps the
+# leftmost entry, so sourcing twice is idempotent.
+{{- end }}
+
+typeset -gU path PATH fpath FPATH
+{{- if eq .chezmoi.os "darwin" }}
+# -x is required: unlike PATH, INFOPATH is not a special exported parameter.
+typeset -gxUT INFOPATH infopath
+infopath=($HOMEBREW_PREFIX/share/info $infopath)
+path=($HOMEBREW_PREFIX/bin $HOMEBREW_PREFIX/sbin $path)
+# Homebrew's zsh has this built in; /bin/zsh does not.
+fpath=($HOMEBREW_PREFIX/share/zsh/site-functions $fpath)
+{{- end }}
+
+path=(
+  $HOME/.local/share/mise/shims
+  $HOME/.local/bin
+  $HOME/.local/share/pnpm/bin
+  $CARGO_HOME/bin
+  $GOPATH/bin
+  $path
+)

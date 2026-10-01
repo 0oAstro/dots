@@ -21,19 +21,21 @@ ZSH_COMPDUMP=$XDG_CACHE_HOME/zsh/zcompdump-$HOST-$ZSH_VERSION
 
 _comp_options+=(globdots)
 
-if (( $+commands[carapace] )); then
+{{- if eq .chezmoi.os "darwin" }}
+
+# carapace is macOS-only (mise conf.d/macos.toml).
+() {
   # Native zsh completions are already present; avoid recursive bridge shells.
   export CARAPACE_BRIDGES=''
-  () {
-    local -A native=( "${(@kv)_comps}" )
-    # Load completions without Carapace prepending its unused wrapper directory.
-    # Keep mise's PATH stable so its first precmd need not activate a second time.
-    local -a path=( "$path[@]" )
-    _zdots_source_generated carapace _carapace zsh
-    # Fill gaps without replacing working native definitions.
-    _comps+=( "${(@kv)native}" )
-  }
-fi
+  local -A native=( "${(@kv)_comps}" )
+  # Load completions without Carapace prepending its unused wrapper directory.
+  # Keep mise's PATH stable so its first precmd need not activate a second time.
+  local -a path=( "$path[@]" )
+  _zdots_source_generated carapace _carapace zsh
+  # Fill gaps without replacing working native definitions.
+  _comps+=( "${(@kv)native}" )
+}
+{{- end }}
 
 # Prefer native generators where the upstream catalog has one. Loading the
 # catalog is builtin-only; generation runs on first Tab.

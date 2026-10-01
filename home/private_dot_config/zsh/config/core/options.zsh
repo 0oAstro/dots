@@ -20,12 +20,7 @@ SAVEHIST=100000
 
 bindkey -e
 
-fpath=(
-  "$ZDOTDIR/functions"
-  ${HOMEBREW_PREFIX:+$HOMEBREW_PREFIX/share/zsh/site-functions}
-  /usr/local/share/zsh/site-functions
-  /usr/share/zsh/site-functions
-  $fpath
-)
+# Site-functions come from zsh's default fpath (and lib/path.zsh on macOS).
+fpath=("$ZDOTDIR/functions" $fpath)
 
 autoload -Uz "$ZDOTDIR"/functions/[^_]*(N.:t)

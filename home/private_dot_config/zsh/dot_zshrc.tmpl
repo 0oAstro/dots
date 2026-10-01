@@ -8,9 +8,8 @@ fi
 if [[ -z ${ZSH_EXECUTION_STRING:-} ]]; then
   () {
     setopt localoptions noprompt_sp noprompt_cr
-    local pokemon=$XDG_DATA_HOME/mise/installs/cargo-pokeget/latest/bin/pokeget
-    [[ -x $pokemon ]] || pokemon=${commands[pokeget]:-}
-    [[ -n $pokemon ]] && "$pokemon" random --hide-name 2>/dev/null
+    # The install path, not the shim: mise hasn't activated yet.
+    "$XDG_DATA_HOME/mise/installs/cargo-pokeget/latest/bin/pokeget" random --hide-name 2>/dev/null
     print
   }
 fi
@@ -32,15 +31,13 @@ typeset -g +x ZSH_AUTOSUGGEST_MANUAL_REBIND=1 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 source "$ZDOTDIR/.zsh_plugins.zsh"
 typeset -g +x ZSH_AUTOSUGGEST_USE_ASYNC=1
 # Plugins finish changing PATH first, avoiding a second mise hook at precmd.
-(( $+commands[mise] )) && eval "$(command mise activate zsh)"
+eval "$(command mise activate zsh)"
 source "$ZDOTDIR/lib/generated.zsh"
 source "$ZDOTDIR/lib/compinit.zsh"
 source "$ZDOTDIR/config/plugins/fzf.zsh"
 source "$ZDOTDIR/config/plugins/zoxide.zsh"
 source "$ZDOTDIR/.p10k.zsh"
 
-[[ -r "$ZDOTDIR/config/integrations/$ZDOTS_PLATFORM.zsh" ]] &&
-  source "$ZDOTDIR/config/integrations/$ZDOTS_PLATFORM.zsh"
 source "$ZDOTDIR/config/integrations/secrets.zsh"
 source "$ZDOTDIR/config/integrations/ai-gateway.zsh"
 source "$ZDOTDIR/config/integrations/terminal.zsh"
@@ -51,6 +48,9 @@ source "$ZDOTDIR/config/ui/functions.zsh"
 source "$ZDOTDIR/config/ui/editor.zsh"
 source "$ZDOTDIR/config/ui/globalias.zsh"
 source "$ZDOTDIR/config/ui/fzf-widgets.zsh"
+{{- if eq .chezmoi.os "darwin" }}
+source "$ZDOTDIR/config/ui/clipboard.zsh"
+{{- end }}
 source "$ZDOTDIR/config/ui/autosuggestions.zsh"
 source "$ZDOTDIR/lib/recompile.zsh"
 

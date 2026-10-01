@@ -1,4 +1,3 @@
-(( $+commands[fzf] )) || return 0
 # Not `-t 0`: instant prompt can redirect stdin. Keeps widgets out of `zsh -c`.
 [[ -z ${ZSH_EXECUTION_STRING:-} ]] || return 0
 _zdots_source_generated fzf --zsh

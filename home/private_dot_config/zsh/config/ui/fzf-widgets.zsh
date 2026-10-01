@@ -1,6 +1,4 @@
 # UI only: fzf itself owns history parsing, quoting, selection and cd.
-(( $+commands[fzf] )) || return 0
-
 # Strip our previous suffix when a nested shell inherits FZF_DEFAULT_OPTS.
 if [[ -n ${_ZDOTS_FZF_UI_OPTS:-} ]]; then
   FZF_DEFAULT_OPTS=${FZF_DEFAULT_OPTS//"$_ZDOTS_FZF_UI_OPTS"/}
@@ -8,11 +6,9 @@ fi
 export _ZDOTS_FZF_UI_OPTS="--height=80% --layout=reverse --style=minimal --border=rounded --padding=0,1 --no-scrollbar --info=inline-right --separator='' --prompt='~ ' --pointer='› ' --marker='• ' --cycle --bind=ctrl-z:ignore $ZDOTS_FZF_THEME_OPTS --color=prompt:$ZDOTS_COLOR_YELLOW,pointer:$ZDOTS_COLOR_ORANGE,marker:$ZDOTS_COLOR_GREEN,header:$ZDOTS_COLOR_GREEN,info:$ZDOTS_COLOR_CYAN,spinner:$ZDOTS_COLOR_CYAN,fg+:$ZDOTS_COLOR_WHITE,hl:$ZDOTS_COLOR_BLUE,hl+:$ZDOTS_COLOR_MAGENTA,border:$ZDOTS_COLOR_BLUE,label:$ZDOTS_COLOR_MAGENTA,preview-fg:$ZDOTS_COLOR_FG,preview-bg:-1"
 export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:+${FZF_DEFAULT_OPTS% } }$_ZDOTS_FZF_UI_OPTS"
 
-if (( $+commands[fd] )); then
-  export FZF_DEFAULT_COMMAND=${FZF_DEFAULT_COMMAND:-'fd --type f --hidden --exclude .git --strip-cwd-prefix'}
-  export FZF_CTRL_T_COMMAND=${FZF_CTRL_T_COMMAND-$FZF_DEFAULT_COMMAND}
-  export FZF_ALT_C_COMMAND=${FZF_ALT_C_COMMAND-'fd --type d --hidden --exclude .git --strip-cwd-prefix'}
-fi
+export FZF_DEFAULT_COMMAND=${FZF_DEFAULT_COMMAND:-'fd --type f --hidden --exclude .git --strip-cwd-prefix'}
+export FZF_CTRL_T_COMMAND=${FZF_CTRL_T_COMMAND-$FZF_DEFAULT_COMMAND}
+export FZF_ALT_C_COMMAND=${FZF_ALT_C_COMMAND-'fd --type d --hidden --exclude .git --strip-cwd-prefix'}
 
 local preview="${(q)ZDOTDIR}/bin/fzf-preview"
 local preview_layout='right:50%:border-rounded:noinfo:nohidden'

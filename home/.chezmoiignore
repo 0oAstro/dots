@@ -28,6 +28,8 @@
 {{- else }}
 # macOS only
 Library
+.config/zsh/.zprofile
+.config/zsh/config/ui/clipboard.zsh
 .config/homebrew
 .config/ghostty
 .config/karabiner
