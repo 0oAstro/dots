@@ -6,6 +6,16 @@ overlay_layers: "{{ group_names | select('in', ['linux', 'servers', 'desktops'])
 
 dots_pull: true
 
+# chezmoi's two switches (home/.chezmoi.toml.tmpl). Servers override server.
+chezmoi_data:
+  ai: true
+  server: false
+
+# chezmoi through mise, so it works before chezmoi has written mise's config.
+dots_home: "{{ ansible_facts.env.HOME }}"
+dots_mise: "{{ dots_home }}/.local/bin/mise"
+dots_chezmoi: "{{ dots_mise }} exec chezmoi@latest -- chezmoi"
+
 # PATH for tools mise installs (chezmoi, gh, the compose plugin).
 dots_env:
   PATH: "{{ ansible_facts.env.HOME }}/.local/share/mise/shims:{{ ansible_facts.env.HOME }}/.local/bin:{{ ansible_facts.env.PATH }}"

@@ -1,14 +1,23 @@
 #!/bin/sh
-# Set up a new machine from 0oAstro/dots:
+# Set up this machine from 0oAstro/dots:
 #   sh -c "$(curl -fsSL https://raw.githubusercontent.com/0oAstro/dots/master/install.sh)"
-# Safe to rerun. Extra arguments go to `chezmoi init`, for example --branch.
-# DOTS_REPO overrides the repo, for example a file:// URL when testing a checkout.
+# Safe to rerun. It bootstraps only what Ansible cannot do unattended (mise,
+# GitHub login, the age key, Homebrew's installer), then runs the playbook
+# for this host, which applies chezmoi at the end. Servers are better set up
+# from another machine: add them to ansible/inventory.yml and run
+# `mise run provision -- --limit <host>` there.
+#
+# DOTS_REPO overrides the repo, for example a file:// URL when testing.
+# DOTS_GROUP is the inventory group for a host not yet listed in
+# ansible/inventory.yml (default: macs on macOS, desktops on Linux).
 set -eu
 
 bin=$HOME/.local/bin
 mise=$bin/mise
 key=$HOME/.config/age/keys.txt
 repo=${DOTS_REPO:-0oAstro/dots}
+src=$HOME/.local/share/chezmoi
+host=$(uname -n | cut -d. -f1 | tr '[:upper:]' '[:lower:]')
 
 say() { printf '\033[1;34mdots:\033[0m %s\n' "$*"; }
 # Piped installs have no stdin, so prompts read the terminal when there is one.
@@ -19,21 +28,21 @@ if [ ! -x "$mise" ]; then
   curl -fsSL https://mise.run | MISE_INSTALL_PATH="$mise" sh
 fi
 
-# The agent modules clone private repos, and mise downloads release assets
-# from GitHub. Both use this login, so do it before the first apply.
-gh() { "$mise" exec aqua:cli/cli@latest -- gh "$@"; }
+# mise downloads release assets from GitHub and the agent setup clones
+# private repos; both use this login.
+gh() { "$mise" exec gh@latest -- gh "$@"; }
 if ! gh auth status --hostname github.com >/dev/null 2>&1; then
   if [ -n "$tty" ]; then
     say "logging in to GitHub"
     gh auth login --hostname github.com --git-protocol https --web <"$tty" ||
-      say "GitHub login failed; private agent repos will fail to clone"
+      say "GitHub login failed; private repos will fail to clone"
   else
-    say "not logged in to GitHub; private agent repos will fail to clone"
+    say "not logged in to GitHub; private repos will fail to clone"
   fi
 fi
 
-# The age key decrypts API keys and SSH host lists. Without it, everything
-# else still applies; add the key later and run `chezmoi apply`.
+# The age key decrypts API keys, SSH host lists and server secrets. Without
+# it, everything else still applies; add the key later and rerun.
 if [ ! -f "$key" ] && [ -n "$tty" ]; then
   say "paste the age key (AGE-SECRET-KEY-...), or press Enter to skip"
   IFS= read -r secret <"$tty" || secret=
@@ -47,5 +56,34 @@ if [ ! -f "$key" ] && [ -n "$tty" ]; then
   esac
 fi
 
-say "applying $repo"
-exec "$mise" exec chezmoi@latest -- chezmoi init --apply "$@" "$repo"
+# Homebrew's installer refuses root and asks for the sudo password itself.
+if [ "$(uname -s)" = Darwin ] && [ ! -x /opt/homebrew/bin/brew ]; then
+  say "installing Homebrew"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" <"${tty:-/dev/null}"
+fi
+
+# chezmoi clones with its built-in git, so a fresh Mac needs no Xcode tools
+# yet. Ansible rewrites the config with this host's switches.
+if [ ! -d "$src/.git" ]; then
+  say "cloning $repo"
+  "$mise" exec chezmoi@latest -- chezmoi init --use-builtin-git=true --no-tty --promptDefaults "$repo"
+fi
+
+cd "$src"
+"$mise" trust --quiet mise.toml
+"$mise" run ansible:deps
+
+set -- --limit "$host"
+if ! "$mise" exec -- ansible-inventory -i ansible/inventory.yml --host "$host" >/dev/null 2>&1; then
+  case $(uname -s) in Darwin) group=${DOTS_GROUP:-macs} ;; *) group=${DOTS_GROUP:-desktops} ;; esac
+  extra=$(mktemp -d)/inventory.yml # the yaml plugin needs the extension
+  printf 'all:\n  children:\n    %s:\n      hosts:\n        %s:\n' "$group" "$host" >"$extra"
+  set -- "$@" -i inventory.yml -i "$extra"
+  say "$host is not in ansible/inventory.yml; using group $group for this run (add it and commit)"
+fi
+if ! sudo -n true 2>/dev/null; then
+  set -- "$@" --ask-become-pass
+fi
+
+say "provisioning $host"
+"$mise" run provision -- "$@" <"${tty:-/dev/null}"

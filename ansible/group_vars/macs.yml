@@ -1,6 +1,7 @@
 ansible_python_interpreter: "{{ ansible_playbook_python if ansible_connection == 'local' else 'auto_silent' }}"
 
 homebrew_brewfile_src: brewfiles/Brewfile
+login_shell: /opt/homebrew/bin/zsh # Brewfile's zsh
 
 # Every Mac gets these. Values match thunderchief on 2026-10-01.
 # kill: the process to restart after a change so it rereads its defaults.

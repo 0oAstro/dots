@@ -1,0 +1,12 @@
+# The login user's shell: listed in /etc/shells, then set.
+- name: Listed in /etc/shells
+  ansible.builtin.lineinfile:
+    path: /etc/shells
+    line: "{{ login_shell }}"
+  become: true
+
+- name: Login shell
+  ansible.builtin.user:
+    name: "{{ ansible_facts.user_id }}"
+    shell: "{{ login_shell }}"
+  become: true

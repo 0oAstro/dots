@@ -1,6 +1,6 @@
 # dots
 
-One repo for every machine. [chezmoi](https://chezmoi.io) owns the home directory: zsh, git, the agent harnesses, and the tool list. [Ansible](ansible/) owns the system layer: Homebrew apps, and on servers the firewall, systemd units, sysctl, and sshd. The zsh config came from `0oAstro/zdots` with its history.
+One repo for every machine. [Ansible](ansible/) runs everything: the system layer (Homebrew, macOS settings, packages, firewall, systemd units, Docker stacks, login shell) and then [chezmoi](https://chezmoi.io), which owns the home directory: zsh, git, the agent harnesses, and the tool list. The zsh config came from `0oAstro/zdots` with its history.
 
 ## Set up a machine
 
@@ -8,11 +8,11 @@ One repo for every machine. [chezmoi](https://chezmoi.io) owns the home director
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/0oAstro/dots/master/install.sh)"
 ```
 
-`install.sh` installs [mise](https://mise.jdx.dev), logs in to GitHub, and asks for the age key. It then runs `chezmoi init --apply 0oAstro/dots`. On a new host, chezmoi asks two questions: set up the coding agents (`ai`), and is this an always-on server (`server`)? Everything else follows the OS.
+That is for the machine you are sitting at. `install.sh` bootstraps only what Ansible cannot do unattended: it installs [mise](https://mise.jdx.dev), logs in to GitHub, asks for the age key, runs Homebrew's installer on a Mac, and clones this repo. It then runs the playbook for this host. A host missing from `ansible/inventory.yml` gets `macs` or `desktops` for that run (`DOTS_GROUP` overrides); add it to the inventory and commit.
 
-The first apply installs base packages or Homebrew, writes the configs, and runs `mise install`. With `ai`, it also clones the pstack repos. To apply without prompts, pass `--promptDefaults` to `install.sh`.
+For a server, add it to `servers` in `ansible/inventory.yml` and provision it from another machine. The playbook installs mise there, copies the age key and a GitHub login from the controller, clones this repo, and applies chezmoi.
 
-Then add the host to a group in `ansible/inventory.yml` (`macs`, `servers` or `desktops`) and run the system layer from any checkout (`chezmoi cd`). The host running the playbook manages itself locally and the rest over SSH:
+The inventory decides chezmoi's two switches, `ai` (coding agents) and `server` (always-on host), through `chezmoi_data` in `ansible/group_vars/`. The playbook writes them into chezmoi's config, so nothing prompts. The host running the playbook manages itself locally and the rest over SSH:
 
 ```sh
 mise run provision -- --check --diff   # dry run on every host

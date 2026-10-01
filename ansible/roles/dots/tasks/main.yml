@@ -1,21 +1,85 @@
-# chezmoi owns the home directory; this only runs it, so one playbook covers
-# both layers. dots_pull: false where the source repo is a working checkout.
-- name: Pull the dotfiles repo
-  ansible.builtin.command: chezmoi git -- pull --ff-only
+# The user layer. Bootstraps what chezmoi needs on the host (mise, the age key
+# and a GitHub login, both copied from the controller), keeps the dots
+# checkout current, writes chezmoi's config with the ai/server switches from
+# chezmoi_data, then applies. chezmoi owns the files; this decides when.
+- name: mise
+  ansible.builtin.shell: curl -fsSL https://mise.run | MISE_INSTALL_PATH="{{ dots_mise }}" sh
+  args:
+    creates: "{{ dots_mise }}"
+
+- name: Copy the age key from the controller
+  when: ansible_connection != 'local' and dots_controller_age_key | length > 0
+  block:
+    - name: Key directory
+      ansible.builtin.file:
+        path: "{{ dots_home }}/.config/age"
+        state: directory
+        mode: "0700"
+    - name: Key
+      ansible.builtin.copy:
+        content: "{{ dots_controller_age_key }}\n"
+        dest: "{{ dots_home }}/.config/age/keys.txt"
+        mode: "0600"
+        force: false
+      no_log: true
+
+- name: GitHub login
+  when: ansible_connection != 'local'
+  block:
+    - name: Logged in?
+      ansible.builtin.command: "{{ dots_mise }} exec gh@latest -- gh auth status --hostname github.com"
+      register: dots_gh_status
+      changed_when: false
+      failed_when: false
+      check_mode: false
+    - name: Log in with the controller's token
+      ansible.builtin.command: "{{ dots_mise }} exec gh@latest -- gh auth login --hostname github.com --git-protocol https --with-token"
+      args:
+        stdin: "{{ lookup('ansible.builtin.pipe', 'gh auth token') }}"
+      when: dots_gh_status.rc != 0
+      no_log: true
+
+- name: Clone the dots repo
+  ansible.builtin.command: "{{ dots_chezmoi }} init --use-builtin-git=true {{ dots_prompt_args }} {{ dots_repo }}"
+  args:
+    creates: "{{ dots_home }}/.local/share/chezmoi/.git"
+
+- name: Pull
+  ansible.builtin.command: "{{ dots_chezmoi }} git -- pull --ff-only"
   register: dots_pulled
   changed_when: "'Already up to date' not in dots_pulled.stdout"
   when: dots_pull and not ansible_check_mode
-  environment: "{{ dots_env }}"
+
+- name: Config chezmoi_data asks for
+  ansible.builtin.shell: "{{ dots_chezmoi }} execute-template --init {{ dots_prompt_args }} < \"$({{ dots_chezmoi }} source-path)/.chezmoi.toml.tmpl\""
+  register: dots_config_wanted
+  changed_when: false
+  check_mode: false
+
+- name: Current config
+  ansible.builtin.slurp:
+    src: "{{ dots_home }}/.config/chezmoi/chezmoi.toml"
+  register: dots_config_current
+
+- name: Template changed since the last init?
+  ansible.builtin.command: "{{ dots_chezmoi }} data --format json"
+  register: dots_data
+  changed_when: false
+  check_mode: false
+
+- name: Regenerate the config
+  ansible.builtin.command: "{{ dots_chezmoi }} init {{ dots_prompt_args }}"
+  when: >-
+    (dots_config_current.content | b64decode | trim) != (dots_config_wanted.stdout | trim)
+    or 'config file template has changed' in dots_data.stderr
 
 - name: Check for drift
-  ansible.builtin.command: chezmoi status
+  ansible.builtin.command: "{{ dots_chezmoi }} status"
   register: dots_status
   changed_when: ansible_check_mode and dots_status.stdout | length > 0
   check_mode: false
-  environment: "{{ dots_env }}"
 
 - name: Apply
-  ansible.builtin.command: chezmoi apply --no-tty
+  ansible.builtin.command: "{{ dots_chezmoi }} apply --no-tty"
   when: dots_status.stdout | length > 0
   changed_when: true
-  environment: "{{ dots_env }}"

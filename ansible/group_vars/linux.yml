@@ -8,6 +8,14 @@ packages_linux:
   - git
   - unzip
   - tar
+# mise builds its cargo: tools from source.
+packages_linux_build: "{{ linux_build_packages[ansible_facts.os_family] | default([]) }}"
+linux_build_packages:
+  RedHat: [gcc, gcc-c++, make, pkgconf, zlib-devel, openssl-devel]
+  Debian: [build-essential, pkg-config, zlib1g-dev, libssl-dev]
+  Archlinux: [base-devel, zlib, openssl]
+
+login_shell: /bin/zsh
 
 # Overlay files that are not 0644.
 overlay_modes:

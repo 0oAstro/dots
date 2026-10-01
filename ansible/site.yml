@@ -5,6 +5,7 @@
   hosts: macs
   roles:
     - role: homebrew
+    - role: login_shell
     - role: macos_defaults
     - role: macos_firewall
     - role: launchd_agents
@@ -15,6 +16,7 @@
   roles:
     - role: packages
       become: true
+    - role: login_shell
     - role: overlay
       become: true
     - role: tailscale

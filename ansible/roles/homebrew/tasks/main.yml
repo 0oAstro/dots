@@ -1,7 +1,19 @@
 # The Brewfile is the whole truth: missing entries get installed, anything
 # else (formulae, casks, taps) gets uninstalled. Upgrades run from the
-# dev.dots.brew-upgrade launchd agent. Homebrew itself comes from chezmoi's
-# prereqs script.
+# dev.dots.brew-upgrade launchd agent.
+- name: Homebrew
+  # The installer refuses root and calls sudo itself, so on a Mac without
+  # passwordless sudo install.sh runs it interactively before Ansible.
+  ansible.builtin.shell: NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  args:
+    creates: "{{ homebrew_bin }}"
+
+- name: Brewfile directory
+  ansible.builtin.file:
+    path: "{{ homebrew_brewfile | dirname }}"
+    state: directory
+    mode: "0755"
+
 - name: Brewfile
   ansible.builtin.copy:
     src: "{{ homebrew_brewfile_src }}"

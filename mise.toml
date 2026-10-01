@@ -5,6 +5,7 @@ shellcheck = "latest"
 shfmt = "latest"
 gitleaks = "latest"
 python = "3.14"
+uv = "latest" # the pipx backend installs ansible-core with uvx
 "pipx:ansible-core" = "latest"
 
 [tasks.fmt]
