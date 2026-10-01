@@ -10,4 +10,6 @@ if [ ! -x "$mise" ]; then
   echo "dots: installing mise"
   curl -fsSL https://mise.run | MISE_INSTALL_PATH="$mise" sh
 fi
-"$mise" install --yes || echo "dots: some mise tools failed; rerun 'mise install'" >&2
+# Runtimes first: other installs (prime-agent's npm postinstall) need them.
+"$mise" install --yes node python &&
+  "$mise" install --yes || echo "dots: some mise tools failed; rerun 'mise install'" >&2
