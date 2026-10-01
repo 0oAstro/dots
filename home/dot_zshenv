@@ -1,0 +1,4 @@
+# Bootstrap the XDG zsh configuration managed by chezmoi (0oAstro/dots).
+export ZDOTDIR="${ZDOTDIR:-$HOME/.config/zsh}"
+[[ -r "$ZDOTDIR/.zshenv" ]] && source "$ZDOTDIR/.zshenv"
+[[ -r "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"

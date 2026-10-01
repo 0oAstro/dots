@@ -1,0 +1,11 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# Environment + API keys shared with zsh (also reached via $BASH_ENV).
+. "${XDG_CONFIG_HOME:-$HOME/.config}/bash/env.bash"
+
+[[ $- == *i* ]] && eval "$(~/.local/bin/mise activate bash)"
