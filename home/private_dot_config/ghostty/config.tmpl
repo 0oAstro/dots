@@ -1,0 +1,100 @@
+# Appearance
+theme = Kanagawa Dragon
+font-family = "IoskeleyMonoTerm Nerd Font Mono"
+font-size = 14
+macos-icon = xray
+macos-titlebar-proxy-icon = hidden
+macos-window-buttons = hidden
+cursor-style = block
+#adjust-box-thickness = -1
+#adjust-cell-height = 2
+window-padding-x = 10
+window-padding-y = 10
+
+# Neovide-style cursor warp
+custom-shader = shaders/cursor_warp.glsl
+
+# blur
+background-opacity = 0.85
+background-blur = macos-glass-regular
+
+# Terminal
+command = {{ .chezmoi.homeDir }}/.config/herdr/launch
+macos-option-as-alt = true
+clipboard-read = allow
+copy-on-select = false
+clipboard-paste-protection = false
+mouse-hide-while-typing = true
+shell-integration-features = no-cursor
+bell-features = no-system,no-audio,no-attention,no-title,no-border
+window-save-state = never
+quit-after-last-window-closed = true
+confirm-close-surface = false
+auto-update = download
+auto-update-channel = tip
+
+# Quick terminal
+quick-terminal-size = 50%
+quick-terminal-position = top
+quick-terminal-animation-duration = 0
+# Use the physical backtick key so this global shortcut is layout-independent.
+keybind = global:cmd+alt+Backquote=toggle_quick_terminal
+
+# Reload Ghostty and forward Cmd+R to Herdr.
+keybind = unconsumed:super+r=reload_config
+
+# Forward workspace shortcuts to Herdr.
+keybind = alt+space=csi:32;3u
+keybind = super+shift+p=csi:112;10u
+keybind = super+shift+n=csi:110;10u
+keybind = super+shift+e=csi:101;10u
+keybind = super+slash=csi:47;9u
+# Forward Cmd+N to Herdr instead of opening a terminal window.
+keybind = super+n=csi:110;9u
+keybind = super+t=csi:116;9u
+keybind = super+w=csi:119;9u
+keybind = super+alt+w=csi:119;11u
+keybind = super+d=csi:100;9u
+keybind = super+shift+d=csi:100;10u
+keybind = super+shift+enter=csi:13;10u
+keybind = super+shift+t=csi:116;10u
+keybind = super+shift+o=csi:111;10u
+keybind = super+b=csi:98;9u
+keybind = super+f=csi:102;9u
+keybind = super+[=csi:91;9u
+keybind = super+]=csi:93;9u
+keybind = super+shift+[=csi:91;10u
+keybind = super+shift+]=csi:93;10u
+keybind = ctrl+tab=csi:9;5u
+keybind = ctrl+shift+tab=csi:9;6u
+keybind = super+alt+arrow_up=csi:1;11A
+keybind = super+alt+arrow_down=csi:1;11B
+keybind = super+alt+arrow_right=csi:1;11C
+keybind = super+alt+arrow_left=csi:1;11D
+keybind = super+ctrl+arrow_up=csi:1;13A
+keybind = super+ctrl+arrow_down=csi:1;13B
+keybind = super+ctrl+arrow_right=csi:1;13C
+keybind = super+ctrl+arrow_left=csi:1;13D
+keybind = super+1=csi:49;9u
+keybind = super+2=csi:50;9u
+keybind = super+3=csi:51;9u
+keybind = super+4=csi:52;9u
+keybind = super+5=csi:53;9u
+keybind = super+6=csi:54;9u
+keybind = super+7=csi:55;9u
+keybind = super+8=csi:56;9u
+keybind = super+9=csi:57;9u
+# Override Ghostty's physical number-row shortcuts as well as logical digits.
+keybind = super+digit_1=csi:49;9u
+keybind = super+digit_2=csi:50;9u
+keybind = super+digit_3=csi:51;9u
+keybind = super+digit_4=csi:52;9u
+keybind = super+digit_5=csi:53;9u
+keybind = super+digit_6=csi:54;9u
+keybind = super+digit_7=csi:55;9u
+keybind = super+digit_8=csi:56;9u
+keybind = super+digit_9=csi:57;9u
+# Cmd+Left must not emit Ctrl+A (Herdr's prefix).
+keybind = super+arrow_left=csi:H
+keybind = super+arrow_right=csi:F
+keybind = escape=unbind

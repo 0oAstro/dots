@@ -1,0 +1,15 @@
+# ripgrep global config
+# --hidden: don't skip hidden files (critical for dotfiles)
+# --glob: still exclude noisy directories/patterns
+
+--hidden
+--glob=!.git/
+--glob=!.antidote/
+--glob=!*.zwc
+--glob=!*.zwc.old
+--glob=!.DS_Store
+--glob=!*.lock
+--glob=!.zsh_plugins.zsh
+--smart-case
+--max-columns=200
+--max-columns-preview

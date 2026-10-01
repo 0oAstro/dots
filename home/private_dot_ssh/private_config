@@ -1,0 +1,3 @@
+# Managed by chezmoi (0oAstro/dots). Each machine's hosts live in
+# config.d/<hostname>, age-encrypted in the repo because it is public.
+Include config.d/*

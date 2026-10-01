@@ -1,0 +1,91 @@
+# Appearance
+include kanagawa_dragon.conf
+font_family IoskeleyMonoTerm Nerd Font Mono
+font_size 14
+hide_window_decorations titlebar-only
+macos_show_window_title_in window
+window_padding_width 6
+# background_opacity 0.85
+# background_blur 32
+macos_thicken_font 0
+text_composition_strategy platform
+modify_font cell_height 2px
+cursor_shape beam
+cursor_blink_interval 0.5
+cursor_trail 10
+cursor_trail_decay 0.1 0.4
+cursor_trail_start_threshold 2
+
+# Terminal
+shell {{ .chezmoi.homeDir }}/.config/herdr/launch
+macos_option_as_alt both
+scrollback_lines 10000
+copy_on_select no
+# Allow remote applications to read the clipboard (including image paste).
+clipboard_control write-clipboard write-primary read-clipboard
+confirm_os_window_close 0
+
+# Native shortcuts
+map cmd+shift+, load_config_file
+map cmd+, edit_config_file
+map cmd+c copy_or_noop
+map cmd+v paste_from_clipboard
+mouse_map cmd+left press ungrabbed mouse_click_url_or_select
+# Open links with a plain click inside Herdr, without intercepting press/drag/release.
+mouse_map left click grabbed mouse_handle_click selection link
+map cmd+equal change_font_size all +1.0
+map cmd+plus change_font_size all +1.0
+map cmd+minus change_font_size all -1.0
+map cmd+0 change_font_size all 0
+# Forward Cmd+N to Herdr instead of opening a terminal window.
+map cmd+n send_text all \x1b[110;9u
+map cmd+shift+w close_os_window
+map cmd+enter toggle_fullscreen
+map cmd+q quit
+map cmd+ctrl+f toggle_fullscreen
+map cmd+backspace send_key ctrl+u
+map alt+left send_text normal,application \x1bb
+map alt+right send_text normal,application \x1bf
+
+# Forward workspace shortcuts to Herdr.
+map alt+space send_text all \x1b[32;3u
+map cmd+shift+p send_text all \x1b[112;10u
+map cmd+shift+n send_text all \x1b[110;10u
+map cmd+shift+e send_text all \x1b[101;10u
+map cmd+slash send_text all \x1b[47;9u
+map cmd+t send_text all \x1b[116;9u
+map cmd+w send_text all \x1b[119;9u
+map cmd+alt+w send_text all \x1b[119;11u
+map cmd+d send_text all \x1b[100;9u
+map cmd+shift+d send_text all \x1b[100;10u
+map cmd+shift+enter send_text all \x1b[13;10u
+map cmd+shift+t send_text all \x1b[116;10u
+map cmd+shift+o send_text all \x1b[111;10u
+map cmd+b send_text all \x1b[98;9u
+map cmd+f send_text all \x1b[102;9u
+map cmd+[ send_text all \x1b[91;9u
+map cmd+] send_text all \x1b[93;9u
+map cmd+shift+[ send_text all \x1b[91;10u
+map cmd+shift+] send_text all \x1b[93;10u
+map ctrl+tab send_text all \x1b[9;5u
+map ctrl+shift+tab send_text all \x1b[9;6u
+map cmd+alt+up send_text all \x1b[1;11A
+map cmd+alt+down send_text all \x1b[1;11B
+map cmd+alt+right send_text all \x1b[1;11C
+map cmd+alt+left send_text all \x1b[1;11D
+map cmd+ctrl+up send_text all \x1b[1;13A
+map cmd+ctrl+down send_text all \x1b[1;13B
+map cmd+ctrl+right send_text all \x1b[1;13C
+map cmd+ctrl+left send_text all \x1b[1;13D
+map cmd+1 send_text all \x1b[49;9u
+map cmd+2 send_text all \x1b[50;9u
+map cmd+3 send_text all \x1b[51;9u
+map cmd+4 send_text all \x1b[52;9u
+map cmd+5 send_text all \x1b[53;9u
+map cmd+6 send_text all \x1b[54;9u
+map cmd+7 send_text all \x1b[55;9u
+map cmd+8 send_text all \x1b[56;9u
+map cmd+9 send_text all \x1b[57;9u
+map cmd+left send_text all \x1b[H
+map cmd+right send_text all \x1b[F
+map cmd+r combine : load_config_file : send_text all \x1b[114;9u
