@@ -3,5 +3,6 @@
 # Brewfile hash: {{ include "private_dot_config/homebrew/Brewfile" | sha256sum }}
 set -eu
 brew=$(command -v brew || echo /opt/homebrew/bin/brew)
-"$brew" bundle --file="$HOME/.config/homebrew/Brewfile"
+# Install what is missing; upgrades stay with homebrew-autoupdate.
+"$brew" bundle --no-upgrade --file="$HOME/.config/homebrew/Brewfile"
 {{- end }}
