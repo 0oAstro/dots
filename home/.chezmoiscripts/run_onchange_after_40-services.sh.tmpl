@@ -8,8 +8,17 @@ set -eu
 plist=$HOME/Library/LaunchAgents/me.shau.bifrost-mitm.plist
 domain=gui/$(id -u)
 # launchd only rereads a plist on bootstrap, so a changed one means a restart.
+# bootout returns before the unload finishes; bootstrap fails (error 5) until it has.
 launchctl bootout "$domain/me.shau.bifrost-mitm" 2>/dev/null || true
-launchctl bootstrap "$domain" "$plist"
+for _ in 1 2 3 4 5 6 7 8 9 10; do
+  launchctl print "$domain/me.shau.bifrost-mitm" >/dev/null 2>&1 || break
+  sleep 0.5
+done
+for _ in 1 2 3; do
+  launchctl bootstrap "$domain" "$plist" && exit 0
+  sleep 1
+done
+exit 1
 {{- else }}
 # bifrost-mitm: {{ include "private_dot_config/systemd/user/bifrost-mitm.service" | sha256sum }}
 # claude-rc: {{ include "private_dot_config/systemd/user/claude-rc.service" | sha256sum }}
