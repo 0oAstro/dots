@@ -1,26 +1,17 @@
-#
-# .zsh_plugins.txt - antidote plugin list
-#
-
-# Completion sources. .zshrc runs compinit once after this bundle adds fpath.
+# fpath only; lib/compinit.zsh runs compinit once after the bundle loads.
 zsh-users/zsh-completions kind:fpath path:src
 zetlen/zsh-completion-generators kind:fpath
-# Source-level fix for Aloxaf/fzf-tab#503; keep updates explicit via this pin.
+# Fork carrying the fix for Aloxaf/fzf-tab#503; pinned so updates are deliberate.
 0oAstro/fzf-tab kind:fpath branch:fix/carapace-quoting pin:8e9d5714ac7a53f37f5ce17a7abd351b05a48189
 
-# Prompt
 romkatv/powerlevel10k path:powerlevel10k.zsh-theme
 
-# Editor / typing
 romkatv/zsh-no-ps2
 
-# Extra git subcommands (sourced from mattmc3's repo)
 mattmc3/git-cmds kind:path
 
-# Autosuggestions (asynchronous by default on supported zsh versions)
 zsh-users/zsh-autosuggestions
 
-# History substring search (binds keys via post: hook)
 zsh-users/zsh-history-substring-search post:bindkey-hss
 
 # vi: ft=properties

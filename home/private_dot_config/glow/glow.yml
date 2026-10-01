@@ -1,10 +1,6 @@
-# style name or JSON path (default "auto")
 style: "auto"
-# mouse support (TUI-mode only)
 mouse: false
-# use pager to display markdown
 pager: false
-# show all files, including hidden and ignored.
 all: false
-# don't truncate or wrap wide tables
+# 0: don't truncate or wrap wide tables.
 width: 0

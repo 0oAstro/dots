@@ -1,11 +1,6 @@
-#
-# env.bash — loaded for ALL bash shells: interactive (via ~/.bashrc), login
-# (via ~/.bash_profile), and non-interactive `bash -c` (via $BASH_ENV).
-#
-# zsh's .zshenv is the source of truth. zsh evaluates it once, the exported
-# result is cached as bash, and the cache rebuilds whenever a source file is
-# newer. The warm path does a few stats and sources the cache; it runs no zsh.
-#
+# Every bash reads this: interactive and login via ~/.bashrc, `bash -c` via
+# $BASH_ENV. zsh's .zshenv is the source of truth: its exported result is cached
+# as bash and rebuilt when a source file is newer, so the warm path runs no zsh.
 
 export BASHDOTDIR=${BASHDOTDIR:-${XDG_CONFIG_HOME:-$HOME/.config}/bash}
 # Non-interactive bash reads only $BASH_ENV; export it so every bash descendant

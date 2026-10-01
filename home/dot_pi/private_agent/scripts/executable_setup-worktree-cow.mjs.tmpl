@@ -35,10 +35,10 @@ export async function setupWorktree(input) {
       || path.resolve(worktreePath, await fs.readlink(nodeModules)) !== path.join(repoRoot, 'node_modules')) {
       throw new Error('Unexpected destination node_modules symlink');
     }
-    await fs.unlink(nodeModules); // Never remove its source target.
+    await fs.unlink(nodeModules);
   }
   const include = await stat(path.join(repoRoot, '.worktreeinclude'));
-  if (!include) return { syntheticPaths: [] }; // Explicit project opt-in only.
+  if (!include) return { syntheticPaths: [] };
   if (!include.isFile() || include.isSymbolicLink()) throw new Error('Allowlist must be a real file');
   const branch = (await git(repoRoot, 'symbolic-ref', '--quiet', '--short', 'HEAD')).trim();
   const args = ['-C', worktreePath, 'step', 'copy-ignored', '--from', branch, '--require-include', '--format', 'json'];
@@ -62,7 +62,6 @@ export async function setupWorktree(input) {
     return entry.path;
   });
   for (const relative of syntheticPaths) {
-    // No custom walk: check only the planned cache root and its ancestry.
     for (const root of [repoRoot, worktreePath]) {
       let current = root;
       for (const part of relative.split('/')) {
@@ -75,7 +74,7 @@ export async function setupWorktree(input) {
     try { await git(worktreePath, 'check-ignore', '-q', '--', `${relative}/`); }
     catch { throw new Error('Destination must ignore selected cache'); }
   }
-  const result = await run([]); // No --force. Worktrunk performs all copying.
+  const result = await run([]);
   if (result.outcome !== 'copied' || result.from !== repoRoot || result.to !== worktreePath
     || JSON.stringify(result.entries) !== JSON.stringify(plan.entries)) throw new Error('Worktrunk selection changed during setup');
   if (result.written !== 0) throw new Error('Worktrunk fell back to full copies; stop before starting a writer');

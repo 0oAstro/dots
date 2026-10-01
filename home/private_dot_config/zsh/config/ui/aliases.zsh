@@ -1,5 +1,3 @@
-# Aliases and Fish-like directory shortcuts.
-
 alias e=$EDITOR
 alias ga="git add" gb="git branch" gc="git commit"
 alias gca="git commit --amend" gcm="git commit -m"

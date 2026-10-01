@@ -48,7 +48,6 @@ function harness({ enabled = true, mode = 'tui', idle = true, snapshot = [], aut
     on(event, handler) { bus.on(event, handler); return () => bus.off(event, handler); },
     emit(event, data) { bus.emit(event, data); },
   };
-  // Mock the public RPC only, never the removed manager registry.
   if (autoStatus) events.on('subagents:rpc:v1:request', (request) => {
     requests.push(request);
     queueMicrotask(() => events.emit(`subagents:rpc:v1:reply:${request.requestId}`, {

@@ -19,7 +19,7 @@ minimum_release_age_excludes = [
 package_manager = "npm"
 
 [settings.github]
-# Authenticated GitHub API calls: no rate limits on `mise install`.
+# Authenticated GitHub API calls avoid rate limits on `mise install`.
 # Call the installed gh, never the shim: the shim runs mise, which needs this
 # credential to resolve gh's version, so a cold cache recurses into a fork bomb.
 credential_command = "sh -c '$HOME/.local/share/mise/installs/aqua-cli-cli/latest/gh_*/bin/gh auth token -h github.com'"

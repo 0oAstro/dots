@@ -1,13 +1,7 @@
-#
-# .zstyles — zstyle settings for completion, history, plugins, antidote
-#
-
-# ── antidote ─────────────────────────────────────────────────────
 zstyle ':antidote:home'  path "$ANTIDOTE_HOME"
 zstyle ':antidote:repo'  path "$ZDOTDIR/.antidote"
 zstyle ':antidote:*'     zcompile 'yes'
 
-# ── completion ───────────────────────────────────────────────────
 # Open the picker on the first Tab, including shared quoted prefixes.
 zstyle ':completion:*' menu yes
 zstyle ':completion:*' group-name ''

@@ -1,5 +1,3 @@
-# ZLE editor behavior and key bindings.
-
 function fancy-ctrl-z {
   if [[ $#BUFFER -eq 0 ]]; then
     BUFFER="fg"

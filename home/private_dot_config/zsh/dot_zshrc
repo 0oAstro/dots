@@ -30,7 +30,6 @@ source "$ZDOTDIR/lib/antidote.zsh"
 source "$ZDOTDIR/config/core/options.zsh"
 typeset -g +x ZSH_AUTOSUGGEST_MANUAL_REBIND=1 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 source "$ZDOTDIR/.zsh_plugins.zsh"
-# The plugin enables async while loading; keep the intended setting explicit.
 typeset -g +x ZSH_AUTOSUGGEST_USE_ASYNC=1
 # Plugins finish changing PATH first, avoiding a second mise hook at precmd.
 (( $+commands[mise] )) && eval "$(command mise activate zsh)"
@@ -55,6 +54,6 @@ source "$ZDOTDIR/config/ui/fzf-widgets.zsh"
 source "$ZDOTDIR/config/ui/autosuggestions.zsh"
 source "$ZDOTDIR/lib/recompile.zsh"
 
-# Patina must see the final widgets. Its activation manages its daemon.
+# Patina must see the final widgets.
 source "$ZDOTDIR/config/plugins/patina.zsh"
 if [[ ${ZPROFRC:-0} == 1 ]]; then zprof; fi

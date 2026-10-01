@@ -1,5 +1,4 @@
-# Local Codex override based on remote manifest 2026.09.22.1.
-# Keep this file synced with upstream; no title-only workaround is applied.
+# Local override of Herdr's Codex manifest 2026.09.22.1; keep it synced with upstream.
 id = "codex"
 version = "2026.09.22.5"
 min_engine_version = 3

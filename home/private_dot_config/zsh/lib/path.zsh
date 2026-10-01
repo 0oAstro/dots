@@ -1,16 +1,11 @@
-# PATH construction, shared by .zshenv and .zprofile.
-#
-# macOS runs /usr/libexec/path_helper from /etc/zprofile after ~/.zshenv, which
-# hoists the system bindirs above Homebrew's. Re-sourcing this from .zprofile
-# restores the intended order; `typeset -U` keeps the leftmost entry, so the
-# repeated assignment is idempotent.
+# Sourced by .zshenv and again by .zprofile: macOS path_helper (/etc/zprofile)
+# hoists the system bindirs above Homebrew's in between. `typeset -U` keeps the
+# leftmost entry, so sourcing twice is idempotent.
 
 typeset -gU path PATH fpath FPATH
 # -x is required: unlike PATH, INFOPATH is not a special exported parameter.
 typeset -gxUT INFOPATH infopath
 
-# Homebrew is a macOS-only path source. Keep its default prefix from
-# polluting Linux shells.
 if [[ -n ${HOMEBREW_PREFIX:-} && -d $HOMEBREW_PREFIX ]]; then
   path=(
     $HOMEBREW_PREFIX/bin

@@ -1,4 +1,4 @@
-# Skip the leftover mise shim for this Cargo-installed tool.
+# Prefer the Cargo binary over a stale mise shim.
 _patina_bin=$CARGO_HOME/bin/zsh-patina
 [[ -x $_patina_bin ]] || _patina_bin=${commands[zsh-patina]:-}
 if [[ -n $_patina_bin ]]; then

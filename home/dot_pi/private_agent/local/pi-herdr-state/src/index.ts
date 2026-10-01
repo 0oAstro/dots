@@ -204,7 +204,7 @@ export default function (pi) {
     let timeout: ReturnType<typeof setTimeout> | undefined;
     const off = pi.events.on(`subagents:rpc:v1:reply:${requestId}`, (reply: any) => {
       dispose();
-      // A completion/start may have overtaken this snapshot. Never resurrect it.
+      // A completion or start may have overtaken this snapshot; don't resurrect it.
       if (!rootSession || revision !== activityRevision || reply?.success !== true) return;
       const runs = reply.data?.asyncSnapshot?.runs;
       if (!Array.isArray(runs)) return;
@@ -223,7 +223,6 @@ export default function (pi) {
     disposeStatusRequest = dispose;
     timeout = setTimeout(dispose, 2000);
     timeout.unref?.();
-    // Public, read-only, current-session RPC. No private registry or disk polling.
     pi.events.emit("subagents:rpc:v1:request", {
       version: 1, requestId, method: "status", params: {},
     });
@@ -236,9 +235,8 @@ export default function (pi) {
     if (agentActive || busyCount > 0 || activeRuns.size > 0) {
       return { state: "working" as const, message: undefined };
     }
-    // Herdr projects unseen idle reports as Done, including on a fresh launch.
-    // Unknown retains lifecycle authority and displays as neutral idle without
-    // inventing a completion. Only observed work may earn a later idle report.
+    // Herdr shows an unseen idle report as Done, even on a fresh launch. Unknown
+    // displays as neutral idle, so idle is reported only after observed work.
     return { state: hasObservedWork ? "idle" as const : "unknown" as const, message: undefined };
   }
 

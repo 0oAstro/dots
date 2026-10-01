@@ -5,8 +5,6 @@
 if [[ -n ${_ZDOTS_FZF_UI_OPTS:-} ]]; then
   FZF_DEFAULT_OPTS=${FZF_DEFAULT_OPTS//"$_ZDOTS_FZF_UI_OPTS"/}
 fi
-# Nix layout: roomy reverse picker with the query at the top. Keep Kanagawa
-# semantic colors shared with the prompt rather than a separate theme.
 export _ZDOTS_FZF_UI_OPTS="--height=80% --layout=reverse --style=minimal --border=rounded --padding=0,1 --no-scrollbar --info=inline-right --separator='' --prompt='~ ' --pointer='› ' --marker='• ' --cycle --bind=ctrl-z:ignore $ZDOTS_FZF_THEME_OPTS --color=prompt:$ZDOTS_COLOR_YELLOW,pointer:$ZDOTS_COLOR_ORANGE,marker:$ZDOTS_COLOR_GREEN,header:$ZDOTS_COLOR_GREEN,info:$ZDOTS_COLOR_CYAN,spinner:$ZDOTS_COLOR_CYAN,fg+:$ZDOTS_COLOR_WHITE,hl:$ZDOTS_COLOR_BLUE,hl+:$ZDOTS_COLOR_MAGENTA,border:$ZDOTS_COLOR_BLUE,label:$ZDOTS_COLOR_MAGENTA,preview-fg:$ZDOTS_COLOR_FG,preview-bg:-1"
 export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:+${FZF_DEFAULT_OPTS% } }$_ZDOTS_FZF_UI_OPTS"
 

@@ -14,13 +14,9 @@ const CC_VERSION = "2.1.280";
 const CC_IDENTITY = "You are Claude Code, Anthropic's official CLI for Claude.";
 // omp main: packages/ai/src/providers/claude-code-fingerprint.ts (@anthropic-ai/sdk bundled by CC).
 const SDK_VERSION = "0.112.1";
-// Measured against Claude Code 2.1.284 on claude-opus-5-5: CC sends the model's full ceiling
-// (128000), not a 64k clamp. omp's 64k came from Cowork's desktop profile and does not describe
-// the CLI, so no output-token clamp is applied here.
-// omp main: packages/ai/src/providers/anthropic.ts claudeCodeAgentBetaDefaults (exactly those
-// entries, in that order). `advanced-tool-use-2025-11-20` was in omp 17.4.2's Cowork profile and
-// was REMOVED upstream; do not re-add it here. `fallback-credit-2026-06-01` is appended by omp at
-// request time (buildCoworkBetas), not part of the default profile, so it is appended below too.
+// Claude Code 2.1.284 sends the model's full max_tokens ceiling, so there is no output clamp.
+// omp main: packages/ai/src/providers/anthropic.ts claudeCodeAgentBetaDefaults, same entries and
+// order. omp appends fallback-credit at request time (buildCoworkBetas), so it stays separate.
 const CC_BETAS = ["claude-code-20250219", "oauth-2025-04-20", "interleaved-thinking-2025-05-14",
  "thinking-token-count-2026-05-13", "context-management-2025-06-27", "prompt-caching-scope-2026-01-05",
  "mid-conversation-system-2026-04-07"];
@@ -97,20 +93,15 @@ function firstUserText(messages: WireMessage[]): string {
  }
  return "";
 }
-// omp main: anthropic-identity.ts resolveAnthropicMetadataUserId → generateClaudeJsonUserId. That
-// shape is a stable {device_id, session_id, account_uuid?} envelope — NOT the older
-// `user_<hex>_account_<uuid>_session_<uuid>` cloak from 17.4.2. omp's own comment on it: a fresh
-// random id per request "would inflate the backend session count", so session_id must be the real
-// session and device_id must be stable. pi exposes a session id but no install id, so device_id is
-// derived once per process (stable across every request and session within a run).
+// omp main: anthropic-identity.ts generateClaudeJsonUserId, a {device_id, session_id} envelope.
+// A random id per request inflates the backend session count, so session_id is the real session
+// and device_id is stable. pi has no install id, so device_id is derived once per process.
 let cachedDeviceId: string | undefined;
 function deviceId(): string {
  // omp: device_id = SHA256(domain + "\0" + installId [+ "\0" + accountId]). pi has no install id.
  return (cachedDeviceId ??= createHash("sha256").update("pi-anthropic-sub-device-v1\0").update(process.pid.toString()).digest("hex"));
 }
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-// Pure: takes the session id for this request. No module-level request state, so overlapping
-// subagent requests cannot cross-contaminate each other's metadata.
 function metadataUserId(sessionId: string | undefined): string {
  const user: Record<string, string> = { device_id: deviceId() };
  user.session_id = sessionId && UUID_RE.test(sessionId) ? sessionId.toLowerCase() : randomUUID().toLowerCase();
@@ -121,15 +112,11 @@ function fingerprint(payload: Payload, sessionId: string | undefined): Payload {
  const originalUserText = firstUserText(payload.messages);
  const system = Array.isArray(payload.system) ? payload.system : [];
  payload.system = [{ type: "text", text: billingHeader(originalUserText) }, ...system];
- // omp main: anthropic.ts builds CC identity in system[1]. Keep existing trimmed prompt
- // in system[2] until live wire evidence shows it needs relocation.
+ // omp main: anthropic.ts puts the CC identity in system[1]; pi's trimmed prompt is system[2].
  if (payload.system[1]?.text !== CC_IDENTITY) warn("unexpected Claude Code identity block");
  const prompt = payload.system[2];
  if (prompt?.text.startsWith(PI_PREAMBLE)) prompt.text = prompt.text.slice(PI_PREAMBLE.length).trimStart().replace(/\n*<docs>[\s\S]*?<\/docs>/, "");
- // Measured against Claude Code 2.1.284: CC does NOT rename or prefix tool names on OAuth — it
- // sends `Read`/`Bash`/`Edit`/`Write` unchanged. omp's `_` prefix is its own invention, so tool
- // names and every tool_use / tool_addition / tool_removal reference are left exactly as pi built
- // them. pi's own mapping is then a no-op and the agent loop sees the real names.
+ // Claude Code 2.1.284 sends tool names unprefixed on OAuth, so pi's tool names pass through as built.
  payload.betas = [...new Set([...(payload.betas ?? []), ...CC_BETAS, FALLBACK_CREDIT_BETA, ...(payload.thinking ? ["effort-2025-11-24"] : [])])];
  // Measured against Claude Code 2.1.284: CC always sends this alongside adaptive thinking.
  // omp main: anthropic.ts shouldKeepThinkingContext sets the same edit for thinking requests.
@@ -146,7 +133,6 @@ function overlay(model: Model<Api>, context: Context, options?: SimpleStreamOpti
  const ai = require("@earendil-works/pi-ai") as {
   streamSimpleAnthropic: (model: Model<"anthropic-messages">, context: Context, options?: SimpleStreamOptions) => AssistantMessageEventStream;
  };
- // This provider registration uses anthropic-messages; model.api is checked for safety.
  if (!isAnthropicModel(model)) throw new Error("Unexpected API for Anthropic provider overlay");
  if (model.provider !== "anthropic" || !options?.apiKey?.includes("sk-ant-oat"))
   return ai.streamSimpleAnthropic(model, context, options);

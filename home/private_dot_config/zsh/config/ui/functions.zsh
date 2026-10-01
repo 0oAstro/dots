@@ -1,5 +1,3 @@
-# Small interactive helper functions.
-
 bak() {
   local now f
   now=$(date +"%Y%m%d-%H%M%S")
@@ -21,8 +19,8 @@ up() {
   cd $dotdot
 }
 
-# `ls` may already be an alias (for example, from a system profile). The
-# `function` form prevents alias expansion while defining the replacement.
+# `function` form: a system profile may already alias `ls`, which would expand
+# in an `ls() {` definition.
 function ls {
   eza -laH --icons --git --color=auto "$@"
 }

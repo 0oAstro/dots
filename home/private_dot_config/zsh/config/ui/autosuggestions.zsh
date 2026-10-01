@@ -1,5 +1,3 @@
-# Autosuggestion-specific widget integration.
-
 ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(
   globalias-accept
   globalias-space

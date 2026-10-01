@@ -1,6 +1,3 @@
-# Shell options, history, key bindings, fpath, and autoloaded functions.
-#
-
 setopt NO_FLOW_CONTROL
 setopt NO_PROMPT_SP
 setopt AUTO_CD

@@ -1,6 +1,6 @@
 {{- $mac := eq .chezmoi.os "darwin" -}}
-# Keys managed by 0oAstro/dots. Codex keeps writing its own state ([projects],
-# [hooks.state], marketplaces, nux counters) next to these; see modify_private_config.toml.tmpl.
+# Merged into Codex's own state ([projects], [hooks.state], marketplaces, nux
+# counters) by private_dot_codex/modify_private_config.toml.
 {{- if $mac }}
 notify = ["{{ .chezmoi.homeDir }}/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
 {{- end }}

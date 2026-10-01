@@ -1,6 +1,5 @@
 onboarding = false
 
-# Cmd-first shortcuts; Option+Space is the fallback leader.
 [keys]
 prefix = "alt+space"
 detach = ["prefix+d", "prefix+q"]
@@ -38,9 +37,6 @@ resize_pane_down = "cmd+ctrl+down"
 resize_pane_up = "cmd+ctrl+up"
 resize_pane_right = "cmd+ctrl+right"
 copy_mode = ["cmd+f", "prefix+["]
-
-# Copy mode: / search, v select, y copy, Esc/q leave.
-# Cmd+C/V, fonts, fullscreen, Cmd+N and Cmd+Shift+W stay terminal-native.
 
 [[keys.command]]
 key = "cmd+shift+p"
@@ -99,8 +95,7 @@ name = "kanagawa"
 auto_switch = false
 
 [theme.custom]
-# Kanagawa Dragon-inspired chrome; accent also colors other UI highlights.
-# Use Ghostty's default background/opacity for the bar and other panels.
+# reset: the bar and panels use Ghostty's background and opacity.
 panel_bg = "reset"
 surface0 = "#282727"
 accent = "#8a9a7b"

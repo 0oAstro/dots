@@ -4,25 +4,21 @@
 tap "abue-ammar/tinycast", trusted: true
 tap "sozercan/repo", trusted: { casks: ["kaset"] }
 
-# ── Formulae ──
 brew "gcc"
 brew "btop"
 brew "mole"  # deep clean and optimize the Mac
 brew "zsh"
 
-# ── Terminal & editors ──
 cask "ghostty"
 cask "cursor"
 cask "karabiner-elements"
 cask "abue-ammar/tinycast/tinycast"  # launcher, hotkeys, clipboard history
 
-# ── Network & sync ──
 cask "tailscale-app"
 cask "google-drive"
 cask "maestral"
 cask "blip"
 
-# ── Apps ──
 cask "cap"
 cask "crossover"
 cask "grok-bot"

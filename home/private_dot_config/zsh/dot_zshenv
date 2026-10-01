@@ -1,7 +1,4 @@
-#
-# .zshenv — loaded for ALL zsh shells (interactive + non-interactive + scripts)
-# Environment and shims only; interactive activation belongs in .zshrc.
-#
+# Every zsh reads this, interactive or not: environment only, no interactive setup.
 
 export ZDOTDIR=${ZDOTDIR:-$HOME/.config/zsh}
 # Ubuntu's /etc/zsh/zshrc runs a bare compinit unless this is set; .zshrc runs
@@ -10,14 +7,11 @@ skip_global_compinit=1
 export EDITOR=${EDITOR:-nvim}
 export VISUAL=${VISUAL:-nvim}
 
-# ── XDG base directories ────────────────────────────────────────
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 export XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}
 export XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 export XDG_STATE_HOME=${XDG_STATE_HOME:-$HOME/.local/state}
 
-# Resolve the platform once. Later config uses this value instead of repeating
-# OSTYPE checks across startup files.
 typeset -g +x ZDOTS_PLATFORM=other
 case ${OSTYPE:-} in
   darwin*)
@@ -38,8 +32,8 @@ case ${OSTYPE:-} in
     ;;
 esac
 
-# Make Bitwarden available to non-interactive SSH sessions too. Preserve a
-# working inherited/forwarded agent; fall back only when its socket is absent.
+# Bitwarden's agent here reaches non-interactive SSH sessions too. A working
+# inherited or forwarded agent wins.
 if [[ $ZDOTS_PLATFORM == macos && ! -S ${SSH_AUTH_SOCK:-} ]]; then
   for _zdots_agent_socket in \
     "$HOME/.bitwarden-ssh-agent.sock" \
@@ -52,12 +46,11 @@ if [[ $ZDOTS_PLATFORM == macos && ! -S ${SSH_AUTH_SOCK:-} ]]; then
   unset _zdots_agent_socket
 fi
 
-# Tool configuration needed by both interactive and noninteractive zsh.
 export PROJECTS=${PROJECTS:-$HOME/Developer}
 [[ -r $XDG_CONFIG_HOME/readline/inputrc ]] && export INPUTRC=$XDG_CONFIG_HOME/readline/inputrc
 export RIPGREP_CONFIG_PATH=$XDG_CONFIG_HOME/ripgrep/config
 
-# Pi: suppress startup version and package update notifications; updates are run manually.
+# Pi updates are run manually.
 export PI_SKIP_VERSION_CHECK=1
 
 # mise: skip aardvark's NFS-mounted $HOME config (targets the remote box).
@@ -65,7 +58,6 @@ export PI_SKIP_VERSION_CHECK=1
 # the untrusted-config error.
 export MISE_IGNORED_CONFIG_PATHS=$HOME/aardvark
 
-# XDG-aware tool homes
 export BUNDLE_USER_CONFIG=$XDG_CONFIG_HOME/bundle
 export BUNDLE_USER_CACHE=$XDG_CACHE_HOME/bundle
 export BUNDLE_USER_PLUGIN=$XDG_DATA_HOME/bundle
@@ -81,8 +73,8 @@ export LESSHISTFILE=$XDG_STATE_HOME/lesshst
 export TERMINFO=$XDG_DATA_HOME/terminfo
 export TERMINFO_DIRS=/usr/share/terminfo
 
-# Create only directories that zsh itself writes. Tool-specific directories are
-# left to their owners, avoiding a long list of permanently cold startup checks.
+# Only directories zsh itself writes; each tool creates its own, which keeps
+# startup free of stat checks.
 for _zdots_dir in \
   "$XDG_CACHE_HOME/zsh" "$XDG_STATE_HOME/zsh"; do
   [[ -d $_zdots_dir ]] || command mkdir -p -- "$_zdots_dir" 2>/dev/null
@@ -95,7 +87,6 @@ unset _zdots_dir
 export ADB_MDNS_AUTO_CONNECT=0
 
 # Amazon Bedrock defaults for the global Anthropic inference profiles.
-# An explicit environment value still takes precedence.
 export AWS_PROFILE=${AWS_PROFILE:-personal}
 export AWS_REGION=${AWS_REGION:-us-east-1}
 

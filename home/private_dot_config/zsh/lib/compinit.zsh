@@ -1,4 +1,3 @@
-# One completion init, after the complete fpath is assembled. No presets.
 ZSH_COMPDUMP=$XDG_CACHE_HOME/zsh/zcompdump-$HOST-$ZSH_VERSION
 
 () {
@@ -22,8 +21,6 @@ ZSH_COMPDUMP=$XDG_CACHE_HOME/zsh/zcompdump-$HOST-$ZSH_VERSION
 
 _comp_options+=(globdots)
 
-# Command-specific definitions belong to the provider, not a dotfiles registry.
-# It supplies candidates to zsh; the fzf selector only controls their display.
 if (( $+commands[carapace] )); then
   # Native zsh completions are already present; avoid recursive bridge shells.
   export CARAPACE_BRIDGES=''
@@ -39,7 +36,7 @@ if (( $+commands[carapace] )); then
 fi
 
 # Prefer native generators where the upstream catalog has one. Loading the
-# catalog is builtin-only; generation happens automatically on first Tab.
+# catalog is builtin-only; generation runs on first Tab.
 typeset -gA _zdots_completion_generators _zdots_completion_catalog_versions _zdots_completion_fallbacks
 autoload -Uz _zdots_native_completion
 () {

@@ -1,6 +1,3 @@
-# Antidote bootstrap and static bundle generation.
-#
-
 local plugins_txt=$ZDOTDIR/.zsh_plugins.txt
 local plugins_zsh=$ZDOTDIR/.zsh_plugins.zsh
 local antidote_repo=$ZDOTDIR/.antidote

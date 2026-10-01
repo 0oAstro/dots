@@ -1,7 +1,3 @@
-# ripgrep global config
-# --hidden: don't skip hidden files (critical for dotfiles)
-# --glob: still exclude noisy directories/patterns
-
 --hidden
 --glob=!.git/
 --glob=!.antidote/

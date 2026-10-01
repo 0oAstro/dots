@@ -1,5 +1,3 @@
-# Linux only.
-
 [tools]
 tmux = "latest"
 # btop ships Linux binaries only; macOS gets it from the Brewfile.
@@ -8,7 +6,7 @@ tmux = "latest"
 "pipx:trash-cli" = "latest"
 "npm:t3" = "latest"
 
-# Cursor's agent CLI. Only cursor-agent goes on PATH; dist-package also ships
+# Cursor's agent CLI. Only cursor-agent goes on PATH: dist-package also ships
 # its own node and rg, which must not shadow the real ones.
 [tools."http:cursor"]
 version = "latest"

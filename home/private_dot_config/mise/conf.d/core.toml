@@ -2,7 +2,6 @@
 # (macos.toml, linux.toml) or belong to the agent setup (ai.toml).
 
 [tools]
-# ── Languages ────────────────────────────────────────────────────────────────
 node = "lts"
 python = "3.14"
 go = "latest"
@@ -12,14 +11,12 @@ uv = "latest"
 pnpm = "latest"
 "aqua:Kitware/CMake" = "latest"
 
-# ── Git & dotfiles ───────────────────────────────────────────────────────────
 chezmoi = "latest"
 "aqua:cli/cli" = "latest"
 "aqua:dandavison/delta" = "latest"
 "aqua:git-lfs/git-lfs" = "latest"
 "pipx:git-filter-repo" = "latest"
 
-# ── Shell ────────────────────────────────────────────────────────────────────
 herdr = "latest"
 "aqua:neovim/neovim" = "latest"
 "aqua:junegunn/fzf" = "latest"
@@ -27,7 +24,6 @@ herdr = "latest"
 "cargo:zsh-patina" = "latest"
 "cargo:pokeget" = "latest"
 
-# ── CLI ──────────────────────────────────────────────────────────────────────
 "aqua:BurntSushi/ripgrep" = "latest"
 "aqua:sharkdp/fd" = "latest"
 "aqua:sharkdp/bat" = "latest"
@@ -42,17 +38,15 @@ herdr = "latest"
 "go:github.com/maaslalani/fast" = "latest"
 "github:AlDanial/cloc" = { version = "latest", asset_pattern = "cloc-{{ version }}.pl", bin = "cloc" }
 
-# ── Docker CLI (plugins are linked by chezmoi: ~/.docker/cli-plugins) ───────
+# chezmoi links the plugins into ~/.docker/cli-plugins.
 "aqua:docker/cli" = "latest"
 "aqua:docker/buildx" = "latest"
 "aqua:docker/compose" = "latest"
 
-# ── Databases ────────────────────────────────────────────────────────────────
 "github:theseus-rs/postgresql-binaries" = { version = "latest", filter_bins = "psql" }
 "vfox:jdx/vfox-mysql" = { version = "latest", filter_bins = "mysql*" }
 "github:jorgerojas26/lazysql" = "latest"
 
-# ── Cloud ────────────────────────────────────────────────────────────────────
 aws-cli = { version = "latest", symlink_bins = "true" }
 azure-cli = { version = "latest", uvx_args = "--prerelease=allow" }
 azd = "latest"
@@ -60,7 +54,6 @@ vercel = { version = "latest", allow_builds = ["esbuild"], trust_policy_excludes
 # Neon's standalone macOS build is x86_64-only; the npm package runs anywhere.
 "npm:neonctl" = "latest"
 
-# ── Sync, secrets & mail ─────────────────────────────────────────────────────
 "aqua:rclone/rclone" = "latest"
 "aqua:FiloSottile/age" = "latest"
 "aqua:bitwarden/clients" = "latest"

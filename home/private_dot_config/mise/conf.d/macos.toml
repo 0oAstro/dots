@@ -1,5 +1,3 @@
-# macOS only.
-
 [tools]
 java = ["zulu-25", "zulu-21"]
 # Finder Trash with Put Back; backs the rm=trash alias.
@@ -11,12 +9,10 @@ carapace = "1.7.3"
 "npm:bitwarden-cli-bio" = "latest"
 "github:bitwarden/agent-access" = "latest"
 
-# ── Media ────────────────────────────────────────────────────────────────────
 ffmpeg = "latest"
 "github:yt-dlp/yt-dlp" = "latest"
 "github:Code-Hex/pget" = "latest"
 
-# ── iOS ──────────────────────────────────────────────────────────────────────
 ruby = "4.0"
 cocoapods = "latest"
 swiftformat = { version = "latest", no_app = true, rename_exe = "swiftformat" }

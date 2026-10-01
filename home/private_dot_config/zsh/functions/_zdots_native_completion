@@ -1,4 +1,4 @@
-# Generic adapter for upstream generator metadata. No per-command recipes.
+# Completion for any tool in the zsh-completion-generators catalog.
 setopt localoptions no_aliases
 local tool=${service:-$words[1]} binary dir file tmp
 local fallback=${_zdots_completion_fallbacks[$tool]:-_default}
