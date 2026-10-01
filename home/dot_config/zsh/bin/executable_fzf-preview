@@ -1,0 +1,13 @@
+#!/bin/sh
+target=${1:-.}
+if [ -d "$target" ]; then
+  if command -v eza >/dev/null 2>&1; then
+    exec eza --all --color=always --icons=always --group-directories-first --tree --level=2 -- "$target"
+  fi
+  exec ls -la -- "$target"
+elif [ -f "$target" ]; then
+  if command -v bat >/dev/null 2>&1; then
+    exec bat --color=always --style=numbers --line-range=:160 -- "$target"
+  fi
+  exec head -n 160 -- "$target"
+fi
