@@ -1,36 +1,13 @@
-import { execSync } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
-import { release } from "node:os";
-import { basename } from "node:path";
 import fs from "node:fs";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import type { Api, AssistantMessageEventStream, Context, Model, SimpleStreamOptions } from "@earendil-works/pi-ai";
 
 // Only the built-in anthropic provider with a resolved subscription credential is overlaid.
 // All other requests continue through pi's unmodified provider and transport.
-const PREAMBLE = "You help users with software engineering tasks by reading files, running commands, and editing code.";
-const DUPLICATED = [
- "Use edit for precise changes", "When changing multiple separate locations", "Each edits[].oldText",
- "Keep edits[].oldText", "For broad codebase exploration", "When an agent runs in the background",
- "Trust but verify", "Use SubagentWorkflow when", "Prefer `pipeline`", "A workflow runs in the background",
- "Use ask_user_question whenever", "Each question MUST", "Set multiSelect", "process tool: after process start",
- "process tool: attention", "process tool: use notify.logMatches", "process tool: for the full lifecycle",
- "Task status is a 4-state", "To change a task's status", "Use blockedBy", "list hides tombstoned",
-];
-const NOTIFY_RULE = "Background agents, workflows and processes notify you when they finish; do not poll or sleep waiting for them.";
-function rules(selectedTools: string[], toolGuidelines: Record<string, string[]>): string {
- const out = new Set<string>();
- if (selectedTools.includes("bash")) out.add("Use bash for file operations like ls, rg, find");
- for (const tool of selectedTools) for (const rule of toolGuidelines[tool] ?? [])
-  if (!DUPLICATED.some(prefix => rule.startsWith(prefix))) out.add(rule.replace(/^process tool: use/, "Use").trim());
- if (["Agent", "workflow", "process"].some(tool => selectedTools.includes(tool))) out.add(NOTIFY_RULE);
- out.add("Be concise in your responses"); out.add("Show file paths clearly when working with files");
- return [...out].map(rule => `- ${rule}`).join("\n");
-}
-function isGitRepo(cwd: string): boolean {
- try { execSync("git rev-parse --is-inside-work-tree", { cwd, stdio: "ignore" }); return true; }
- catch { return false; }
-}
+// The system prompt is pi's own. Its opening sentence and <docs> block are dropped on the wire,
+// because Anthropic bills subscription requests carrying pi's identity as extra usage.
+const PI_PREAMBLE = "You are an expert coding assistant operating inside pi, a coding agent harness. You help users by reading files, executing commands, editing code, and writing new files.";
 
 // omp main: packages/ai/src/providers/claude-code-fingerprint.ts (Claude Code CLI wire identity).
 const CC_VERSION = "2.1.280";
@@ -147,6 +124,8 @@ function fingerprint(payload: Payload, sessionId: string | undefined): Payload {
  // omp main: anthropic.ts builds CC identity in system[1]. Keep existing trimmed prompt
  // in system[2] until live wire evidence shows it needs relocation.
  if (payload.system[1]?.text !== CC_IDENTITY) warn("unexpected Claude Code identity block");
+ const prompt = payload.system[2];
+ if (prompt?.text.startsWith(PI_PREAMBLE)) prompt.text = prompt.text.slice(PI_PREAMBLE.length).trimStart().replace(/\n*<docs>[\s\S]*?<\/docs>/, "");
  // Measured against Claude Code 2.1.284: CC does NOT rename or prefix tool names on OAuth — it
  // sends `Read`/`Bash`/`Edit`/`Write` unchanged. omp's `_` prefix is its own invention, so tool
  // names and every tool_use / tool_addition / tool_removal reference are left exactly as pi built
@@ -221,22 +200,4 @@ function overlay(model: Model<Api>, context: Context, options?: SimpleStreamOpti
 }
 export default function (pi: ExtensionAPI): void {
  pi.registerProvider("anthropic", { api: "anthropic-messages", streamSimple: overlay });
- pi.on("before_agent_start", (event, ctx) => {
-  if (!ctx.model || ctx.model.provider !== "anthropic" || !ctx.modelRegistry.isUsingOAuth(ctx.model)) return;
-  const options = event.systemPromptOptions;
-  const forced = options.forceSystemPrompt;
-  options.forceSystemPrompt = undefined;
-  const previous = forced ? ctx.getSystemPrompt() : undefined;
-  options.forceSystemPrompt = forced;
-  options.customPrompt = `${PREAMBLE}\n\n<rules>\n${rules(options.selectedTools, options.toolGuidelines)}\n</rules>`;
-  options.sections.environment = [
-   `- Is a git repository: ${isGitRepo(ctx.cwd)}`,
-   `- Platform: ${process.platform}, ${basename(process.env.SHELL ?? "sh")}, ${release()}`,
-   `- Today's date: ${new Date().toISOString().slice(0, 10)}`,
-  ].join("\n");
-  if (forced && previous && forced.endsWith(previous)) {
-   options.forceSystemPrompt = undefined;
-   options.forceSystemPrompt = `${forced.slice(0, -previous.length)}${ctx.getSystemPrompt()}`;
-  }
- });
 }
