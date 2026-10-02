@@ -17,3 +17,17 @@
     clone.args = ["--depth", "1"]
     pull.args = ["--ff-only"]
 {{- end }}
+{{- if eq .chezmoi.os "darwin" }}
+
+# Ghostty's font. Homebrew's font-ioskeley-mono lacks the Term Nerd Font build.
+{{- range $w := list "Thin" "ExtraLight" "Light" "SemiLight" "Regular" "Medium" "SemiBold" "Bold" "ExtraBold" "Heavy" }}
+{{-   range $i := list "" "Italic" }}
+{{-     $style := ternary "Italic" (print $w $i) (and (eq $w "Regular") (eq $i "Italic")) }}
+
+["Library/Fonts/IoskeleyMonoTermNerdFontMono-{{ $style }}.ttf"]
+    type = "archive-file"
+    url = "https://github.com/ahatem/IoskeleyMono/releases/download/v2.1.0/IoskeleyMono-Term-NerdFont.zip"
+    path = "Normal/IoskeleyMonoTermNerdFontMono-{{ $style }}.ttf"
+{{-   end }}
+{{- end }}
+{{- end }}
