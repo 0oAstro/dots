@@ -35,9 +35,6 @@
 # The Bitwarden SSH agent holds the signing key on macOS.
 .ssh/github
 # Linux only
-.bashrc
-.bash_profile
-.config/bash
 .config/mise/conf.d/linux.toml
 .codex/packages
 {{- else }}

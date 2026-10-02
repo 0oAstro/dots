@@ -15,7 +15,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 ACTION = re.compile(r"\{\{.*?\}\}")
 PLAIN = ["install.sh", "tests/*.sh", "home/**/*.sh", "home/**/*.bash",
-         "home/dot_bashrc", "home/dot_bash_profile",
          "home/private_dot_config/zsh/bin/executable_fzf-preview"]
 
 

@@ -5,7 +5,7 @@ end_of_line = lf
 insert_final_newline = true
 charset = utf-8
 
-[{*.sh,*.sh.tmpl,*.bash,install.sh,dot_bashrc,dot_bash_profile,executable_fzf-preview}]
+[{*.sh,*.sh.tmpl,*.bash,install.sh,executable_fzf-preview}]
 indent_style = space
 indent_size = 2
 switch_case_indent = true

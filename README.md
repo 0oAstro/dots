@@ -62,7 +62,7 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 | every machine | zsh, git, herdr, tmux, bat, ripgrep, glow, dtop, btop; `conf.d/core.toml` |
 | `ai` | Claude Code, Codex, Pi, and Grok Build settings; pstack; `conf.d/ai.toml` |
 | macOS | Ghostty, Karabiner, herdr launcher, lazysql, routerctl; `conf.d/macos.toml` |
-| Linux | bash; `conf.d/linux.toml` |
+| Linux | `conf.d/linux.toml` |
 
 `home/.chezmoiignore` holds these rules. Ansible copies `ansible/files/user_units/<layer>/` into `~/.config/systemd/user/` (claude-rc for `servers`; the AlgoChat timers and T3 drop-ins for aardvark).
 
@@ -70,7 +70,7 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 
 Secrets are age-encrypted in the repo (`encrypted_*.age`), using chezmoi's built-in age. Every machine uses the same key, `~/.config/age/keys.txt`. Keep a copy outside the repo, for example in Bitwarden. Without the key, chezmoi skips the encrypted files and applies everything else. To add the key later, save it with mode `600` and run `chezmoi apply`.
 
-chezmoi decrypts the API keys to `~/.config/zsh/.zshrc.local` (mode `600`), which zsh and bash both source. Each host's SSH config goes to `~/.ssh/config.d/<host>`.
+chezmoi decrypts the API keys to `~/.config/zsh/.zshrc.local` (mode `600`), which zsh sources. Agents run commands in bash or non-interactive zsh and inherit those keys from the zsh that launched them. Each host's SSH config goes to `~/.ssh/config.d/<host>`.
 
 ## Files the apps also write
 

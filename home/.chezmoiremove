@@ -2,6 +2,10 @@
 .config/zsh/config/integrations/macos.zsh*
 .config/zsh/config/integrations/linux.zsh*
 .config/zsh/config/themes/shell/kanagawa-dragon.zsh*
+.bashrc
+.bash_profile
+.config/bash
+.cache/bash
 
 {{- if .ai }}
 # Retired Pi extensions and their configuration. Keep histories, agents, and skills.
