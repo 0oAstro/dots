@@ -1,6 +1,8 @@
 {{- $mac := eq .chezmoi.os "darwin" -}}
 # Merged into Codex's own state ([projects], [hooks.state], marketplaces, nux
 # counters) by private_dot_codex/modify_private_config.toml.
+# Mac: the ChatGPT app is installed and owns the app-server daemon, plugins and
+# computer use, so those keep Codex's defaults (on). Server: plain CLI only.
 {{- if $mac }}
 notify = ["{{ .chezmoi.homeDir }}/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
 {{- end }}
@@ -36,11 +38,18 @@ hooks = true
 secret_auth_storage = true
 # Keep shell snapshots disabled to reduce overhead.
 shell_snapshot = false
-# Plugins and computer use only help on the Mac desktop.
-plugins = {{ $mac }}
 remote_plugin = false
 apps = false
-computer_use = {{ $mac }}
+{{- if not $mac }}
+# Desktop features need the ChatGPT app; Codex turns them on by default.
+plugins = false
+computer_use = false
+{{- end }}
+{{- if .server }}
+# No shared background app-server: one that outlives its socket in /tmp
+# breaks every new session ("app server did not become ready").
+daemon_auto_start = false
+{{- end }}
 
 [sandbox_workspace_write]
 network_access = true

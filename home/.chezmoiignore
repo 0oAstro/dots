@@ -36,7 +36,6 @@
 .ssh/github
 # Linux only
 .config/mise/conf.d/linux.toml
-.codex/packages
 {{- else }}
 # macOS only
 Library
@@ -57,6 +56,12 @@ Library
 .codex
 .pi
 .config/mise/conf.d/ai.toml
+{{- end }}
+
+{{- if or (eq .chezmoi.os "darwin") .server }}
+# Pins Codex's app-server daemon to mise's build. The ChatGPT app ships its own
+# daemon on macOS; servers run Codex without one.
+.codex/packages
 {{- end }}
 
 {{- if not .server }}

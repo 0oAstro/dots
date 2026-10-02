@@ -10,10 +10,12 @@ claude-code = "latest"
 
 # On Linux, Codex's app-server daemon runs ~/.codex/packages/standalone/current,
 # which chezmoi links to this tool's `latest` install. Restart it on upgrade.
+# Servers run without the daemon (features.daemon_auto_start = false).
 [tools."aqua:openai/codex"]
 version = "latest"
 postinstall = '''
 [ "$(uname)" = Linux ] || exit 0
+[ -S "$HOME/.codex/app-server-control/app-server-control.sock" ] || exit 0
 codex=$HOME/.codex/packages/standalone/current/codex
 "$codex" app-server daemon restart >/dev/null 2>&1 ||
   "$codex" app-server daemon start >/dev/null 2>&1 || true
