@@ -93,3 +93,9 @@ firewalld_zones:
     services: []
     ports: []
     rich_rules: []
+
+# User units from files/user_units/aardvark/. t3code.service itself is T3's
+# (its ExecStart pins the runtime version); only its drop-ins live here.
+user_units_enabled_aardvark:
+  - algochat-ads-chat-export.timer
+  - algochat-retained-chats.timer

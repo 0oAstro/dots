@@ -64,7 +64,7 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 | macOS | Ghostty, Karabiner, herdr launcher, lazysql, routerctl; `conf.d/macos.toml` |
 | Linux | bash; `conf.d/linux.toml` |
 
-`home/.chezmoiignore` holds these rules. Ansible's `servers` group gets `claude-rc.service` (Claude Remote Control) as a user unit.
+`home/.chezmoiignore` holds these rules. Ansible copies `ansible/files/user_units/<layer>/` into `~/.config/systemd/user/` (claude-rc for `servers`; the AlgoChat timers and T3 drop-ins for aardvark).
 
 ## Secrets
 

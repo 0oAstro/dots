@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily AlgoChat shown-ads conversation export
+
+[Timer]
+OnCalendar=*-*-* 04:30:00
+Persistent=true
+Unit=algochat-ads-chat-export.service
+
+[Install]
+WantedBy=timers.target

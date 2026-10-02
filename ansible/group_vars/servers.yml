@@ -4,6 +4,7 @@ chezmoi_data:
   ai: true
   server: true
 
-# Login user's systemd units keep running without a session (claude-rc).
-user_units:
+# Login user's systemd units (files/user_units/servers/) keep running without
+# a session.
+user_units_enabled_servers:
   - claude-rc.service

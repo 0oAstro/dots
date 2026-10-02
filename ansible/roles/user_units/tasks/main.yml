@@ -1,34 +1,70 @@
-# systemd --user units for the login user (files/user_units/), kept running
-# without a session through lingering.
+# systemd --user units for the login user, kept running without a session
+# through lingering. Like the overlay role, files/user_units/<layer>/ is copied
+# into ~/.config/systemd/user/ for each layer in overlay_layers; a later layer
+# wins for the same path. Drop-ins (<unit>.d/*.conf) work for units that an
+# app writes itself, such as T3's t3code.service.
+#
+# Units listed in a user_units_enabled_* list are enabled, started, and
+# restarted when their unit or drop-in changes. Anything else only gets a
+# daemon-reload: timer-run services pick changes up on their next run, and
+# t3code drop-ins wait for T3's next restart, which would end its sessions.
+- name: Collect unit files
+  ansible.builtin.set_fact:
+    user_unit_files: >-
+      {{ user_unit_files | default({}) | combine(
+           query('community.general.filetree', playbook_dir ~ '/files/user_units/' ~ item)
+           | selectattr('state', 'eq', 'file')
+           | items2dict(key_name='path', value_name='src')) }}
+  loop: "{{ overlay_layers }}"
+
 - name: Linger
   ansible.builtin.command: loginctl enable-linger {{ ansible_facts.user_id }}
   args:
     creates: /var/lib/systemd/linger/{{ ansible_facts.user_id }}
   become: true
 
-- name: Unit directory
+- name: Unit directories
   ansible.builtin.file:
-    path: "{{ ansible_facts.env.HOME }}/.config/systemd/user"
+    path: "{{ ansible_facts.env.HOME }}/.config/systemd/user/{{ item }}"
     state: directory
     mode: "0755"
+  loop: "{{ [''] + user_unit_files.keys() | map('dirname') | select | unique | sort }}"
 
 - name: Units
   ansible.builtin.copy:
-    src: user_units/{{ item }}
-    dest: "{{ ansible_facts.env.HOME }}/.config/systemd/user/{{ item }}"
+    src: "{{ item.value }}"
+    dest: "{{ ansible_facts.env.HOME }}/.config/systemd/user/{{ item.key }}"
     mode: "0644"
-  loop: "{{ user_units }}"
+  loop: "{{ user_unit_files | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
   register: user_units_copied
 
-- name: Reload, enable and start
+- name: Units that changed this run
+  ansible.builtin.set_fact:
+    user_units_changed: >-
+      {{ user_units_copied.results | selectattr('changed') | map(attribute='item.key')
+         | map('regex_replace', '\\.d/.*$', '') | unique }}
+    user_units_enabled: >-
+      {{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^user_units_enabled_.+'))
+         | flatten | unique }}
+
+- name: Reload
   ansible.builtin.systemd_service:
-    name: "{{ item.item }}"
     scope: user
-    daemon_reload: "{{ item is changed }}"
-    enabled: true
-    state: "{{ 'restarted' if item is changed else 'started' }}"
-  loop: "{{ user_units_copied.results }}"
-  loop_control:
-    label: "{{ item.item }}"
+    daemon_reload: true
+  when: user_units_changed | length > 0
   environment:
     XDG_RUNTIME_DIR: /run/user/{{ ansible_facts.user_uid }}
+  tags: [service]
+
+- name: Enable and start
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    scope: user
+    enabled: true
+    state: "{{ 'restarted' if item in user_units_changed else 'started' }}"
+  loop: "{{ user_units_enabled }}"
+  environment:
+    XDG_RUNTIME_DIR: /run/user/{{ ansible_facts.user_uid }}
+  tags: [service]

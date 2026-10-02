@@ -40,6 +40,4 @@
       when: docker_stacks_repo is defined
       tags: [docker_stacks]
     - {role: systemd_units, become: true, tags: [systemd_units]}
-    - role: user_units
-      when: user_units | default([]) | length > 0
-      tags: [user_units]
+    - {role: user_units, tags: [user_units]}

@@ -1,0 +1,31 @@
+[Unit]
+Description=Export AlgoChat conversations with shown ads
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Developer/algoplex/export-chats/ads-chats
+EnvironmentFile=-%h/.config/algoplex/algochat.env
+# Resolve the installed PostgreSQL binary without invoking mise or shell hooks.
+Environment="PATH=%h/.local/share/mise/installs/github-theseus-rs-postgresql-binaries/latest/.mise-bins:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin"
+Environment="RCLONE_CONFIG=%h/.config/rclone/rclone.conf"
+ExecStartPre=/usr/bin/python3 -B /opt/docker/prometheus/algochat-ads/monitor.py start
+ExecStart=/usr/bin/flock -w 300 %h/Developer/algoplex/chat-analysis/.export-state/export.lock /usr/bin/python3 -B %h/Developer/algoplex/export-chats/ads-chats/export_ads_chats.py --output %h/Developer/algoplex/export-chats/ads-chats/output --rclone-destination dropbox:AlgoDump/ad-chats
+ExecStopPost=/usr/bin/python3 -B /opt/docker/prometheus/algochat-ads/monitor.py finish
+TimeoutStartSec=45min
+TimeoutStopSec=30s
+UMask=0077
+
+# The export contains conversations, so keep the service narrowly scoped.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%h/Developer/algoplex/export-chats/ads-chats
+ReadWritePaths=%h/Developer/algoplex/chat-analysis/.export-state
+# OAuth refresh replaces rclone.conf atomically, requiring directory write access.
+ReadWritePaths=%h/.config/rclone
+
+[Install]
+WantedBy=default.target

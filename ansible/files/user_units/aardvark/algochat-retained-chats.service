@@ -1,0 +1,17 @@
+[Unit]
+Description=Export AlgoChat and compact retained Obsidian books
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=1h
+StartLimitBurst=3
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/ec2-user/Developer/algoplex/chat-analysis
+ExecStart=/bin/bash /home/ec2-user/Developer/algoplex/chat-analysis/run_exports.sh --publish
+TimeoutStartSec=12h
+TimeoutStopSec=30s
+UMask=0077
+NoNewPrivileges=true
+Restart=on-failure
+RestartSec=60s
