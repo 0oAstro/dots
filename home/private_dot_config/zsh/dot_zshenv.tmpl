@@ -82,4 +82,14 @@ export ADB_MDNS_AUTO_CONNECT=0
 export AWS_PROFILE=${AWS_PROFILE:-personal}
 export AWS_REGION=${AWS_REGION:-us-east-1}
 
+# Codex's Bifrost provider reads this key, and T3 Desktop starts its server
+# from a non-interactive SSH shell that never sources .zshrc.local. Load only
+# this key here; the other secrets stay interactive.
+() {
+  local secrets=$ZDOTDIR/.zshrc.local line
+  [[ -z ${BIFROST_VIRTUAL_KEY:-} && -r $secrets ]] || return 0
+  line=${(M)${(f)"$(<$secrets)"}:#export BIFROST_VIRTUAL_KEY=*}
+  [[ -n $line ]] && eval "$line"
+}
+
 source "$ZDOTDIR/lib/path.zsh"
