@@ -42,6 +42,7 @@ Library
 {{- if not .ai }}
 .claude
 .codex
+.grok
 .pi
 .config/mise/conf.d/ai.toml
 {{- end }}

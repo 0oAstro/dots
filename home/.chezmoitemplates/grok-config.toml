@@ -1,0 +1,8 @@
+# Merged into Grok Build's own config.toml by dot_grok/modify_private_config.toml.
+
+[ui]
+permission_mode = "always-approve"
+
+# mise installs and upgrades grok (conf.d/ai.toml).
+[cli]
+auto_update = false

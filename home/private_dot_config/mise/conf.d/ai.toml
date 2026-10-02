@@ -1,4 +1,4 @@
-# Coding agents. Their configs live under ~/.claude, ~/.codex and ~/.pi.
+# Coding agents. Their configs live under ~/.claude, ~/.codex, ~/.pi and ~/.grok.
 
 [tools]
 claude-code = "latest"
@@ -34,3 +34,12 @@ cd "$MISE_TOOL_INSTALL_PATH" \
   && mkdir -p bin \
   && ln -sf ../dist/bundle/cli.js bin/prime
 '''
+
+# Grok Build. `grok update` is off (~/.grok/config.toml); mise owns upgrades.
+[tools."http:grok"]
+version = "latest"
+version_list_url = "https://x.ai/cli/stable"
+bin = "grok"
+platforms.macos-arm64.url = "https://x.ai/cli/grok-{{ version }}-macos-aarch64.gz"
+platforms.linux-arm64.url = "https://x.ai/cli/grok-{{ version }}-linux-aarch64.gz"
+platforms.linux-x64.url = "https://x.ai/cli/grok-{{ version }}-linux-x86_64.gz"
