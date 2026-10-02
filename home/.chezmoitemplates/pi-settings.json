@@ -9,7 +9,8 @@
     "bifrost/azure/gpt-6.1-sol",
     "bifrost/anthropic/claude-opus-5-5",
     "bifrost/anthropic/claude-fable-5-1",
-    "bifrost/azure/gpt-6-astra"
+    "bifrost/azure/gpt-6-astra",
+    "bifrost/azure/fw-glm-5.3"
   ],
   "packages": [
     "npm:@aliou/pi-processes"
@@ -35,7 +36,8 @@
     "bifrost/anthropic/claude-sonnet-5-5": "high",
     "bifrost/azure/gpt-6-astra": "medium",
     "bifrost/azure/gpt-6-luna": "xhigh",
-    "bifrost/azure/gpt-6.1-sol": "high"
+    "bifrost/azure/gpt-6.1-sol": "high",
+    "bifrost/azure/fw-glm-5.3": "high"
   },
   "httpIdleTimeoutMs": 900000,
   "retry": {

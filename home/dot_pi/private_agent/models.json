@@ -145,6 +145,39 @@
           }
         },
         {
+          "id": "azure/fw-glm-5.3",
+          "name": "GLM-5.3 (Fireworks)",
+          "api": "openai-completions",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1.4,
+            "output": 4.4,
+            "cacheRead": 0.26,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1048576,
+          "maxTokens": 131072,
+          "thinkingLevelMap": {
+            "off": null,
+            "minimal": null,
+            "low": "low",
+            "medium": null,
+            "high": "high",
+            "xhigh": null,
+            "max": "max"
+          },
+          "compat": {
+            "supportsStore": false,
+            "supportsDeveloperRole": false,
+            "supportsStrictMode": true,
+            "maxTokensField": "max_tokens",
+            "supportsLongCacheRetention": false
+          }
+        },
+        {
           "id": "anthropic/claude-fable-5-1",
           "name": "Claude Fable 5.1",
           "api": "anthropic-messages",

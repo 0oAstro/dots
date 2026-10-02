@@ -10,7 +10,8 @@
     "bifrost/azure/gpt-6.1-sol:high",
     "bifrost/anthropic/claude-opus-5-5:medium",
     "bifrost/anthropic/claude-fable-5-1:medium",
-    "bifrost/azure/gpt-6-astra:medium"
+    "bifrost/azure/gpt-6-astra:medium",
+    "bifrost/azure/fw-glm-5.3:high"
   ],
   "httpIdleTimeoutMs": 900000,
   "retry": {
