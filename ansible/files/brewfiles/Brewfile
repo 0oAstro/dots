@@ -18,6 +18,7 @@ brew "smartmontools"
 
 cask "ghostty"
 cask "cursor"
+cask "chatgpt"  # also runs Codex's app-server and computer use
 cask "karabiner-elements"
 cask "abue-ammar/tinycast/tinycast"  # launcher, hotkeys, clipboard history
 
