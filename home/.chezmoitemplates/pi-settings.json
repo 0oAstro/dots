@@ -1,19 +1,22 @@
 {
   "theme": "dark",
-  "defaultProvider": "anthropic",
-  "defaultModel": "claude-opus-5-5",
+  "defaultProvider": "bifrost",
+  "defaultModel": "anthropic/claude-opus-5-5",
   "defaultThinkingLevel": "high",
   "enabledModels": [
     "bifrost/azure/gpt-6-luna",
-    "anthropic/claude-sonnet-5-5",
+    "bifrost/anthropic/claude-sonnet-5-5",
     "bifrost/azure/gpt-6.1-sol",
-    "anthropic/claude-opus-5-5",
-    "anthropic/claude-fable-5-1",
+    "bifrost/anthropic/claude-opus-5-5",
+    "bifrost/anthropic/claude-fable-5-1",
     "bifrost/azure/gpt-6-astra"
   ],
   "packages": [
     "npm:@aliou/pi-processes"
   ],
+  "firecrawl-web": {
+    "fetchModel": "bifrost/azure/gpt-6-luna"
+  },
   "warnings": {
     "anthropicExtraUsage": false
   },
@@ -27,12 +30,12 @@
   "defaultProjectTrust": "always",
   "hideThinkingBlock": false,
   "modelThinkingLevels": {
-    "bifrost/azure/gpt-6-luna": "xhigh",
-    "bifrost/azure/gpt-6.1-sol": "high",
+    "bifrost/anthropic/claude-fable-5-1": "medium",
+    "bifrost/anthropic/claude-opus-5-5": "medium",
+    "bifrost/anthropic/claude-sonnet-5-5": "high",
     "bifrost/azure/gpt-6-astra": "medium",
-    "anthropic/claude-opus-5-5": "medium",
-    "anthropic/claude-fable-5-1": "medium",
-    "anthropic/claude-sonnet-5-5": "high"
+    "bifrost/azure/gpt-6-luna": "xhigh",
+    "bifrost/azure/gpt-6.1-sol": "high"
   },
   "httpIdleTimeoutMs": 900000,
   "retry": {
@@ -40,7 +43,9 @@
       "timeoutMs": 960000
     }
   },
-  "extensions": [],
+  "extensions": [
+    "-builtin:llama.cpp"
+  ],
   "skills": [
     "~/.pi/agent/pstack-src/pstack/skills"
   ],

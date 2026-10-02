@@ -143,25 +143,159 @@
               }
             }
           }
+        },
+        {
+          "id": "anthropic/claude-fable-5-1",
+          "name": "Claude Fable 5.1",
+          "api": "anthropic-messages",
+          "baseUrl": "https://bifrost.shau.me/anthropic",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 10,
+            "output": 50,
+            "cacheRead": 0.25,
+            "cacheWrite": 12.5
+          },
+          "contextWindow": 1000000,
+          "maxTokens": 128000,
+          "compat": {
+            "supportsMidConvoEffort": true,
+            "supportsMidConvoSystemMessages": true,
+            "supportsMidConvoToolChanges": true,
+            "forceAdaptiveThinking": true,
+            "supportsStrictTools": true
+          },
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "promptCache": {
+            "short": 300,
+            "long": 3600
+          },
+          "inputLimits": {
+            "maxRequestBytes": 33554432,
+            "images": {
+              "maxPerRequest": 600,
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          }
+        },
+        {
+          "id": "anthropic/claude-opus-5-5",
+          "name": "Claude Opus 5.5",
+          "api": "anthropic-messages",
+          "baseUrl": "https://bifrost.shau.me/anthropic",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 4,
+            "output": 20,
+            "cacheRead": 0.2,
+            "cacheWrite": 5
+          },
+          "contextWindow": 1000000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "compat": {
+            "supportsMidConvoEffort": true,
+            "supportsMidConvoSystemMessages": true,
+            "supportsMidConvoToolChanges": true,
+            "forceAdaptiveThinking": true,
+            "supportsTemperature": false,
+            "supportsStrictTools": true
+          },
+          "promptCache": {
+            "short": 300,
+            "long": 3600
+          },
+          "inputLimits": {
+            "maxRequestBytes": 33554432,
+            "images": {
+              "maxPerRequest": 600,
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          }
+        },
+        {
+          "id": "anthropic/claude-sonnet-5-5",
+          "name": "Claude Sonnet 5.5",
+          "api": "anthropic-messages",
+          "baseUrl": "https://bifrost.shau.me/anthropic",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 2,
+            "output": 10,
+            "cacheRead": 0.2,
+            "cacheWrite": 2.5
+          },
+          "contextWindow": 1000000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "compat": {
+            "supportsMidConvoEffort": true,
+            "supportsMidConvoSystemMessages": true,
+            "supportsMidConvoToolChanges": true,
+            "forceAdaptiveThinking": true,
+            "supportsTemperature": false,
+            "supportsStrictTools": true
+          },
+          "promptCache": {
+            "short": 300,
+            "long": 3600
+          },
+          "inputLimits": {
+            "maxRequestBytes": 33554432,
+            "images": {
+              "maxPerRequest": 600,
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          }
         }
       ]
-    },
-    "anthropic": {
-      "baseUrl": "https://bifrost.shau.me/anthropic",
-      "headers": {
-        "x-bf-vk": "$BIFROST_VIRTUAL_KEY"
-      },
-      "modelOverrides": {
-        "claude-fable-5-1": {
-          "contextWindow": 1000000
-        },
-        "claude-opus-5-5": {
-          "contextWindow": 1000000
-        },
-        "claude-sonnet-5-5": {
-          "contextWindow": 1000000
-        }
-      }
     }
   }
 }

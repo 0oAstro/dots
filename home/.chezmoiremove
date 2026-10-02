@@ -4,7 +4,6 @@
 
 {{- if .ai }}
 # Retired Pi extensions and their configuration. Keep histories, agents, and skills.
-.pi/agent/extensions/firecrawl-web
 .pi/agent/extensions/fast-mode.ts
 .pi/agent/extensions/fast-mode.json
 .pi/agent/extensions/anthropic-sub-prompt.ts
@@ -16,6 +15,7 @@
 .pi/agent/local/pi-herdr-state
 .pi/agent/local/pi-processes-fast
 .pi/agent/local/pi-nico-eager
+.pi/agent/git/github.com/tmustier/pi-extensions/session-recap
 .pi/agent/scripts/test-anthropic-subagents.ts
 .pi/agent/pi-vcc-config.json
 .pi/subagents.json

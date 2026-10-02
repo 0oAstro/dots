@@ -6,10 +6,10 @@
   "skills": [],
   "enabledModels": [
     "bifrost/azure/gpt-6-luna:xhigh",
-    "anthropic/claude-sonnet-5-5:high",
+    "bifrost/anthropic/claude-sonnet-5-5:high",
     "bifrost/azure/gpt-6.1-sol:high",
-    "anthropic/claude-opus-5-5:medium",
-    "anthropic/claude-fable-5-1:medium",
+    "bifrost/anthropic/claude-opus-5-5:medium",
+    "bifrost/anthropic/claude-fable-5-1:medium",
     "bifrost/azure/gpt-6-astra:medium"
   ],
   "httpIdleTimeoutMs": 900000,
