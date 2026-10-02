@@ -51,7 +51,9 @@ aws-cli = { version = "latest", symlink_bins = "true" }
 # The registry already allows prerelease dependencies; repeating it breaks uv.
 azure-cli = "latest"
 azd = "latest"
-gcloud = "latest"
+# gcloud rejects the system Python (3.9 on macOS and Amazon Linux); CLOUDSDK_PYTHON
+# below points its installer and runtime at mise's.
+gcloud = { version = "latest", depends = ["python"] }
 vercel = { version = "latest", allow_builds = ["esbuild"], trust_policy_excludes = ["undici"] }
 # Neon's standalone macOS build is x86_64-only; the npm package runs anywhere.
 "npm:neonctl" = "latest"
@@ -60,3 +62,6 @@ vercel = { version = "latest", allow_builds = ["esbuild"], trust_policy_excludes
 "aqua:FiloSottile/age" = "latest"
 "aqua:bitwarden/clients" = "2026.8.0"  # 2026.9 key-id backfill 404s on Vaultwarden 1.37.3
 "github:pimalaya/himalaya" = "latest"
+
+[env]
+CLOUDSDK_PYTHON = "{{ env.HOME }}/.local/share/mise/installs/python/3.14/bin/python3"
