@@ -1,0 +1,14 @@
+[Unit]
+Description=Local proxy that sends Claude Code model calls to Bifrost
+After=network-online.target
+
+[Service]
+ExecStart=%h/.local/bin/mitmdump --listen-host 127.0.0.1 --listen-port 18899 \
+  --allow-hosts '^api\\.anthropic\\.com(:443)?$' \
+  --set stream_large_bodies=1m --set flow_detail=0 --set termlog_verbosity=warn \
+  -s %h/.config/bifrost-mitm/addon.py
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
