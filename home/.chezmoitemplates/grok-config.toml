@@ -2,6 +2,8 @@
 
 [ui]
 permission_mode = "always-approve"
+# Follows the terminal: over SSH, Grok reads its background color at startup.
+theme = "auto"
 yolo = true
 
 # mise installs and upgrades grok (conf.d/ai.toml).
