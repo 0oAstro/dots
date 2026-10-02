@@ -89,7 +89,7 @@
   },
   "showCacheMissNotices": true,
   "cacheWarming": "idle",
-  "quietStartup": true,
+  "quietStartup": "header",
   "enableInstallTelemetry": false,
   "defaultProjectTrust": "always",
   "hideThinkingBlock": false,
