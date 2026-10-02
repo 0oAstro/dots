@@ -1,5 +1,6 @@
-# Per-user launchd agents. Each launchd_agents item: {label, command,
-# start_interval, env}. A changed plist is reloaded; nothing is run on demand.
+# Per-user launchd agents. Each launchd_agents item: {label, command, env} plus
+# start_interval (periodic, low priority) or keep_alive: true (daemon). A
+# changed plist is reloaded; nothing is run on demand.
 - name: Plists
   ansible.builtin.template:
     src: agent.plist.j2

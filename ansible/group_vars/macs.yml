@@ -97,6 +97,14 @@ launchd_agents:
       HOMEBREW_NO_ENV_HINTS: "1"
       HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK: "1"
       PATH: /opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin
+  # Same proxy as the servers' bifrost-mitm.service; see ai-gateway.zsh.
+  - label: dev.dots.bifrost-mitm
+    keep_alive: true
+    command: >-
+      exec "$HOME/.local/bin/mitmdump" --listen-host 127.0.0.1 --listen-port 18899
+      --allow-hosts '^api\.anthropic\.com(:443)?$'
+      --set stream_large_bodies=1m --set flow_detail=0 --set termlog_verbosity=warn
+      -s "$HOME/.config/bifrost-mitm/addon.py"
 launchd_agents_absent:
   - label: com.github.domt4.homebrew-autoupdate
     files:

@@ -20,12 +20,21 @@
 {% endfor %}
   </dict>
 {% endif %}
+{% if item.keep_alive | default(false) %}
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>ThrottleInterval</key>
+  <integer>2</integer>
+{% else %}
   <key>StartInterval</key>
   <integer>{{ item.start_interval }}</integer>
   <key>ProcessType</key>
   <string>Background</string>
   <key>LowPriorityIO</key>
   <true/>
+{% endif %}
   <key>StandardOutPath</key>
   <string>{{ ansible_facts.env.HOME }}/Library/Logs/{{ item.label }}.log</string>
   <key>StandardErrorPath</key>

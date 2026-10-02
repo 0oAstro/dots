@@ -64,8 +64,8 @@ Library
 .codex/packages
 {{- end }}
 
-{{- if not .server }}
-# bifrost-mitm runs only on servers (unit: ansible/files/user_units/servers).
+{{- if not .ai }}
+# Claude Code's Bifrost proxy (servers: user_units/servers; Macs: launchd_agents).
 .config/bifrost-mitm
 {{- end }}
 

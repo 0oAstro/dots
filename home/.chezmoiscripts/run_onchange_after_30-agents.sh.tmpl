@@ -49,11 +49,9 @@ fi
 
 ext=$HOME/.pi/agent/extensions/firecrawl-web
 [[ -f $ext/package-lock.json ]] && (cd "$ext" && npm ci --silent --no-audit --no-fund)
-{{- if .server }}
 
-# bifrost-mitm (servers only) routes Claude Code's model calls through Bifrost.
+# bifrost-mitm routes Claude Code's model calls through Bifrost.
 command -v mitmdump >/dev/null || uv tool install --quiet mitmproxy
-{{- end }}
 
 exit $status
 {{- end }}
