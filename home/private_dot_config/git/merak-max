@@ -1,0 +1,10 @@
+# Included for ~/hemant/ on aardvark (config). gh holds both logins; 0oAstro
+# stays the active one, so ask for merak-max's token by name.
+[user]
+	name = merak-max
+	email = 181515478+merak-max@users.noreply.github.com
+	signingKey = ~/.ssh/merak-signing
+
+[credential "https://github.com"]
+	helper =
+	helper = "!f() { test \"$1\" = get || exit 0; echo username=merak-max; echo \"password=$($HOME/.local/share/mise/shims/gh auth token -u merak-max)\"; }; f"

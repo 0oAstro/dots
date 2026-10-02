@@ -7,6 +7,8 @@
 # No age key yet: skip the encrypted files.
 .config/zsh/.zshrc.local
 .ssh/config.d/*
+.ssh/github
+.ssh/merak-signing
 .config/lazysql/config.toml
 {{- end }}
 
@@ -17,7 +19,15 @@
 {{-   end }}
 {{- end }}
 
+# Hemant shares aardvark's ec2-user; his git identity lives only there.
+{{- if ne .host "aardvark" }}
+.ssh/merak-signing
+.config/git/merak-max
+{{- end }}
+
 {{- if eq .chezmoi.os "darwin" }}
+# The Bitwarden SSH agent holds the signing key on macOS.
+.ssh/github
 # Linux only
 .bashrc
 .bash_profile
