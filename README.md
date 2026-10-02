@@ -60,7 +60,8 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 | | Files |
 | --- | --- |
 | every machine | zsh, git, herdr, tmux, bat, ripgrep, glow, dtop, btop; `conf.d/core.toml` |
-| `ai` | Claude Code, Codex, Pi, and Grok Build settings; pstack; `conf.d/ai.toml` |
+| `ai` | Claude Code, Codex, and Pi settings; pstack; `conf.d/ai.toml` |
+| `ai` servers | Grok Build and Prime settings; prime, grok, cursor-agent in `conf.d/server.toml` |
 | macOS | Ghostty, Karabiner, herdr launcher, lazysql, routerctl; `conf.d/macos.toml` |
 | Linux | `conf.d/linux.toml` |
 

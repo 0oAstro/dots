@@ -3,7 +3,7 @@
 {{- range (glob (joinPath .chezmoi.sourceDir "private_dot_config/mise/conf.d/*")) }}
 # {{ base . }}: {{ include . | sha256sum }}
 {{- end }}
-# ai={{ .ai }}
+# ai={{ .ai }} server={{ .server }}
 set -eu
 mise=$HOME/.local/bin/mise
 if [ ! -x "$mise" ]; then

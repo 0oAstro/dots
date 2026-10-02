@@ -55,13 +55,18 @@ Library
 {{- if not .ai }}
 .claude
 .codex
-.grok
 .pi
-.prime
 .config/mise/conf.d/ai.toml
 {{- end }}
 
 {{- if not .server }}
 # bifrost-mitm runs only on servers (unit: ansible/files/user_units/servers).
 .config/bifrost-mitm
+{{- end }}
+
+{{- if not (and .ai .server) }}
+# Server-only harnesses.
+.prime
+.grok
+.config/mise/conf.d/server.toml
 {{- end }}

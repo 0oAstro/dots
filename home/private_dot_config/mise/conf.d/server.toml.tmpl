@@ -1,0 +1,38 @@
+# Agent harnesses only servers run; ~/.prime and ~/.grok follow the same rule
+# (.chezmoiignore). Servers are Linux, so Cursor ships its Linux build only.
+
+# Prime agent, installed as `prime`. The tarball ships cli.js without the exec bit.
+[tools."http:prime-agent"]
+version = "latest"
+url = "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/releases/v{{ "{{" }} version {{ "}}" }}/prime-agent-{{ "{{" }} version {{ "}}" }}.tgz"
+version_list_url = "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/stable"
+version_regex = 'v?([0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?)'
+checksum_url = "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev/releases/v{{ "{{" }} version {{ "}}" }}/SHA256SUMS"
+strip_components = 1
+bin_path = "bin"
+postinstall = '''
+cd "$MISE_TOOL_INSTALL_PATH" \
+  && npm install --omit=dev --min-release-age=1 \
+  && chmod +x dist/bundle/cli.js \
+  && mkdir -p bin \
+  && ln -sf ../dist/bundle/cli.js bin/prime
+'''
+
+# Grok Build. `grok update` is off (~/.grok/config.toml); mise owns upgrades.
+[tools."http:grok"]
+version = "latest"
+version_list_url = "https://x.ai/cli/stable"
+bin = "grok"
+platforms.macos-arm64.url = "https://x.ai/cli/grok-{{ "{{" }} version {{ "}}" }}-macos-aarch64.gz"
+platforms.linux-arm64.url = "https://x.ai/cli/grok-{{ "{{" }} version {{ "}}" }}-linux-aarch64.gz"
+platforms.linux-x64.url = "https://x.ai/cli/grok-{{ "{{" }} version {{ "}}" }}-linux-x86_64.gz"
+
+# Cursor's agent CLI. Only cursor-agent goes on PATH: dist-package also ships
+# its own node and rg, which must not shadow the real ones.
+[tools."http:cursor"]
+version = "latest"
+url = "https://downloads.cursor.com/lab/{{ "{{" }} version {{ "}}" }}/linux/{{ if eq .chezmoi.arch "arm64" }}arm64{{ else }}x64{{ end }}/agent-cli-package.tar.gz"
+version_list_url = "https://cursor.com/install"
+version_regex = 'lab/(\d{4}\.\d{2}\.\d{2}-[0-9A-Za-z]+)'
+bin_path = "dist-package/bin"
+postinstall = 'mkdir -p "$MISE_TOOL_INSTALL_PATH/dist-package/bin" && ln -sf ../cursor-agent "$MISE_TOOL_INSTALL_PATH/dist-package/bin/cursor-agent"'
