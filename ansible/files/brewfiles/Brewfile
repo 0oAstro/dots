@@ -3,11 +3,18 @@
 
 tap "abue-ammar/tinycast", trusted: true
 tap "sozercan/repo", trusted: { casks: ["kaset"] }
+tap "henrygd/beszel"
 
 brew "gcc"
 brew "btop"
 brew "mole"  # deep clean and optimize the Mac
 brew "zsh"
+
+# Beszel agent, reporting to beszel.shau.me on aardvark. Env: ~/.config/beszel.
+# macmon (GPU) and smartmontools (S.M.A.R.T.) must be on the service PATH.
+brew "henrygd/beszel/beszel-agent", trusted: true, restart_service: :changed
+brew "macmon"
+brew "smartmontools"
 
 cask "ghostty"
 cask "cursor"

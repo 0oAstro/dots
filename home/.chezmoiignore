@@ -10,6 +10,7 @@
 .ssh/github
 .ssh/merak-signing
 .config/lazysql/config.toml
+.config/beszel/beszel-agent.env
 {{- end }}
 
 # Only this host's SSH config.
@@ -17,6 +18,11 @@
 {{-   if ne $h $.host }}
 .ssh/config.d/{{ $h }}
 {{-   end }}
+{{- end }}
+
+# Beszel agent (brew service) with this host's hub token; only thunderchief runs it.
+{{- if ne .host "thunderchief" }}
+.config/beszel
 {{- end }}
 
 # Hemant shares aardvark's ec2-user; his git identity lives only there.
