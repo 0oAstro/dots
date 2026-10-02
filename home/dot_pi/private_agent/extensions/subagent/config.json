@@ -1,7 +1,0 @@
-{
-  "timeoutMs": 600000,
-  "worktreeProvider": "native",
-  "worktreeBaseDir": "~/.pi/agent/worktrees",
-  "worktreeSetupHook": "~/.pi/agent/scripts/setup-worktree-cow.mjs",
-  "worktreeSetupHookTimeoutMs": 120000
-}

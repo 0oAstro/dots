@@ -1,3 +1,22 @@
 # Targets that left the source; chezmoi otherwise leaves them behind.
 .config/zsh/config/integrations/macos.zsh*
 .config/zsh/config/integrations/linux.zsh*
+
+{{- if .ai }}
+# Retired Pi extensions and their configuration. Keep histories, agents, and skills.
+.pi/agent/extensions/firecrawl-web
+.pi/agent/extensions/fast-mode.ts
+.pi/agent/extensions/fast-mode.json
+.pi/agent/extensions/anthropic-sub-prompt.ts
+.pi/agent/extensions/anthropic-sub-prompt.ts.bak
+.pi/agent/extensions/logo-only-header.ts
+.pi/agent/extensions/herdr-agent-state.ts
+.pi/agent/extensions/subagent
+.pi/agent/local/pi-single-line-footer
+.pi/agent/local/pi-herdr-state
+.pi/agent/local/pi-processes-fast
+.pi/agent/local/pi-nico-eager
+.pi/agent/scripts/test-anthropic-subagents.ts
+.pi/agent/pi-vcc-config.json
+.pi/subagents.json
+{{- end }}
