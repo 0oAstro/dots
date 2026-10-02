@@ -51,6 +51,7 @@ aws-cli = { version = "latest", symlink_bins = "true" }
 # The registry already allows prerelease dependencies; repeating it breaks uv.
 azure-cli = "latest"
 azd = "latest"
+gcloud = "latest"
 vercel = { version = "latest", allow_builds = ["esbuild"], trust_policy_excludes = ["undici"] }
 # Neon's standalone macOS build is x86_64-only; the npm package runs anywhere.
 "npm:neonctl" = "latest"
