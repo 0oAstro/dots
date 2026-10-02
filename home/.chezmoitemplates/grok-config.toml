@@ -2,6 +2,7 @@
 
 [ui]
 permission_mode = "always-approve"
+yolo = true
 
 # mise installs and upgrades grok (conf.d/ai.toml).
 [cli]
