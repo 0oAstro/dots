@@ -1,0 +1,39 @@
+# Patina's kanagawa theme with palette indexes instead of hex, so it follows
+# Ghostty's Dragon/Lotus pair. 16-18 come from the "Plus" Ghostty themes.
+# Upstream: https://github.com/michel-kraemer/zsh-patina/blob/main/themes/kanagawa.toml
+
+"comment" = 16
+"punctuation.definition.comment.begin" = 16
+"string" = 2 # green
+"punctuation.definition.string" = 2
+"keyword.control.regexp" = 4
+"meta.regexp" = 3
+"constant.character.escape" = 3
+"constant.numeric" = 18
+"variable" = {}
+"variable.language" = 9
+"variable.parameter.option" = 4
+"punctuation.definition.variable" = 12
+"meta.function-call.arguments" = 17
+"variable.language.tilde" = 17
+"keyword" = 13 # violet
+"keyword.control.case.item" = 4
+"source" = {}
+"storage" = 13
+"support" = 4
+"keyword.operator" = 3
+"keyword.operator.logical.continue" = 4
+"entity.name.function" = 12
+"invalid" = 9
+"punctuation.section.parens" = 12
+"meta.group.expansion.brace" = 3
+"punctuation" = 4
+"punctuation.section.expansion" = 12
+"meta.group.expansion.history" = 12
+"meta.group.expansion.command.parens" = {}
+"meta" = 12
+"dynamic" = 6 # aqua
+"dynamic.callable.alias" = 14
+"dynamic.callable.builtin" = 12
+"dynamic.callable.missing" = 1
+"dynamic.path" = { underline = true }

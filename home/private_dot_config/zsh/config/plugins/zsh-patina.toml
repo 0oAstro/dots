@@ -1,5 +1,5 @@
 [highlighting]
-theme = "kanagawa"
+theme = "file:~/.config/zsh/config/plugins/zsh-patina-kanagawa.toml"
 
 # Partial: style existing path prefixes while typing, not only complete paths.
 dynamic = { callables = true, paths = "partial" }

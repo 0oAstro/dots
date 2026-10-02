@@ -1,5 +1,5 @@
 {
-  "theme": "dark",
+  "theme": "light/dark",
   "defaultProvider": "bifrost",
   "defaultModel": "anthropic/claude-opus-5-5",
   "defaultThinkingLevel": "high",

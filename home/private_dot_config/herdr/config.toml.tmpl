@@ -91,12 +91,16 @@ case "$dir" in */acad/fall_2026/*) label=${label%% - *} ;; esac
 '''
 
 [theme]
-name = "kanagawa"
-auto_switch = false
+# Follows Ghostty's light/dark theme pair.
+auto_switch = true
+dark_name = "kanagawa"
+light_name = "kanagawa-lotus"
 
 [theme.custom]
 # reset: the bar and panels use Ghostty's background and opacity.
 panel_bg = "reset"
+
+[theme.custom.dark]
 surface0 = "#282727"
 accent = "#8a9a7b"
 text = "#c5c9c5"
@@ -131,7 +135,7 @@ copy_on_select = true
 
 [ui.sidebar.agents]
 rows = [
-  ["state_icon", { token = "machine", fg = "#DCD7BA", bold = true, dim = false }, "workspace", "tab"],
+  ["state_icon", { token = "machine", bold = true, dim = false }, "workspace", "tab"],
   ["agent"],
 ]
 

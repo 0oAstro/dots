@@ -1,6 +1,7 @@
 # Targets that left the source; chezmoi otherwise leaves them behind.
 .config/zsh/config/integrations/macos.zsh*
 .config/zsh/config/integrations/linux.zsh*
+.config/zsh/config/themes/shell/kanagawa-dragon.zsh*
 
 {{- if .ai }}
 # Retired Pi extensions and their configuration. Keep histories, agents, and skills.
