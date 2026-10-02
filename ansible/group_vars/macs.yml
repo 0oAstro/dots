@@ -1,6 +1,10 @@
 ansible_python_interpreter: "{{ ansible_playbook_python if ansible_connection == 'local' else 'auto_silent' }}"
 
-homebrew_brewfile_src: brewfiles/Brewfile
+# Concatenated; a host without its own Brewfile gets only the shared one.
+homebrew_brewfile_srcs:
+  - brewfiles/Brewfile
+  - "brewfiles/{{ inventory_hostname }}.Brewfile"
+
 login_shell: /opt/homebrew/bin/zsh # Brewfile's zsh
 
 # Every Mac gets these. Values match thunderchief on 2026-10-01.

@@ -7,6 +7,7 @@ all:
     macs:
       hosts:
         thunderchief:
+        blackbird:
     linux:
       children:
         servers:

@@ -16,7 +16,7 @@
 
 - name: Brewfile
   ansible.builtin.copy:
-    src: "{{ homebrew_brewfile_src }}"
+    content: "{% for src in query('ansible.builtin.fileglob', *homebrew_brewfile_srcs) %}{{ lookup('ansible.builtin.file', src) }}\n\n{% endfor %}"
     dest: "{{ homebrew_brewfile }}"
     mode: "0644"
 

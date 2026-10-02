@@ -27,7 +27,7 @@ Roles are generic; groups and hosts hold the data. A second run reports `changed
 | Where | What |
 | --- | --- |
 | `group_vars/macs.yml` | macOS defaults, application firewall, the `dev.dots.brew-upgrade` launchd agent |
-| `files/brewfiles/Brewfile` | Homebrew. The Brewfile is the whole truth: anything installed but unlisted is uninstalled |
+| `files/brewfiles/Brewfile`, `<host>.Brewfile` | Homebrew: every Mac gets `Brewfile` plus its own. Together they are the whole truth: anything installed but unlisted is uninstalled |
 | `group_vars/linux.yml`, `servers.yml`, `desktops.yml` | Base packages, Tailscale (official repo), Claude Remote Control on servers |
 | `host_vars/<host>.yml` | That host's packages, enabled units, firewalld zones, Docker stacks |
 | `files/overlays/<layer>/` | Files copied onto `/`, layered `linux`, then `servers` or `desktops`, then the host. sysctl, exports, sshd and systemd units reload when they change |
@@ -48,7 +48,7 @@ chezmoi update                              # on the other machines
 | To change | Edit |
 | --- | --- |
 | Tools | `~/.config/mise/conf.d/core.toml` (both OSes), `macos.toml`, `linux.toml`, `ai.toml` |
-| macOS apps | `ansible/files/brewfiles/Brewfile` |
+| macOS apps | `ansible/files/brewfiles/Brewfile` (every Mac) or `<host>.Brewfile` |
 | Machine settings, packages, firewall, units | `ansible/` (see System layer) |
 | API keys | `edit-secrets` (re-encrypts and applies) |
 | SSH hosts | `chezmoi edit ~/.ssh/config.d/$(uname -n)` |
