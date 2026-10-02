@@ -6,3 +6,4 @@ fi
 . "${XDG_CONFIG_HOME:-$HOME/.config}/bash/env.bash"
 
 [[ $- == *i* ]] && eval "$(~/.local/bin/mise activate bash)"
+[[ $- == *i* ]] && alias cat=bat

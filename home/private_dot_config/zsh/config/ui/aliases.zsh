@@ -5,6 +5,7 @@ alias gco="git checkout" gd="git diff" gds="git diff --staged"
 alias gp="git push" gpl="git pull" gl="git log"
 alias gr="git rebase" gs="git status --short" gss="git status"
 alias md="mkdir -p" rrm="command rm"
+alias cat=bat
 alias rm=trash
 alias ..="cd .."
 alias l=ls g=git
