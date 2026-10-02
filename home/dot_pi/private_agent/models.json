@@ -144,16 +144,12 @@
             }
           }
         }
-      ],
-      "headers": {
-        "x-bf-lh-harness": "pi"
-      }
+      ]
     },
     "anthropic": {
       "baseUrl": "https://bifrost.shau.me/anthropic",
       "headers": {
-        "x-bf-vk": "$BIFROST_VIRTUAL_KEY",
-        "x-bf-lh-harness": "pi"
+        "x-bf-vk": "$BIFROST_VIRTUAL_KEY"
       },
       "modelOverrides": {
         "claude-fable-5-1": {

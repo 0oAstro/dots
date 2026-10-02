@@ -1,0 +1,2 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- includeTemplate "merge" (dict "current" .chezmoi.stdin "managed" (includeTemplate "prime-settings.json" .) "format" "json") -}}

@@ -1,0 +1,27 @@
+{
+  "defaultProvider": "bifrost",
+  "defaultModel": "azure/gpt-6.1-sol",
+  "defaultThinkingLevel": "high",
+  "subagentDefaultModel": "bifrost/azure/gpt-6.1-sol",
+  "skills": [],
+  "enabledModels": [
+    "bifrost/azure/gpt-6-luna:xhigh",
+    "anthropic/claude-sonnet-5-5:high",
+    "bifrost/azure/gpt-6.1-sol:high",
+    "anthropic/claude-opus-5-5:medium",
+    "anthropic/claude-fable-5-1:medium",
+    "bifrost/azure/gpt-6-astra:medium"
+  ],
+  "httpIdleTimeoutMs": 900000,
+  "retry": {
+    "provider": {
+      "timeoutMs": 960000
+    }
+  },
+  "agentTraces": {
+    "enabled": false
+  },
+  "warnings": {
+    "anthropicExtraUsage": false
+  }
+}

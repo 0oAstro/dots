@@ -60,5 +60,6 @@ Library
 .codex
 .grok
 .pi
+.prime
 .config/mise/conf.d/ai.toml
 {{- end }}
