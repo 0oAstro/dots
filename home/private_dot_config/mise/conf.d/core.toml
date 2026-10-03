@@ -29,7 +29,8 @@ herdr = "latest"
 "aqua:sharkdp/bat" = "latest"
 "cargo:eza" = "latest"
 "aqua:jqlang/jq" = "latest"
-"aqua:charmbracelet/glow" = "latest"
+# Glow 3.0.0 hardcodes auto to dark for Markdown: charmbracelet/glow#1022.
+"aqua:charmbracelet/glow" = "2.1.2"
 "aqua:sharkdp/hyperfine" = "latest"
 # aqua's dust entry picks the Intel build on Apple silicon.
 "github:bootandy/dust" = "latest"
