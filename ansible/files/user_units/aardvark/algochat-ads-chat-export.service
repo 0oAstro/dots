@@ -6,13 +6,12 @@ After=network-online.target
 [Service]
 Type=oneshot
 WorkingDirectory=%h/Developer/algoplex/export-chats/ads-chats
-EnvironmentFile=-%h/.config/algoplex/algochat.env
+EnvironmentFile=-%h/Developer/algoplex/.env
 # Resolve the installed PostgreSQL binary without invoking mise or shell hooks.
 Environment="PATH=%h/.local/share/mise/installs/github-theseus-rs-postgresql-binaries/latest/.mise-bins:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin"
 Environment="RCLONE_CONFIG=%h/.config/rclone/rclone.conf"
-ExecStartPre=/usr/bin/python3 -B /opt/docker/prometheus/algochat-ads/monitor.py start
 ExecStart=/usr/bin/flock -w 300 %h/Developer/algoplex/chat-analysis/.export-state/export.lock /usr/bin/python3 -B %h/Developer/algoplex/export-chats/ads-chats/export_ads_chats.py --output %h/Developer/algoplex/export-chats/ads-chats/output --rclone-destination dropbox:AlgoDump/ad-chats
-ExecStopPost=/usr/bin/python3 -B /opt/docker/prometheus/algochat-ads/monitor.py finish
+ExecStopPost=%h/Developer/algoplex/export-chats/ads-chats/systemd/report-gatus.sh
 TimeoutStartSec=45min
 TimeoutStopSec=30s
 UMask=0077

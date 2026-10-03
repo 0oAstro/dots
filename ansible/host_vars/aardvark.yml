@@ -29,7 +29,6 @@ systemd_enabled_aardvark:
 # Left out: the rclone mounts, because containers hold files open on them.
 systemd_restart_on_change:
   - tailscale-udp-gro.service
-  - algochat-ads-monitor.timer
   - beszel-status.timer
   - claude-usage.timer
   - cloudflare-ip-sync.timer
@@ -55,8 +54,6 @@ docker_stacks_units:
   - glance/ops/claude-usage.timer
   - glance/ops/docker-backup-status.service
   - glance/ops/docker-backup-status.timer
-  - prometheus/systemd/algochat-ads-monitor.service
-  - prometheus/systemd/algochat-ads-monitor.timer
   - prometheus/systemd/ebs-cloudwatch-exporter.service
   - prometheus/systemd/ebs-cloudwatch-exporter.timer
 
@@ -98,4 +95,3 @@ firewalld_zones:
 # (its ExecStart pins the runtime version); only its drop-ins live here.
 user_units_enabled_aardvark:
   - algochat-ads-chat-export.timer
-  - algochat-retained-chats.timer
