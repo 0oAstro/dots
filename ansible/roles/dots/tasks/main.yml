@@ -6,6 +6,9 @@
   ansible.builtin.shell: curl -fsSL https://mise.run | MISE_INSTALL_PATH="{{ dots_mise }}" sh
   args:
     creates: "{{ dots_mise }}"
+  # A system PATH: an older mise's shims (zstd, xz) break the installer's unpack.
+  environment:
+    PATH: /usr/bin:/bin:/usr/sbin:/sbin
 
 - name: Copy the age key from the controller
   when: ansible_connection != 'local' and dots_controller_age_key | length > 0
