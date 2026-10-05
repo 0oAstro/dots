@@ -1,0 +1,71 @@
+---
+name: cow-worktrees
+description: Create copy-on-write Git worktrees on this host, or use Pi managed worktrees with explicitly opted-in Worktrunk cache copies. Use when the operator asks for CoW worktrees or isolated coding checkouts.
+---
+
+# CoW worktrees on this host
+
+Read `../../worktrees/README.md` for configuration, limitations, and recovery.
+
+## Managed Pi subagents
+
+Delegation still requires operator authorization. Use `worktree: true` on an
+otherwise authorized Pi child. The configured native allocator runs the local
+cache hook automatically; do not run it again. Keep one writer per worktree.
+
+This gives normal Git source checkout, plus upstream Worktrunk cache copying
+**only when the source repository has a reviewed `.worktreeinclude`**. Without
+that file nothing copies. No existing projects were opted in automatically.
+The adapter permits ignored `node_modules`, `target`, and `.next`/`.next/cache`
+directory roots, including monorepo paths, and rejects other selections.
+
+Before adding an allowlist, obtain operator authorization and review the **whole
+selected tree** for secrets and external/absolute symlinks. Worktrunk does not
+apply exclusions recursively inside selected directories and copies symlinks
+as-is. Do not claim recursive secret filtering or complete isolation when such
+links exist. Never auto-add `.env`, `.npmrc`, virtualenvs, runtime data, or broad
+ignored-file patterns. Read the README for `.next/cache` matching limitations.
+
+It does not make tracked source files CoW. Isolation stays opt-in:
+`worktree: false` remains the shared-cwd option for non-Git/read-only runs.
+
+## Manual CoW source checkout
+
+1. Resolve the source Git root and read its applicable instructions. Preserve
+   existing changes; do not automatically commit, stash, or overwrite them.
+2. Choose an explicit new branch and a nonexistent destination beneath
+   `~/.pi/agent/worktrees/<project>/manual-<task>`. Keep it outside the source
+   checkout and extension discovery, on the same XFS filesystem. Do not use
+   `/tmp` (tmpfs), hardlinks, or shared writable symlinks.
+3. Create the source worktree with the pinned helper already on PATH:
+
+   ```sh
+   git -C "$repo" cow-worktree add -v -b "$branch" "$worktree" HEAD
+   ```
+
+4. Verify HEAD, file materialization, and `git status` before starting a writer.
+   This third-party helper is experimental and can fall back to ordinary Git
+   checkout when reflinks are unavailable.
+5. If cache copies are useful and the source has a reviewed `.worktreeinclude`,
+   invoke the thin Worktrunk adapter once. The source must be on a named branch;
+   selected destination caches must not already exist. JSON stdin contains
+   `repoRoot` and `worktreePath`, both absolute. Use a JSON serializer, not shell
+   string interpolation. Example in Node:
+
+   ```js
+   import { spawnSync } from 'node:child_process';
+   const result = spawnSync(
+     '{{ .chezmoi.homeDir }}/.pi/agent/scripts/setup-worktree-cow.mjs', [],
+     { input: JSON.stringify({ repoRoot, worktreePath }), encoding: 'utf8' }
+   );
+   if (result.status !== 0) throw new Error('Cache setup failed; stop before writing');
+   ```
+
+6. Start Pi from the worktree. Review unfamiliar project resources before trust.
+   Git worktrees are edit isolation, not an OS/security sandbox. Never run Docker
+   stacks from these checkouts without a separate explicit deployment request.
+
+Manual worktrees are not managed/auto-cleaned by Pi. Retain until the handoff is
+durable and no process owns them. Use normal `git worktree list/remove/prune`;
+never force-remove a dirty worktree or delete its branch without authorization.
+Do not use `git cow-worktree` for subcommands other than `add`.
