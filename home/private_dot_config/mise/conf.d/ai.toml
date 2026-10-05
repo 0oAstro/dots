@@ -24,6 +24,35 @@ strip_components = 1
 # No executables; keep the tarball root off PATH.
 bin_path = "bin"
 
+# Nous Research Hermes Agent; data lives in ~/.hermes. Upstream ships no wheel
+# (PyPI is stale and setup.py refuses wheel builds), so this follows their
+# Dockerfile: release source tarball, locked uv venv on Python 3.13 (<3.14
+# required), built web dashboard and TUI. mise owns upgrades: use `mise up`,
+# not `hermes update`. Browser tools use the agent-browser above.
+[tools."http:hermes"]
+version = "latest"
+url = "https://github.com/NousResearch/hermes-agent/archive/refs/tags/v{{ version }}.tar.gz"
+version_list_url = "https://api.github.com/repos/NousResearch/hermes-agent/releases?per_page=50"
+version_json_path = ".[].tag_name"
+version_order = "semver"
+strip_components = 1
+bin_path = "bin"
+postinstall = '''
+set -eu
+cd "$MISE_TOOL_INSTALL_PATH"
+unset UV_PYTHON VIRTUAL_ENV
+npm_config_install_links=false npm install --no-audit --no-fund \
+  --workspace ui-tui --workspace web --include-workspace-root
+uv sync --locked --extra all --python 3.13
+(cd web && npm run build)
+(cd ui-tui && npm run build)
+mkdir -p bin
+ln -sf ../.venv/bin/hermes bin/hermes
+ln -sf ../.venv/bin/hermes-acp bin/hermes-acp
+# Refresh bundled skills in ~/.hermes/skills, as `hermes update` would.
+.venv/bin/python tools/skills_sync.py
+'''
+
 # On Linux, Codex's app-server daemon runs ~/.codex/packages/standalone/current,
 # which chezmoi links to this tool's `latest` install. Restart it on upgrade.
 # Servers run without the daemon (features.daemon_auto_start = false).

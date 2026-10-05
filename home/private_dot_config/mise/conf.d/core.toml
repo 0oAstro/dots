@@ -65,6 +65,8 @@ vercel = { version = "latest", allow_builds = ["esbuild"], trust_policy_excludes
 "aqua:FiloSottile/age" = "latest"
 "aqua:bitwarden/clients" = "2026.8.0"  # 2026.9 key-id backfill 404s on Vaultwarden 1.37.3
 "github:pimalaya/himalaya" = "latest"
+# Google Workspace CLI (Drive, Gmail, ...). Auth: `gws auth setup` / `gws auth login`.
+"github:googleworkspace/cli" = { version = "latest", bin = "gws" }
 
 [env]
 CLOUDSDK_PYTHON = "{{ env.HOME }}/.local/share/mise/installs/python/3.14/bin/python3"

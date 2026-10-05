@@ -34,7 +34,7 @@
   "quietStartup": "header",
   "enableInstallTelemetry": false,
   "defaultProjectTrust": "always",
-  "hideThinkingBlock": false,
+  "hideThinkingBlock": true,
   "modelThinkingLevels": {
     "bifrost/anthropic/claude-fable-5-1": "medium",
     "bifrost/anthropic/claude-opus-5-5": "medium",
@@ -51,7 +51,8 @@
     }
   },
   "extensions": [
-    "-builtin:llama.cpp"
+    "-builtin:llama.cpp",
+    "-builtin:codemode"
   ],
   "tuiMode": "fullscreen",
   "defaultTools": [
