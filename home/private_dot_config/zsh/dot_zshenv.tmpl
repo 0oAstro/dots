@@ -36,6 +36,10 @@ export CP_HOME_DIR=$XDG_DATA_HOME/cocoapods
 # its own (lib/compinit.zsh), so skip the duplicate and its insecure-dir prompt.
 skip_global_compinit=1
 export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/user/$UID}
+{{- if .server }}
+# Build and agent scratch belongs on disk, not the RAM-backed /tmp mount.
+export TMPDIR=${TMPDIR:-/var/tmp}
+{{- end }}
 
 # systemd runs the gcr ssh-agent but doesn't export its socket to non-graphical
 # shells (tmux, ssh). No ssh-add: the keys are passphrase-less and ~/.ssh/config

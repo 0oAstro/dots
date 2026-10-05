@@ -1,5 +1,9 @@
 tailscale_enabled: true
 
+# Kills the worst cgroup under memory pressure (user-1000.slice opts in).
+systemd_enabled_servers:
+  - systemd-oomd.service
+
 chezmoi_data:
   ai: true
   server: true
