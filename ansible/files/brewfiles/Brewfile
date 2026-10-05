@@ -30,7 +30,7 @@ cask "iina"
 cask "obsidian"
 cask "slack"
 cask "steam"
-cask "t3-code"
+cask "t3-code@nightly"
 cask "whatsapp"
 
 mas "Bitwarden", id: 1352778147
