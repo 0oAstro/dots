@@ -1,1 +1,0 @@
-pstack/standing.md

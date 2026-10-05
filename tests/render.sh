@@ -71,6 +71,34 @@ for p in "${profiles[@]}"; do
     fail=1
   fi
 
+  if [[ -f $home/.config/mise/conf.d/ai.toml ]]; then
+    check "Pi packages are mise-managed" python3 - "$home" "$("${cz[@]}" execute-template <"$repo/home/.chezmoiremove")" <<'PY'
+import json
+import pathlib
+import sys
+import tomllib
+
+home = pathlib.Path(sys.argv[1])
+tools = tomllib.loads((home / ".config/mise/conf.d/ai.toml").read_text())["tools"]
+package = tools["npm:@aliou/pi-processes"]
+assert package["version"] == "latest", package
+assert package["npm_args"] == "--legacy-peer-deps", package
+settings = json.loads((home / ".pi/agent/settings.json").read_text())
+assert "~/.local/share/mise/installs/npm-aliou-pi-processes/latest/lib/node_modules/@aliou/pi-processes" in settings["packages"], settings["packages"]
+assert "npm:@aliou/pi-processes" not in settings["packages"], settings["packages"]
+package = tools["npm:@sting8k/pi-vcc"]
+assert package["version"] == "latest", package
+assert package["npm_args"] == "--legacy-peer-deps", package
+assert "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/@sting8k/pi-vcc" in settings["packages"], settings["packages"]
+assert "npm:@sting8k/pi-vcc" not in settings["packages"], settings["packages"]
+assert settings["compaction"]["enabled"] is True, settings["compaction"]
+vcc = json.loads((home / ".pi/agent/pi-vcc-config.json").read_text())
+assert vcc["overrideDefaultCompaction"] is True, vcc
+assert vcc["skipForProviders"] == [], vcc
+assert ".pi/agent/pi-vcc-config.json" not in sys.argv[2].splitlines(), sys.argv[2]
+PY
+  fi
+
   while IFS= read -r f; do
     case $f in
       *.toml) check "${f#"$home"/}" python3 -c 'import sys,tomllib; tomllib.load(open(sys.argv[1],"rb"))' "$f" ;;

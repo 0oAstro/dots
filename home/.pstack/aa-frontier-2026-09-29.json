@@ -1,0 +1,877 @@
+{
+  "retrieved": "2026-09-29",
+  "sources": [
+    "https://artificialanalysis.ai/models/gpt-6-1-sol-high",
+    "https://artificialanalysis.ai/agents/coding-agents"
+  ],
+  "methodology": {
+    "intelligence": "AA Intelligence Index v4.3.2, weighted cost per task",
+    "coding": "AA Coding Agent Index v1.5; Codex vs Claude Code, not measurements in Pi/Prime",
+    "costPerSuccessProxy": "mean cost divided by index pass@1; descriptive proxy, not retry guarantee"
+  },
+  "models": [
+    {
+      "slug": "gpt-6-1-sol-high",
+      "name": "GPT-6.1 Sol (high)",
+      "releaseDate": "2026-09-29",
+      "effort": "high",
+      "intelligenceIndex": 50.2377777519769,
+      "intelligenceCostPerTask": 0.31914442375664703,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.515151515151515,
+          "costPerTask": 0.8281767981765117
+        },
+        {
+          "slug": "scicode",
+          "score": 0.55787037037037,
+          "costPerTask": 0.012967263888888888
+        }
+      ]
+    },
+    {
+      "slug": "claude-sonnet-5-5-medium",
+      "name": "Claude Sonnet 5.5 (Adaptive Reasoning, Medium Effort, Default Fallback)",
+      "releaseDate": "2026-09-28",
+      "effort": "medium",
+      "intelligenceIndex": 40.7386909594307,
+      "intelligenceCostPerTask": 0.5861822401191022,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.297979797979798,
+          "costPerTask": 2.2451861407346856
+        },
+        {
+          "slug": "scicode",
+          "score": 0.528935185185185,
+          "costPerTask": 0.013536590277777776
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-1-sol-xhigh",
+      "name": "GPT-6.1 Sol (xhigh)",
+      "releaseDate": "2026-09-29",
+      "effort": "xhigh",
+      "intelligenceIndex": 51.0377679093761,
+      "intelligenceCostPerTask": 0.39286117158850653,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.54040404040404,
+          "costPerTask": 1.0259491542428139
+        },
+        {
+          "slug": "scicode",
+          "score": 0.556712962962963,
+          "costPerTask": 0.022047979166666665
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-luna-xhigh",
+      "name": "GPT-6 Luna (xhigh)",
+      "releaseDate": "2026-09-22",
+      "effort": "xhigh",
+      "intelligenceIndex": 33.8845820217785,
+      "intelligenceCostPerTask": 0.04208218646439018,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.0808080808080808,
+          "costPerTask": 0.1981783100252545
+        },
+        {
+          "slug": "scicode",
+          "score": 0.517361111111111,
+          "costPerTask": 0.0014390868055555554
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-astra-xhigh",
+      "name": "GPT-6 Astra (xhigh)",
+      "releaseDate": "2026-09-03",
+      "effort": "xhigh",
+      "intelligenceIndex": 52.3863277108782,
+      "intelligenceCostPerTask": 2.308795912269076,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.595959595959596,
+          "costPerTask": 5.855482520522051
+        },
+        {
+          "slug": "scicode",
+          "score": 0.556712962962963,
+          "costPerTask": 0.12163322916666665
+        }
+      ]
+    },
+    {
+      "slug": "claude-sonnet-5-5-high",
+      "name": "Claude Sonnet 5.5 (Adaptive Reasoning, High Effort, Default Fallback)",
+      "releaseDate": "2026-09-28",
+      "effort": "high",
+      "intelligenceIndex": 46.7356921799024,
+      "intelligenceCostPerTask": 1.079758672715514,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.439393939393939,
+          "costPerTask": 3.0643122554616866
+        },
+        {
+          "slug": "scicode",
+          "score": 0.537037037037037,
+          "costPerTask": 0.0160004375
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-astra",
+      "name": "GPT-6 Astra (max)",
+      "releaseDate": "2026-09-03",
+      "effort": "max",
+      "intelligenceIndex": 52.673669395513,
+      "intelligenceCostPerTask": 3.2575003134834164,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.590909090909091,
+          "costPerTask": 8.498119471851334
+        },
+        {
+          "slug": "scicode",
+          "score": 0.564814814814815,
+          "costPerTask": 0.23225916666666663
+        }
+      ]
+    },
+    {
+      "slug": "claude-opus-5-5",
+      "name": "Claude Opus 5.5 (Adaptive Reasoning, Max Effort, Default Fallback)",
+      "releaseDate": "2026-09-22",
+      "effort": "max",
+      "intelligenceIndex": 57.6223698102963,
+      "intelligenceCostPerTask": 5.982012019521066,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.595959595959596,
+          "costPerTask": 13.109276120148786
+        },
+        {
+          "slug": "scicode",
+          "score": 0.668981481481482,
+          "costPerTask": 0.46911601388888885
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-luna-medium",
+      "name": "GPT-6 Luna (medium)",
+      "releaseDate": "2026-09-22",
+      "effort": "medium",
+      "intelligenceIndex": 29.4619523515762,
+      "intelligenceCostPerTask": 0.01756122553820397,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.0252525252525253,
+          "costPerTask": 0.07156543103673528
+        },
+        {
+          "slug": "scicode",
+          "score": 0.509259259259259,
+          "costPerTask": 0.0006986395833333333
+        }
+      ]
+    },
+    {
+      "slug": "claude-opus-5-5-low",
+      "name": "Claude Opus 5.5 (Adaptive Reasoning, Low Effort, Default Fallback)",
+      "releaseDate": "2026-09-22",
+      "effort": "low",
+      "intelligenceIndex": 42.3077781466168,
+      "intelligenceCostPerTask": 0.551180473909146,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.313131313131313,
+          "costPerTask": 2.077650464264361
+        },
+        {
+          "slug": "scicode",
+          "score": 0.585648148148148,
+          "costPerTask": 0.026438402777777776
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-luna-non-reasoning",
+      "name": "GPT-6 Luna (Non-reasoning)",
+      "releaseDate": "2026-09-22",
+      "effort": null,
+      "intelligenceIndex": 18.2617465935701,
+      "intelligenceCostPerTask": 0.01146983124544933,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.0151515151515152,
+          "costPerTask": 0.0446207812657598
+        },
+        {
+          "slug": "scicode",
+          "score": 0.430555555555556,
+          "costPerTask": 0.0004164618055555555
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-luna",
+      "name": "GPT-6 Luna (max)",
+      "releaseDate": "2026-09-22",
+      "effort": "max",
+      "intelligenceIndex": 37.2559686869738,
+      "intelligenceCostPerTask": 0.06792906856485216,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.126262626262626,
+          "costPerTask": 0.23621085607736897
+        },
+        {
+          "slug": "scicode",
+          "score": 0.546296296296296,
+          "costPerTask": 0.0036765802083333337
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-luna-high",
+      "name": "GPT-6 Luna (high)",
+      "releaseDate": "2026-09-22",
+      "effort": "high",
+      "intelligenceIndex": 32.1482304150837,
+      "intelligenceCostPerTask": 0.029067566599182932,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.0454545454545455,
+          "costPerTask": 0.12040055149702272
+        },
+        {
+          "slug": "scicode",
+          "score": 0.503472222222222,
+          "costPerTask": 0.0009804875000000001
+        }
+      ]
+    },
+    {
+      "slug": "claude-sonnet-5-5-xhigh",
+      "name": "Claude Sonnet 5.5 (Adaptive Reasoning, Xhigh Effort, Default Fallback)",
+      "releaseDate": "2026-09-28",
+      "effort": "xhigh",
+      "intelligenceIndex": 51.8522867021152,
+      "intelligenceCostPerTask": 2.742576603824205,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.570707070707071,
+          "costPerTask": 8.86990753731452
+        },
+        {
+          "slug": "scicode",
+          "score": 0.572916666666667,
+          "costPerTask": 0.023654777777777778
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-1-sol-medium",
+      "name": "GPT-6.1 Sol (medium)",
+      "releaseDate": "2026-09-29",
+      "effort": "medium",
+      "intelligenceIndex": 47.7833271274065,
+      "intelligenceCostPerTask": 0.21370088267875537,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.47979797979798,
+          "costPerTask": 0.6137554705459501
+        },
+        {
+          "slug": "scicode",
+          "score": 0.532407407407407,
+          "costPerTask": 0.009314833333333333
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-astra-low",
+      "name": "GPT-6 Astra (low)",
+      "releaseDate": "2026-09-03",
+      "effort": "low",
+      "intelligenceIndex": 45.7819243120341,
+      "intelligenceCostPerTask": 0.8175139285656057,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.419191919191919,
+          "costPerTask": 2.2485580260976215
+        },
+        {
+          "slug": "scicode",
+          "score": 0.540509259259259,
+          "costPerTask": 0.04250701388888889
+        }
+      ]
+    },
+    {
+      "slug": "claude-sonnet-5-5",
+      "name": "Claude Sonnet 5.5 (Adaptive Reasoning, Max Effort, Default Fallback)",
+      "releaseDate": "2026-09-28",
+      "effort": "max",
+      "intelligenceIndex": 55.9779549012591,
+      "intelligenceCostPerTask": 7.602633532969859,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.636363636363636,
+          "costPerTask": 18.763860643260998
+        },
+        {
+          "slug": "scicode",
+          "score": 0.609953703703704,
+          "costPerTask": 0.2780096319444444
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-1-sol",
+      "name": "GPT-6.1 Sol (max)",
+      "releaseDate": "2026-09-29",
+      "effort": "max",
+      "intelligenceIndex": 51.8332597011541,
+      "intelligenceCostPerTask": 0.7241670655535033,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.560606060606061,
+          "costPerTask": 1.8227634618325743
+        },
+        {
+          "slug": "scicode",
+          "score": 0.541666666666667,
+          "costPerTask": 0.04341916666666667
+        }
+      ]
+    },
+    {
+      "slug": "claude-sonnet-5-5-low",
+      "name": "Claude Sonnet 5.5 (Adaptive Reasoning, Low Effort, Default Fallback)",
+      "releaseDate": "2026-09-28",
+      "effort": "low",
+      "intelligenceIndex": 35.8430309275022,
+      "intelligenceCostPerTask": 0.41439222745942095,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.207070707070707,
+          "costPerTask": 1.8426878944390828
+        },
+        {
+          "slug": "scicode",
+          "score": 0.490740740740741,
+          "costPerTask": 0.012945277777777778
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-luna-low",
+      "name": "GPT-6 Luna (low)",
+      "releaseDate": "2026-09-22",
+      "effort": "low",
+      "intelligenceIndex": 20.9225480080866,
+      "intelligenceCostPerTask": 0.0045215478273067,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0,
+          "costPerTask": 0.005448337009257049
+        },
+        {
+          "slug": "scicode",
+          "score": 0.46875,
+          "costPerTask": 0.0005107920138888889
+        }
+      ]
+    },
+    {
+      "slug": "claude-opus-5-5-xhigh",
+      "name": "Claude Opus 5.5 (Adaptive Reasoning, Xhigh Effort, Default Fallback)",
+      "releaseDate": "2026-09-22",
+      "effort": "xhigh",
+      "intelligenceIndex": 55.9873505840139,
+      "intelligenceCostPerTask": 3.459110175822289,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.595959595959596,
+          "costPerTask": 8.77835633170967
+        },
+        {
+          "slug": "scicode",
+          "score": 0.650462962962963,
+          "costPerTask": 0.06755947222222222
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-astra-high",
+      "name": "GPT-6 Astra (high)",
+      "releaseDate": "2026-09-03",
+      "effort": "high",
+      "intelligenceIndex": 50.9191471636152,
+      "intelligenceCostPerTask": 1.7252530861048456,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.54040404040404,
+          "costPerTask": 4.0469926217499435
+        },
+        {
+          "slug": "scicode",
+          "score": 0.554398148148148,
+          "costPerTask": 0.06957760416666667
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-1-sol-low",
+      "name": "GPT-6.1 Sol (low)",
+      "releaseDate": "2026-09-29",
+      "effort": "low",
+      "intelligenceIndex": 42.0835618555848,
+      "intelligenceCostPerTask": 0.13075190869859377,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.308080808080808,
+          "costPerTask": 0.3829418451399688
+        },
+        {
+          "slug": "scicode",
+          "score": 0.532407407407407,
+          "costPerTask": 0.008424590277777777
+        }
+      ]
+    },
+    {
+      "slug": "gpt-6-astra-medium",
+      "name": "GPT-6 Astra (medium)",
+      "releaseDate": "2026-09-03",
+      "effort": "medium",
+      "intelligenceIndex": 49.5704363034369,
+      "intelligenceCostPerTask": 1.5406493220021167,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.494949494949495,
+          "costPerTask": 4.430107637760555
+        },
+        {
+          "slug": "scicode",
+          "score": 0.541666666666667,
+          "costPerTask": 0.05087506944444444
+        }
+      ]
+    },
+    {
+      "slug": "claude-opus-5-5-medium",
+      "name": "Claude Opus 5.5 (Adaptive Reasoning, Medium Effort, Default Fallback)",
+      "releaseDate": "2026-09-22",
+      "effort": "medium",
+      "intelligenceIndex": 51.2434931792768,
+      "intelligenceCostPerTask": 1.3360093438976588,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.525252525252525,
+          "costPerTask": 4.042978672513101
+        },
+        {
+          "slug": "scicode",
+          "score": 0.592592592592593,
+          "costPerTask": 0.03547125
+        }
+      ]
+    },
+    {
+      "slug": "claude-opus-5-5-high",
+      "name": "Claude Opus 5.5 (Adaptive Reasoning, High Effort, Default Fallback)",
+      "releaseDate": "2026-09-22",
+      "effort": "high",
+      "intelligenceIndex": 53.5831959822067,
+      "intelligenceCostPerTask": 1.822504718771704,
+      "evaluations": [
+        {
+          "slug": "terminalbench-4-0",
+          "score": 0.565656565656566,
+          "costPerTask": 5.118905183990514
+        },
+        {
+          "slug": "scicode",
+          "score": 0.604166666666667,
+          "costPerTask": 0.04019579166666666
+        }
+      ]
+    }
+  ],
+  "codingAgents": [
+    {
+      "label": "Codex - GPT-6 Astra (max)",
+      "score": 0.6164504498789397,
+      "cost": 7.46709735138597,
+      "costPerSuccess": 12.113053616640851,
+      "evals": {
+        "deep-swe-v1.1": 0.675516224188791,
+        "swe-atlas-qna": 0.618279569892473,
+        "terminal-bench-v4": 0.555555555555555
+      }
+    },
+    {
+      "label": "Codex - GPT-6.1 Sol (max)",
+      "score": 0.6014750704302517,
+      "cost": 1.554119528390054,
+      "costPerSuccess": 2.583846953587535,
+      "evals": {
+        "deep-swe-v1.1": 0.696165191740413,
+        "swe-atlas-qna": 0.577956989247312,
+        "terminal-bench-v4": 0.53030303030303
+      }
+    },
+    {
+      "label": "Claude Code - Sonnet 5.5 (max)",
+      "score": 0.6835783373750831,
+      "cost": 14.190800796369649,
+      "costPerSuccess": 20.759582363100954,
+      "evals": {
+        "deep-swe-v1.1": 0.71976401179941,
+        "swe-atlas-qna": 0.669354838709677,
+        "terminal-bench-v4": 0.661616161616162
+      }
+    },
+    {
+      "label": "Antigravity SDK - Gemini 3.8 Flash (high)",
+      "score": 0.4186315529449987,
+      "cost": 2.4673922004125437,
+      "costPerSuccess": 5.8939470354178445,
+      "evals": {
+        "deep-swe-v1.1": 0.657817109144543,
+        "swe-atlas-qna": 0.451612903225807,
+        "terminal-bench-v4": 0.146464646464646
+      }
+    },
+    {
+      "label": "Muse Code - Muse Spark 1.3 (max)",
+      "score": 0.5430273329930766,
+      "cost": 3.977504096947204,
+      "costPerSuccess": 7.32468488284717,
+      "evals": {
+        "deep-swe-v1.1": 0.716814159292036,
+        "swe-atlas-qna": 0.594086021505376,
+        "terminal-bench-v4": 0.318181818181818
+      }
+    },
+    {
+      "label": "Grok Build - Grok 4.7 (xhigh)",
+      "score": 0.5626764360706693,
+      "cost": 8.817468730473037,
+      "costPerSuccess": 15.670584665048258,
+      "evals": {
+        "deep-swe-v1.1": 0.725663716814159,
+        "swe-atlas-qna": 0.629032258064516,
+        "terminal-bench-v4": 0.333333333333333
+      }
+    },
+    {
+      "label": "Claude Code - Fable 5.1 (max) (with fallback)",
+      "score": 0.6222249615769457,
+      "cost": 12.388092375137534,
+      "costPerSuccess": 19.90934652274569,
+      "evals": {
+        "deep-swe-v1.1": 0.64306784660767,
+        "swe-atlas-qna": 0.647849462365591,
+        "terminal-bench-v4": 0.575757575757576
+      }
+    },
+    {
+      "label": "Claude Code - Opus 5.5 (max)",
+      "score": 0.659885802549234,
+      "cost": 13.036383418426828,
+      "costPerSuccess": 19.75551431484872,
+      "evals": {
+        "deep-swe-v1.1": 0.684365781710915,
+        "swe-atlas-qna": 0.663978494623656,
+        "terminal-bench-v4": 0.631313131313131
+      }
+    },
+    {
+      "label": "Grok Build - Grok 4.6 (xhigh)",
+      "score": 0.4696895205744764,
+      "cost": 3.5701432805280535,
+      "costPerSuccess": 7.601070758745943,
+      "evals": {
+        "deep-swe-v1.1": 0.648967551622419,
+        "swe-atlas-qna": 0.583333333333333,
+        "terminal-bench-v4": 0.176767676767677
+      }
+    },
+    {
+      "label": "Codex - GPT-5.6 Luna (max)",
+      "score": 0.4322468668029613,
+      "cost": 0.43802256393839384,
+      "costPerSuccess": 1.0133620335484477,
+      "evals": {
+        "deep-swe-v1.1": 0.663716814159292,
+        "swe-atlas-qna": 0.486559139784946,
+        "terminal-bench-v4": 0.146464646464646
+      }
+    },
+    {
+      "label": "Muse Code - Muse Spark 1.3 (xhigh)",
+      "score": 0.482993172759088,
+      "cost": 3.467754041474145,
+      "costPerSuccess": 7.179716478526343,
+      "evals": {
+        "deep-swe-v1.1": 0.731563421828909,
+        "swe-atlas-qna": 0.545698924731183,
+        "terminal-bench-v4": 0.171717171717172
+      }
+    },
+    {
+      "label": "Codex - GPT-6.1 Sol (xhigh) ({'reasoning_effort': 'xhigh'})",
+      "score": 0.6290776736822983,
+      "cost": 1.0397081014409635,
+      "costPerSuccess": 1.6527499622662574,
+      "evals": {
+        "deep-swe-v1.1": 0.731563421828909,
+        "swe-atlas-qna": 0.610215053763441,
+        "terminal-bench-v4": 0.545454545454545
+      }
+    },
+    {
+      "label": "Codex - DeepSeek V4 Pro 0813 (max)",
+      "score": 0.4305203524444174,
+      "cost": 0.23804610720792058,
+      "costPerSuccess": 0.5529264896684616,
+      "evals": {
+        "deep-swe-v1.1": 0.572271386430678,
+        "swe-atlas-qna": 0.618279569892473,
+        "terminal-bench-v4": 0.101010101010101
+      }
+    },
+    {
+      "label": "Codex - GPT-6 Sol (max)",
+      "score": 0.5666259127577997,
+      "cost": 2.989729004180416,
+      "costPerSuccess": 5.276371829924331,
+      "evals": {
+        "deep-swe-v1.1": 0.690265486725664,
+        "swe-atlas-qna": 0.575268817204301,
+        "terminal-bench-v4": 0.434343434343434
+      }
+    },
+    {
+      "label": "Claude Code - Sonnet 5.5 (medium)",
+      "score": 0.4588397535157457,
+      "cost": 0.6187507753025301,
+      "costPerSuccess": 1.3485116983903551,
+      "evals": {
+        "deep-swe-v1.1": 0.654867256637168,
+        "swe-atlas-qna": 0.448924731182796,
+        "terminal-bench-v4": 0.272727272727273
+      }
+    },
+    {
+      "label": "Claude Code - Sonnet 5.5 (low)",
+      "score": 0.420593075103495,
+      "cost": 0.48311011474147336,
+      "costPerSuccess": 1.1486402019876216,
+      "evals": {
+        "deep-swe-v1.1": 0.619469026548673,
+        "swe-atlas-qna": 0.389784946236559,
+        "terminal-bench-v4": 0.252525252525253
+      }
+    },
+    {
+      "label": "Claude Code - Opus 5 (max)",
+      "score": 0.5972636729844837,
+      "cost": 10.789154699257413,
+      "costPerSuccess": 18.064307586873284,
+      "evals": {
+        "deep-swe-v1.1": 0.625368731563422,
+        "swe-atlas-qna": 0.620967741935484,
+        "terminal-bench-v4": 0.545454545454545
+      }
+    },
+    {
+      "label": "Codex - GPT-6.1 Sol (medium) ({'reasoning_effort': 'medium'})",
+      "score": 0.6141474695571183,
+      "cost": 0.7046746644898908,
+      "costPerSuccess": 1.1474030252018372,
+      "evals": {
+        "deep-swe-v1.1": 0.71976401179941,
+        "swe-atlas-qna": 0.60752688172043,
+        "terminal-bench-v4": 0.515151515151515
+      }
+    },
+    {
+      "label": "Codex - GPT-5.6 Sol (max) ({'reasoning_effort': 'max'})",
+      "score": 0.54559127289644,
+      "cost": 6.353318230693071,
+      "costPerSuccess": 11.644831114992943,
+      "evals": {
+        "deep-swe-v1.1": 0.722713864306785,
+        "swe-atlas-qna": 0.540322580645161,
+        "terminal-bench-v4": 0.373737373737374
+      }
+    },
+    {
+      "label": "Devin Fusion CLI - Claude Fable 5.1 XHigh + SWE-2 Medium",
+      "score": 0.6168255492406223,
+      "cost": 7.897126985217273,
+      "costPerSuccess": 12.802853245847995,
+      "evals": {
+        "deep-swe-v1.1": 0.631268436578171,
+        "swe-atlas-qna": 0.658602150537635,
+        "terminal-bench-v4": 0.560606060606061
+      }
+    },
+    {
+      "label": "Claude Code - Qwen3.8 Max",
+      "score": 0.43265296412598736,
+      "cost": 3.478965577837015,
+      "costPerSuccess": 8.041007149609982,
+      "evals": {
+        "deep-swe-v1.1": 0.510324483775811,
+        "swe-atlas-qna": 0.620967741935484,
+        "terminal-bench-v4": 0.166666666666667
+      }
+    },
+    {
+      "label": "Devin Fusion CLI - GPT-6 Astra XHigh + SWE-2 Medium",
+      "score": 0.588884131062264,
+      "cost": 4.536492777821779,
+      "costPerSuccess": 7.703540541394086,
+      "evals": {
+        "deep-swe-v1.1": 0.672566371681416,
+        "swe-atlas-qna": 0.594086021505376,
+        "terminal-bench-v4": 0.5
+      }
+    },
+    {
+      "label": "Codex - GPT-6 Luna (max) ({'reasoning_effort': 'max'})",
+      "score": 0.4107438934016153,
+      "cost": 0.17591172304455457,
+      "costPerSuccess": 0.42827593025845034,
+      "evals": {
+        "deep-swe-v1.1": 0.63716814159292,
+        "swe-atlas-qna": 0.443548387096774,
+        "terminal-bench-v4": 0.151515151515152
+      }
+    },
+    {
+      "label": "Claude Code - Sonnet 5.5 (xhigh)",
+      "score": 0.628713868151493,
+      "cost": 3.3333865348734886,
+      "costPerSuccess": 5.30191348359169,
+      "evals": {
+        "deep-swe-v1.1": 0.684365781710914,
+        "swe-atlas-qna": 0.620967741935484,
+        "terminal-bench-v4": 0.580808080808081
+      }
+    },
+    {
+      "label": "Claude Code - Sonnet 5.5 (high)",
+      "score": 0.5501249049636148,
+      "cost": 1.235497127172719,
+      "costPerSuccess": 2.2458483810225514,
+      "evals": {
+        "deep-swe-v1.1": 0.666666666666667,
+        "swe-atlas-qna": 0.564516129032258,
+        "terminal-bench-v4": 0.419191919191919
+      }
+    },
+    {
+      "label": "Codex - DeepSeek V4 Flash 0731 (max)",
+      "score": 0.3874247758775307,
+      "cost": 0.08506419165060494,
+      "costPerSuccess": 0.21956311766053568,
+      "evals": {
+        "deep-swe-v1.1": 0.542772861356932,
+        "swe-atlas-qna": 0.513440860215054,
+        "terminal-bench-v4": 0.106060606060606
+      }
+    },
+    {
+      "label": "Codex - GPT-6.1 Sol (high) ({'reasoning_effort': 'high'})",
+      "score": 0.6014923716179784,
+      "cost": 0.8892413135295484,
+      "costPerSuccess": 1.4783916729276925,
+      "evals": {
+        "deep-swe-v1.1": 0.705014749262537,
+        "swe-atlas-qna": 0.599462365591398,
+        "terminal-bench-v4": 0.5
+      }
+    },
+    {
+      "label": "Codex - GPT-6.1 Sol (low) ({'reasoning_effort': 'low'})",
+      "score": 0.5721634943016617,
+      "cost": 0.49880364510270725,
+      "costPerSuccess": 0.8717851629305855,
+      "evals": {
+        "deep-swe-v1.1": 0.675516224188791,
+        "swe-atlas-qna": 0.551075268817204,
+        "terminal-bench-v4": 0.48989898989899
+      }
+    },
+    {
+      "label": "Kimi Code CLI - Kimi K3",
+      "score": 0.519259105470924,
+      "cost": 5.047195443300332,
+      "costPerSuccess": 9.719994103373407,
+      "evals": {
+        "deep-swe-v1.1": 0.684365781710915,
+        "swe-atlas-qna": 0.661290322580645,
+        "terminal-bench-v4": 0.212121212121212
+      }
+    },
+    {
+      "label": "Opencode - GLM-5.3 ({'reasoning_effort': 'max'})",
+      "score": 0.5355484140097326,
+      "cost": 4.241385833751375,
+      "costPerSuccess": 7.919705712496602,
+      "evals": {
+        "deep-swe-v1.1": 0.613569321533923,
+        "swe-atlas-qna": 0.594086021505376,
+        "terminal-bench-v4": 0.398989898989899
+      }
+    }
+  ],
+  "codingParetoFrontier": [
+    "Claude Code - Sonnet 5.5 (max)",
+    "Claude Code - Opus 5.5 (max)",
+    "Codex - GPT-5.6 Luna (max)",
+    "Codex - GPT-6.1 Sol (xhigh) ({'reasoning_effort': 'xhigh'})",
+    "Codex - DeepSeek V4 Pro 0813 (max)",
+    "Codex - GPT-6.1 Sol (medium) ({'reasoning_effort': 'medium'})",
+    "Codex - GPT-6 Luna (max) ({'reasoning_effort': 'max'})",
+    "Codex - DeepSeek V4 Flash 0731 (max)",
+    "Codex - GPT-6.1 Sol (low) ({'reasoning_effort': 'low'})"
+  ]
+}

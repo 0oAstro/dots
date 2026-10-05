@@ -13,8 +13,13 @@
     "bifrost/azure/fw-glm-5.3"
   ],
   "packages": [
-    "npm:@aliou/pi-processes"
+    "~/.local/share/mise/installs/npm-aliou-pi-processes/latest/lib/node_modules/@aliou/pi-processes",
+    "~/.local/share/mise/installs/http-pstack/latest",
+    "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/@sting8k/pi-vcc"
   ],
+  "compaction": {
+    "enabled": true
+  },
   "firecrawl-web": {
     "fetchModel": "bifrost/azure/gpt-6-luna"
   },
@@ -47,9 +52,6 @@
   },
   "extensions": [
     "-builtin:llama.cpp"
-  ],
-  "skills": [
-    "~/.pi/agent/pstack-src/pstack/skills"
   ],
   "tuiMode": "fullscreen",
   "defaultTools": [

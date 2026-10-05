@@ -4,9 +4,25 @@
 [tools]
 claude-code = "latest"
 "aqua:earendil-works/pi" = "latest"
+"npm:@aliou/pi-processes" = { version = "latest", npm_args = "--legacy-peer-deps" }
+"npm:@sting8k/pi-vcc" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "aqua:vercel-labs/agent-browser" = "latest"
 # Pi's subagent worktree hook (~/.pi/agent/scripts/setup-worktree-cow.mjs) runs `wt`.
 "aqua:max-sixty/worktrunk" = "latest"
+
+# pstack: michael-denyer's Claude Code/Codex/Pi port of cursor/plugins/pstack.
+# Claude Code (~/.claude/skills/pstack) and Pi (settings packages) both read it
+# in place through the `latest` link, so `mise upgrade` is the whole update.
+# The http backend has no release dates, so minimum_release_age cannot hold it.
+[tools."http:pstack"]
+version = "latest"
+url = "https://github.com/michael-denyer/pstack-claude/archive/refs/tags/v{{ version }}.tar.gz"
+version_list_url = "https://github.com/michael-denyer/pstack-claude/releases.atom"
+version_regex = 'releases/tag/v(\d+\.\d+\.\d+)'
+version_order = "semver"
+strip_components = 1
+# No executables; keep the tarball root off PATH.
+bin_path = "bin"
 
 # On Linux, Codex's app-server daemon runs ~/.codex/packages/standalone/current,
 # which chezmoi links to this tool's `latest` install. Restart it on upgrade.

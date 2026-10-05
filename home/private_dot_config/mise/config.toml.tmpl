@@ -3,12 +3,15 @@
 
 [settings]
 # Hold new releases for 24h as a supply-chain safety window, except for
-# agent harnesses, which should update immediately.
+# agent harnesses and Pi extensions, which should update immediately.
 minimum_release_age = "24h"
 minimum_release_age_excludes = [
   "claude-code",
   "aqua:openai/codex",
   "aqua:earendil-works/pi",
+  "npm:@aliou/pi-processes",
+  "npm:@sting8k/pi-vcc",
+  "http:pstack",
   "http:prime-agent",
   "http:cursor",
   "http:grok",
