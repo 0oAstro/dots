@@ -3,7 +3,7 @@
   .format ("json" or "toml"). modify_ files use this for app-owned configs:
   keys from the repo win; keys the app writes for itself (trusted projects,
   last-seen versions, model picks) survive. Managed values replace outright,
-  so false and "" apply too.
+  so false and "" apply too. JSON ends with one newline (toPrettyJson's).
 */ -}}
 {{- $toml := eq .format "toml" -}}
 {{- $cur := dict -}}
@@ -23,4 +23,4 @@
 {{-     $_ := set $cur $k $v -}}
 {{-   end -}}
 {{- end -}}
-{{- if $toml }}{{ toToml $cur }}{{ else }}{{ toPrettyJson "  " $cur }}{{ "\n" }}{{ end -}}
+{{- if $toml }}{{ toToml $cur }}{{ else }}{{ toPrettyJson "  " $cur }}{{ end -}}

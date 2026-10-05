@@ -91,8 +91,10 @@ case "$dir" in */acad/fall_2026/*) label=${label%% - *} ;; esac
 '''
 
 [theme]
-# Follows Ghostty's light/dark theme pair.
-auto_switch = true
+# Use the terminal's own palette (Ghostty's theme); dark_name/light_name only
+# apply if auto_switch is turned back on.
+name = "terminal"
+auto_switch = false
 dark_name = "kanagawa"
 light_name = "kanagawa-lotus"
 

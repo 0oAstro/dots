@@ -2,4 +2,5 @@
 {{- $current := dict -}}
 {{- if .chezmoi.stdin }}{{ $current = fromJson .chezmoi.stdin }}{{ end -}}
 {{- range $key := list "subagents" "skills" }}{{ $_ := unset $current $key }}{{ end -}}
-{{- includeTemplate "merge" (dict "current" (toJson $current) "managed" (includeTemplate "pi-settings.json" .) "format" "json") -}}
+{{- /* Pi saves this file without a final newline. */ -}}
+{{- includeTemplate "merge" (dict "current" (toJson $current) "managed" (includeTemplate "pi-settings.json" .) "format" "json") | trimSuffix "\n" -}}
