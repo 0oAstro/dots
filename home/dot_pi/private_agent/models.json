@@ -2,6 +2,7 @@
   "providers": {
     "bifrost": {
       "baseUrl": "https://bifrost.shau.me/openai/v1",
+      "apiKey": "$BIFROST_VIRTUAL_KEY",
       "models": [
         {
           "id": "azure/gpt-6-luna",
