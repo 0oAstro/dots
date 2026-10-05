@@ -64,7 +64,7 @@
 - name: Remember changed units
   ansible.builtin.set_fact:
     docker_stacks_units_changed: "{{ docker_stacks_units_copied.results | default([]) | selectattr('changed') | map(attribute='dest') | list }}"
-    systemd_enabled_docker_stacks: "{{ (docker_stacks_units | default([]) | map('basename') | select('match', '.*\\.timer$') | list) + ['docker.service'] }}"
+    systemd_enabled_docker_stacks: "{{ (docker_stacks_units | default([]) | map('basename') | select('match', '.*\\.(timer|path)$') | list) + ['docker.service'] }}"
 
 - name: Shared networks
   ansible.builtin.command: sh networks.sh

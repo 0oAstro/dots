@@ -58,6 +58,8 @@ gcloud = { version = "latest", depends = ["python"] }
 vercel = { version = "latest", allow_builds = ["esbuild"], trust_policy_excludes = ["undici"] }
 # Neon's standalone macOS build is x86_64-only; the npm package runs anywhere.
 "npm:neonctl" = "latest"
+# Cloudflare's cf CLI; caddy/cloudflare-dns-sync.py in the docker repo calls it.
+"npm:cf" = "1.0.0-beta.12"  # mise resolves "latest" to 0.15, which predates `dns records`
 
 "aqua:rclone/rclone" = "latest"
 "aqua:FiloSottile/age" = "latest"

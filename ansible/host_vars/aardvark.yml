@@ -31,6 +31,7 @@ systemd_restart_on_change:
   - tailscale-udp-gro.service
   - beszel-status.timer
   - claude-usage.timer
+  - cloudflare-dns-sync.path
   - cloudflare-ip-sync.timer
   - docker-backup-status.timer
   - docker-backup.timer
@@ -42,10 +43,12 @@ docker_stacks_repo: https://github.com/0oAstro/aardvark-docker.git
 docker_stacks_dir: /opt/docker
 docker_stacks_owner: ec2-user
 # Units the stacks own, by repo path; installed to /etc/systemd/system.
-# Timers are enabled; their oneshot services stay static.
+# Timers and path units are enabled; their oneshot services stay static.
 docker_stacks_units:
   - backup/docker-backup.service
   - backup/docker-backup.timer
+  - caddy/systemd/cloudflare-dns-sync.path
+  - caddy/systemd/cloudflare-dns-sync.service
   - caddy/systemd/cloudflare-ip-sync.service
   - caddy/systemd/cloudflare-ip-sync.timer
   - glance/ops/beszel-status.service
