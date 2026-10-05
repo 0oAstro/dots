@@ -6,12 +6,13 @@
 - name: macOS
   hosts: macs
   roles:
+    # dots first: Homebrew services read config chezmoi writes (beszel-agent's env).
+    - {role: dots, tags: [dots]}
     - {role: homebrew, tags: [homebrew]}
     - {role: login_shell, tags: [login_shell]}
     - {role: macos_defaults, tags: [macos_defaults]}
     - {role: macos_firewall, tags: [macos_firewall]}
     - {role: launchd_agents, tags: [launchd_agents]}
-    - {role: dots, tags: [dots]}
 
 - name: Linux
   hosts: linux

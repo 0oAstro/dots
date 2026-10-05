@@ -7,6 +7,10 @@ homebrew_brewfile_srcs:
 
 login_shell: /opt/homebrew/bin/zsh # Brewfile's zsh
 
+# The system Python: a discovered python3 may be a mise shim that fails on an
+# untrusted config.
+ansible_python_interpreter: "{{ ansible_playbook_python if ansible_connection == 'local' else '/usr/bin/python3' }}"
+
 # Every Mac gets these. Values match thunderchief on 2026-10-01.
 # kill: the process to restart after a change so it rereads its defaults.
 macos_defaults:
