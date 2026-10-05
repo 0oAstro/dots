@@ -1,0 +1,15 @@
+[Unit]
+Description=Herdr server for the %i session (remote machines attach to it)
+After=network-online.target
+
+[Service]
+WorkingDirectory=%h
+Environment=HERDR_SESSION=%i
+# A server started by hand or by a client already owns the socket; skip.
+ExecCondition=/bin/sh -c '! %h/.local/share/mise/installs/herdr/latest/herdr --session %i status server | grep -q "status: running"'
+ExecStart=%h/.local/share/mise/installs/herdr/latest/herdr server
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

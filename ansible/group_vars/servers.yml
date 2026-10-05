@@ -13,3 +13,6 @@ chezmoi_data:
 user_units_enabled_servers:
   - bifrost-mitm.service
   - claude-rc.service
+  # One Herdr session per client machine (herdr machine add ... --session <mac>).
+  - herdr@thunderchief.service
+  - herdr@blackbird.service
