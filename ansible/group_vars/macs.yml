@@ -28,6 +28,7 @@ macos_defaults:
   - {domain: NSGlobalDomain, key: NSTableViewDefaultSizeMode, type: int, value: 2}
   - {domain: NSGlobalDomain, key: NSNavPanelExpandedStateForSaveMode, type: bool, value: true}
   - {domain: NSGlobalDomain, key: NSDocumentSaveNewDocumentsToCloud, type: bool, value: false}
+  - {domain: NSGlobalDomain, key: ComputerUseAllowForbiddenTargets, type: bool, value: true}
   - {domain: com.apple.WindowManager, key: EnableTiledWindowMargins, type: bool, value: false}
   - {domain: com.apple.universalaccess, key: reduceMotion, type: bool, value: false}
   # Trackpad

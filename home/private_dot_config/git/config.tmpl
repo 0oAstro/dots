@@ -1,7 +1,14 @@
 [user]
+{{- if eq .host "blackbird" }}
+	# Hemant's Mac: merak-max everywhere, signed with his own key; gh is logged in as him.
+	name = merak-max
+	email = 181515478+merak-max@users.noreply.github.com
+	signingKey = ~/.ssh/github_hemant
+{{- else }}
 	name = 0oAstro
 	email = 79555780+0oAstro@users.noreply.github.com
 	signingKey = {{ if eq .chezmoi.os "darwin" }}ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJfml6YGLlOvm7VICn5K/G05N6JkHVLtWtpDL7ejvlvB{{ else }}~/.ssh/github{{ end }}
+{{- end }}
 
 [commit]
 	gpgSign = true

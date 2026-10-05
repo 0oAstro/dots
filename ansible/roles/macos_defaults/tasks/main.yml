@@ -30,6 +30,11 @@
   loop_control:
     label: "{{ item.domain }} {{ item.key }} = {{ item.value }}"
   register: macos_defaults_set
+  # Check mode skips the delete above, so a retyped key reports a mismatch here.
+  changed_when: macos_defaults_set.changed or macos_defaults_retyped
+  failed_when: macos_defaults_set.failed | default(false) and not macos_defaults_retyped
+  vars:
+    macos_defaults_retyped: "{{ ansible_check_mode and 'Type mismatch' in macos_defaults_set.msg | default('') }}"
 
 - name: Restart what reads them
   ansible.builtin.command: killall {{ item }}

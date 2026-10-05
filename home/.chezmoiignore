@@ -14,7 +14,7 @@
 {{- end }}
 
 # Only this host's SSH config.
-{{- range $h := list "aardvark" "thunderchief" }}
+{{- range $h := list "aardvark" "blackbird" "thunderchief" }}
 {{-   if ne $h $.host }}
 .ssh/config.d/{{ $h }}
 {{-   end }}
@@ -39,6 +39,8 @@
 {{- else }}
 # macOS only
 Library
+.ssh/config.d/macs
+.ssh/keys
 .config/zsh/.zprofile
 .config/zsh/config/ui/clipboard.zsh
 .config/ghostty
