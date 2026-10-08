@@ -5,7 +5,7 @@ After=network-online.target
 [Service]
 ExecStart=%h/.local/bin/mitmdump --listen-host 127.0.0.1 --listen-port 18899 \
   --allow-hosts '^api\\.anthropic\\.com(:443)?$' \
-  --set stream_large_bodies=1m --set flow_detail=0 --set termlog_verbosity=warn \
+  --set stream_large_bodies=64m --set flow_detail=0 --set termlog_verbosity=warn \
   -s %h/.config/bifrost-mitm/addon.py
 Restart=on-failure
 RestartSec=2
