@@ -17,6 +17,8 @@ model_reasoning_summary = "detailed"
 show_raw_agent_reasoning = false
 web_search = "live"
 service_tier = "default"
+developer_instructions = '''
+{{ include ".me/AGENTS.md" }}'''
 
 [model_providers.azure]
 name = "Azure OpenAI"
