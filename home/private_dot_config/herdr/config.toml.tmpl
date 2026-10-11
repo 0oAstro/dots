@@ -91,10 +91,9 @@ case "$dir" in */acad/fall_2026/*) label=${label%% - *} ;; esac
 '''
 
 [theme]
-# Use the terminal's own palette (Ghostty's theme); dark_name/light_name only
-# apply if auto_switch is turned back on.
-name = "terminal"
-auto_switch = false
+# Follows Ghostty's light/dark pair (Kanagawa Lotus Plus / Dragon Plus).
+name = "kanagawa"
+auto_switch = true
 dark_name = "kanagawa"
 light_name = "kanagawa-lotus"
 
@@ -128,7 +127,7 @@ pane_outer_borders = false
 pane_gaps = false
 pane_scrollbars = false
 show_agent_labels_on_pane_borders = true
-status_indicators = "dots"
+status_indicators = "symbols"
 agent_panel_sort = "spaces"
 tab_bar_right = [{ type = "zoom" }, { type = "hostname" }]
 window_title = "{hostname}: {workspace} / {tab}"

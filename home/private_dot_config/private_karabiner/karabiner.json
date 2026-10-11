@@ -35,6 +35,29 @@
                                 "type": "basic"
                             }
                         ]
+                    },
+                    {
+                        "description": "Ctrl+Option+Cmd+L: toggle macOS light/dark appearance",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "l",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "control",
+                                            "option",
+                                            "command"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "shell_command": "osascript -e 'tell application \"System Events\" to tell appearance preferences to set dark mode to not dark mode'"
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
                     }
                 ]
             },
