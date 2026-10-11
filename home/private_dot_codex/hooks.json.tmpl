@@ -1,17 +1,5 @@
 {
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash|apply_patch",
-        "hooks": [
-          {
-            "command": "sh '{{ .chezmoi.homeDir }}/.codex/no-backups.sh'",
-            "timeout": 10,
-            "type": "command"
-          }
-        ]
-      }
-    ],
     "SessionStart": [
       {
         "hooks": [
