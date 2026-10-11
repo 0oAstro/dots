@@ -8,17 +8,17 @@ perf-issue: opus @medium
 hillclimb: opus @medium
 judgment and prose: opus @high
 strongest judgment: opus @xhigh
-how explorer: opus @low
+how explorer: haiku @xhigh
 how explainer: opus @high
 why investigators: opus @medium
 why synthesizer: opus @high
 reflect tooling: opus @medium
 reflect judgment, divergent, synthesizer: opus @high
-arena runners: opus @high, sonnet @xhigh
-arena cross-judge pool: opus @high, sonnet @xhigh
+arena runners: opus @high, opus @low
+arena cross-judge pool: opus @high, opus @low
 swarm workers: opus @medium
-architect runners: opus @high, sonnet @xhigh
-interrogate reviewers: opus @high, sonnet @xhigh
+architect runners: opus @medium, opus @low
+interrogate reviewers: opus @high, opus @low
 
 default effort: session
 session hook: off

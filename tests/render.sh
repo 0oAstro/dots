@@ -75,6 +75,7 @@ for p in "${profiles[@]}"; do
     check "Pi packages are mise-managed" python3 - "$home" "$("${cz[@]}" execute-template <"$repo/home/.chezmoiremove")" <<'PY'
 import json
 import pathlib
+import re
 import sys
 import tomllib
 
@@ -92,6 +93,21 @@ assert package["npm_args"] == "--legacy-peer-deps", package
 assert "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/@sting8k/pi-vcc" in settings["packages"], settings["packages"]
 assert "npm:@sting8k/pi-vcc" not in settings["packages"], settings["packages"]
 assert settings["compaction"]["enabled"] is True, settings["compaction"]
+assert "~/.local/share/mise/installs/npm-pi-intercom/latest/lib/node_modules/pi-intercom" in settings["packages"], settings["packages"]
+pstack = next(package for package in settings["packages"] if isinstance(package, dict))
+assert pstack["skills"] == ["!principle-*"], pstack
+assert settings["firecrawl-web"]["fetchModel"] == "bifrost/anthropic/claude-haiku-5-5", settings["firecrawl-web"]
+extension_config = tomllib.loads((home / ".config/mise/conf.d/pi-global-tools.toml").read_text())
+version = extension_config["tools"]["pi-global-tools"]["version"]
+assert re.fullmatch(r"[0-9a-f]{64}", version), version
+assert extension_config["plugins"]["pi-global-tools"] == str(home / ".pi/agent/package-sources/pi-global-tools"), extension_config
+assert f"~/.local/share/mise/installs/pi-global-tools/{version}" in settings["packages"], settings["packages"]
+remove_targets = set(sys.argv[2].splitlines())
+assert ".pi/agent/extensions/codemode-gpt.ts" in remove_targets, remove_targets
+assert ".pi/agent/extensions/firecrawl-web" in remove_targets, remove_targets
+config = tomllib.loads((home / ".config/mise/config.toml").read_text())
+assert "pi-global-tools" in config["settings"]["minimum_release_age_excludes"], config["settings"]
+assert "pi-dev-extensions" in config["settings"]["minimum_release_age_excludes"], config["settings"]
 vcc = json.loads((home / ".pi/agent/pi-vcc-config.json").read_text())
 assert vcc["overrideDefaultCompaction"] is True, vcc
 assert vcc["skipForProviders"] == [], vcc

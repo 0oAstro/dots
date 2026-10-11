@@ -9,6 +9,10 @@
 
 {{- if .ai }}
 # Retired Pi extensions and their configuration. Keep histories, agents, and skills.
+.pi/agent/extensions/codemode-gpt.ts
+.pi/agent/extensions/cache-ttl.ts
+.pi/agent/package-sources/pi-global-tools/package/codemode-gpt.ts
+.pi/agent/extensions/firecrawl-web
 .pi/agent/extensions/fast-mode.ts
 .pi/agent/extensions/fast-mode.json
 .pi/agent/extensions/anthropic-sub-prompt.ts

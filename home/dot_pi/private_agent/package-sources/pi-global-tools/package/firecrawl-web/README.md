@@ -2,9 +2,11 @@
 
 Fulcrum-style Firecrawl integration for Pi. It exposes three focused tools:
 
-- `web_search` — compact Firecrawl v2 web search
-- `web_fetch` — cleaned page fetch, with optional focused extraction
-- `web_map` — site URL discovery
+- `web_search`: compact Firecrawl v2 search over web, news, images, and Alexandria data tools
+- `web_fetch`: cleaned page fetch, Firecrawl-side question/JSON extraction, or Alexandria tool execution
+- `web_map`: site URL discovery
+
+The tool surface stays at three because codemode composes them: fan out `web_fetch` with `Promise.all` instead of a batch tool, chain `web_map` and `web_fetch` instead of crawl.
 
 The extension calls Firecrawl v2 directly. `web_fetch` uses Defuddle with LinkeDOM to clean Firecrawl HTML before returning Markdown.
 
@@ -15,7 +17,18 @@ The extension calls Firecrawl v2 directly. `web_fetch` uses Defuddle with LinkeD
 - Fetch returns the source URL, HTTP status, and cache state/timestamp/age when supplied by Firecrawl. Missing cache information is reported as unknown, not fresh. Known source HTTP errors (400+) fail the tool before focused extraction.
 - `maxAge` bounds page cache age in **milliseconds**; `0` requests a fresh fetch. Omit it to retain Firecrawl's default policy. Search accepts it only with `includeContent: true`: it affects scraped pages, not search-index freshness.
 - Markdown fetches use lazily loaded Defuddle when HTML is available, falling back to Firecrawl Markdown. `onlyMainContent: false` skips local cleaning. HTML and links are not reprocessed. Screenshot/audio URLs are retained; embedded binary strings are omitted.
-- Focused extraction bounds its page input to 120,000 characters. A successful extraction reports if the model did not see the entire source. Fetch without an instruction to retrieve the complete cleaned source instead.
+- `instruction` is sent to Firecrawl as a `question` format, or a `json` format when `schema` is given. One request, about 5 credits, and no 120,000-character input cap. If Firecrawl returns no answer, the tool refetches Markdown and uses the configured `fetchModel`.
+- Model-fallback focused extraction bounds its page input to 120,000 characters. A successful extraction reports if the model did not see the entire source. Fetch without an instruction to retrieve the complete cleaned source instead.
+
+### Search sources
+
+`sources` defaults to `["web"]`. Add `"news"` or `"images"` for those result groups. `["alexandria"]` returns structured data-tool contracts for free; run one with `web_fetch({ alexandria: { provider, capability, options } })`, charged at the tool's listed price. `{ provider: "firecrawl", capability: "find-tools" }` is free and returns option contracts. Alexandria executions send an `x-request-id`, so a retried call replays instead of billing twice.
+
+`categories` restricts web results to `github`, `research`, `pdf`, `developer`, or `gov` sites. `highlights` is off by default: it returns longer query-relevant passages but measured about twice as slow (around 1.4s against 0.7s).
+
+### Rate limits
+
+On HTTP 429 the client waits `retry_after_seconds` (or `Retry-After`) and retries up to three times, only when the wait is 30 seconds or less. Longer waits fail immediately with Firecrawl's message. Waits are cancellable.
 
 ### Long output and continuation
 

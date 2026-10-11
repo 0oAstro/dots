@@ -6,6 +6,7 @@ claude-code = "latest"
 "aqua:earendil-works/pi" = "latest"
 "npm:@aliou/pi-processes" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "npm:@sting8k/pi-vcc" = { version = "latest", npm_args = "--legacy-peer-deps" }
+"npm:pi-intercom" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "aqua:vercel-labs/agent-browser" = "latest"
 # Pi's subagent worktree hook (~/.pi/agent/scripts/setup-worktree-cow.mjs) runs `wt`.
 "aqua:max-sixty/worktrunk" = "latest"
@@ -28,7 +29,9 @@ bin_path = "bin"
 # (PyPI is stale and setup.py refuses wheel builds), so this follows their
 # Dockerfile: release source tarball, locked uv venv on Python 3.13 (<3.14
 # required), built web dashboard and TUI. mise owns upgrades: use `mise up`,
-# not `hermes update`. Browser tools use the agent-browser above.
+# not `hermes update`. Instead of upstream's [all], the venv gets only MCP,
+# ACP, the dashboard, uvloop and aiohttp (homeassistant extra) for the API
+# server; Hermes lazy-installs anything else on first use.
 [tools."http:hermes"]
 version = "latest"
 url = "https://github.com/NousResearch/hermes-agent/archive/refs/tags/v{{ version }}.tar.gz"
@@ -43,7 +46,8 @@ cd "$MISE_TOOL_INSTALL_PATH"
 unset UV_PYTHON VIRTUAL_ENV
 npm_config_install_links=false npm install --no-audit --no-fund \
   --workspace ui-tui --workspace web --include-workspace-root
-uv sync --locked --extra all --python 3.13
+uv sync --locked --extra mcp --extra acp --extra web --extra uvloop \
+  --extra homeassistant --python 3.13
 (cd web && npm run build)
 (cd ui-tui && npm run build)
 mkdir -p bin

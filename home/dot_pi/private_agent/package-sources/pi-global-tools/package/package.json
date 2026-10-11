@@ -1,0 +1,16 @@
+{
+  "name": "pi-global-tools",
+  "private": true,
+  "type": "module",
+  "pi": {
+    "extensions": [
+      "./firecrawl-web/index.ts"
+    ]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*",
+    "typebox": "*"
+  }
+}

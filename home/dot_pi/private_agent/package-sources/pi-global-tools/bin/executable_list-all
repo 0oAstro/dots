@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+plugin_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+version="$(<"$plugin_dir/version")"
+[[ "$version" =~ ^[[:xdigit:]]{64}$ ]] || {
+  printf 'invalid pi-global-tools version: %s\n' "$version" >&2
+  exit 1
+}
+printf '%s\n' "$version"

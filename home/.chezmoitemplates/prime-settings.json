@@ -5,13 +5,13 @@
   "subagentDefaultModel": "bifrost/azure/gpt-6.1-sol",
   "skills": [],
   "enabledModels": [
-    "bifrost/azure/gpt-6-luna:xhigh",
-    "bifrost/anthropic/claude-sonnet-5-5:high",
+    "bifrost/azure/fw-kimi-k3:high",
+    "bifrost/azure/fw-glm-5.3-flash:high",
+    "bifrost/anthropic/claude-haiku-5-5:high",
     "bifrost/azure/gpt-6.1-sol:high",
     "bifrost/anthropic/claude-opus-5-5:medium",
     "bifrost/anthropic/claude-fable-5-1:medium",
-    "bifrost/azure/gpt-6-astra:medium",
-    "bifrost/azure/fw-glm-5.3:high"
+    "bifrost/azure/gpt-6-astra:medium"
   ],
   "httpIdleTimeoutMs": 900000,
   "retry": {

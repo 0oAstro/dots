@@ -21,7 +21,7 @@ export default function tests(pi: ExtensionAPI) {
       const temporaryDirectories = new Set<string>();
       let passed = 0;
       let failed = 0;
-      let requests: { url: string; body: any }[] = [];
+      let requests: { url: string; body: any; headers?: any }[] = [];
       const check = async (name: string, test: () => unknown) => {
         try { await test(); passed++; console.log(`PASS ${name}`); }
         catch (error) { failed++; console.error(`FAIL ${name}:`, error); }
@@ -29,7 +29,7 @@ export default function tests(pi: ExtensionAPI) {
       const mock = (payload: unknown, status = 200) => {
         requests = [];
         globalThis.fetch = async (url, init) => {
-          requests.push({ url: String(url), body: JSON.parse(String(init?.body)) });
+          requests.push({ url: String(url), body: JSON.parse(String(init?.body)), headers: init?.headers });
           return new Response(JSON.stringify(payload), { status, headers: { "Content-Type": "application/json" } });
         };
       };
@@ -56,6 +56,7 @@ export default function tests(pi: ExtensionAPI) {
           const result = await execute("web_search", { query: "nodejs mock timers" });
           assert.equal(requests[0].body.limit, 5);
           assert.deepEqual(requests[0].body.sources, ["web"]);
+          assert.equal(requests[0].body.highlights, false);
           assert.equal(requests[0].body.scrapeOptions, undefined);
           assert.doesNotMatch(text(result), /Content:/);
           assert.equal((result.details as any).fullOutputPath, undefined);
@@ -125,6 +126,79 @@ export default function tests(pi: ExtensionAPI) {
             await assert.rejects(execute("web_fetch", { url: "https://example.com", instruction: "Summarize" }), new RegExp(`HTTP ${statusCode}`));
           }
         });
+        await check("search sources, categories and non-web groups reach output", async () => {
+          mock({ success: true, data: {
+            web: [],
+            news: [{ url: "https://news.example/a", title: "Launch", snippet: "Shipped", date: "2 days ago" }],
+            images: [{ url: "https://page.example", imageUrl: "https://cdn.example/i.png", title: "Logo", imageWidth: 10, imageHeight: 20 }],
+            tools: [{ provider: "github-com", capability: "repositories/repo", description: "Repo stats", creditsCost: 5, requiresOneOf: [["repo", "url"]] }],
+          } });
+          const result = await execute("web_search", { query: "test", sources: ["news", "images", "alexandria"], categories: ["github"], highlights: true });
+          assert.deepEqual(requests[0].body.sources, ["news", "images", "alexandria"]);
+          assert.deepEqual(requests[0].body.categories, ["github"]);
+          assert.equal(requests[0].body.highlights, true);
+          assert.equal(requests[0].body.toolDetail, "summary");
+          assert.match(text(result), /News 1: Launch \(2 days ago\)/);
+          assert.match(text(result), /Image URL: https:\/\/cdn.example\/i.png/);
+          assert.match(text(result), /provider: "github-com", capability: "repositories\/repo"\} \(5 credits\)/);
+          assert.match(text(result), /Requires one of: \[\["repo","url"\]\]/);
+          assert.equal((result.details as any).resultCount, 3);
+        });
+        await check("instruction is answered by Firecrawl in one request", async () => {
+          mock({ success: true, data: { answer: "1000", metadata: { statusCode: 200, cacheState: "hit" } } });
+          const result = await execute("web_fetch", { url: "https://example.com", instruction: "Default keepAliveMsecs?", maxAge: 0 });
+          assert.equal(requests.length, 1);
+          assert.deepEqual(requests[0].body.formats, [{ type: "question", question: "Default keepAliveMsecs?" }]);
+          assert.equal(requests[0].body.maxAge, 0);
+          assert.match(text(result), /Answered by Firecrawl[\s\S]*HTTP: 200; cache=hit[\s\S]*1000/);
+          assert.equal((result.details as any).answeredBy, "firecrawl");
+        });
+        await check("schema uses Firecrawl JSON extraction", async () => {
+          mock({ success: true, data: { json: { maxSockets: "Infinity" }, metadata: { statusCode: 200 } } });
+          const schema = { type: "object", properties: { maxSockets: { type: "string" } } };
+          const result = await execute("web_fetch", { url: "https://example.com", instruction: "Agent defaults", schema });
+          assert.deepEqual(requests[0].body.formats, [{ type: "json", schema, prompt: "Agent defaults" }]);
+          assert.match(text(result), /"maxSockets": "Infinity"/);
+          await assert.rejects(execute("web_fetch", { url: "https://example.com", schema }), /schema needs an instruction/);
+        });
+        await check("alexandria runs without a URL and sends an idempotency key", async () => {
+          mock({ success: true, data: { creditsCost: 5, alexandria: [{ provider: "github-com", capability: "repositories/repo", creditsCost: 5, data: { stars: 7 } }] } });
+          const call = { provider: "github-com", capability: "repositories/repo", options: { repo: "a/b" } };
+          const result = await execute("web_fetch", { alexandria: call });
+          assert.deepEqual(requests[0].body, { alexandria: call });
+          assert.match(String(requests[0].headers["x-request-id"]), /^[0-9a-f-]{36}$/);
+          assert.match(text(result), /github-com\/repositories\/repo \(5 credits\):[\s\S]*"stars": 7/);
+          await assert.rejects(execute("web_fetch", { alexandria: call, url: "https://example.com" }), /either url or alexandria/);
+          await assert.rejects(execute("web_fetch", {}), /needs url or alexandria/);
+        });
+        await check("alexandria per-call errors are shown, not hidden", async () => {
+          mock({ success: true, data: { creditsCost: 0, alexandria: [{ provider: "x", capability: "y", error: { code: "THIRD_PARTY_DATA_TERMS_REQUIRED", message: "Accept terms" } }] } });
+          assert.match(text(await execute("web_fetch", { alexandria: { provider: "x", capability: "y" } })), /x\/y failed:[\s\S]*THIRD_PARTY_DATA_TERMS_REQUIRED/);
+        });
+        await check("429 waits for retry_after_seconds then succeeds", async () => {
+          let calls = 0;
+          globalThis.fetch = async () => {
+            calls++;
+            return calls === 1
+              ? new Response(JSON.stringify({ success: false, error: "Rate limit", retry_after_seconds: 0 }), { status: 429 })
+              : new Response(JSON.stringify(search), { status: 200 });
+          };
+          const result = await execute("web_search", { query: "test" });
+          assert.equal(calls, 2);
+          assert.match(text(result), /Test runner/);
+        });
+        await check("429 with a long wait fails fast with the server message", async () => {
+          mock({ success: false, error: "Rate limit exceeded", retry_after_seconds: 600 }, 429);
+          await assert.rejects(execute("web_search", { query: "test" }), /HTTP 429: Rate limit exceeded/);
+          assert.equal(requests.length, 1);
+        });
+        await check("abort during a 429 wait cancels promptly", async () => {
+          const controller = new AbortController();
+          globalThis.fetch = async () => new Response(JSON.stringify({ retry_after_seconds: 20 }), { status: 429 });
+          const pending = execute("web_search", { query: "test" }, controller.signal);
+          setTimeout(() => controller.abort(new Error("stop waiting")), 20);
+          await assert.rejects(pending, /stop waiting/);
+        });
         await check("onlyMainContent=false preserves original Markdown", async () => {
           mock({ success: true, data: { markdown: page, html: "<article>Wrong replacement</article>", metadata: {} } });
           const result = await execute("web_fetch", { url: "https://example.com", onlyMainContent: false });
@@ -134,7 +208,8 @@ export default function tests(pi: ExtensionAPI) {
         await check("focused fallback shares metadata and requests cleaning HTML", async () => {
           mock({ success: true, data: { markdown: page, metadata: { statusCode: 200, cacheState: "hit" } } });
           const result = await execute("web_fetch", { url: "https://example.com", instruction: "Find code", formats: ["links"] });
-          assert.deepEqual(requests[0].body.formats, ["links", "markdown", "html"]);
+          assert.deepEqual(requests[0].body.formats, [{ type: "question", question: "Find code" }]);
+          assert.deepEqual(requests[1].body.formats, ["links", "markdown", "html"]);
           assert.match(text(result), /HTTP: 200; cache=hit/);
           assert.match(text(result), /Focused extraction unavailable/);
           assert.match(text(result), /const keep/);
@@ -262,8 +337,8 @@ export default function tests(pi: ExtensionAPI) {
           await rejection;
         });
         await check("API errors retain numeric HTTP status", async () => {
-          mock({ error: "Quota" }, 429);
-          await assert.rejects(new FirecrawlClient("test").search({ query: "test", sources: ["web"] }), (error: unknown) => error instanceof FirecrawlApiError && error.status === 429);
+          mock({ error: "Quota", retry_after_seconds: 999 }, 429);
+          await assert.rejects(new FirecrawlClient("test").search({ query: "test", sources: ["web"], highlights: false }), (error: unknown) => error instanceof FirecrawlApiError && error.status === 429);
           globalThis.fetch = async () => new Response("Bad Gateway", { status: 502 });
           await assert.rejects(execute("web_search", { query: "test" }), /non-JSON response \(HTTP 502\)/);
         });
@@ -312,11 +387,18 @@ export default function tests(pi: ExtensionAPI) {
           assert.ok((await readFile((result.details as any).fullOutputPath, "utf8")).length > 40000);
           console.log(text(result));
         });
+        await check("LIVE alexandria discovery is free and parseable", async () => {
+          const result = await execute("web_search", { query: "github repository stars", sources: ["alexandria"], limit: 2 });
+          assert.match(text(result), /Tool 1: \{provider: "/);
+          assert.equal((result.details as any).creditsUsed, 0);
+          console.log(text(result));
+        });
         await check("LIVE focused output retains its source envelope", async () => {
           const result = await execute("web_fetch", { url: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429", instruction: "Return the HTTP status code and the retry guidance header NAME, not value.", maxAge: 0, maxChars: 2000 }, undefined, ctx);
           assert.match(text(result), /HTTP: 200; cache=/);
           assert.match(text(result), /Retry-After/);
           assert.equal((result.details as any).focused, true);
+          assert.equal((result.details as any).answeredBy, "firecrawl");
           console.log(text(result));
         });
       }

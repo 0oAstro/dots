@@ -2,6 +2,9 @@
 # `mise use -g` writes here; move anything worth keeping into conf.d.
 
 [settings]
+self_update.auto = true
+tool_update.global_auto = true
+
 # Hold new releases for 24h as a supply-chain safety window, except for
 # agent harnesses and Pi extensions, which should update immediately.
 minimum_release_age = "24h"
@@ -9,6 +12,8 @@ minimum_release_age_excludes = [
   "claude-code",
   "aqua:openai/codex",
   "aqua:earendil-works/pi",
+  "pi-global-tools",
+  "pi-dev-extensions",
   "npm:@aliou/pi-processes",
   "npm:@sting8k/pi-vcc",
   "http:pstack",

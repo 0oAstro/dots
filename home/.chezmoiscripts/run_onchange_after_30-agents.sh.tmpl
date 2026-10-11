@@ -1,9 +1,8 @@
 {{- if .ai -}}
 #!/bin/bash
-# Agent harness setup that is state, not config: Codex's pstack skill links
-# and extension deps. pstack itself is mise's http:pstack (conf.d/ai.toml);
+# Agent harness setup that is state, not config: Codex's pstack skill links.
+# pstack itself is mise's http:pstack (conf.d/ai.toml);
 # Claude Code and Pi load it through links and settings chezmoi manages.
-# firecrawl-web lockfile: {{ include "dot_pi/private_agent/extensions/firecrawl-web/package-lock.json" | sha256sum }}
 set -euo pipefail
 export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"
 export GIT_TERMINAL_PROMPT=0
@@ -33,29 +32,34 @@ for link in "$HOME"/.claude/skills/* "$HOME"/.codex/skills/*; do
   [[ $target == ../pstack/skills/* || ($target == "$pstack"/* && ! -e $link) ]] && rm -f "$link"
 done
 
-ext=$HOME/.pi/agent/extensions/firecrawl-web
-[[ -f $ext/package-lock.json ]] && (cd "$ext" && npm ci --silent --no-audit --no-fund)
-
 # bifrost-mitm routes Claude Code's model calls through Bifrost.
 command -v mitmdump >/dev/null || uv tool install --quiet mitmproxy
 
 # Pi reaches Claude only through Bifrost (aardvark's claude-relay holds the one
 # proxy token). Claude Code keeps its own per-machine login. Drop any Anthropic
 # OAuth that Pi's /login stored so no third Claude token persists here.
+# Bifrost requests use 1h prompt caching through the credential's env, which Pi
+# reads ahead of the process environment.
 pi_auth=$HOME/.pi/agent/auth.json
 if [[ -f $pi_auth ]]; then
   python3 - "$pi_auth" <<'PY'
 import json, os, sys
 p = sys.argv[1]
 d = json.load(open(p))
-if d.pop("anthropic", None) is not None:
+changed = d.pop("anthropic", None) is not None
+if changed:
+    print("dots: removed Pi's direct Anthropic login; Pi uses Bifrost", file=sys.stderr)
+bifrost = d.get("bifrost")
+if isinstance(bifrost, dict) and bifrost.get("env", {}).get("PI_CACHE_RETENTION") != "long":
+    bifrost.setdefault("env", {})["PI_CACHE_RETENTION"] = "long"
+    changed = True
+if changed:
     tmp = p + ".tmp"
     with open(tmp, "w") as f:
         json.dump(d, f, indent=2)
         f.write("\n")
     os.chmod(tmp, 0o600)
     os.replace(tmp, p)
-    print("dots: removed Pi's direct Anthropic login; Pi uses Bifrost", file=sys.stderr)
 PY
 fi
 
