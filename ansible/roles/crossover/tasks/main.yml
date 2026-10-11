@@ -1,34 +1,32 @@
-# brew owns CrossOver (games.Brewfile). This role holds it at crossover_version,
-# then cmas-apply patches the app bundle with cmas.sh. cmas-apply re-runs the
-# patch when the installed version changes and stamps it. Both scripts are
-# age-encrypted chezmoi files in ~/.local/bin: dots applies before this role,
-# and without the age key they are skipped and this role fails.
-- name: Installed and offered versions
-  ansible.builtin.command: "{{ homebrew_bin }} info --cask --json=v2 crossover"
-  register: crossover_info
-  changed_when: false
-  check_mode: false
-  environment: "{{ homebrew_env }}"
+# CrossOver and NotProton come from games.Brewfile. crossover-sync (chezmoi,
+# ~/.local/bin) upgrades NotProton, moves CrossOver to Homebrew's release only
+# when NotProton supports that build, then patches CrossOver with cmas.sh. The
+# dev.dots.brew-upgrade agent runs the same script twice a day. cmas.sh is
+# age-encrypted: without the age key it is missing and this role fails.
+# Patching Steam stays in NotProton: open it and click Patch once, and again
+# after Steam or CrossOver updates.
+- name: Sync CrossOver with NotProton
+  ansible.builtin.command: "{{ ansible_facts.env.HOME }}/.local/bin/crossover-sync"
+  register: crossover_sync
+  when: not ansible_check_mode # it upgrades casks and patches the app
+  changed_when: >-
+    crossover_sync.stdout_lines | select('match', '^(changed: |patched$)') | list | length > 0
 
-- name: Upgrade to crossover_version
-  ansible.builtin.command: "{{ homebrew_bin }} upgrade --cask --greedy crossover"
-  when:
-    - crossover_installed != crossover_version
-    - crossover_offered == crossover_version
-  changed_when: true
-  environment: "{{ homebrew_env }}"
-
-- name: Say so when Homebrew has moved past crossover_version
+- name: Say what is held back
   ansible.builtin.debug:
-    msg: >-
-      CrossOver {{ crossover_installed }} is installed and Homebrew offers {{ crossover_offered }},
-      but crossover_version is {{ crossover_version }}. Check NotProton's supported
-      versions, then raise crossover_version in group_vars/games.yml.
-  when:
-    - crossover_installed != crossover_version
-    - crossover_offered != crossover_version
+    msg: "{{ crossover_held }}"
+  when: crossover_sync.stdout_lines is defined and crossover_held | length > 0
+  vars:
+    crossover_held: "{{ crossover_sync.stdout_lines | select('match', '^held: ') | list }}"
 
-- name: Apply the CrossOver patch
-  ansible.builtin.command: "{{ ansible_facts.env.HOME }}/.local/bin/cmas-apply"
-  register: crossover_cmas_apply
-  changed_when: "'patched' in crossover_cmas_apply.stdout"
+- name: Steam patched?
+  ansible.builtin.command: /usr/libexec/PlistBuddy -c "Print :LSEnvironment:DYLD_INSERT_LIBRARIES" /Applications/Steam.app/Contents/Info.plist
+  register: notproton_steam
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Say Steam needs patching
+  ansible.builtin.debug:
+    msg: Steam is not patched. Open NotProton and click Patch.
+  when: notproton_steam.rc != 0

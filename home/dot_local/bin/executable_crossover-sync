@@ -1,0 +1,56 @@
+#!/bin/sh
+# Keeps CrossOver at the newest release NotProton supports, so no version is
+# pinned by hand. NotProton updates first, because a new NotProton release can
+# add CrossOver builds. CrossOver then follows Homebrew only when NotProton
+# lists the exact build that Homebrew offers. After an upgrade, cmas-apply
+# patches the new bundle again. roles/crossover and the dev.dots.brew-upgrade
+# agent run this script.
+set -eu
+
+brew=${BREW:-/opt/homebrew/bin/brew}
+notproton_app=/Applications/NotProton.app
+feed=https://www.codeweavers.com/xml/versions/cxmac.xml
+export HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_ENV_HINTS=1
+
+cask_version() {
+  "$brew" list --cask --versions "$1" 2>/dev/null | awk '{print $2}'
+}
+
+# The NotProton cask is auto_updates, so only a greedy upgrade moves it.
+notproton_before=$(cask_version notproton)
+"$brew" upgrade --cask --greedy notprotonnot/notproton/notproton >/dev/null 2>&1
+notproton_after=$(cask_version notproton)
+if [ "$notproton_before" != "$notproton_after" ]; then
+  echo "changed: notproton $notproton_before -> $notproton_after"
+fi
+
+# The app is not signed with a Developer ID; its cask asks to clear this flag.
+if xattr -p com.apple.quarantine "$notproton_app" >/dev/null 2>&1; then
+  xattr -dr com.apple.quarantine "$notproton_app"
+  echo "changed: notproton quarantine cleared"
+fi
+
+installed=$(cask_version crossover)
+offered=$("$brew" info --cask --json=v2 crossover | plutil -extract casks.0.version raw -)
+
+if [ "$installed" != "$offered" ]; then
+  # The cask names a release (26.3.0); NotProton names builds (26.3.0.39832).
+  # CodeWeavers' Sparkle feed maps one to the other.
+  build=$(curl -fsSL "$feed" |
+    grep "sparkle:shortVersionString=\"$offered\"" |
+    sed -n 's/.*sparkle:version="\([^"]*\)".*/\1/p' |
+    head -n 1)
+  supported=$(LC_ALL=C grep -a -o -E '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]{5}' \
+    "$notproton_app/Contents/MacOS/NotProtonApp" | sort -u)
+
+  if [ -z "$build" ]; then
+    echo "held: CrossOver $offered is not in CodeWeavers' feed; staying on $installed"
+  elif printf '%s\n' "$supported" | grep -qx "$build"; then
+    "$brew" upgrade --cask --greedy crossover >/dev/null
+    echo "changed: crossover $installed -> $offered ($build)"
+  else
+    echo "held: NotProton $notproton_after does not support CrossOver $offered ($build); staying on $installed"
+  fi
+fi
+
+"$HOME/.local/bin/cmas-apply"

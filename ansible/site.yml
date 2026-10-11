@@ -10,7 +10,7 @@
     - {role: dots, tags: [dots]}
     - {role: homebrew, tags: [homebrew]}
     - role: crossover
-      when: crossover_version is defined
+      when: games_crossover_sync | default(false)
       tags: [games]
     - {role: login_shell, tags: [login_shell]}
     - {role: macos_defaults, tags: [macos_defaults]}
@@ -23,9 +23,6 @@
     - role: maestral
       when: maestral_config is defined
       tags: [maestral]
-    - role: notproton
-      when: notproton_app is defined
-      tags: [games]
 
 - name: Linux
   hosts: linux

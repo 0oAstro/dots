@@ -7,6 +7,13 @@
 .config/bash
 .cache/bash
 
+{{- if not (has "games" (get . "modules" | default list)) }}
+# CrossOver upkeep left on a host that is not in the games module.
+.local/bin/crossover-sync
+.local/bin/cmas-apply
+.local/bin/cmas.sh
+{{- end }}
+
 {{- if .ai }}
 # Retired Pi extensions and their configuration. Keep histories, agents, and skills.
 .pi/agent/extensions/codemode-gpt.ts

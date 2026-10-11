@@ -28,14 +28,14 @@ macos_firewall:
 launchd_agents_macs:
   - label: dev.dots.brew-upgrade
     start_interval: 43200
-    # The trailing clause re-applies cmas.sh's CrossOver patch after cask
-    # upgrades (roles/crossover); hosts without cmas-apply skip it.
+    # The trailing clause moves NotProton and CrossOver together and patches
+    # CrossOver again (crossover-sync, games module); other hosts skip it.
     command: >-
       /bin/date &&
       /opt/homebrew/bin/brew update &&
       /opt/homebrew/bin/brew upgrade --formula &&
       /opt/homebrew/bin/brew upgrade --cask &&
-      { [ -x "$HOME/.local/bin/cmas-apply" ] && "$HOME/.local/bin/cmas-apply" || true; } &&
+      { [ -x "$HOME/.local/bin/crossover-sync" ] && "$HOME/.local/bin/crossover-sync" || true; } &&
       /opt/homebrew/bin/brew cleanup
     env:
       HOMEBREW_NO_ENV_HINTS: "1"

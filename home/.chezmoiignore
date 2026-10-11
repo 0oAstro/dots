@@ -57,6 +57,13 @@ Library
 .config/karabiner
 {{- end }}
 
+{{- if not (has "games" (get . "modules" | default list)) }}
+# CrossOver and NotProton upkeep follows the games module.
+.local/bin/crossover-sync
+.local/bin/cmas-apply
+.local/bin/cmas.sh
+{{- end }}
+
 {{- if not .ai }}
 .claude
 .codex
