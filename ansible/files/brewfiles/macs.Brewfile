@@ -1,13 +1,15 @@
-# Every Mac: apps and the few formulae mise can't provide. CLI tools belong in
-# ~/.config/mise/conf.d. The homebrew role appends <host>.Brewfile, and
-# anything installed but listed in neither gets uninstalled.
+# Every Mac: the base apps and the few formulae mise can't provide. CLI tools
+# belong in ~/.config/mise/conf.d. The homebrew role concatenates
+# <group>.Brewfile for each inventory group the host is in, then
+# <host>.Brewfile; anything installed but listed in none gets uninstalled,
+# taps included.
 
 tap "abue-ammar/tinycast", trusted: true
 tap "henrygd/beszel"
 
 brew "btop"
 brew "gcc"
-brew "mas"  # App Store apps below; needs an App Store sign-in
+brew "mas"  # App Store apps; needs an App Store sign-in
 brew "mole"  # deep clean and optimize the Mac
 brew "zsh"
 
@@ -18,23 +20,14 @@ brew "macmon"
 brew "smartmontools"
 
 cask "ghostty"
-cask "cursor"
-cask "chatgpt"  # also runs Codex's app-server and computer use
 cask "abue-ammar/tinycast/tinycast"  # launcher, hotkeys, clipboard history
 cask "tailscale-app"
 cask "rustdesk"
 cask "blip"
-
 cask "helium-browser"
-cask "iina"
+cask "notion"
 cask "obsidian"
-cask "slack"
-cask "steam"
-cask "t3-code@nightly"
-cask "whatsapp"
 
 mas "Bitwarden", id: 1352778147
 mas "uBlock Origin Lite", id: 6745342698
-mas "TestFlight", id: 899247664
 mas "Numbers", id: 361304891
-mas "Xcode", id: 497799835

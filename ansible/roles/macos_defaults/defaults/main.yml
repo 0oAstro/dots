@@ -1,4 +1,17 @@
-macos_defaults_all: "{{ macos_defaults | default([]) + macos_defaults_host | default([]) }}"
+# Every list named macos_defaults_<layer> in scope (a module, the host), plus
+# the appearance a person picks with macos_appearance (dark | light | auto).
+macos_defaults_merged: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^macos_defaults_(?!merged$|type_names$|appearance$).+')) | flatten + macos_defaults_appearance[macos_appearance | default('dark')] }}"
+# Light mode is the absence of AppleInterfaceStyle.
+macos_defaults_appearance:
+  dark:
+    - {domain: NSGlobalDomain, key: AppleInterfaceStyle, type: string, value: Dark}
+    - {domain: NSGlobalDomain, key: AppleInterfaceStyleSwitchesAutomatically, state: absent}
+  light:
+    - {domain: NSGlobalDomain, key: AppleInterfaceStyle, state: absent}
+    - {domain: NSGlobalDomain, key: AppleInterfaceStyleSwitchesAutomatically, state: absent}
+  auto:
+    - {domain: NSGlobalDomain, key: AppleInterfaceStyle, state: absent}
+    - {domain: NSGlobalDomain, key: AppleInterfaceStyleSwitchesAutomatically, type: bool, value: true}
 # osx_defaults type -> what `defaults read-type` prints
 macos_defaults_type_names:
   bool: boolean

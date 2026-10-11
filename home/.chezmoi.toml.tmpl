@@ -1,7 +1,7 @@
 {{- /*
   Machine profile. Ansible decides it from the inventory (ansible/group_vars,
-  chezmoi_data) and runs `chezmoi init --promptBool ai=…,server=…`; a manual
-  `chezmoi init` asks instead.
+  chezmoi_data) and runs `chezmoi init --promptBool ai=…,server=…
+  --promptString modules=…`; a manual `chezmoi init` asks instead.
 */ -}}
 {{- /* Not .chezmoi.hostname: it resolves through /etc/hosts, where blocklists remap 127.0.0.1. */ -}}
 {{- $host := output "uname" "-n" | trim | lower | splitList "." | first -}}
@@ -10,6 +10,8 @@
 {{- /* The prompt text is also the --promptBool key, so keep it one word. */ -}}
 {{- $ai := promptBool "ai" true -}} {{- /* Claude Code, Codex, Pi */ -}}
 {{- $server := promptBool "server" false -}} {{- /* always-on host */ -}}
+{{- /* The host's inventory modules, comma-separated (ansible/inventory.yml). */ -}}
+{{- $modules := promptString "modules" "" | splitList "," | compact -}}
 
 encryption = "age"
 # chezmoi's own age, so decrypting never depends on an installed age binary.
@@ -31,4 +33,5 @@ useBuiltinAge = true
     host = {{ $host | quote }}
     ai = {{ $ai }}
     server = {{ $server }}
+    modules = {{ $modules | toToml }}
 

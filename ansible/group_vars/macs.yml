@@ -1,9 +1,6 @@
-ansible_python_interpreter: "{{ ansible_playbook_python if ansible_connection == 'local' else 'auto_silent' }}"
-
-# Concatenated; a host without its own Brewfile gets only the shared one.
-homebrew_brewfile_srcs:
-  - brewfiles/Brewfile
-  - "brewfiles/{{ inventory_hostname }}.Brewfile"
+# Concatenated: <group>.Brewfile for each group the host is in (macs plus
+# its modules), then the host's own. Missing files are skipped.
+homebrew_brewfile_srcs: "{{ group_names | map('regex_replace', '^(.*)$', 'brewfiles/\\1.Brewfile') | list + ['brewfiles/' ~ inventory_hostname ~ '.Brewfile'] }}"
 
 login_shell: /opt/homebrew/bin/zsh # Brewfile's zsh
 
@@ -11,75 +8,14 @@ login_shell: /opt/homebrew/bin/zsh # Brewfile's zsh
 # untrusted config.
 ansible_python_interpreter: "{{ ansible_playbook_python if ansible_connection == 'local' else '/usr/bin/python3' }}"
 
-# Every Mac gets these. Values match thunderchief on 2026-10-01.
-# kill: the process to restart after a change so it rereads its defaults.
-macos_defaults:
-  # Keyboard and text
-  - {domain: NSGlobalDomain, key: KeyRepeat, type: int, value: 1}
-  - {domain: NSGlobalDomain, key: InitialKeyRepeat, type: int, value: 10}
-  - {domain: NSGlobalDomain, key: ApplePressAndHoldEnabled, type: bool, value: false}
-  - {domain: NSGlobalDomain, key: AppleKeyboardUIMode, type: int, value: 3}
-  - {domain: NSGlobalDomain, key: com.apple.keyboard.fnState, type: bool, value: false}
-  - {domain: NSGlobalDomain, key: NSAutomaticSpellingCorrectionEnabled, type: bool, value: false}
-  - {domain: NSGlobalDomain, key: NSAutomaticCapitalizationEnabled, type: bool, value: false}
-  - {domain: NSGlobalDomain, key: NSAutomaticPeriodSubstitutionEnabled, type: bool, value: false}
-  - {domain: NSGlobalDomain, key: NSAutomaticQuoteSubstitutionEnabled, type: bool, value: false}
-  - {domain: NSGlobalDomain, key: NSAutomaticDashSubstitutionEnabled, type: bool, value: false}
-  # Look and windows
-  - {domain: NSGlobalDomain, key: AppleInterfaceStyle, type: string, value: Dark}
-  - {domain: NSGlobalDomain, key: AppleShowScrollBars, type: string, value: Automatic}
-  - {domain: NSGlobalDomain, key: NSWindowShouldDragOnGesture, type: bool, value: true}
-  - {domain: NSGlobalDomain, key: NSTableViewDefaultSizeMode, type: int, value: 2}
-  - {domain: NSGlobalDomain, key: NSNavPanelExpandedStateForSaveMode, type: bool, value: true}
-  - {domain: NSGlobalDomain, key: NSDocumentSaveNewDocumentsToCloud, type: bool, value: false}
-  - {domain: NSGlobalDomain, key: ComputerUseAllowForbiddenTargets, type: bool, value: true}
-  - {domain: com.apple.WindowManager, key: EnableTiledWindowMargins, type: bool, value: false}
-  - {domain: com.apple.universalaccess, key: reduceMotion, type: bool, value: false}
-  # Trackpad
-  - {domain: NSGlobalDomain, key: com.apple.swipescrolldirection, type: bool, value: true}
-  - {domain: NSGlobalDomain, key: com.apple.trackpad.scaling, type: float, value: 8}
-  - {domain: com.apple.AppleMultitouchTrackpad, key: Clicking, type: bool, value: true}
-  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadRightClick, type: bool, value: true}
-  - {domain: com.apple.AppleMultitouchTrackpad, key: TrackpadThreeFingerDrag, type: bool, value: false}
-  # Dock and Mission Control
-  - {domain: com.apple.dock, key: autohide, type: bool, value: true, kill: Dock}
-  - {domain: com.apple.dock, key: autohide-delay, type: float, value: 0, kill: Dock}
-  # A binary fraction (19/64, about 0.3): the Dock keeps 32-bit floats and
-  # defaults reads doubles, so a value like 0.3 rounds differently each side.
-  - {domain: com.apple.dock, key: autohide-time-modifier, type: float, value: 0.296875, kill: Dock}
-  - {domain: com.apple.dock, key: tilesize, type: float, value: 51, kill: Dock}
-  - {domain: com.apple.dock, key: show-recents, type: bool, value: false, kill: Dock}
-  - {domain: com.apple.dock, key: mru-spaces, type: bool, value: false, kill: Dock}
-  - {domain: com.apple.dock, key: minimize-to-application, type: bool, value: true, kill: Dock}
-  - {domain: com.apple.dock, key: mineffect, type: string, value: scale, kill: Dock}
-  - {domain: com.apple.dock, key: magnification, type: bool, value: false, kill: Dock}
-  - {domain: com.apple.dock, key: launchanim, type: bool, value: false, kill: Dock}
-  - {domain: com.apple.dock, key: expose-group-apps, type: bool, value: true, kill: Dock}
-  - {domain: com.apple.dock, key: wvous-br-corner, type: int, value: 14, kill: Dock} # Quick Note
-  # Finder
-  - {domain: com.apple.finder, key: ShowPathbar, type: bool, value: true, kill: Finder}
-  - {domain: com.apple.finder, key: ShowStatusBar, type: bool, value: true, kill: Finder}
-  - {domain: com.apple.finder, key: FXPreferredViewStyle, type: string, value: icnv, kill: Finder}
-  - {domain: com.apple.finder, key: FXDefaultSearchScope, type: string, value: SCcf, kill: Finder}
-  - {domain: com.apple.finder, key: FXEnableExtensionChangeWarning, type: bool, value: false, kill: Finder}
-  - {domain: com.apple.finder, key: _FXSortFoldersFirst, type: bool, value: true, kill: Finder}
-  - {domain: com.apple.finder, key: NewWindowTarget, type: string, value: PfHm, kill: Finder}
-  - {domain: com.apple.finder, key: ShowExternalHardDrivesOnDesktop, type: bool, value: false, kill: Finder}
-  - {domain: com.apple.finder, key: ShowHardDrivesOnDesktop, type: bool, value: false, kill: Finder}
-  - {domain: com.apple.finder, key: ShowRemovableMediaOnDesktop, type: bool, value: true, kill: Finder}
-  - {domain: com.apple.finder, key: QuitMenuItem, type: bool, value: true, kill: Finder}
-  - {domain: com.apple.finder, key: AppleShowAllFiles, type: bool, value: false, kill: Finder}
-  - {domain: NSGlobalDomain, key: AppleShowAllExtensions, type: bool, value: false, kill: Finder}
-  - {domain: com.apple.desktopservices, key: DSDontWriteNetworkStores, type: bool, value: true}
-  - {domain: com.apple.desktopservices, key: DSDontWriteUSBStores, type: bool, value: true}
-  # Screenshots (location is per host)
-  - {domain: com.apple.screencapture, key: type, type: string, value: png, kill: SystemUIServer}
-  - {domain: com.apple.screencapture, key: disable-shadow, type: bool, value: true, kill: SystemUIServer}
-  # Misc
-  - {domain: com.apple.menuextra.clock, key: ShowSeconds, type: bool, value: false}
-  - {domain: com.apple.TextEdit, key: RichText, type: int, value: 0}
-  - {domain: com.apple.ActivityMonitor, key: ShowCategory, type: int, value: 100}
-  - {domain: com.apple.LaunchServices, key: LSQuarantine, type: bool, value: false}
+# What every Mac is, whatever its modules: Homebrew, firewall, the background
+# agents below. Look, input, Finder and the rest are modules (inventory.yml).
+
+# Taps Homebrew keeps but no Brewfile needs. homebrew/core is a 1.5 GB clone
+# that Homebrew stopped reading in 4.0 (it installs from its JSON API).
+homebrew_untap:
+  - homebrew/core
+  - homebrew/cask
 
 macos_firewall:
   globalstate: true
@@ -89,14 +25,17 @@ macos_firewall:
   allowsignedapp: false
 
 # Replaces the domt4/homebrew-autoupdate agent (its tap is gone).
-launchd_agents:
+launchd_agents_macs:
   - label: dev.dots.brew-upgrade
     start_interval: 43200
+    # The trailing clause re-applies cmas.sh's CrossOver patch after cask
+    # upgrades (roles/crossover); hosts without cmas-apply skip it.
     command: >-
       /bin/date &&
       /opt/homebrew/bin/brew update &&
       /opt/homebrew/bin/brew upgrade --formula &&
       /opt/homebrew/bin/brew upgrade --cask &&
+      { [ -x "$HOME/.local/bin/cmas-apply" ] && "$HOME/.local/bin/cmas-apply" || true; } &&
       /opt/homebrew/bin/brew cleanup
     env:
       HOMEBREW_NO_ENV_HINTS: "1"

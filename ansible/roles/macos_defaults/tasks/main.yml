@@ -1,43 +1,55 @@
-# macos_defaults (group) plus macos_defaults_host (host). Each item:
-# {domain, key, type, value, kill}. kill restarts that process after a change.
+# Every macos_defaults_<layer> list (defaults/main.yml). Each item:
+# {domain, key, type, value, kill}, or {domain, key, state: absent} for a key
+# that must not exist. kill restarts that process after a change.
 # A key stored with another type (fresh Macs keep some trackpad flags as
 # integers) is deleted first; osx_defaults refuses to change a type.
+- name: One value per key
+  ansible.builtin.assert:
+    that: keys | length == keys | unique | length
+    fail_msg: "Set by two layers: {{ keys | community.general.counter | dict2items | selectattr('value', '>', 1) | map(attribute='key') | list }}"
+    quiet: true
+  vars:
+    keys: "{{ macos_defaults_merged | map(attribute='domain') | zip(macos_defaults_merged | map(attribute='key')) | map('join', ' ') | list }}"
+
 - name: Stored types
-  ansible.builtin.command: defaults read-type {{ item.domain }} {{ item.key }}
-  loop: "{{ macos_defaults_all }}"
+  ansible.builtin.command:
+    argv: [defaults, read-type, "{{ item.domain }}", "{{ item.key }}"]
+  loop: "{{ macos_defaults_merged }}"
   loop_control:
     label: "{{ item.domain }} {{ item.key }}"
-  register: macos_defaults_types
+  register: defaults_types
   changed_when: false
   failed_when: false
   check_mode: false
 
 - name: Delete keys stored with another type
-  ansible.builtin.command: defaults delete {{ item.item.domain }} {{ item.item.key }}
-  loop: "{{ macos_defaults_types.results }}"
+  ansible.builtin.command:
+    argv: [defaults, delete, "{{ item.item.domain }}", "{{ item.item.key }}"]
+  loop: "{{ defaults_types.results }}"
   loop_control:
     label: "{{ item.item.domain }} {{ item.item.key }}"
-  when: item.rc == 0 and (item.stdout | regex_replace('^Type is ', '')) != macos_defaults_type_names[item.item.type]
+  when: item.rc == 0 and item.item.state | default('present') == 'present' and (item.stdout | regex_replace('^Type is ', '')) != macos_defaults_type_names[item.item.type]
   changed_when: true
 
 - name: Defaults
   community.general.osx_defaults:
     domain: "{{ item.domain }}"
     key: "{{ item.key }}"
-    type: "{{ item.type }}"
-    value: "{{ item.value }}"
-  loop: "{{ macos_defaults_all }}"
+    type: "{{ item.type | default(omit) }}"
+    value: "{{ item.value | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ macos_defaults_merged }}"
   loop_control:
-    label: "{{ item.domain }} {{ item.key }} = {{ item.value }}"
-  register: macos_defaults_set
+    label: "{{ item.domain }} {{ item.key }} = {{ item.value | default('(absent)') }}"
+  register: defaults_set
   # Check mode skips the delete above, so a retyped key reports a mismatch here.
-  changed_when: macos_defaults_set.changed or macos_defaults_retyped
-  failed_when: macos_defaults_set.failed | default(false) and not macos_defaults_retyped
+  changed_when: defaults_set.changed or defaults_retyped
+  failed_when: defaults_set.failed | default(false) and not defaults_retyped
   vars:
-    macos_defaults_retyped: "{{ ansible_check_mode and 'Type mismatch' in macos_defaults_set.msg | default('') }}"
+    defaults_retyped: "{{ ansible_check_mode and 'Type mismatch' in defaults_set.msg | default('') }}"
 
 - name: Restart what reads them
   ansible.builtin.command: killall {{ item }}
-  loop: "{{ macos_defaults_set.results | selectattr('changed') | map(attribute='item.kill') | select('defined') | select | unique }}"
+  loop: "{{ defaults_set.results | selectattr('changed') | map(attribute='item.kill') | select('defined') | select | unique }}"
   changed_when: true
   failed_when: false

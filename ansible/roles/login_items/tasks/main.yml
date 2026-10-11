@@ -1,0 +1,21 @@
+# Login items (System Settings > General > Login Items, "Open at Login"): the
+# listed apps and nothing else. Apps that register a background helper
+# instead (Google Drive, Tailscale) appear under "Allow in the Background",
+# which macOS does not let scripts change.
+- name: Current
+  ansible.builtin.command: osascript -e 'tell application "System Events" to get the name of every login item'
+  register: current_login_items
+  changed_when: false
+  check_mode: false
+
+- name: Add
+  ansible.builtin.command: >-
+    osascript -e 'tell application "System Events" to make login item at end
+    with properties {path:"/Applications/{{ item }}.app", hidden:true}'
+  loop: "{{ login_items | difference(current_login_items.stdout.split(', ') | reject('equalto', '') | list) }}"
+  changed_when: true
+
+- name: Remove
+  ansible.builtin.command: osascript -e 'tell application "System Events" to delete login item "{{ item }}"'
+  loop: "{{ current_login_items.stdout.split(', ') | reject('equalto', '') | list | difference(login_items) }}"
+  changed_when: true

@@ -1,0 +1,13 @@
+# Steam, CrossOver, NotProton, Prism Launcher. Apps: files/brewfiles/games.Brewfile.
+launchd_services_games:
+  - {label: com.apple.gamed, state: enabled} # Game Center stays on
+
+# NotProton supports CrossOver 26.3 and nothing newer yet, so roles/crossover
+# holds the cask there. The cask is auto_updates, so the non-greedy
+# dev.dots.brew-upgrade agent leaves it alone. Raise this when NotProton's
+# README lists a newer CrossOver.
+crossover_version: 26.3.0
+
+# The NotProton cask is not signed with a Developer ID; roles/notproton
+# clears its quarantine flag, as the cask's caveat asks.
+notproton_app: /Applications/NotProton.app

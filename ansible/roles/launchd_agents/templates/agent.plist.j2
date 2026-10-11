@@ -27,6 +27,14 @@
   <true/>
   <key>ThrottleInterval</key>
   <integer>2</integer>
+{% if item.background | default(false) %}
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>LowPriorityIO</key>
+  <true/>
+  <key>Nice</key>
+  <integer>10</integer>
+{% endif %}
 {% else %}
   <key>StartInterval</key>
   <integer>{{ item.start_interval }}</integer>

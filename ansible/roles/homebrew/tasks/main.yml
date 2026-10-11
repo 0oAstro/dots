@@ -52,3 +52,16 @@
   environment: "{{ homebrew_env }}"
   vars:
     homebrew_extra_listed: "{{ homebrew_extra.stdout is search('Would (uninstall|untap)') }}"
+
+- name: Taps listed in homebrew_untap
+  ansible.builtin.command: "{{ homebrew_bin }} tap"
+  register: homebrew_taps
+  changed_when: false
+  check_mode: false
+  environment: "{{ homebrew_env }}"
+
+- name: Untap them
+  ansible.builtin.command: "{{ homebrew_bin }} untap --force {{ item }}"
+  loop: "{{ homebrew_untap | default([]) | intersect(homebrew_taps.stdout_lines) }}"
+  changed_when: true
+  environment: "{{ homebrew_env }}"

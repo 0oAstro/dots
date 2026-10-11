@@ -26,13 +26,16 @@ Roles are generic; groups and hosts hold the data. A second run reports `changed
 
 | Where | What |
 | --- | --- |
-| `group_vars/macs.yml` | macOS defaults, application firewall, the `dev.dots.brew-upgrade` launchd agent |
-| `files/brewfiles/Brewfile`, `<host>.Brewfile` | Homebrew: every Mac gets `Brewfile` plus its own. Together they are the whole truth: anything installed but unlisted is uninstalled |
+| `group_vars/macs.yml` | What every Mac is: Homebrew taps to drop, application firewall, the `dev.dots.brew-upgrade` and `dev.dots.bifrost-mitm` launchd agents |
+| `group_vars/<module>.yml` | One feature each. `inventory.yml` gives every Mac the shared modules (`look`, `input`, `finder`, `perf`, `vendor_updaters_off`, `ai_off`) and lists hosts under the opt-in ones (`apps_dev`, `apps_comms`, `apps_media`, `games`, `google_drive`, `dropbox`) |
+| `files/brewfiles/<group>.Brewfile`, `<host>.Brewfile` | Homebrew: a Mac gets `macs.Brewfile`, one per module it is in, and its own. Together they are the whole truth: anything installed but unlisted is uninstalled |
 | `group_vars/linux.yml`, `servers.yml`, `desktops.yml` | Base packages, Tailscale (official repo), Claude Remote Control on servers |
-| `host_vars/<host>.yml` | That host's packages, enabled units, firewalld zones, Docker stacks |
+| `host_vars/<host>.yml` | That host's personal choices (`screenshot_dir`, `macos_appearance`, `dock_tilesize`, `pmset_*`), packages, enabled units, firewalld zones, Docker stacks |
 | `files/overlays/<layer>/` | Files copied onto `/`, layered `linux`, then `servers` or `desktops`, then the host. sysctl, exports, sshd and systemd units reload when they change |
 
-Lists named `packages_*` and `systemd_enabled_*` merge across groups and hosts. Firewalld services, ports and rich rules are exclusive, so hand-added ones get removed.
+Lists named `packages_*`, `systemd_enabled_*`, `macos_defaults_*`, `launchd_agents_*`, `launchd_services_*`, `launchd_daemons_absent_*`, `login_items_*` and `home_links_*` merge across groups, modules and hosts, so each layer adds its own; name them after the layer (`macos_defaults_games`, `launchd_services_thunderchief`). A defaults key or launchd label set by two layers fails the run. Login items are exclusive: an app that no layer lists is removed. Firewalld services, ports and rich rules are exclusive too, so hand-added ones get removed.
+
+chezmoi sees the host's modules as `.modules` (the `dots` role passes them to `chezmoi init`), so home files can follow a module: `~/.config/karabiner` comes with `input`.
 
 aardvark's `/opt/docker` is the private repo `0oAstro/aardvark-docker`. The `docker_stacks` role fast-forwards it, writes its secrets, installs the units the stacks own, creates the shared networks, and runs `docker compose up` for every stack without a `DISABLED` file. Secrets there are age-encrypted copies (`sealed/`, same key as this repo) listed in `secrets.yml`. The `secrets` role creates missing ones and fails, without writing, when a live secret differs from its copy: run `bin/seal` there to keep the live one, or pass `-e secrets_take_sealed=true` to restore the copy.
 
@@ -48,7 +51,8 @@ chezmoi update                              # on the other machines
 | To change | Edit |
 | --- | --- |
 | Tools | `~/.config/mise/conf.d/core.toml` (both OSes), `macos.toml`, `linux.toml`, `ai.toml` |
-| macOS apps | `ansible/files/brewfiles/Brewfile` (every Mac) or `<host>.Brewfile` |
+| macOS apps | `ansible/files/brewfiles/macs.Brewfile` (every Mac), `<module>.Brewfile`, or `<host>.Brewfile` |
+| A Mac's modules | `ansible/inventory.yml`, then `mise run provision -- --limit <host>` |
 | Machine settings, packages, firewall, units | `ansible/` (see System layer) |
 | API keys | `edit-secrets` (re-encrypts and applies) |
 | SSH hosts | `chezmoi edit ~/.ssh/config.d/$(uname -n)` |
@@ -62,8 +66,9 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 | every machine | zsh, git, herdr, tmux, bat, ripgrep, glow, dtop, btop; `conf.d/core.toml` |
 | `ai` | Claude Code, Codex, and Pi settings; pstack; `conf.d/ai.toml` |
 | `ai` servers | Grok Build and Prime settings; prime, grok, cursor-agent in `conf.d/server.toml` |
-| macOS | Ghostty, Karabiner, herdr launcher, lazysql, routerctl; `conf.d/macos.toml` |
+| macOS | Ghostty, herdr launcher, lazysql, routerctl; `conf.d/macos.toml` |
 | Linux | `conf.d/linux.toml` |
+| `input` module | Karabiner |
 
 `home/.chezmoiignore` holds these rules. Ansible copies `ansible/files/user_units/<layer>/` into `~/.config/systemd/user/` (claude-rc for `servers`; the AlgoChat timers and T3 drop-ins for aardvark).
 

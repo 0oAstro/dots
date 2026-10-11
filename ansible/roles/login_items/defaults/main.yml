@@ -1,0 +1,2 @@
+# Every list named login_items_<layer>: app names as System Settings shows them.
+login_items: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^login_items_.+')) | flatten | unique }}"

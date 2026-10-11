@@ -9,10 +9,23 @@
     # dots first: Homebrew services read config chezmoi writes (beszel-agent's env).
     - {role: dots, tags: [dots]}
     - {role: homebrew, tags: [homebrew]}
+    - role: crossover
+      when: crossover_version is defined
+      tags: [games]
     - {role: login_shell, tags: [login_shell]}
     - {role: macos_defaults, tags: [macos_defaults]}
     - {role: macos_firewall, tags: [macos_firewall]}
     - {role: launchd_agents, tags: [launchd_agents]}
+    - {role: launchd_services, tags: [launchd_services]}
+    - {role: login_items, tags: [login_items]}
+    - {role: power, tags: [power]}
+    - {role: home_links, tags: [home_links]}
+    - role: maestral
+      when: maestral_config is defined
+      tags: [maestral]
+    - role: notproton
+      when: notproton_app is defined
+      tags: [games]
 
 - name: Linux
   hosts: linux

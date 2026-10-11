@@ -1,0 +1,34 @@
+# brew owns CrossOver (games.Brewfile). This role holds it at crossover_version,
+# then cmas-apply patches the app bundle with cmas.sh. cmas-apply re-runs the
+# patch when the installed version changes and stamps it. Both scripts are
+# age-encrypted chezmoi files in ~/.local/bin: dots applies before this role,
+# and without the age key they are skipped and this role fails.
+- name: Installed and offered versions
+  ansible.builtin.command: "{{ homebrew_bin }} info --cask --json=v2 crossover"
+  register: crossover_info
+  changed_when: false
+  check_mode: false
+  environment: "{{ homebrew_env }}"
+
+- name: Upgrade to crossover_version
+  ansible.builtin.command: "{{ homebrew_bin }} upgrade --cask --greedy crossover"
+  when:
+    - crossover_installed != crossover_version
+    - crossover_offered == crossover_version
+  changed_when: true
+  environment: "{{ homebrew_env }}"
+
+- name: Say so when Homebrew has moved past crossover_version
+  ansible.builtin.debug:
+    msg: >-
+      CrossOver {{ crossover_installed }} is installed and Homebrew offers {{ crossover_offered }},
+      but crossover_version is {{ crossover_version }}. Check NotProton's supported
+      versions, then raise crossover_version in group_vars/games.yml.
+  when:
+    - crossover_installed != crossover_version
+    - crossover_offered != crossover_version
+
+- name: Apply the CrossOver patch
+  ansible.builtin.command: "{{ ansible_facts.env.HOME }}/.local/bin/cmas-apply"
+  register: crossover_cmas_apply
+  changed_when: "'patched' in crossover_cmas_apply.stdout"

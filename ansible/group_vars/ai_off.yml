@@ -1,0 +1,61 @@
+# Apple Intelligence, Siri and dictation off, and the agents behind them
+# disabled. Taken from thunderchief on 2026-10-08. Kept on: intelligentroutingd
+# (AirPods switching), OSIntelligence.* (battery optimisation), coreduetd.
+# With translationd off, callservicesd can spin retrying; `killall callservicesd`.
+macos_defaults_ai_off:
+  - {domain: com.apple.Siri, key: AppleIntelligenceEnabled, type: bool, value: false}
+  - {domain: com.apple.Siri, key: LLMEnable, type: bool, value: false}
+  - {domain: com.apple.Siri, key: VoiceTriggerUserEnabled, type: bool, value: false}
+  - {domain: com.apple.assistant.support, key: Assistant Enabled, type: bool, value: false}
+  - {domain: com.apple.assistant.support, key: Dictation Enabled, type: bool, value: false}
+  - {domain: NSGlobalDomain, key: NSAutomaticInlinePredictionEnabled, type: bool, value: false}
+
+launchd_services_ai_off:
+  - {label: com.apple.assistant_cdmd, state: disabled}
+  - {label: com.apple.assistant_service, state: disabled}
+  - {label: com.apple.assistantd, state: disabled}
+  - {label: com.apple.BiomeAgent, state: disabled}
+  - {label: com.apple.callintelligenced, state: disabled}
+  - {label: com.apple.campo, state: disabled} # the Siri AI app; KeepAlive respawns it otherwise
+  - {label: com.apple.corespeechd, state: disabled}
+  - {label: com.apple.DictationIM, state: disabled}
+  - {label: com.apple.duetexpertd, state: disabled}
+  - {label: com.apple.GenerativeFunctions.agentstored, state: disabled}
+  - {label: com.apple.generativeexperiencesd, state: disabled}
+  - {label: com.apple.imageplaygroundd, state: disabled}
+  - {label: com.apple.intelligencecontextd, state: disabled}
+  - {label: com.apple.intelligenceflowd, state: disabled}
+  - {label: com.apple.intelligenceplatformd, state: disabled}
+  - {label: com.apple.intelligencetasksd, state: disabled}
+  - {label: com.apple.knowledge-agent, state: disabled}
+  - {label: com.apple.knowledgeconstructiond, state: disabled}
+  - {label: com.apple.mediaanalysisd, state: disabled}
+  - {label: com.apple.mlhostd, state: disabled}
+  - {label: com.apple.ModelCatalogAgent, state: disabled}
+  - {label: com.apple.naturallanguaged, state: disabled}
+  - {label: com.apple.parsec-fbf, state: disabled}
+  - {label: com.apple.parsecd, state: disabled}
+  - {label: com.apple.photoanalysisd, state: disabled}
+  - {label: com.apple.privatecloudcomputed, state: disabled}
+  - {label: com.apple.proactived, state: disabled}
+  - {label: com.apple.proactiveeventtrackerd, state: disabled}
+  - {label: com.apple.Siri, state: disabled}
+  - {label: com.apple.Siri.agent, state: disabled}
+  - {label: com.apple.siri.morphun, state: disabled}
+  - {label: com.apple.siriactionsd, state: disabled}
+  - {label: com.apple.siriappintentsd, state: disabled}
+  - {label: com.apple.siriinferenced, state: disabled}
+  - {label: com.apple.siriknowledged, state: disabled}
+  - {label: com.apple.SiriTTSTrainingAgent, state: disabled}
+  - {label: com.apple.sirittsd, state: disabled}
+  - {label: com.apple.SpeechRecognitionCore.brokerd, state: disabled}
+  - {label: com.apple.spotlightknowledged, state: disabled}
+  - {label: com.apple.spotlightknowledged.importer, state: disabled}
+  - {label: com.apple.spotlightknowledged.updater, state: disabled}
+  - {label: com.apple.suggestd, state: disabled}
+  - {label: com.apple.translationd, state: disabled}
+  - {label: com.apple.visualintelligenced, state: disabled}
+  - {label: com.apple.corespeech_launchagent.xpc, domain: system, state: disabled}
+  - {label: com.apple.modelmanagerd, domain: system, state: disabled}
+  - {label: com.apple.siri.acousticsignature, domain: system, state: disabled}
+  - {label: com.apple.siri.uaf.subscription.service, domain: system, state: disabled}

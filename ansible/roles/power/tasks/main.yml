@@ -1,0 +1,24 @@
+# pmset settings for battery (-b) and charger (-c): pmset_battery and pmset_ac.
+- name: Current
+  ansible.builtin.command: pmset -g custom
+  register: power_now
+  changed_when: false
+  check_mode: false
+
+- name: Set
+  ansible.builtin.command: pmset -{{ item.flag }} {{ item.key }} {{ item.value }}
+  loop: >-
+    {{ (pmset_battery | default({}) | dict2items | map('combine', {'flag': 'b'}) | list)
+       + (pmset_ac | default({}) | dict2items | map('combine', {'flag': 'c'}) | list) }}
+  loop_control:
+    label: "-{{ item.flag }} {{ item.key }} {{ item.value }}"
+  when: power_current[item.flag][item.key] | default('') != item.value | string
+  changed_when: true
+  become: true
+  vars:
+    # "Battery Power:" then "AC Power:", each followed by " key   value" lines.
+    power_battery_text: "{{ power_now.stdout.split('AC Power:') | first }}"
+    power_ac_text: "{{ power_now.stdout.split('AC Power:') | last }}"
+    power_current:
+      b: "{{ dict(power_battery_text | regex_findall('(?m)^ (\\S+) +(\\S+)$')) }}"
+      c: "{{ dict(power_ac_text | regex_findall('(?m)^ (\\S+) +(\\S+)$')) }}"

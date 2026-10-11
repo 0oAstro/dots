@@ -1,0 +1,3 @@
+# Hemant. Shared settings come from the modules in inventory.yml; these are
+# the personal ones.
+screenshot_dir: ~/Desktop

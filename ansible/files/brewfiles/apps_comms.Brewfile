@@ -1,0 +1,2 @@
+cask "slack"
+cask "whatsapp"

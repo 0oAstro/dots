@@ -1,0 +1,38 @@
+# How every Mac looks. Values match thunderchief on 2026-10-08.
+# Choices a person may override in host_vars:
+macos_appearance: dark # dark | light | auto
+dock_tilesize: 45
+
+# Transparency and motion stay on: the UI keeps its blur and animations.
+macos_defaults_look:
+  - {domain: com.apple.universalaccess, key: reduceTransparency, type: bool, value: false}
+  - {domain: NSGlobalDomain, key: AppleICUForce24HourTime, type: bool, value: true}
+  - {domain: NSGlobalDomain, key: AppleShowScrollBars, type: string, value: Automatic}
+  - {domain: NSGlobalDomain, key: NSWindowShouldDragOnGesture, type: bool, value: true}
+  - {domain: NSGlobalDomain, key: NSTableViewDefaultSizeMode, type: int, value: 2}
+  - {domain: com.apple.WindowManager, key: EnableTiledWindowMargins, type: bool, value: false}
+  - {domain: com.apple.WindowManager, key: StandardHideDesktopIcons, type: bool, value: true}
+  - {domain: com.apple.WindowManager, key: HideDesktop, type: bool, value: true}
+  - {domain: NSGlobalDomain, key: NSAutomaticWindowAnimationsEnabled, type: bool, value: false}
+  - {domain: NSGlobalDomain, key: AppleSpacesSwitchOnActivate, type: bool, value: false}
+  - {domain: NSGlobalDomain, key: CGDisableCursorLocationMagnification, type: bool, value: true}
+  - {domain: com.apple.universalaccess, key: reduceMotion, type: bool, value: false}
+  - {domain: com.apple.dock, key: autohide, type: bool, value: true, kill: Dock}
+  - {domain: com.apple.dock, key: autohide-delay, type: float, value: 0, kill: Dock}
+  # A binary fraction (19/64, about 0.3): the Dock keeps 32-bit floats and
+  # defaults reads doubles, so a value like 0.3 rounds differently each side.
+  - {domain: com.apple.dock, key: autohide-time-modifier, type: float, value: 0.296875, kill: Dock}
+  - {domain: com.apple.dock, key: show-recents, type: bool, value: false, kill: Dock}
+  - {domain: com.apple.dock, key: mru-spaces, type: bool, value: false, kill: Dock}
+  - {domain: com.apple.dock, key: minimize-to-application, type: bool, value: true, kill: Dock}
+  - {domain: com.apple.dock, key: mineffect, type: string, value: scale, kill: Dock}
+  - {domain: com.apple.dock, key: magnification, type: bool, value: false, kill: Dock}
+  - {domain: com.apple.dock, key: launchanim, type: bool, value: false, kill: Dock}
+  - {domain: com.apple.dock, key: expose-group-apps, type: bool, value: true, kill: Dock}
+  - {domain: com.apple.dock, key: expose-animation-duration, type: float, value: 0, kill: Dock}
+  - {domain: com.apple.dock, key: enterMissionControlByTopWindowDrag, type: bool, value: false, kill: Dock}
+  - {domain: com.apple.dock, key: wvous-br-corner, type: int, value: 14, kill: Dock} # Quick Note
+  - {domain: com.apple.menuextra.clock, key: ShowSeconds, type: bool, value: false}
+  - {domain: com.apple.menuextra.clock, key: Show24Hour, type: bool, value: true}
+  - {domain: com.apple.menuextra.clock, key: ShowDayOfWeek, type: bool, value: true}
+  - {domain: com.apple.dock, key: tilesize, type: float, value: "{{ dock_tilesize | float }}", kill: Dock}

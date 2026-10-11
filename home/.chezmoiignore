@@ -44,13 +44,17 @@ Library
 .config/zsh/.zprofile
 .config/zsh/config/ui/clipboard.zsh
 .config/ghostty
-.config/karabiner
 .config/herdr/launch
 .config/lazysql
 .config/mise/conf.d/macos.toml
 .local/bin/routerctl
 .local/bin/airtel-routerctl
 .local/bin/routerctl_credentials.py
+{{- end }}
+
+{{- if not (has "input" (get . "modules" | default list)) }}
+# Karabiner's config follows the input module.
+.config/karabiner
 {{- end }}
 
 {{- if not .ai }}

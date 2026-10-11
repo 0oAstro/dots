@@ -1,0 +1,88 @@
+# Maestral (Dropbox) settings from group_vars/dropbox.yml, applied through
+# maestral-cli so the running daemon picks them up. Signing in stays manual:
+# `maestral-cli auth link -c {{ maestral_name }}` (the token goes to the Keychain).
+# The daemon runs from launchd_agents_dropbox; leave `maestral autostart` off,
+# since it writes a plist with the same label.
+- name: Signed in?
+  ansible.builtin.command: "{{ maestral_cli }} auth status -c {{ maestral_name }}"
+  register: maestral_auth
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Say so
+  ansible.builtin.debug:
+    msg: "Dropbox is not linked. Run: {{ maestral_cli }} auth link -c {{ maestral_name }}"
+  when: maestral_auth.rc != 0 or 'Email:' not in maestral_auth.stdout
+
+- name: Configure
+  when: maestral_auth.rc == 0 and 'Email:' in maestral_auth.stdout
+  block:
+    - name: Folder now
+      ansible.builtin.command: "{{ maestral_cli }} config get path -c {{ maestral_name }}"
+      register: maestral_path
+      changed_when: false
+      check_mode: false
+
+    - name: Folder
+      ansible.builtin.command:
+        argv: ["{{ maestral_cli }}", move-dir, "{{ maestral_folder }}", -c, "{{ maestral_name }}"]
+      when: maestral_path.stdout | trim != maestral_folder
+      changed_when: true
+
+    - name: Current values
+      ansible.builtin.command: "{{ maestral_cli }} config get {{ item.key }} -c {{ maestral_name }}"
+      loop: "{{ maestral_config | dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"
+      register: maestral_now
+      changed_when: false
+      check_mode: false
+
+    - name: Settings
+      ansible.builtin.command: "{{ maestral_cli }} config set {{ item.item.key }} {{ item.item.value }} -c {{ maestral_name }}"
+      loop: "{{ maestral_now.results }}"
+      loop_control:
+        label: "{{ item.item.key }} = {{ item.item.value }}"
+      when: item.stdout | trim | lower != item.item.value | string | lower
+      register: maestral_set
+      changed_when: true
+
+    - name: Bandwidth limits now
+      ansible.builtin.command: "{{ maestral_cli }} bandwidth-limit {{ item }} -c {{ maestral_name }}"
+      loop: [up, down]
+      register: maestral_bw
+      changed_when: false
+      check_mode: false
+
+    - name: Bandwidth limits
+      ansible.builtin.command: "{{ maestral_cli }} bandwidth-limit {{ item.item }} {{ maestral_bandwidth[item.item] }} -c {{ maestral_name }}"
+      loop: "{{ maestral_bw.results }}"
+      loop_control:
+        label: "{{ item.item }} {{ maestral_bandwidth[item.item] }} MB/s"
+      when: (item.stdout | trim) != ('unlimited' if maestral_bandwidth[item.item] | float == 0 else maestral_bandwidth[item.item] | string ~ ' MB/sec')
+      changed_when: true
+
+    - name: Excluded now
+      ansible.builtin.command: "{{ maestral_cli }} excluded list -c {{ maestral_name }}"
+      register: maestral_excluded_now
+      changed_when: false
+      check_mode: false
+
+    - name: Exclude
+      ansible.builtin.command:
+        argv: ["{{ maestral_cli }}", excluded, add, "{{ item }}", -c, "{{ maestral_name }}"]
+      loop: "{{ maestral_excluded | reject('in', maestral_excluded_now.stdout_lines) | list }}"
+      changed_when: true
+
+    - name: Include again
+      ansible.builtin.command:
+        argv: ["{{ maestral_cli }}", excluded, remove, "{{ item }}", -c, "{{ maestral_name }}"]
+      loop: "{{ maestral_excluded_now.stdout_lines | select('match', '^/') | reject('in', maestral_excluded) | list }}"
+      changed_when: true
+
+    - name: Restart for config-file settings
+      ansible.builtin.command: launchctl kickstart -k gui/{{ ansible_facts.user_uid }}/com.samschott.maestral.maestral
+      when: maestral_set is changed
+      changed_when: true
+

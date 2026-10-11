@@ -1,0 +1,3 @@
+# Every list named home_links_<layer>: {link, target}, both relative to $HOME
+# unless absolute.
+home_links: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^home_links_.+')) | flatten }}"

@@ -1,0 +1,3 @@
+crossover_cask: "{{ (crossover_info.stdout | from_json).casks | first }}"
+crossover_installed: "{{ crossover_cask.installed | default('') }}"
+crossover_offered: "{{ crossover_cask.version }}"

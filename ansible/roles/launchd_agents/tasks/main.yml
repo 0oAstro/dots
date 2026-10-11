@@ -1,19 +1,20 @@
-# Per-user launchd agents. Each launchd_agents item: {label, command, env} plus
-# start_interval (periodic, low priority) or keep_alive: true (daemon). A
+# Per-user launchd agents. Each launchd_agents_<layer> item: {label, command, env} plus
+# start_interval (periodic, low priority) or keep_alive: true (daemon;
+# background: true lowers its priority). A
 # changed plist is reloaded; nothing is run on demand.
 - name: Plists
   ansible.builtin.template:
     src: agent.plist.j2
     dest: "{{ ansible_facts.env.HOME }}/Library/LaunchAgents/{{ item.label }}.plist"
     mode: "0644"
-  loop: "{{ launchd_agents | default([]) }}"
+  loop: "{{ launchd_agents_merged }}"
   loop_control:
     label: "{{ item.label }}"
   register: launchd_plists
 
 - name: Loaded?
   ansible.builtin.command: launchctl print gui/{{ ansible_facts.user_uid }}/{{ item.label }}
-  loop: "{{ launchd_agents | default([]) }}"
+  loop: "{{ launchd_agents_merged }}"
   loop_control:
     label: "{{ item.label }}"
   register: launchd_loaded
@@ -24,8 +25,13 @@
 - name: Load or reload
   ansible.builtin.shell: |
     launchctl bootout gui/{{ ansible_facts.user_uid }}/{{ item.0.label }} 2>/dev/null || true
+    # bootout returns before the service is gone; bootstrap fails (5) until it is.
+    for i in 1 2 3 4 5 6 7 8 9 10; do
+      launchctl print gui/{{ ansible_facts.user_uid }}/{{ item.0.label }} >/dev/null 2>&1 || break
+      sleep 0.5
+    done
     launchctl bootstrap gui/{{ ansible_facts.user_uid }} "$HOME/Library/LaunchAgents/{{ item.0.label }}.plist"
-  loop: "{{ launchd_agents | default([]) | zip(launchd_plists.results | default([]), launchd_loaded.results | default([])) | list }}"
+  loop: "{{ launchd_agents_merged | zip(launchd_plists.results | default([]), launchd_loaded.results | default([])) | list }}"
   loop_control:
     label: "{{ item.0.label }}"
   when: item.1 is changed or item.2.rc != 0

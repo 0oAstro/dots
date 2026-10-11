@@ -1,0 +1,19 @@
+# Short names in $HOME for folders apps keep elsewhere (~/Drive).
+# A link whose target does not exist yet (no sign-in) is skipped.
+- name: Targets present?
+  ansible.builtin.stat:
+    path: "{{ item.target if item.target is abs else ansible_facts.env.HOME ~ '/' ~ item.target }}"
+  loop: "{{ home_links }}"
+  loop_control:
+    label: "{{ item.link }}"
+  register: link_targets
+
+- name: Links
+  ansible.builtin.file:
+    src: "{{ item.stat.path }}"
+    dest: "{{ ansible_facts.env.HOME }}/{{ item.item.link }}"
+    state: link
+  loop: "{{ link_targets.results }}"
+  loop_control:
+    label: "~/{{ item.item.link }}"
+  when: item.stat.exists

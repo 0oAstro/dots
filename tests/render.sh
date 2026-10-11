@@ -16,7 +16,7 @@ fail=0
 # name|os|arch|switches json
 profiles=(
   'aardvark|linux|arm64|"ai":true,"server":true'
-  'thunderchief|darwin|arm64|"ai":true,"server":false'
+  'thunderchief|darwin|arm64|"ai":true,"server":false,"modules":["ai_off","apps_comms","apps_dev","apps_media","dropbox","finder","games","google_drive","input","look","perf","vendor_updaters_off"]'
   'newbox|linux|amd64|"ai":false,"server":false'
   'newmac|darwin|arm64|"ai":false,"server":true'
 )
