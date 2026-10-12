@@ -29,7 +29,7 @@ launchd_services_ai_off:
   - {label: com.apple.intelligencetasksd, state: disabled}
   - {label: com.apple.knowledge-agent, state: disabled}
   - {label: com.apple.knowledgeconstructiond, state: disabled}
-  - {label: com.apple.mediaanalysisd, state: disabled}
+  - {label: com.apple.mediaanalysisd, state: enabled}
   - {label: com.apple.mlhostd, state: disabled}
   - {label: com.apple.ModelCatalogAgent, state: disabled}
   - {label: com.apple.naturallanguaged, state: disabled}
@@ -49,9 +49,9 @@ launchd_services_ai_off:
   - {label: com.apple.SiriTTSTrainingAgent, state: disabled}
   - {label: com.apple.sirittsd, state: disabled}
   - {label: com.apple.SpeechRecognitionCore.brokerd, state: disabled}
-  - {label: com.apple.spotlightknowledged, state: disabled}
-  - {label: com.apple.spotlightknowledged.importer, state: disabled}
-  - {label: com.apple.spotlightknowledged.updater, state: disabled}
+  - {label: com.apple.spotlightknowledged, state: enabled}
+  - {label: com.apple.spotlightknowledged.importer, state: enabled}
+  - {label: com.apple.spotlightknowledged.updater, state: enabled}
   - {label: com.apple.suggestd, state: disabled}
   - {label: com.apple.translationd, state: disabled}
   - {label: com.apple.visualintelligenced, state: disabled}
