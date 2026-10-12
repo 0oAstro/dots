@@ -14,6 +14,9 @@ goto = ["cmd+shift+o", "prefix+w", "prefix+g"]
 toggle_sidebar = ["cmd+b", "prefix+b"]
 new_workspace = ["cmd+shift+n", "prefix+shift+n"]
 rename_workspace = ["cmd+shift+e", "prefix+shift+w"]
+new_worktree = "prefix+shift+g"
+open_worktree = "prefix+shift+o"
+remove_worktree = "prefix+shift+x"
 
 new_tab = ["cmd+t", "prefix+c"]
 rename_tab = ["cmd+shift+t", "prefix+comma", "prefix+shift+t"]
@@ -113,15 +116,18 @@ new_cwd = "follow"
 shell_mode = "auto"
 kitty_graphics = true
 
+[worktrees]
+directory = "~/.pi/agent/worktrees"
+
 [ui]
 prompt_new_tab_name = false
 prompt_new_workspace_name = true
 confirm_close = false
-sidebar_start_collapsed = true
+sidebar_start_collapsed = false
 sidebar_width = 28
 sidebar_min_width = 18
 sidebar_max_width = 36
-sidebar_collapsed_mode = "hidden"
+sidebar_collapsed_mode = "compact"
 pane_borders = "auto"
 pane_outer_borders = false
 pane_gaps = false
