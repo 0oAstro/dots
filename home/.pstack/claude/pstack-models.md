@@ -9,6 +9,7 @@ hillclimb: opus @medium
 judgment and prose: opus @high
 strongest judgment: opus @xhigh
 how explorer: haiku @xhigh
+bounded lookups (CLI help, docs, config and quota reads): haiku @xhigh
 how explainer: opus @high
 why investigators: opus @medium
 why synthesizer: opus @high

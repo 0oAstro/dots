@@ -88,6 +88,7 @@ hillclimb: bifrost/anthropic/claude-opus-5-5 @medium
 judgment and prose: bifrost/anthropic/claude-opus-5-5 @high
 strongest judgment: bifrost/anthropic/claude-fable-5-1 @xhigh
 how explorer: bifrost/anthropic/claude-haiku-5-5 @xhigh
+bounded lookups (CLI help, docs, config and quota reads): bifrost/anthropic/claude-haiku-5-5 @xhigh
 how explainer: bifrost/anthropic/claude-opus-5-5 @high
 why investigators: bifrost/anthropic/claude-opus-5-5 @medium
 why synthesizer: bifrost/anthropic/claude-opus-5-5 @high
@@ -102,10 +103,11 @@ interrogate reviewers: bifrost/anthropic/claude-opus-5-5 @medium, bifrost/azure/
 
 <memory>
 You own this block and may edit it without asking. Record durable facts and corrections the user would otherwise repeat. Keep it short: replace or delete stale lines instead of appending. Never edit anything outside this block.
-- AlgoChat GA4 (property 537760472): user OAuth for analytics scopes is blocked; impersonate ga4-reader@algoplex-algochat.iam.gserviceaccount.com via `gcloud auth print-access-token --impersonate-service-account=... --scopes=...`. Host DNS can't resolve *.googleapis.com analytics hosts: curl `--resolve host:443:<ip from nslookup host 8.8.8.8>`.
+- AlgoChat GA4 (property 537760472): user OAuth for analytics scopes is blocked; impersonate ga4-reader@algoplex-algochat.iam.gserviceaccount.com via `gcloud auth print-access-token --impersonate-service-account=... --scopes=...`. Blocky allowlists googleads/analyticsadmin/analyticsdata.googleapis.com, so no `--resolve` workaround is needed.
 - Executor (executor.shau.me) auth server moved to /api/auth on 2026-10-03; if pi says needs sign-in with stale discovery, `pi mcp logout executor` then login. Multi-account app tools take `{accountId, input:{...}}`.
 - AI Gateway key is production-only for DeepSeek, Luna, Typesafe AI and Amazon Nova Micro. Never use it for Claude, evaluation or judge models. Judges use Astra subagents, not Sol or gateway API calls.
 - Harness paper arXiv 2609.20804 vs 1,120 sessions (2026-10-11): mid-history elision loses money to prompt-cache rewrites; only change kept is compaction.modelOverrides reserveTokens 40960 for 272k GPT models. No new extensions for harness tweaks.
 - Model chart (2026-10-11): Kimi K3, GLM-5.3 Flash, Haiku 5.5, Sol, Opus 5.5 (default), Fable 5.1, Astra. Never put Luna or Sonnet in a selector. Codex is retired; skip it. Roles: impl, investigation, architect, swarm = Opus med; judgment = Opus high; strongest = Fable xhigh; panels = Opus med+Sol xhigh. Astra, Kimi, GLM are selector-only. Policy: ~/.pi/agent/model-routing-policy.md.
+- Worktrees: never pass `isolation: "worktree"` (it makes Claude worktrees under `.claude/worktrees/`). Make a CoW worktree with `git cow-worktree add -b <branch> ~/.pi/agent/worktrees/<project>/manual-<task> HEAD` and point the delegate at it.
 - Algoplex verification tools belong in its product repos or directly under algoplex/.pi/skills/, not in a shared pstack checkout or new generic framework.
 </memory>

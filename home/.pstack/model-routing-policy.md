@@ -12,7 +12,7 @@ The user's cycling order is Kimi K3, GLM-5.3 Flash, Haiku 5.5, GPT-6.1 Sol, Opus
 | --- | --- | --- |
 | Implementation: feature, refactoring, bug-fix, perf-issue, hillclimb, swarm workers | `anthropic/claude-opus-5-5 @medium` | `opus @medium` |
 | Investigation: why investigators, reflect tooling | `anthropic/claude-opus-5-5 @medium` | `opus @medium` |
-| Bounded reading: how explorer | `anthropic/claude-haiku-5-5 @xhigh` | `haiku @xhigh` |
+| Bounded reading: how explorer, bounded lookups (CLI help, docs, config and quota reads) | `anthropic/claude-haiku-5-5 @xhigh` | `haiku @xhigh` |
 | Judgment and prose: how explainer, why synthesizer, reflect judgment | `anthropic/claude-opus-5-5 @high` | `opus @high` |
 | Strongest judgment: hardest ambiguous design, cross-cutting architecture | `anthropic/claude-fable-5-1 @xhigh` | `opus @xhigh` (Fable has no Agent alias) |
 | Architect runners | `anthropic/claude-opus-5-5 @medium` | `opus @medium`, `opus @low` |
