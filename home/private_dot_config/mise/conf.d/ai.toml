@@ -10,6 +10,20 @@ claude-code = "latest"
 "aqua:vercel-labs/agent-browser" = "latest"
 # Pi's subagent worktree hook (~/.pi/agent/scripts/setup-worktree-cow.mjs) runs `wt`.
 "aqua:max-sixty/worktrunk" = "latest"
+# REA (reverse engineering MCP). Pi registers it in ~/.pi/agent/mcp.json and
+# loads its skill as a settings package. Its native analysis drives Ghidra.
+"npm:rea-agents" = "latest"
+
+# REA accepts Ghidra 12.1.x only. Releases ship no macOS or Linux arm64
+# decompiler, so postinstall builds it with JDK 21 (gcc/clang required).
+[tools."github:NationalSecurityAgency/ghidra"]
+version = "Ghidra_12.1"
+depends = ["java"]
+postinstall = '''
+set -eu
+cd "$MISE_TOOL_INSTALL_PATH/support/gradle"
+JAVA_HOME="$HOME/.local/share/mise/installs/java/zulu-21" ./gradlew --no-daemon -q buildNatives
+'''
 
 # pstack: michael-denyer's Claude Code/Codex/Pi port of cursor/plugins/pstack.
 # Claude Code (~/.claude/skills/pstack) and Pi (settings packages) both read it

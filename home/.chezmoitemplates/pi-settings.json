@@ -20,6 +20,7 @@
     },
     "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/@sting8k/pi-vcc",
     "~/.local/share/mise/installs/npm-pi-intercom/latest/lib/node_modules/pi-intercom",
+    "~/.local/share/mise/installs/npm-rea-agents/latest/lib/node_modules/rea-agents",
     "~/.local/share/mise/installs/pi-global-tools/{{ includeTemplate "pi-global-tools-version" . }}"
   ],
   "compaction": {

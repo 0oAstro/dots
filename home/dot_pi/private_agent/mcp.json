@@ -3,6 +3,17 @@
     "executor": {
       "url": "https://executor.shau.me/mcp",
       "exposure": "codemode-deferred"
+    },
+    "rea": {
+      "command": "~/.local/share/mise/installs/npm-rea-agents/latest/bin/rea",
+      "args": ["mcp"],
+      "env": {
+        "GHIDRA_INSTALL_DIR": "${HOME}/.local/share/mise/installs/github-national-security-agency-ghidra/Ghidra_12.1",
+        "JAVA_HOME": "${HOME}/.local/share/mise/installs/java/zulu-21"
+      },
+      "timeout": 600,
+      "exposure": "codemode",
+      "description": "Reverse engineer shipped software: native binaries through headless Ghidra, Electron and JavaScript apps, .NET, APKs, websites, network captures, and process runs."
     }
   }
 }
