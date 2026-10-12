@@ -9,7 +9,6 @@ carapace = "1.7.3"
 "npm:bitwarden-cli-bio" = "latest"
 "github:bitwarden/agent-access" = "latest"
 
-ffmpeg = "latest"
 "github:yt-dlp/yt-dlp" = "latest"
 "github:Code-Hex/pget" = "latest"
 
