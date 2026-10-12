@@ -8,8 +8,6 @@ claude-code = "latest"
 "npm:@sting8k/pi-vcc" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "npm:pi-intercom" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "aqua:vercel-labs/agent-browser" = "latest"
-# Pi's subagent worktree hook (~/.pi/agent/scripts/setup-worktree-cow.mjs) runs `wt`.
-"aqua:max-sixty/worktrunk" = "latest"
 # REA (reverse engineering MCP). Pi registers it in ~/.pi/agent/mcp.json and
 # loads its skill as a settings package. Its native analysis drives Ghidra.
 "npm:rea-agents" = "latest"

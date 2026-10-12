@@ -108,6 +108,6 @@ You own this block and may edit it without asking. Record durable facts and corr
 - AI Gateway key is production-only for DeepSeek, Luna, Typesafe AI and Amazon Nova Micro. Never use it for Claude, evaluation or judge models. Judges use Astra subagents, not Sol or gateway API calls.
 - Harness paper arXiv 2609.20804 vs 1,120 sessions (2026-10-11): mid-history elision loses money to prompt-cache rewrites; only change kept is compaction.modelOverrides reserveTokens 40960 for 272k GPT models. No new extensions for harness tweaks.
 - Model chart (2026-10-11): Kimi K3, GLM-5.3 Flash, Haiku 5.5, Sol, Opus 5.5 (default), Fable 5.1, Astra. Never put Luna or Sonnet in a selector. Codex is retired; skip it. Roles: impl, investigation, architect, swarm = Opus med; judgment = Opus high; strongest = Fable xhigh; panels = Opus med+Sol xhigh. Astra, Kimi, GLM are selector-only. Policy: ~/.pi/agent/model-routing-policy.md.
-- Worktrees: never pass `isolation: "worktree"` (it makes Claude worktrees under `.claude/worktrees/`). Make a CoW worktree with `git cow-worktree add -b <branch> ~/.pi/agent/worktrees/<project>/manual-<task> HEAD` and point the delegate at it.
+- Worktrees: never pass `isolation: "worktree"` (it makes Claude worktrees under `.claude/worktrees/`). Make one with `git worktree add -b <branch> ~/.pi/agent/worktrees/<project>/<task> HEAD` and point the delegate at it.
 - Algoplex verification tools belong in its product repos or directly under algoplex/.pi/skills/, not in a shared pstack checkout or new generic framework.
 </memory>

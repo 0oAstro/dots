@@ -40,6 +40,12 @@
 .pi/agent/extensions/quiet-tools.ts
 .pi/agent/skills
 .pi/subagents.json
+# Retired CoW worktree tooling. Existing checkouts under .pi/agent/worktrees stay.
+.local/bin/git-cow-worktree
+.pi/agent/skills/cow-worktrees
+.pi/agent/scripts/setup-worktree-cow.mjs
+.pi/agent/scripts/test-worktree-cow.mjs
+.pi/agent/worktrees/README.md
 # Retired pstack forks and the agent links into them; pstack is mise's http:pstack.
 .claude/pstack
 .codex/pstack
