@@ -103,5 +103,5 @@ interrogate reviewers: bifrost-anthropic/claude-opus-5-5 @medium, bifrost-openai
 </pstack>
 
 <memory>
-The shared memory block is the <memory> block in ~/.pi/agent/AGENTS.md. Read it before work on a topic it names. Record durable facts and corrections there, inside that block only.
+Memory lives in two places. Read both before work on a topic they name. The <memory> block in ~/.pi/agent/AGENTS.md is shared through git; edit it only when Shaurya asks. The <machine-memory> block in ~/.pi/agent/APPEND_SYSTEM.md is local to this machine; record durable facts and corrections there, inside that block only.
 </memory>

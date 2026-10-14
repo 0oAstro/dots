@@ -102,7 +102,7 @@ interrogate reviewers: bifrost/anthropic/claude-opus-5-5 @medium, bifrost/azure/
 </pstack>
 
 <memory>
-You own this block and may edit it without asking. Record durable facts and corrections the user would otherwise repeat. Keep it short: replace or delete stale lines instead of appending. Never edit anything outside this block.
+This block is shared through git on every machine. Edit it only when Shaurya asks. Write new facts to the <machine-memory> block in ~/.pi/agent/APPEND_SYSTEM.md instead.
 - AlgoChat GA4 (property 537760472): user OAuth for analytics scopes is blocked; impersonate ga4-reader@algoplex-algochat.iam.gserviceaccount.com via `gcloud auth print-access-token --impersonate-service-account=... --scopes=...`. Blocky allowlists googleads/analyticsadmin/analyticsdata.googleapis.com, so no `--resolve` workaround is needed.
 - Executor (executor.shau.me) auth server moved to /api/auth on 2026-10-03; if pi says needs sign-in with stale discovery, `pi mcp logout executor` then login. Multi-account app tools take `{accountId, input:{...}}`.
 - AI Gateway key is production-only for DeepSeek, Luna, Typesafe AI and Amazon Nova Micro. Never use it for Claude, evaluation or judge models. Judges use Astra subagents, not Sol or gateway API calls.
