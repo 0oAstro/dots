@@ -40,7 +40,7 @@ const SCRAPE_FORMATS = [
 const SEARCH_SOURCES = ["web", "news", "images", "alexandria"] as const satisfies readonly SearchSource[];
 const SEARCH_CATEGORIES = ["github", "research", "pdf", "developer", "gov"] as const satisfies readonly SearchCategory[];
 
-const DEFAULT_FETCH_MODEL = "openai-codex/gpt-5.3-codex-spark";
+const DEFAULT_FETCH_MODEL = "bifrost/azure/gpt-6-luna";
 const DEFAULT_SEARCH_MAX_CHARS = 8192;
 const DEFAULT_FETCH_MAX_CHARS = 20000;
 const DEFAULT_MAP_MAX_CHARS = 12000;

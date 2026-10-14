@@ -98,7 +98,7 @@ pstack = next(package for package in settings["packages"] if isinstance(package,
 assert pstack["skills"][0] == "!principle-*", pstack
 for skill in pstack["skills"][1:]:
     assert (home / ".pi/agent/prompts" / f"{skill[1:]}.md").exists(), skill
-assert settings["firecrawl-web"]["fetchModel"] == "bifrost/anthropic/claude-haiku-5-5", settings["firecrawl-web"]
+assert settings["firecrawl-web"]["fetchModel"] == "bifrost/azure/gpt-6-luna", settings["firecrawl-web"]
 extension_config = tomllib.loads((home / ".config/mise/conf.d/pi-global-tools.toml").read_text())
 version = extension_config["tools"]["pi-global-tools"]["version"]
 assert re.fullmatch(r"[0-9a-f]{64}", version), version

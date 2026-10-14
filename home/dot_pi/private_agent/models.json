@@ -52,6 +52,53 @@
           }
         },
         {
+          "id": "azure/gpt-6-luna",
+          "name": "GPT-6 Luna",
+          "api": "openai-responses",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.1,
+            "output": 0.5,
+            "cacheRead": 0.01,
+            "cacheWrite": 0.125
+          },
+          "promptCache": {
+            "short": 1800,
+            "long": 1800
+          },
+          "contextWindow": 922000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "compat": {
+            "supportsMidConvoSystemMessages": true,
+            "supportsToolSearch": true,
+            "supportsOpenAIGrammarTools": true,
+            "supportsExplicitPromptCacheMode": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          }
+        },
+        {
           "id": "azure/gpt-6-astra",
           "name": "GPT-6 Astra",
           "api": "openai-responses",

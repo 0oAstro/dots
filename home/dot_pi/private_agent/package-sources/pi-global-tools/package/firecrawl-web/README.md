@@ -60,12 +60,12 @@ When `web_fetch` receives an `instruction`, it reads the model from `~/.pi/agent
 ```json
 {
   "firecrawl-web": {
-    "fetchModel": "openai-codex/gpt-5.3-codex-spark"
+    "fetchModel": "bifrost/azure/gpt-6-luna"
   }
 }
 ```
 
-The value must exactly match a model known to Pi and have working authentication. It defaults to `openai-codex/gpt-5.3-codex-spark` when the setting is absent. `/firecrawl` checks that an API key is configured and shows the selected extraction model; it does not verify network access or model authentication.
+The value must exactly match a model known to Pi and have working authentication. It defaults to `bifrost/azure/gpt-6-luna` when the setting is absent. `/firecrawl` checks that an API key is configured and shows the selected extraction model; it does not verify network access or model authentication.
 
 ## Validation
 

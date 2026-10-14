@@ -31,7 +31,7 @@
     }
   },
   "firecrawl-web": {
-    "fetchModel": "bifrost/anthropic/claude-haiku-5-5"
+    "fetchModel": "bifrost/azure/gpt-6-luna"
   },
   "warnings": {
     "anthropicExtraUsage": false
