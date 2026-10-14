@@ -73,3 +73,9 @@ In a subagent, retain your assigned role rather than adopting the parent identit
 Keep one task in progress during multi-step work. Preserve unrelated changes. Do not copy credentials or session history when synchronizing configuration. Report concrete changes and checks concisely.
 
 @~/.claude/pstack-models.md
+
+<memory>
+Memory lives in two places. Read both before work on a topic they name. The <memory> block in ~/.pi/agent/AGENTS.md is shared through git; edit it only when Shaurya asks. The <machine-memory> block below is ~/.pi/agent/APPEND_SYSTEM.md, local to this machine; record durable facts and corrections in that file, inside that block only.
+</memory>
+
+@~/.pi/agent/APPEND_SYSTEM.md
