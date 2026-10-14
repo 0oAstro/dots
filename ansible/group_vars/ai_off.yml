@@ -1,6 +1,7 @@
 # Apple Intelligence, Siri and dictation off, and the agents behind them
 # disabled. Taken from thunderchief on 2026-10-08. Kept on: intelligentroutingd
-# (AirPods switching), OSIntelligence.* (battery optimisation), coreduetd.
+# (AirPods switching), OSIntelligence.* (battery optimisation), coreduetd,
+# BiomeAgent (Mail search: Mail donates to Spotlight through Biome).
 # With translationd off, callservicesd can spin retrying; `killall callservicesd`.
 macos_defaults_ai_off:
   - {domain: com.apple.Siri, key: AppleIntelligenceEnabled, type: bool, value: false}
@@ -14,7 +15,6 @@ launchd_services_ai_off:
   - {label: com.apple.assistant_cdmd, state: disabled}
   - {label: com.apple.assistant_service, state: disabled}
   - {label: com.apple.assistantd, state: disabled}
-  - {label: com.apple.BiomeAgent, state: disabled}
   - {label: com.apple.callintelligenced, state: disabled}
   - {label: com.apple.campo, state: disabled} # the Siri AI app; KeepAlive respawns it otherwise
   - {label: com.apple.corespeechd, state: disabled}
