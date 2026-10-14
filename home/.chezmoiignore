@@ -68,6 +68,7 @@ Library
 .claude
 .codex
 .pi
+.config/opencode
 .config/mise/conf.d/ai.toml
 .config/mise/conf.d/pi-global-tools.toml
 {{- end }}

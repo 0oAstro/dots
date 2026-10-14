@@ -1,0 +1,322 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "bifrost-anthropic/claude-opus-5-5",
+  "update": "disable",
+  "skills": [
+    "~/.local/share/mise/installs/http-emil-skills/latest/skills",
+    "~/.local/share/mise/installs/http-humanlayer-skills/latest/plugins",
+    "~/.local/share/mise/installs/pi-global-tools/{{ includeTemplate "pi-global-tools-version" . }}/skills"
+  ],
+  "permissions": [
+    {
+      "action": "external_directory",
+      "resource": "~/.local/share/mise/installs/http-pstack/latest/plugins/pstack/*",
+      "effect": "allow"
+    },
+    {
+      "action": "external_directory",
+      "resource": "~/.pi/agent/*",
+      "effect": "allow"
+    },
+    {
+      "action": "skill",
+      "resource": "principle-*",
+      "effect": "deny"
+    },
+    {
+      "action": "skill",
+      "resource": "algorithmic-art",
+      "effect": "deny"
+    },
+    {
+      "action": "skill",
+      "resource": "docs",
+      "effect": "deny"
+    },
+    {
+      "action": "skill",
+      "resource": "pdf",
+      "effect": "deny"
+    },
+    {
+      "action": "skill",
+      "resource": "import-memory",
+      "effect": "deny"
+    },
+    {
+      "action": "skill",
+      "resource": "skill-creator",
+      "effect": "deny"
+    },
+    {
+      "action": "skill",
+      "resource": "docx",
+      "effect": "deny"
+    },
+    {
+      "action": "skill",
+      "resource": "morning",
+      "effect": "deny"
+    },
+    {
+      "action": "skill",
+      "resource": "pptx",
+      "effect": "deny"
+    },
+    {
+      "action": "skill",
+      "resource": "xlsx",
+      "effect": "deny"
+    },
+    {
+      "action": "skill",
+      "resource": "google-workspace",
+      "effect": "deny"
+    }
+  ],
+  "agents": {
+    "title": {
+      "model": "bifrost-bedrock/nova-micro"
+    },
+    "poteto-agent": {
+      "mode": "subagent"
+    },
+    "comment-sicko": {
+      "mode": "subagent"
+    }
+  },
+  "providers": {
+    "bifrost-anthropic": {
+      "name": "Bifrost Anthropic",
+      "canonical": "anthropic",
+      "package": "@opencode/ai/providers/anthropic",
+      "env": [
+        "BIFROST_VIRTUAL_KEY"
+      ],
+      "settings": {
+        "baseURL": "https://bifrost.shau.me/anthropic/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}"
+      },
+      "models": {
+        "claude-opus-5-5": {
+          "modelID": "anthropic/claude-opus-5-5",
+          "name": "Claude Opus 5.5"
+        },
+        "claude-fable-5-1": {
+          "modelID": "anthropic/claude-fable-5-1",
+          "name": "Claude Fable 5.1"
+        },
+        "claude-haiku-5-5": {
+          "modelID": "anthropic/claude-haiku-5-5",
+          "name": "Claude Haiku 5.5"
+        }
+      }
+    },
+    "bifrost-bedrock": {
+      "name": "Bifrost Bedrock",
+      "canonical": "anthropic",
+      "package": "@opencode/ai/providers/anthropic",
+      "env": [
+        "BIFROST_VIRTUAL_KEY"
+      ],
+      "settings": {
+        "baseURL": "https://bifrost.shau.me/anthropic/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}"
+      },
+      "models": {
+        "claude-opus-5-5": {
+          "modelID": "bedrock/anthropic.claude-opus-5-5",
+          "name": "Claude Opus 5.5"
+        },
+        "claude-fable-5-1": {
+          "modelID": "bedrock/anthropic.claude-fable-5-1",
+          "name": "Claude Fable 5.1"
+        },
+        "claude-haiku-5-5": {
+          "modelID": "bedrock/anthropic.claude-haiku-5-5",
+          "name": "Claude Haiku 5.5"
+        },
+        "nova-micro": {
+          "modelID": "bedrock/amazon.nova-micro-v1:0",
+          "name": "Nova Micro",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 128000,
+            "output": 10000
+          },
+          "cost": {
+            "input": 0.035,
+            "output": 0.14,
+            "cache": {
+              "read": 0.00875,
+              "write": 0
+            }
+          },
+          "variants": []
+        }
+      }
+    },
+    "bifrost-openai": {
+      "name": "Bifrost OpenAI",
+      "canonical": "openai",
+      "package": "@opencode/ai/providers/openai/responses",
+      "env": [
+        "BIFROST_VIRTUAL_KEY"
+      ],
+      "settings": {
+        "baseURL": "https://bifrost.shau.me/openai/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}",
+        "transport": "http"
+      },
+      "models": {
+        "gpt-6.1-sol": {
+          "modelID": "azure/gpt-6.1-sol",
+          "name": "GPT-6.1 Sol",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          }
+        },
+        "gpt-6-astra": {
+          "modelID": "azure/gpt-6-astra",
+          "name": "GPT-6 Astra",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          }
+        }
+      }
+    },
+    "bifrost-fireworks": {
+      "name": "Bifrost Fireworks",
+      "package": "@opencode/ai/providers/openai-compatible",
+      "env": [
+        "BIFROST_VIRTUAL_KEY"
+      ],
+      "settings": {
+        "baseURL": "https://bifrost.shau.me/openai/v1",
+        "apiKey": "{env:BIFROST_VIRTUAL_KEY}"
+      },
+      "models": {
+        "kimi-k3": {
+          "modelID": "azure/fw-kimi-k3",
+          "name": "Kimi K3 (Fireworks)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 1048576,
+            "output": 131072
+          },
+          "cost": {
+            "input": 3,
+            "output": 15,
+            "cache": {
+              "read": 0.3,
+              "write": 0
+            }
+          },
+          "variants": [
+            {
+              "id": "none",
+              "settings": {
+                "reasoningEffort": "none"
+              }
+            },
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
+              }
+            },
+            {
+              "id": "medium",
+              "settings": {
+                "reasoningEffort": "medium"
+              }
+            },
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
+              }
+            },
+            {
+              "id": "max",
+              "settings": {
+                "reasoningEffort": "max"
+              }
+            }
+          ]
+        },
+        "glm-5.3-flash": {
+          "modelID": "azure/fw-glm-5.3-flash",
+          "name": "GLM-5.3 Flash (Fireworks)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 1048576,
+            "output": 131072
+          },
+          "cost": {
+            "input": 0.15,
+            "output": 0.5,
+            "cache": {
+              "read": 0.03,
+              "write": 0
+            }
+          },
+          "variants": [
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
+              }
+            },
+            {
+              "id": "medium",
+              "settings": {
+                "reasoningEffort": "medium"
+              }
+            },
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
+              }
+            },
+            {
+              "id": "max",
+              "settings": {
+                "reasoningEffort": "max"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
-# Coding agents. Their configs live under ~/.claude, ~/.codex and ~/.pi.
+# Coding agents. Their configs live under ~/.claude, ~/.codex, ~/.pi and
+# ~/.config/opencode.
 # Server-only harnesses (prime, grok, cursor) are in server.toml.
 
 [tools]
@@ -8,6 +9,9 @@ claude-code = "latest"
 "npm:@sting8k/pi-vcc" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "npm:pi-intercom" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "aqua:vercel-labs/agent-browser" = "latest"
+# OpenCode v2. The aqua registry entry tracks v1 GitHub releases only. The
+# package postinstall links the native binary for this platform.
+"npm:@opencode/cli" = { version = "latest", allow_builds = ["@opencode/cli"] }
 # REA (reverse engineering MCP). Pi registers it in ~/.pi/agent/mcp.json and
 # loads its skill as a settings package. Its native analysis drives Ghidra.
 "npm:rea-agents" = "latest"

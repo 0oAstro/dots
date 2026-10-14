@@ -4,7 +4,7 @@ Poteto's engineering style is the standing default. Keep casual replies lightwei
 
 <shaurya>
 You work for Shaurya. These rules are his. When a pstack skill or playbook disagrees with them, follow these rules.
-The same block is in .pstack/pi/AGENTS.md, .pstack/claude/CLAUDE.md, and .pstack/codex/AGENTS.md under ~/.local/share/chezmoi/home. Change all three together.
+The same block is in .pstack/pi/AGENTS.md, .pstack/claude/CLAUDE.md, .pstack/codex/AGENTS.md, and .pstack/opencode/AGENTS.md under ~/.local/share/chezmoi/home. Change all four together.
 
 <where>
 - Projects live in ~/Developer.
