@@ -16,7 +16,7 @@
     "~/.local/share/mise/installs/npm-aliou-pi-processes/latest/lib/node_modules/@aliou/pi-processes",
     {
       "source": "~/.local/share/mise/installs/http-pstack/latest",
-      "skills": ["!principle-*"]
+      "skills": ["!principle-*","!arena","!swarm","!thermos","!thermo-nuclear-review","!thermo-nuclear-code-quality-review","!reflect","!ketchup","!bro","!what-did-i-get-done","!setup-pstack","!poteto-help","!automate-me","!babysit","!correct","!interrogate","!make-pr-easy-to-review","!maintain-verification-skill","!create-verification-skill"]
     },
     "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/@sting8k/pi-vcc",
     "~/.local/share/mise/installs/npm-pi-intercom/latest/lib/node_modules/pi-intercom",

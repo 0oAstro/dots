@@ -88,7 +88,6 @@ Library
 .prime
 .grok
 # CoW worktrees need the server XFS reflink disk.
-.pi/agent/skills/cow-worktrees
 .pi/agent/worktrees
 .config/mise/conf.d/server.toml
 {{- end }}

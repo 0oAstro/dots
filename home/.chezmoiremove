@@ -34,6 +34,11 @@
 .pi/agent/local/pi-nico-eager
 .pi/agent/git/github.com/tmustier/pi-extensions/session-recap
 .pi/agent/scripts/test-anthropic-subagents.ts
+# Pi extensions and skills now ship through mise (pi-global-tools, http:emil-skills,
+# http:humanlayer-skills); the old chezmoi copies are gone.
+.pi/agent/extensions/pure-footer.ts
+.pi/agent/extensions/quiet-tools.ts
+.pi/agent/skills
 .pi/subagents.json
 # Retired pstack forks and the agent links into them; pstack is mise's http:pstack.
 .claude/pstack

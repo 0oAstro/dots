@@ -118,8 +118,7 @@ This shares tracked source blocks, unlike native Pi source checkout. The helper
 can fall back to ordinary Git checkout when reflinks are unavailable. It supports
 only `add`; use normal Git for listing/removing/pruning worktrees.
 
-`/skill:cow-worktrees` documents optional manual Worktrunk cache setup. Never
-launch Docker stacks from these checkouts without separate explicit deployment
+Never launch Docker stacks from these checkouts without separate explicit deployment
 authorization. No real repository or Docker stack was modified during setup.
 
 ## Validation and maintenance

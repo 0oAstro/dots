@@ -39,6 +39,26 @@ strip_components = 1
 # No executables; keep the tarball root off PATH.
 bin_path = "bin"
 
+# Emil Kowalski's design and motion skills. The repo has no releases, so each
+# version is one commit, named <date>.<time>.<sha> so that newer sorts later.
+# Pi reads them through ~/.pi/agent/prompts/<skill>.md slash commands.
+[tools."http:emil-skills"]
+version = "latest"
+url = '{% raw %}https://github.com/emilkowalski/skills/archive/{{ version | split(pat=".") | last }}.tar.gz{% endraw %}'
+version_list_url = "https://github.com/emilkowalski/skills/commits/HEAD.atom"
+version_expr = 'reverse(map(split(body, "<entry>")[1:], { let sha = #[indexOf(#, "Grit::Commit/") + 13:indexOf(#, "Grit::Commit/") + 25]; let date = #[indexOf(#, "<updated>") + 9:indexOf(#, "<updated>") + 28]; replace(date[0:10], "-", "") + "." + replace(date[11:19], ":", "") + "." + sha }))'
+strip_components = 1
+bin_path = "bin"
+
+# HumanLayer's skills, versioned the same way as http:emil-skills.
+[tools."http:humanlayer-skills"]
+version = "latest"
+url = '{% raw %}https://github.com/humanlayer/skills/archive/{{ version | split(pat=".") | last }}.tar.gz{% endraw %}'
+version_list_url = "https://github.com/humanlayer/skills/commits/HEAD.atom"
+version_expr = 'reverse(map(split(body, "<entry>")[1:], { let sha = #[indexOf(#, "Grit::Commit/") + 13:indexOf(#, "Grit::Commit/") + 25]; let date = #[indexOf(#, "<updated>") + 9:indexOf(#, "<updated>") + 28]; replace(date[0:10], "-", "") + "." + replace(date[11:19], ":", "") + "." + sha }))'
+strip_components = 1
+bin_path = "bin"
+
 # Nous Research Hermes Agent; data lives in ~/.hermes. Upstream ships no wheel
 # (PyPI is stale and setup.py refuses wheel builds), so this follows their
 # Dockerfile: release source tarball, locked uv venv on Python 3.13 (<3.14

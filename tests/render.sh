@@ -95,7 +95,9 @@ assert "npm:@sting8k/pi-vcc" not in settings["packages"], settings["packages"]
 assert settings["compaction"]["enabled"] is True, settings["compaction"]
 assert "~/.local/share/mise/installs/npm-pi-intercom/latest/lib/node_modules/pi-intercom" in settings["packages"], settings["packages"]
 pstack = next(package for package in settings["packages"] if isinstance(package, dict))
-assert pstack["skills"] == ["!principle-*"], pstack
+assert pstack["skills"][0] == "!principle-*", pstack
+for skill in pstack["skills"][1:]:
+    assert (home / ".pi/agent/prompts" / f"{skill[1:]}.md").exists(), skill
 assert settings["firecrawl-web"]["fetchModel"] == "bifrost/anthropic/claude-haiku-5-5", settings["firecrawl-web"]
 extension_config = tomllib.loads((home / ".config/mise/conf.d/pi-global-tools.toml").read_text())
 version = extension_config["tools"]["pi-global-tools"]["version"]
@@ -103,6 +105,7 @@ assert re.fullmatch(r"[0-9a-f]{64}", version), version
 assert extension_config["plugins"]["pi-global-tools"] == str(home / ".pi/agent/package-sources/pi-global-tools"), extension_config
 assert f"~/.local/share/mise/installs/pi-global-tools/{version}" in settings["packages"], settings["packages"]
 remove_targets = set(sys.argv[2].splitlines())
+assert ".pi/agent/skills" in remove_targets, remove_targets
 assert ".pi/agent/extensions/codemode-gpt.ts" in remove_targets, remove_targets
 assert ".pi/agent/extensions/firecrawl-web" in remove_targets, remove_targets
 config = tomllib.loads((home / ".config/mise/config.toml").read_text())
