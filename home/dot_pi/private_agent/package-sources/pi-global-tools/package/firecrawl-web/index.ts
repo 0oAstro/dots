@@ -9,7 +9,6 @@ import { Type } from "typebox";
 import {
   FirecrawlClient,
   type AlexandriaResponse,
-  type FirecrawlFormatRequest,
   type FirecrawlScrapeFormat,
   type FirecrawlScrapeResult,
   type FirecrawlSearchResult,
@@ -40,7 +39,6 @@ const SCRAPE_FORMATS = [
 const SEARCH_SOURCES = ["web", "news", "images", "alexandria"] as const satisfies readonly SearchSource[];
 const SEARCH_CATEGORIES = ["github", "research", "pdf", "developer", "gov"] as const satisfies readonly SearchCategory[];
 
-const DEFAULT_FETCH_MODEL = "bifrost/azure/gpt-6-luna";
 const DEFAULT_SEARCH_MAX_CHARS = 8192;
 const DEFAULT_FETCH_MAX_CHARS = 20000;
 const DEFAULT_MAP_MAX_CHARS = 12000;
@@ -50,21 +48,22 @@ const SETTINGS_KEY = "firecrawl-web";
 
 function fetchModel(): string {
   const settingsPath = join(getAgentDir(), "settings.json");
+  const missing = `Set ${SETTINGS_KEY}.fetchModel in ${settingsPath} to a provider/model string.`;
   let settings: unknown;
   try {
     settings = JSON.parse(readFileSync(settingsPath, "utf8"));
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return DEFAULT_FETCH_MODEL;
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") throw new Error(missing);
     throw new Error(`Could not read Firecrawl settings from ${settingsPath}: ${error instanceof Error ? error.message : String(error)}`);
   }
-  if (!settings || typeof settings !== "object" || Array.isArray(settings)) return DEFAULT_FETCH_MODEL;
+  if (!settings || typeof settings !== "object" || Array.isArray(settings)) throw new Error(missing);
   const section = (settings as Record<string, unknown>)[SETTINGS_KEY];
-  if (section === undefined) return DEFAULT_FETCH_MODEL;
+  if (section === undefined) throw new Error(missing);
   if (!section || typeof section !== "object" || Array.isArray(section)) {
     throw new Error(`${SETTINGS_KEY} in ${settingsPath} must be an object.`);
   }
   const configured = (section as Record<string, unknown>).fetchModel;
-  if (configured === undefined) return DEFAULT_FETCH_MODEL;
+  if (configured === undefined) throw new Error(missing);
   if (typeof configured !== "string" || !configured.includes("/") || !configured.trim()) {
     throw new Error(`${SETTINGS_KEY}.fetchModel in ${settingsPath} must be a provider/model string.`);
   }
@@ -175,17 +174,15 @@ export function presentScrape(
   result: FirecrawlScrapeResult,
   url: string,
   formats: readonly FirecrawlScrapeFormat[],
-  focus?: { extracted?: ExtractedContent },
+  extracted?: ExtractedContent,
 ): string {
-  const focusNotice = focus
-    ? !focus.extracted
-      ? "Focused extraction unavailable; returned cleaned page content."
-      : focus.extracted.inputTruncated
-        ? "Warning: Focused extraction input was limited to 120,000 characters; the model did not see the entire page. Fetch without instruction for complete source content."
-        : "Focused extraction."
+  const focusNotice = extracted
+    ? extracted.inputTruncated
+      ? `Warning: Focused extraction by ${extracted.model} saw only the first 120,000 characters of the page. Fetch without instruction for complete source content.`
+      : `Focused extraction by ${extracted.model}.`
     : undefined;
   const lines = [focusNotice, scrapeHeader(result, url)].filter((line): line is string => line !== undefined);
-  if (focus?.extracted) return [...lines, focus.extracted.text].join("\n\n");
+  if (extracted) return [...lines, extracted.text].join("\n\n");
   const headerCount = lines.length;
   for (const format of formats) {
     const value = result[format as keyof FirecrawlScrapeResult];
@@ -302,7 +299,7 @@ export default function firecrawlWeb(pi: ExtensionAPI) {
     name: "web_fetch",
     label: "Web Fetch",
     description:
-      "Fetch a URL through Firecrawl with HTTP/cache metadata and cleaned content, or run an Alexandria data tool. instruction asks Firecrawl to answer from the page (5 credits); with schema it returns JSON. maxAge=0 forces a fresh fetch. Output is capped at 40,000 characters; complete truncated output is saved for read with offset/limit.",
+      "Fetch a URL through Firecrawl with HTTP/cache metadata and cleaned content, or run an Alexandria data tool. instruction has the firecrawl-web.fetchModel model answer from the cleaned page; with schema it returns JSON. maxAge=0 forces a fresh fetch. Output is capped at 40,000 characters; complete truncated output is saved for read with offset/limit.",
     promptSnippet: "Fetch or focus-extract a web page through Firecrawl",
     parameters: Type.Object({
       url: Type.Optional(Type.String({ description: "HTTP(S) page URL. Required unless alexandria is given." })),
@@ -313,7 +310,7 @@ export default function firecrawlWeb(pi: ExtensionAPI) {
       }, { description: "Run a catalogued data tool instead of fetching a URL; charged at the tool's listed price. Discover with web_search sources [\"alexandria\"]. provider \"firecrawl\", capability \"find-tools\" is free and returns contracts." })),
       formats: Type.Optional(Type.Array(StringEnum(SCRAPE_FORMATS), { minItems: 1, maxItems: 4, description: "Formats; default markdown." })),
       onlyMainContent: Type.Optional(Type.Boolean({ description: "Exclude navigation and boilerplate; default true." })),
-      instruction: Type.Optional(Type.String({ description: "Question or extraction instruction answered from the page. Falls back to firecrawl-web.fetchModel on cleaned Markdown." })),
+      instruction: Type.Optional(Type.String({ description: "Question or extraction instruction that the firecrawl-web.fetchModel model answers from the cleaned page." })),
       schema: Type.Optional(Type.Record(Type.String(), Type.Unknown(), { description: "JSON Schema for structured extraction; instruction becomes its prompt." })),
       maxAge: Type.Optional(Type.Integer({ minimum: 0, description: "Maximum Firecrawl cache age in milliseconds; 0 forces a fresh fetch. Omit to use Firecrawl's default cache policy." })),
       maxChars: Type.Optional(Type.Integer({ minimum: 1000, maximum: 40000, description: "Maximum returned characters; default 20,000 raw or 12,000 focused." })),
@@ -341,22 +338,8 @@ export default function firecrawlWeb(pi: ExtensionAPI) {
         ...(outputFormats.includes("markdown") ? ["html"] : []),
       ])] as FirecrawlScrapeFormat[];
       const maxOutput = params.maxChars ?? (instruction ? 12000 : DEFAULT_FETCH_MAX_CHARS);
+      const model = instruction ? fetchModel() : undefined;
       onUpdate?.({ content: [{ type: "text", text: `Fetching: ${url}` }], details: {} });
-      if (instruction) {
-        const answerFormat: FirecrawlFormatRequest = params.schema
-          ? { type: "json", schema: params.schema, prompt: instruction }
-          : { type: "question", question: instruction };
-        const answered = await client().scrape({ url, formats: [answerFormat], onlyMainContent: params.onlyMainContent ?? true, maxAge: params.maxAge }, signal);
-        failOnSourceError(answered, url);
-        const answer = params.schema ? (answered.json === undefined ? undefined : JSON.stringify(answered.json, null, 2)) : answered.answer?.trim();
-        if (answer) {
-          const output = await boundedOutput([`Answered by Firecrawl.`, scrapeHeader(answered, url), answer].join("\n\n"), maxOutput, signal);
-          return {
-            content: [{ type: "text", text: output.text }],
-            details: { provider: "firecrawl", url, metadata: answered.metadata, warning: answered.warning, focused: true, answeredBy: "firecrawl", fullOutputPath: output.fullOutputPath },
-          };
-        }
-      }
       const result = await client().scrape({
         url,
         formats: requestFormats,
@@ -369,16 +352,21 @@ export default function firecrawlWeb(pi: ExtensionAPI) {
       signal?.throwIfAborted();
       const cleanedResult = defuddledMarkdown ? { ...result, markdown: defuddledMarkdown } : result;
       const cleaner = defuddledMarkdown ? "defuddle" : "firecrawl";
-      const extracted = instruction && cleanedResult.markdown ? await extractFirecrawlContent({
-        registry: ctx.modelRegistry,
-        url,
-        markdown: cleanedResult.markdown,
-        instruction,
-        model: fetchModel(),
-        maxOutput,
-        signal,
-      }) : undefined;
-      const body = presentScrape(cleanedResult, url, outputFormats, instruction ? { extracted } : undefined);
+      let extracted: ExtractedContent | undefined;
+      if (instruction && model) {
+        if (!cleanedResult.markdown) throw new Error(`Firecrawl returned no page content for ${url}, so ${model} cannot answer the instruction.`);
+        extracted = await extractFirecrawlContent({
+          registry: ctx.modelRegistry,
+          url,
+          markdown: cleanedResult.markdown,
+          instruction,
+          schema: params.schema,
+          model,
+          maxOutput,
+          signal,
+        });
+      }
+      const body = presentScrape(cleanedResult, url, outputFormats, extracted);
       const output = await boundedOutput(body, maxOutput, signal);
       return {
         content: [{ type: "text", text: output.text }],
@@ -393,7 +381,6 @@ export default function firecrawlWeb(pi: ExtensionAPI) {
           fullOutputPath: output.fullOutputPath,
           extractionInputTruncated: extracted?.inputTruncated,
           extractionModel: extracted?.model,
-          answeredBy: extracted ? "model" : undefined,
         },
         usage: extracted?.usage,
       };

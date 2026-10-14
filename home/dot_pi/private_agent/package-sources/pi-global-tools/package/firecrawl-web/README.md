@@ -3,7 +3,7 @@
 Fulcrum-style Firecrawl integration for Pi. It exposes three focused tools:
 
 - `web_search`: compact Firecrawl v2 search over web, news, images, and Alexandria data tools
-- `web_fetch`: cleaned page fetch, Firecrawl-side question/JSON extraction, or Alexandria tool execution
+- `web_fetch`: cleaned page fetch, focused extraction by the configured model, or Alexandria tool execution
 - `web_map`: site URL discovery
 
 The tool surface stays at three because codemode composes them: fan out `web_fetch` with `Promise.all` instead of a batch tool, chain `web_map` and `web_fetch` instead of crawl.
@@ -17,8 +17,8 @@ The extension calls Firecrawl v2 directly. `web_fetch` uses Defuddle with LinkeD
 - Fetch returns the source URL, HTTP status, and cache state/timestamp/age when supplied by Firecrawl. Missing cache information is reported as unknown, not fresh. Known source HTTP errors (400+) fail the tool before focused extraction.
 - `maxAge` bounds page cache age in **milliseconds**; `0` requests a fresh fetch. Omit it to retain Firecrawl's default policy. Search accepts it only with `includeContent: true`: it affects scraped pages, not search-index freshness.
 - Markdown fetches use lazily loaded Defuddle when HTML is available, falling back to Firecrawl Markdown. `onlyMainContent: false` skips local cleaning. HTML and links are not reprocessed. Screenshot/audio URLs are retained; embedded binary strings are omitted.
-- `instruction` is sent to Firecrawl as a `question` format, or a `json` format when `schema` is given. One request, about 5 credits, and no 120,000-character input cap. If Firecrawl returns no answer, the tool refetches Markdown and uses the configured `fetchModel`.
-- Model-fallback focused extraction bounds its page input to 120,000 characters. A successful extraction reports if the model did not see the entire source. Fetch without an instruction to retrieve the complete cleaned source instead.
+- `instruction` makes the configured `fetchModel` answer from the cleaned page. Firecrawl only fetches the page. With `schema`, the model returns one JSON value that matches it. There is no other extractor: if the model is missing, has no credentials, or fails, the call fails.
+- Focused extraction bounds its page input to 120,000 characters. A successful extraction reports if the model did not see the entire source. Fetch without an instruction to retrieve the complete cleaned source instead.
 
 ### Search sources
 
@@ -55,7 +55,7 @@ No config-file, command-resolver, or Keychain credential fallback is supported.
 
 ## Focused extraction model
 
-When `web_fetch` receives an `instruction`, it reads the model from `~/.pi/agent/settings.json`:
+When `web_fetch` receives an `instruction`, it reads the model from `~/.pi/agent/settings.json`. The setting is required:
 
 ```json
 {
@@ -65,7 +65,7 @@ When `web_fetch` receives an `instruction`, it reads the model from `~/.pi/agent
 }
 ```
 
-The value must exactly match a model known to Pi and have working authentication. It defaults to `bifrost/azure/gpt-6-luna` when the setting is absent. `/firecrawl` checks that an API key is configured and shows the selected extraction model; it does not verify network access or model authentication.
+The value must exactly match a model known to Pi and have working authentication. There is no default: an `instruction` call fails until the setting exists. `/firecrawl` checks that an API key is configured and shows the selected extraction model; it does not verify network access or model authentication.
 
 ## Validation
 

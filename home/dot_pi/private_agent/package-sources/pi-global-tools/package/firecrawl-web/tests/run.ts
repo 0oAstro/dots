@@ -2,11 +2,53 @@ import assert from "node:assert/strict";
 import { readFile, rm, stat } from "node:fs/promises";
 import { dirname } from "node:path";
 import type { ExtensionAPI, ToolDefinition } from "@earendil-works/pi-coding-agent";
+import { type Api, type AssistantMessage, createAssistantMessageEventStream, registerApiProvider } from "@earendil-works/pi-ai/compat";
 import firecrawlWeb, { boundedOutput, presentScrape } from "../index.js";
 import { FirecrawlApiError, FirecrawlClient } from "../client.js";
 import { cleanFirecrawlHtml, extractFirecrawlContent } from "../content.js";
 
 // Run through Pi's extension loader: it supplies the host packages and schemas.
+
+let fakeReply = "";
+let onFakePrompt: (text: string) => void = () => {};
+registerApiProvider({
+  api: "firecrawl-test-api" as Api,
+  stream: fakeStream,
+  streamSimple: fakeStream,
+});
+
+function fakeStream(model: any, context: any) {
+  const stream = createAssistantMessageEventStream();
+  const prompt = JSON.stringify(context.messages);
+  onFakePrompt(prompt);
+  const message: AssistantMessage = {
+    role: "assistant",
+    content: fakeReply ? [{ type: "text", text: fakeReply }] : [],
+    api: model.api,
+    provider: model.provider,
+    model: model.id,
+    usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 } },
+    stopReason: "stop",
+    timestamp: Date.now(),
+  };
+  queueMicrotask(() => {
+    stream.push({ type: "done", reason: "stop", message });
+    stream.end();
+  });
+  return stream;
+}
+
+function fakeModelContext(reply: string, onPrompt: (text: string) => void = () => {}) {
+  fakeReply = reply;
+  onFakePrompt = onPrompt;
+  const model = { id: "model", name: "Test", api: "firecrawl-test-api", provider: "test", baseUrl: "", reasoning: false, input: ["text"], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 100000, maxTokens: 4000 };
+  return {
+    modelRegistry: {
+      find: () => model,
+      getApiKeyAndHeaders: async () => ({ ok: true, apiKey: "test-key" }),
+    },
+  };
+}
 export default function tests(pi: ExtensionAPI) {
   pi.registerCommand("firecrawl-tests", {
     description: "Run offline Firecrawl regression tests; 'live' adds bounded API checks",
@@ -123,7 +165,7 @@ export default function tests(pi: ExtensionAPI) {
         await check("target HTTP failures are not successful fetches", async () => {
           for (const statusCode of [403, 404, 500]) {
             mock({ success: true, data: { markdown: "Access denied", metadata: { statusCode } } });
-            await assert.rejects(execute("web_fetch", { url: "https://example.com", instruction: "Summarize" }), new RegExp(`HTTP ${statusCode}`));
+            await assert.rejects(execute("web_fetch", { url: "https://example.com", instruction: "Summarize" }, undefined, fakeModelContext("unused")), new RegExp(`HTTP ${statusCode}`));
           }
         });
         await check("search sources, categories and non-web groups reach output", async () => {
@@ -144,21 +186,23 @@ export default function tests(pi: ExtensionAPI) {
           assert.match(text(result), /Requires one of: \[\["repo","url"\]\]/);
           assert.equal((result.details as any).resultCount, 3);
         });
-        await check("instruction is answered by Firecrawl in one request", async () => {
-          mock({ success: true, data: { answer: "1000", metadata: { statusCode: 200, cacheState: "hit" } } });
-          const result = await execute("web_fetch", { url: "https://example.com", instruction: "Default keepAliveMsecs?", maxAge: 0 });
+        await check("instruction is answered only by the configured model, in one Firecrawl request", async () => {
+          mock({ success: true, data: { markdown: page, metadata: { statusCode: 200, cacheState: "hit" } } });
+          const result = await execute("web_fetch", { url: "https://example.com", instruction: "Default keepAliveMsecs?", maxAge: 0 }, undefined, fakeModelContext("1000"));
           assert.equal(requests.length, 1);
-          assert.deepEqual(requests[0].body.formats, [{ type: "question", question: "Default keepAliveMsecs?" }]);
+          assert.deepEqual(requests[0].body.formats, ["markdown", "html"]);
           assert.equal(requests[0].body.maxAge, 0);
-          assert.match(text(result), /Answered by Firecrawl[\s\S]*HTTP: 200; cache=hit[\s\S]*1000/);
-          assert.equal((result.details as any).answeredBy, "firecrawl");
+          assert.match(text(result), /Focused extraction by test\/model[\s\S]*HTTP: 200; cache=hit[\s\S]*1000/);
+          assert.equal((result.details as any).extractionModel, "test/model");
         });
-        await check("schema uses Firecrawl JSON extraction", async () => {
-          mock({ success: true, data: { json: { maxSockets: "Infinity" }, metadata: { statusCode: 200 } } });
+        await check("schema goes to the configured model, not Firecrawl", async () => {
+          mock({ success: true, data: { markdown: page, metadata: { statusCode: 200 } } });
           const schema = { type: "object", properties: { maxSockets: { type: "string" } } };
-          const result = await execute("web_fetch", { url: "https://example.com", instruction: "Agent defaults", schema });
-          assert.deepEqual(requests[0].body.formats, [{ type: "json", schema, prompt: "Agent defaults" }]);
-          assert.match(text(result), /"maxSockets": "Infinity"/);
+          let prompt = "";
+          const result = await execute("web_fetch", { url: "https://example.com", instruction: "Agent defaults", schema }, undefined, fakeModelContext('{"maxSockets":"Infinity"}', (text) => { prompt = text; }));
+          assert.deepEqual(requests[0].body.formats, ["markdown", "html"]);
+          assert.match(prompt, /<schema>\{\\"type\\":\\"object\\"/);
+          assert.match(text(result), /"maxSockets":"Infinity"/);
           await assert.rejects(execute("web_fetch", { url: "https://example.com", schema }), /schema needs an instruction/);
         });
         await check("alexandria runs without a URL and sends an idempotency key", async () => {
@@ -205,15 +249,10 @@ export default function tests(pi: ExtensionAPI) {
           assert.match(text(result), /const keep/);
           assert.equal((result.details as any).cleaner, "firecrawl");
         });
-        await check("focused fallback shares metadata and requests cleaning HTML", async () => {
-          mock({ success: true, data: { markdown: page, metadata: { statusCode: 200, cacheState: "hit" } } });
-          const result = await execute("web_fetch", { url: "https://example.com", instruction: "Find code", formats: ["links"] });
-          assert.deepEqual(requests[0].body.formats, [{ type: "question", question: "Find code" }]);
-          assert.deepEqual(requests[1].body.formats, ["links", "markdown", "html"]);
-          assert.match(text(result), /HTTP: 200; cache=hit/);
-          assert.match(text(result), /Focused extraction unavailable/);
-          assert.match(text(result), /const keep/);
-          assert.equal((result.details as any).focused, false);
+        await check("an unusable extraction model fails the call instead of returning the page", async () => {
+          mock({ success: true, data: { markdown: page, metadata: { statusCode: 200 } } });
+          await assert.rejects(execute("web_fetch", { url: "https://example.com", instruction: "Find code", formats: ["links"] }), /not known to Pi/);
+          assert.deepEqual(requests[0].body.formats, ["links", "markdown", "html"]);
         });
         await check("blank instruction and HTML-only calls do not add Markdown", async () => {
           mock({ success: true, data: { html: "<article>Keep exact HTML</article>", metadata: {} } });
@@ -314,20 +353,18 @@ export default function tests(pi: ExtensionAPI) {
         });
         await check("long successful focused output keeps source-limitation warning before preview", async () => {
           const body = presentScrape({ metadata: { statusCode: 200 } }, "https://example.com", ["markdown"], {
-            extracted: { text: "ANSWER".repeat(400), inputTruncated: true, model: "test/model", usage: {} as any },
+            text: "ANSWER".repeat(400), inputTruncated: true, model: "test/model", usage: {} as any,
           });
           const result = await boundedOutput(body, 1000);
           temporaryDirectories.add(dirname(result.fullOutputPath!));
           assert.ok(result.text.length <= 1000);
-          assert.match(result.text, /model did not see the entire page/);
+          assert.match(result.text, /test\/model saw only the first 120,000 characters/);
           assert.ok(result.text.includes(result.fullOutputPath!));
           assert.equal(await readFile(result.fullOutputPath!, "utf8"), body);
         });
-        await check("long focused fallback keeps unavailable notice before preview", async () => {
-          mock({ success: true, data: { markdown: "line\n".repeat(1000), metadata: {} } });
-          const result = await execute("web_fetch", { url: "https://example.com", instruction: "Find code", maxChars: 1000 });
-          assert.match(text(result), /Focused extraction unavailable/);
-          assert.ok(text(result).includes((result.details as any).fullOutputPath));
+        await check("a model error fails the call", async () => {
+          mock({ success: true, data: { markdown: page, metadata: {} } });
+          await assert.rejects(execute("web_fetch", { url: "https://example.com", instruction: "Find code" }, undefined, fakeModelContext("")), /returned no text/);
         });
         await check("cancellation during asynchronous output publication never returns a path", async () => {
           const controller = new AbortController();
@@ -398,7 +435,7 @@ export default function tests(pi: ExtensionAPI) {
           assert.match(text(result), /HTTP: 200; cache=/);
           assert.match(text(result), /Retry-After/);
           assert.equal((result.details as any).focused, true);
-          assert.equal((result.details as any).answeredBy, "firecrawl");
+          assert.match((result.details as any).extractionModel, /\//);
           console.log(text(result));
         });
       }

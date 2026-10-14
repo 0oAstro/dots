@@ -11,11 +11,6 @@ export type FirecrawlScrapeFormat =
   | "branding"
   | "audio";
 
-export type FirecrawlFormatRequest =
-  | FirecrawlScrapeFormat
-  | { type: "question"; question: string }
-  | { type: "json"; schema: Record<string, unknown>; prompt?: string };
-
 export type SearchSource = "web" | "news" | "images" | "alexandria";
 export type SearchCategory = "github" | "research" | "pdf" | "developer" | "gov";
 
@@ -93,8 +88,6 @@ export interface FirecrawlScrapeResult {
   links?: string[];
   images?: string[];
   branding?: Record<string, unknown>;
-  answer?: string;
-  json?: unknown;
   metadata: FirecrawlScrapeMetadata;
   warning?: string;
 }
@@ -135,7 +128,7 @@ export interface SearchRequest {
 
 export interface ScrapeRequest {
   url: string;
-  formats: FirecrawlFormatRequest[];
+  formats: FirecrawlScrapeFormat[];
   onlyMainContent: boolean;
   maxAge?: number;
 }
@@ -283,8 +276,6 @@ function parseScrapeResponse(payload: unknown): FirecrawlScrapeResult {
     links: stringArray(data.links),
     images: stringArray(data.images),
     branding: isRecord(data.branding) ? data.branding : undefined,
-    answer: stringValue(data.answer),
-    json: data.json,
     metadata: isRecord(data.metadata) ? data.metadata : {},
     warning: responseWarning(response, data),
   };
