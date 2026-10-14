@@ -45,7 +45,7 @@ launchd_agents_macs:
   - label: dev.dots.bifrost-mitm
     keep_alive: true
     command: >-
-      exec "$HOME/.local/bin/mitmdump" --listen-host 127.0.0.1 --listen-port 18899
+      exec "$HOME/.local/share/mise/installs/pipx-mitmproxy/latest/bin/mitmdump" --listen-host 127.0.0.1 --listen-port 18899
       --allow-hosts '^api\.anthropic\.com(:443)?$'
       --set stream_large_bodies=64m --set flow_detail=0 --set termlog_verbosity=warn
       -s "$HOME/.config/bifrost-mitm/addon.py"

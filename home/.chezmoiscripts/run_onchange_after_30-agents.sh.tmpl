@@ -17,9 +17,6 @@ for link in "$HOME"/.claude/skills/*; do
   [[ $target == ../pstack/skills/* || ($target == "$pstack"/* && ! -e $link) ]] && rm -f "$link"
 done
 
-# bifrost-mitm routes Claude Code's model calls through Bifrost.
-command -v mitmdump >/dev/null || uv tool install --quiet mitmproxy
-
 # Pi reaches Claude only through Bifrost (aardvark's claude-relay holds the one
 # proxy token). Claude Code keeps its own per-machine login. Drop any Anthropic
 # OAuth that Pi's /login stored so no third Claude token persists here.

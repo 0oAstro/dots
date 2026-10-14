@@ -3,7 +3,7 @@
 
 [tools]
 node = "lts"
-python = "3.14"
+python = "latest"
 go = "latest"
 rust = "stable"
 bun = "latest"
@@ -29,8 +29,9 @@ herdr = "latest"
 "aqua:sharkdp/bat" = "latest"
 "cargo:eza" = "latest"
 "aqua:jqlang/jq" = "latest"
-# Glow 3.0.0 hardcodes auto to dark for Markdown: charmbracelet/glow#1022.
-"aqua:charmbracelet/glow" = "2.1.2"
+# Glow 3 renders "auto" as dark for Markdown (charmbracelet/glow#1022, fix in PR #1023).
+# Stay on the 2.x line until the fix ships; patch releases still arrive.
+"aqua:charmbracelet/glow" = "2"
 "aqua:sharkdp/hyperfine" = "latest"
 ffmpeg = "latest"
 # aqua's dust entry picks the Intel build on Apple silicon.
@@ -60,7 +61,9 @@ vercel = { version = "latest", allow_builds = ["esbuild"], trust_policy_excludes
 # Neon's standalone macOS build is x86_64-only; the npm package runs anywhere.
 "npm:neonctl" = "latest"
 # Cloudflare's cf CLI; caddy/cloudflare-dns-sync.py in the docker repo calls it.
-"npm:cf" = "1.0.0-beta.12"  # mise resolves "latest" to 0.15, which predates `dns records`
+# The npm `latest` tag still points to 0.15, which predates `dns records`. The 1.0
+# line ships only as betas, so follow the newest version, prereleases included.
+"npm:cf" = { version = "latest", prerelease = true }
 
 "aqua:rclone/rclone" = "latest"
 "aqua:FiloSottile/age" = "latest"
@@ -70,4 +73,4 @@ vercel = { version = "latest", allow_builds = ["esbuild"], trust_policy_excludes
 "github:googleworkspace/cli" = { version = "latest", bin = "gws" }
 
 [env]
-CLOUDSDK_PYTHON = "{{ env.HOME }}/.local/share/mise/installs/python/3.14/bin/python3"
+CLOUDSDK_PYTHON = "{{ env.HOME }}/.local/share/mise/installs/python/latest/bin/python3"

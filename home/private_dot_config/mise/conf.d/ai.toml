@@ -11,6 +11,9 @@ claude-code = "latest"
 # OpenCode v2. The aqua registry entry tracks v1 GitHub releases only. The
 # package postinstall links the native binary for this platform.
 "npm:@opencode/cli" = { version = "latest", allow_builds = ["@opencode/cli"] }
+# bifrost-mitm (ai-gateway.zsh) runs mitmdump to send Claude Code's model calls
+# through Bifrost.
+"pipx:mitmproxy" = "latest"
 # REA (reverse engineering MCP). Pi registers it in ~/.pi/agent/mcp.json and
 # loads its skill as a settings package. Its native analysis drives Ghidra.
 "npm:rea-agents" = "latest"
@@ -62,17 +65,18 @@ bin_path = "bin"
 
 # Nous Research Hermes Agent; data lives in ~/.hermes. Upstream ships no wheel
 # (PyPI is stale and setup.py refuses wheel builds), so this follows their
-# Dockerfile: release source tarball, locked uv venv on Python 3.13 (<3.14
-# required), built web dashboard and TUI. mise owns upgrades: use `mise up`,
+# Dockerfile: release source tarball, locked uv venv on the Python version
+# that the release's .python-version names, built web dashboard and TUI. mise owns upgrades: use `mise up`,
 # not `hermes update`. Instead of upstream's [all], the venv gets only MCP,
-# ACP, the dashboard, uvloop and aiohttp (homeassistant extra) for the API
-# server; Hermes lazy-installs anything else on first use.
+# ACP, the dashboard, uvloop and aiohttp (sms extra) for the API server;
+# Hermes lazy-installs anything else on first use.
 [tools."http:hermes"]
 version = "latest"
 url = "https://github.com/NousResearch/hermes-agent/archive/refs/tags/v{{ version }}.tar.gz"
-version_list_url = "https://api.github.com/repos/NousResearch/hermes-agent/releases?per_page=50"
-version_json_path = ".[].tag_name"
-version_order = "semver"
+# Upstream moved from date tags (v2026.9.24) to semver tags (v0.22.0), so a
+# sorted list ranks the old date tags higher. Ask GitHub for the Latest release.
+version_list_url = "https://api.github.com/repos/NousResearch/hermes-agent/releases/latest"
+version_json_path = ".tag_name"
 strip_components = 1
 bin_path = "bin"
 postinstall = '''
@@ -82,12 +86,20 @@ unset UV_PYTHON VIRTUAL_ENV
 npm_config_install_links=false npm install --no-audit --no-fund \
   --workspace ui-tui --workspace web --include-workspace-root
 uv sync --locked --extra mcp --extra acp --extra web --extra uvloop \
-  --extra homeassistant --python 3.13
+  --extra sms
 (cd web && npm run build)
 (cd ui-tui && npm run build)
 mkdir -p bin
 ln -sf ../.venv/bin/hermes bin/hermes
 ln -sf ../.venv/bin/hermes-acp bin/hermes-acp
+# Without a stamp, `hermes --version` says "unknown". "external" tells Hermes
+# that mise, not `hermes update`, owns upgrades.
+commit=$(curl -fsSL -H "Accept: application/vnd.github.sha"   "https://api.github.com/repos/NousResearch/hermes-agent/commits/v$MISE_TOOL_VERSION")
+.venv/bin/python scripts/write_install_stamp.py --output install-stamp.json   --commit "$commit" --base-version "$MISE_TOOL_VERSION" --distance 0   --source ci --update-mechanism external
 # Refresh bundled skills in ~/.hermes/skills, as `hermes update` would.
 .venv/bin/python tools/skills_sync.py
+# The gateway unit names this install's venv. Point it at the new install.
+if [ -f "$HOME/.config/systemd/user/hermes-gateway.service" ]; then
+  bin/hermes gateway restart || echo "hermes: gateway restart failed" >&2
+fi
 '''

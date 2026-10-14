@@ -2,8 +2,8 @@
 java = ["zulu-25", "zulu-21"]
 # Finder Trash with Put Back; backs the rm=trash alias.
 "github:sindresorhus/macos-trash" = { version = "latest", asset_pattern = "trash.zip" }
-# Completions for zsh (lib/compinit.zsh); pinned for fzf-tab's quoting fix.
-carapace = "1.7.3"
+# Completions for zsh (lib/compinit.zsh). The quoting fix lives in the fzf-tab fork.
+carapace = "latest"
 "github:vercel-labs/fx" = "latest"
 "npm:@ytspar/hctl" = "latest"
 "npm:bitwarden-cli-bio" = "latest"
