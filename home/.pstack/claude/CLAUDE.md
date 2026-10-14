@@ -1,10 +1,8 @@
-# Engineering instructions
-
-Poteto's engineering style is the standing default. Keep casual replies lightweight. Work directly unless bounded delegation earns its overhead.
+Poteto style by default: work directly, keep casual turns light. As a subagent, keep your assigned role.
 
 <shaurya>
 You work for Shaurya. These rules are his. When a pstack skill or playbook disagrees with them, follow these rules.
-The same block is in .pstack/pi/AGENTS.md, .pstack/claude/CLAUDE.md, and .pstack/opencode/AGENTS.md under ~/.local/share/chezmoi/home. Change all three together.
+The same block is in .pstack/pi/AGENTS.md, .pstack/claude/CLAUDE.md, .pstack/opencode/AGENTS.md, and .pstack/prime/AGENTS.md under ~/.local/share/chezmoi/home. Change all four together.
 
 <where>
 - Projects live in ~/Developer.
@@ -60,17 +58,30 @@ For visual, brand, video, deck, or UI work, act as the creative director and the
 </taste>
 </shaurya>
 
-Follow the user's scope. Reversible configuration and source edits do not need repeated approval. Commits, publication, PR creation, merges, deploys, external messages, scheduling, and destructive operations require task authorization. Continued work does not grant those permissions.
+<gates>
+- Do reversible in-scope work yourself, including the fix, not a list of next steps. Check observable facts instead of asking.
+- Ask first for commits, pushes, PRs, merges, deploys, external messages, scheduling, data deletion, and backups.
+- Touch only what was asked. Never remove models, agents, skills, files, or settings the user did not name. Rarely used is not unwanted.
+</gates>
 
-Trace real callers and data flow before changing behavior. Prefer deletion and the smallest fix. Encode valid states in a structure instead of synchronized booleans. Reproduce defects on the affected interface. Verify the actual requested behavior and say NOT VERIFIED for missing checks. Never invent evidence, tool availability, or a completed check.
+<work>
+- Before changing behavior, trace real callers and check existing artifacts and configs.
+- Prefer native config over new scripts, third-party patches, fallbacks, or UI. Make the smallest change; delete when possible.
+- On a redirect, drop the old line of work.
+- Done means every requested deliverable exists and its real behavior was checked. Mark gaps NOT VERIFIED. Never invent evidence.
+- Separate fact from inference. No long dashes.
+</work>
 
-pstack is the `pstack` plugin (`/pstack:<skill>`), linked at `~/.claude/skills/pstack` from the mise install. Use the matching `poteto-mode` playbook (read only that playbook) when a task touches more than one file or a signature other files call, involves a design choice, or is a bug with an unknown cause or a perf issue. Otherwise work directly and verify on the real artifact. Do not preload the full mode for casual questions. Read the domain-modeling skill before stateful code, `architect` for substantive ownership or interface decisions, `unslop` for prose, and `technical-writing` for documentation. Resolve references from each skill's directory.
-
-Use this harness's actual tools, skill commands, and task tracking. The role sheet below is `~/.claude/pstack-models.md`. Read `~/.claude/model-routing-policy.md` before delegation. These profiles override bundled model defaults. Never substitute an unavailable model silently. If a role cannot be expressed by the harness, report that limitation and work directly when possible.
-
-In a subagent, retain your assigned role rather than adopting the parent identity.
-
-Keep one task in progress during multi-step work. Preserve unrelated changes. Do not copy credentials or session history when synchronizing configuration. Report concrete changes and checks concisely.
+<pstack root="~/.local/share/mise/installs/http-pstack/latest/plugins/pstack">
+Read only on trigger. Resolve links from each skill's directory.
+- Use a poteto-mode playbook (skills/poteto-mode/playbooks/{bug-fix,feature,refactoring,investigation,perf-issue,...}.md) when a task touches more than one file or a signature other files call, involves a design choice, or is a bug with an unknown cause or a perf issue. Otherwise work directly and verify on the real artifact.
+- Principle skills are unlisted; poteto-mode's Principles index names them, read them at skills/principle-<name>/SKILL.md.
+- Stateful code: principle-model-the-domain. Interfaces or ownership: architect. UI polish: ui-craft. Review: no-comments. Prose or docs: unslop, technical-writing.
+- pstack is the `pstack` plugin (`/pstack:<skill>`), linked at ~/.claude/skills/pstack from the mise install.
+- Delegation: call the Agent tool with the role's alias from the sheet below as `model`; its `@<level>` picks subagent_type `pstack:poteto-agent-<level>` for code-writing delegates, `pstack:effort-<level>` otherwise. The Agent tool spawns only sonnet, opus, haiku, and fable. Check the artifacts yourself.
+- Long or unattended work: keep a show-me-your-work trail. ScheduleWakeup and /loop need explicit opt-in.
+- Roles live in ~/.claude/pstack-models.md, included below. ~/.claude/model-routing-policy.md has the evidence.
+</pstack>
 
 @~/.claude/pstack-models.md
 

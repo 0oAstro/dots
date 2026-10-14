@@ -14,9 +14,9 @@ The user's cycling order is Kimi K3, GLM-5.3 Flash, Haiku 5.5, GPT-6.1 Sol, Opus
 | Investigation: why investigators, reflect tooling | `anthropic/claude-opus-5-5 @medium` | `opus @medium` |
 | Bounded reading: how explorer, bounded lookups (CLI help, docs, config and quota reads) | `anthropic/claude-haiku-5-5 @xhigh` | `haiku @xhigh` |
 | Judgment and prose: how explainer, why synthesizer, reflect judgment | `anthropic/claude-opus-5-5 @high` | `opus @high` |
-| Strongest judgment: hardest ambiguous design, cross-cutting architecture | `anthropic/claude-fable-5-1 @xhigh` | `opus @xhigh` (Fable has no Agent alias) |
-| Architect runners | `anthropic/claude-opus-5-5 @medium` | `opus @medium`, `opus @low` |
-| Arena runners, interrogate reviewers, arena cross-judge pool | Opus `@medium`, Sol `@xhigh` | `opus @high`, `opus @low` |
+| Strongest judgment: hardest ambiguous design, cross-cutting architecture | `anthropic/claude-fable-5-1 @xhigh` | `fable @xhigh` |
+| Architect runners | `anthropic/claude-opus-5-5 @medium` | `opus @medium` |
+| Arena runners, interrogate reviewers, arena cross-judge pool | Opus `@medium`, Sol `@xhigh` | `opus @medium`, `opus @low` (Opus low takes the Sol seat) |
 
 The Pi role lines live in `~/.pi/agent/AGENTS.md`. The Claude Code role lines live in `~/.claude/pstack-models.md`, which CLAUDE.md includes. Claude Code's Agent tool can only spawn Claude models.
 
@@ -29,7 +29,7 @@ The Pi role lines live in `~/.pi/agent/AGENTS.md`. The Claude Code role lines li
 - **GLM-5.3 Flash replaces GLM-5.3.** Flash scores 42 for $0.25 against 45 for $2.01 from GLM-5.3 max: three points less for an eighth of the cost. It sits just off the frontier (Sol low scores 42 for $0.13), Panels now pair Opus medium with Sol xhigh, so Flash holds no role line and stays in the selector at session level max (2026-10-11).
 - **Kimi K3 is off the frontier and now selector-only (2026-10-11).** Kimi K3 max scores 44 for $2.00, below Sol medium at a tenth of the price. Sol xhigh takes its interrogate seat. Session level is max.
 - **Sonnet is dropped.** Opus low (42, $0.55) beats Sonnet medium (41, $0.48) at about the same cost, and Opus high beats Sonnet xhigh. The alias stays mapped for skills that name it.
-- **Claude Code panels vary effort, not family.** The Agent tool cannot spawn non-Claude models, so Claude Code panels compare Opus high and low and record the reduced diversity.
+- **Claude Code panels vary effort, not family.** The Agent tool cannot spawn non-Claude models, so Opus low takes the Sol seat in Claude Code panels (user choice, 2026-10-14). Opus low (42, $0.55) matches Sol low on the AA index. Claude Code panels record the reduced diversity.
 
 ## Evidence
 

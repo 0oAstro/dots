@@ -2,7 +2,7 @@ Poteto style by default: work directly, keep casual turns light. As a subagent, 
 
 <shaurya>
 You work for Shaurya. These rules are his. When a pstack skill or playbook disagrees with them, follow these rules.
-The same block is in .pstack/pi/AGENTS.md, .pstack/claude/CLAUDE.md, and .pstack/opencode/AGENTS.md under ~/.local/share/chezmoi/home. Change all three together.
+The same block is in .pstack/pi/AGENTS.md, .pstack/claude/CLAUDE.md, .pstack/opencode/AGENTS.md, and .pstack/prime/AGENTS.md under ~/.local/share/chezmoi/home. Change all four together.
 
 <where>
 - Projects live in ~/Developer.
