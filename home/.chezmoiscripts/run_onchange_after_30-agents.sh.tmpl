@@ -1,32 +1,17 @@
 {{- if .ai -}}
 #!/bin/bash
-# Agent harness setup that is state, not config: Codex's pstack skill links.
+# Agent harness setup that is state, not config.
 # pstack itself is mise's http:pstack (conf.d/ai.toml);
 # Claude Code and Pi load it through links and settings chezmoi manages.
 set -euo pipefail
 export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"
 export GIT_TERMINAL_PROMPT=0
-status=0 # nonzero makes chezmoi rerun this script on the next apply
 
 pstack=$HOME/.local/share/mise/installs/http-pstack/latest/plugins/pstack/skills
 
-# Codex has no skills-directory plugins, so link each pstack skill.
-if [[ -d $pstack ]]; then
-  mkdir -p "$HOME/.codex/skills"
-  for skill in "$pstack"/*/; do
-    skill=$(basename "$skill")
-    link=$HOME/.codex/skills/$skill
-    [[ -e $link && ! -L $link ]] && continue
-    ln -sfn "$pstack/$skill" "$link"
-  done
-else
-  echo "dots: http:pstack is not installed; run 'mise install', then 'chezmoi apply'" >&2
-  status=1
-fi
-
-# Drop links into the deleted pstack forks (~/.claude/pstack, ~/.codex/pstack)
+# Drop links into the deleted pstack fork (~/.claude/pstack)
 # and to skills pstack no longer ships.
-for link in "$HOME"/.claude/skills/* "$HOME"/.codex/skills/*; do
+for link in "$HOME"/.claude/skills/*; do
   [[ -L $link ]] || continue
   target=$(readlink "$link")
   [[ $target == ../pstack/skills/* || ($target == "$pstack"/* && ! -e $link) ]] && rm -f "$link"
@@ -63,5 +48,4 @@ if changed:
 PY
 fi
 
-exit $status
 {{- end }}

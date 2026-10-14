@@ -1,5 +1,5 @@
 cask "cursor"
-cask "chatgpt"  # also runs Codex's app-server and computer use
+cask "chatgpt"
 cask "t3-code@nightly"
 
 mas "TestFlight", id: 899247664

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Mirrors the Codex status line: model+effort, dir, host, branch, context left, cost.
+# Shows model+effort, dir, host, branch, context left, and cost.
 in=$(cat)
 j() { jq -r "$1 // empty" <<<"$in"; }
 

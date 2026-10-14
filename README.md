@@ -64,7 +64,7 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 | | Files |
 | --- | --- |
 | every machine | zsh, git, herdr, tmux, bat, ripgrep, glow, dtop, btop; `conf.d/core.toml` |
-| `ai` | Claude Code, Codex, and Pi settings; pstack; `conf.d/ai.toml` |
+| `ai` | Claude Code, Pi, and OpenCode settings; pstack; `conf.d/ai.toml` |
 | `ai` servers | Grok Build and Prime settings; prime, grok, cursor-agent in `conf.d/server.toml` |
 | macOS | Ghostty, herdr launcher, lazysql, routerctl; `conf.d/macos.toml` |
 | Linux | `conf.d/linux.toml` |
@@ -80,9 +80,9 @@ chezmoi decrypts the API keys to `~/.config/zsh/.zshrc.local` (mode `600`), whic
 
 ## Files the apps also write
 
-Claude Code, Codex, Pi, and Grok Build rewrite their own settings. `modify_` templates merge the keys kept in `home/.chezmoitemplates/` into the live file. Keys the app owns survive: Codex's trusted projects, Pi's last-seen version, a model picked with `/model`. `btop.conf` is written only when missing, because btop saves its settings on exit.
+Claude Code, Pi, and Grok Build rewrite their own settings. `modify_` templates merge the keys kept in `home/.chezmoitemplates/` into the live file. Keys the app owns survive: Pi's last-seen version, a model picked with `/model`. `btop.conf` is written only when missing, because btop saves its settings on exit.
 
-Symlinks that must survive tool upgrades point at mise's `latest` folder: the Docker CLI plugins and Codex's app-server binary.
+Symlinks that must survive tool upgrades point at mise's `latest` folder: the Docker CLI plugins.
 
 ## Check the repo
 

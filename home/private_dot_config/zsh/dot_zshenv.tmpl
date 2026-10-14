@@ -83,7 +83,7 @@ export ADB_MDNS_AUTO_CONNECT=0
 export AWS_PROFILE=${AWS_PROFILE:-personal}
 export AWS_REGION=${AWS_REGION:-us-east-1}
 
-# Codex's Bifrost provider reads this key, and T3 Desktop starts its server
+# Agents read this key for Bifrost, and T3 Desktop starts its server
 # from a non-interactive SSH shell that never sources .zshrc.local. Load only
 # this key here; the other secrets stay interactive.
 () {

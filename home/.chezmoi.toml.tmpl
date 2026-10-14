@@ -8,7 +8,7 @@
 
 {{- /* Two switches; everything else follows the OS. */ -}}
 {{- /* The prompt text is also the --promptBool key, so keep it one word. */ -}}
-{{- $ai := promptBool "ai" true -}} {{- /* Claude Code, Codex, Pi */ -}}
+{{- $ai := promptBool "ai" true -}} {{- /* Claude Code, Pi, OpenCode */ -}}
 {{- $server := promptBool "server" false -}} {{- /* always-on host */ -}}
 {{- /* The host's inventory modules, comma-separated (ansible/inventory.yml). */ -}}
 {{- $modules := promptString "modules" "" | splitList "," | compact -}}

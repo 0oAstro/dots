@@ -46,6 +46,18 @@
 .pi/agent/scripts/setup-worktree-cow.mjs
 .pi/agent/scripts/test-worktree-cow.mjs
 .pi/agent/worktrees/README.md
+# Codex is gone. On macOS the ChatGPT app keeps its own state in ~/.codex,
+# so remove only the files chezmoi placed there.
+.codex/AGENTS.md
+.codex/model-routing-policy.md
+.codex/pstack-models.md
+.codex/aa-frontier-2026-09-29.json
+.codex/bifrost_models.json
+.codex/herdr-agent-state.sh
+.codex/hooks.json
+.codex/skills
+.codex/packages/standalone/current
+.config/herdr/agent-detection/codex.toml
 # Retired pstack forks and the agent links into them; pstack is mise's http:pstack.
 .claude/pstack
 .codex/pstack

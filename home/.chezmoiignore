@@ -66,17 +66,10 @@ Library
 
 {{- if not .ai }}
 .claude
-.codex
 .pi
 .config/opencode
 .config/mise/conf.d/ai.toml
 .config/mise/conf.d/pi-global-tools.toml
-{{- end }}
-
-{{- if or (eq .chezmoi.os "darwin") .server }}
-# Pins Codex's app-server daemon to mise's build. The ChatGPT app ships its own
-# daemon on macOS; servers run Codex without one.
-.codex/packages
 {{- end }}
 
 {{- if not .ai }}
