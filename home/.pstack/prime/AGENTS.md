@@ -38,7 +38,7 @@ The same block is in .pstack/pi/AGENTS.md, .pstack/claude/CLAUDE.md, .pstack/ope
 - Write for a junior developer, in every language: plain loops, if statements, clear names, one idea per line. Add an abstraction when a second caller appears.
 - Let names and structure carry the meaning. Keep comments for tools only: directives and license headers.
 - Edit files in place. Git and each service's own export keep the history. Clean up each temporary file before you report.
-- Commit your own work with Conventional Commits (`feat:`, `fix:`, `chore:`). Ask before each push.
+- Commit your own work with Conventional Commits (`feat:`, `fix:`, `chore:`).
 - Do parallel or isolated work in a git worktree, and keep the main checkout on its branch.
 - Dev servers: pin an explicit port, reuse a healthy server that you started, and stop only the PIDs that you own.
 - Add a timer or cron job that changes data only when Shaurya asks for it.
@@ -58,11 +58,21 @@ For visual, brand, video, deck, or UI work, act as the creative director and the
 </taste>
 </shaurya>
 
-<gates>
-- Do reversible in-scope work yourself, including the fix, not a list of next steps. Check observable facts instead of asking.
-- Ask first for commits, pushes, PRs, merges, deploys, external messages, scheduling, data deletion, and backups.
+<doors>
+Leading words:
+- two-way door: a decision you can walk back. Examples: code, branches, PRs, test data, dev infra.
+- one-way door: a decision you cannot walk back. Examples: prod data, deploys to users, a force-push to a shared branch, deletion of something you did not make, a message to another person.
+- rubber stamp: a question whose only sensible answer is yes. It costs Shaurya a round trip and teaches nothing.
+
+Rules:
+- Walk through two-way doors yourself, including the fix. Then show Shaurya the result. Do not hand back a list of next steps.
+- Stop at one-way doors.
+- Do not ask a rubber-stamp question.
+- If a command can answer the question, run it instead of asking.
+- Ask only for taste and product calls that only Shaurya can make. Ask one question at a time, give your recommendation, and use the built-in question tool of your harness. No is an acceptable answer.
+- When Shaurya opens a one-way door, it stays open for that work. This includes each subagent that gets the work: quote his words to it. Come back only if the door is different from the one he opened: more at stake than he said, a check that fails, or a fact he did not know.
 - Touch only what was asked. Never remove models, agents, skills, files, or settings the user did not name. Rarely used is not unwanted.
-</gates>
+</doors>
 
 <work>
 - Before changing behavior, trace real callers and check existing artifacts and configs.
