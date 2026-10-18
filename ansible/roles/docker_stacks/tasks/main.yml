@@ -66,13 +66,40 @@
     docker_stacks_units_changed: "{{ docker_stacks_units_copied.results | default([]) | selectattr('changed') | map(attribute='dest') | list }}"
     systemd_enabled_docker_stacks: "{{ (docker_stacks_units | default([]) | map('basename') | select('match', '.*\\.(timer|path)$') | list) + ['docker.service'] }}"
 
-- name: Shared networks
-  ansible.builtin.command: sh networks.sh
-  args:
-    chdir: "{{ docker_stacks_dir }}"
-    removes: "{{ docker_stacks_dir }}/networks.sh"
-  register: docker_stacks_networks
-  changed_when: "'created' in docker_stacks_networks.stdout"
+# The module deletes and recreates a network whose config differs, which
+# disconnects live containers. So create only missing networks, and fail on
+# drift: stop that network's stacks and recreate it by hand.
+- name: Read shared networks
+  community.docker.docker_network_info:
+    name: "{{ item.name }}"
+  loop: "{{ docker_stacks_networks | default([]) }}"
+  loop_control: {label: "{{ item.name }}"}
+  register: docker_stacks_network_info
+
+- name: Create missing shared networks
+  community.docker.docker_network:
+    name: "{{ item.item.name }}"
+    driver: bridge
+    internal: "{{ item.item.internal | default(false) }}"
+    ipam_config:
+      - subnet: "{{ item.item.prefix }}.0.0/16"
+        gateway: "{{ item.item.prefix }}.0.1"
+        iprange: "{{ item.item.prefix }}.1.0/24"
+  loop: "{{ docker_stacks_network_info.results }}"
+  loop_control: {label: "{{ item.item.name }}"}
+  when: not item.exists
+
+- name: Shared networks match their definition
+  ansible.builtin.assert:
+    that:
+      - item.network.IPAM.Config[0].Subnet == item.item.prefix ~ '.0.0/16'
+      - item.network.IPAM.Config[0].IPRange == item.item.prefix ~ '.1.0/24'
+      - item.network.Internal == (item.item.internal | default(false))
+    fail_msg: "{{ item.item.name }} drifted. Stop its stacks, then recreate it."
+    quiet: true
+  loop: "{{ docker_stacks_network_info.results }}"
+  loop_control: {label: "{{ item.item.name }}"}
+  when: item.exists
 
 - name: Find stacks
   ansible.builtin.find:

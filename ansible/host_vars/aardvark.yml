@@ -24,6 +24,7 @@ systemd_enabled_aardvark:
   - tailscale-udp-gro.service
   - rclone-dropbox.service
   - rclone-gdrive.service
+  - psacct.service # per-command CPU history: `sudo sa -m`, `sudo lastcomm`
 
 # Restarted when their unit, drop-in or (for stack units) repo copy changes.
 # Left out: the rclone mounts, because containers hold files open on them.
@@ -42,6 +43,19 @@ docker_users: [ec2-user]
 docker_stacks_repo: https://github.com/0oAstro/aardvark-docker.git
 docker_stacks_dir: /opt/docker
 docker_stacks_owner: ec2-user
+# Shared Docker networks. Compose files join them with external: true and own
+# their memberships. Subnets are fixed because pins live inside them: caddy
+# 172.28.0.5, email-dns 172.21.0.53, Jellyfin KnownProxies 172.18.0.0/16.
+# Docker assigns dynamic IPs only from x.y.1.0/24. internal: no host or
+# internet access, so uguu on proxy_net reaches Caddy and nothing else.
+docker_stacks_networks:
+  - {name: proxy_net, prefix: "172.24", internal: true}
+  - {name: media_net, prefix: "172.18"}
+  - {name: ai_net, prefix: "172.21"}
+  - {name: monitoring_net, prefix: "172.22"}
+  - {name: assistant_net, prefix: "172.25"}
+  - {name: auth_net, prefix: "172.28"}
+  - {name: blocky_net, prefix: "172.19"}
 # Units the stacks own, by repo path; installed to /etc/systemd/system.
 # Timers and path units are enabled; their oneshot services stay static.
 docker_stacks_units:
