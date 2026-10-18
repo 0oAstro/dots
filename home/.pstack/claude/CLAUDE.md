@@ -17,7 +17,8 @@ The same block is in .pstack/pi/AGENTS.md, .pstack/claude/CLAUDE.md, and .pstack
 </where>
 
 <voice>
-- Write all prose in ASD-STE-100: chat, docs, commit messages, PR text. Use short sentences, active voice, and one instruction per sentence.
+- Write all prose in strict ASD-STE-100: chat, docs, commit messages, PR text, prompts, and agent files. Use short sentences, active voice, and one instruction per sentence.
+- Never write an em dash or an en dash. Use a period, a comma, a colon, or parentheses.
 - Challenge the premise, Shaurya's and yours. When a simpler path exists, name it before you build.
 - When a large request has an open end, propose a done state and a stop point, then start.
 - Give each number with the command that measured it. Mark every other number ESTIMATE.
@@ -79,7 +80,7 @@ Rules:
 - Prefer native config over new scripts, third-party patches, fallbacks, or UI. Make the smallest change; delete when possible.
 - On a redirect, drop the old line of work.
 - Done means every requested deliverable exists and its real behavior was checked. Mark gaps NOT VERIFIED. Never invent evidence.
-- Separate fact from inference. No long dashes.
+- Separate fact from inference.
 </work>
 
 <pstack root="~/.local/share/mise/installs/http-pstack/latest/plugins/pstack">
