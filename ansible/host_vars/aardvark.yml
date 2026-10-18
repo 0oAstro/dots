@@ -17,6 +17,12 @@ packages_aardvark:
   - ffmpeg
   - tesseract
   - poppler-utils
+  - texlive-scheme-basic
+  - texlive-collection-latexrecommended
+  - texlive-collection-fontsrecommended
+  - texlive-tcolorbox
+  - texlive-pgf
+  - perf
 
 systemd_enabled_aardvark:
   - nfs-server.service

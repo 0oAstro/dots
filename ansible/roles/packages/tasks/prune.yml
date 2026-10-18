@@ -1,0 +1,48 @@
+# Keeps only the packages that Ansible declares, plus their dependencies.
+# A package installed by hand is marked as a dependency, then autoremove
+# takes it with everything only it needed. The base image's own packages have
+# no install reason, so autoremove keeps them.
+- name: Docker package names
+  ansible.builtin.include_vars:
+    file: "{{ playbook_dir }}/roles/docker/defaults/main.yml"
+
+- name: Declared packages
+  ansible.builtin.set_fact:
+    packages_keep: >-
+      {{ (query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^packages_.+')) | flatten
+          + ([docker_package.get(ansible_facts.distribution, docker_package[ansible_facts.os_family] | default('docker'))] if docker_users is defined else [])
+          + (['tailscale'] if tailscale_enabled | default(false) else []))
+         | unique }}
+
+# A declared name can be a virtual one (zlib-devel is zlib-ng-compat-devel).
+- name: Find the packages that provide each declared name
+  ansible.builtin.command:
+    argv: "{{ ['rpm', '-q', '--qf', '%{name}\\n', '--whatprovides'] + packages_keep }}"
+  register: packages_providers
+  changed_when: false
+  failed_when: false
+
+- name: Read install reasons
+  ansible.builtin.command: dnf repoquery --installed --qf '%{name} %{reason}'
+  register: packages_reasons
+  changed_when: false
+
+- name: Sort packages by reason
+  ansible.builtin.set_fact:
+    packages_user: "{{ packages_reasons.stdout_lines | select('match', '^\\S+ user$') | map('split', ' ') | map('first') | unique }}"
+    packages_installed: "{{ packages_reasons.stdout_lines | map('split', ' ') | map('first') | unique }}"
+    packages_keep: "{{ (packages_keep + (packages_providers.stdout_lines | reject('search', ' ') | list)) | unique }}"
+
+- name: Mark declared packages as wanted
+  ansible.builtin.command:
+    argv: [dnf, mark, install, -q, "{{ item }}"]
+  loop: "{{ packages_keep | intersect(packages_installed) | difference(packages_user) }}"
+
+- name: Mark undeclared packages as dependencies
+  ansible.builtin.command:
+    argv: [dnf, mark, remove, -q, "{{ item }}"]
+  loop: "{{ packages_user | difference(packages_keep) }}"
+
+- name: Remove what nothing declared needs
+  ansible.builtin.dnf:
+    autoremove: true

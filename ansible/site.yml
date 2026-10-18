@@ -52,3 +52,14 @@
       tags: [docker_stacks]
     - {role: systemd_units, become: true, tags: [systemd_units]}
     - {role: user_units, tags: [user_units]}
+  post_tasks:
+    # Last, so packages from the docker and tailscale roles count as declared.
+    - name: Prune undeclared packages
+      ansible.builtin.include_role:
+        name: packages
+        tasks_from: prune
+        apply:
+          become: true
+          tags: [packages]
+      when: ansible_facts.pkg_mgr in ['dnf', 'dnf5']
+      tags: [packages]
