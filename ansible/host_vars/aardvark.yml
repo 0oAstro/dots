@@ -18,11 +18,6 @@ packages_aardvark:
   - tesseract
   - poppler-utils
 
-# ffmpeg pulls this in as a weak dependency. With no display, it fails each
-# time Chromium asks for a portal.
-packages_absent_aardvark:
-  - xdg-desktop-portal-gtk
-
 systemd_enabled_aardvark:
   - nfs-server.service
   - dnf-automatic.timer

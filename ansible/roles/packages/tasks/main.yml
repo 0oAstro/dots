@@ -1,5 +1,4 @@
-# Installs every list named packages_* in scope (group and host vars merge),
-# then removes every list named packages_absent_*.
+# Installs every list named packages_* in scope (group and host vars merge).
 - name: Refresh apt
   ansible.builtin.apt:
     update_cache: true
@@ -14,10 +13,5 @@
 
 - name: Packages
   ansible.builtin.package:
-    name: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^packages_(?!absent_).+')) | flatten | unique }}"
+    name: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^packages_.+')) | flatten | unique }}"
     state: present
-
-- name: Removed packages
-  ansible.builtin.package:
-    name: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^packages_absent_.+')) | flatten | unique }}"
-    state: absent
