@@ -43,6 +43,16 @@
   ansible.builtin.set_fact:
     overlay_changed: "{{ overlay_copied.results | selectattr('changed') | map(attribute='item.key') | map('regex_replace', '^', '/') | list }}"
 
+- name: Load kernel modules
+  ansible.builtin.command: systemctl restart systemd-modules-load
+  when: overlay_changed | select('match', '/etc/modules-load.d/') | list | length > 0
+  changed_when: true
+
+- name: Apply udev rules
+  ansible.builtin.shell: udevadm control --reload && udevadm trigger --subsystem-match=block --action=change
+  when: overlay_changed | select('match', '/etc/udev/rules.d/') | list | length > 0
+  changed_when: true
+
 - name: Apply sysctl
   ansible.builtin.command: sysctl --system
   when: overlay_changed | select('match', '/etc/sysctl.d/') | list | length > 0
