@@ -48,6 +48,29 @@
   when: overlay_changed | select('match', '/etc/sysctl.d/') | list | length > 0
   changed_when: true
 
+- name: Reload systemd units
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  when: overlay_changed | select('match', '/etc/systemd/system/') | list | length > 0
+
+- name: Restart systemd-oomd
+  ansible.builtin.systemd_service:
+    name: systemd-oomd
+    state: restarted
+  when: overlay_changed | select('match', '/etc/systemd/oomd.conf.d/') | list | length > 0
+
+- name: Apply tmpfiles
+  ansible.builtin.command: systemd-tmpfiles --create
+  when: overlay_changed | select('match', '/etc/tmpfiles.d/') | list | length > 0
+  changed_when: true
+
+- name: Start zram swap
+  ansible.builtin.systemd_service:
+    name: systemd-zram-setup@zram0
+    state: restarted
+    daemon_reload: true
+  when: overlay_changed | select('match', '/etc/systemd/zram-generator.conf') | list | length > 0
+
 - name: Re-export NFS
   ansible.builtin.command: exportfs -ra
   when: overlay_changed | select('match', '/etc/exports') | list | length > 0

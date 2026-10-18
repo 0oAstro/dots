@@ -39,6 +39,8 @@ export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/user/$UID}
 {{- if .server }}
 # Build and agent scratch belongs on disk, not the RAM-backed /tmp mount.
 export TMPDIR=${TMPDIR:-/var/tmp}
+# Close an idle agent-browser daemon and its Chromium after 5 minutes.
+export AGENT_BROWSER_IDLE_TIMEOUT_MS=300000
 {{- end }}
 
 # systemd runs the gcr ssh-agent but doesn't export its socket to non-graphical
