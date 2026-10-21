@@ -24,6 +24,23 @@ packages_aardvark:
   - texlive-pgf
   - perf
   - libatomic # t3code runtime binary links it
+  # Hermes Bot Desktop: the Xvnc + Xfce screen that computer_use drives
+  # (`hermes computer-use screen`). xfwm4 and xfdesktop come from the
+  # yxwang5db2 COPR, like the other Xfce libraries here.
+  - tigervnc-server-minimal
+  - xfwm4
+  - xfce4-panel
+  - xfdesktop
+  - xfce4-settings
+  - xfce4-terminal
+  - dbus-daemon
+  - xsetroot
+  - xset
+  - xdpyinfo
+  - xprop
+  - xorg-x11-xauth
+  - setxkbmap
+  - dejavu-sans-fonts
 
 systemd_enabled_aardvark:
   - nfs-server.service
