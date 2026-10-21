@@ -80,5 +80,6 @@ Library
 # Server-only harnesses.
 .prime
 .grok
+.hermes
 .config/mise/conf.d/server.toml
 {{- end }}

@@ -1,0 +1,6 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- $oldKimiModel := "      azure/FW-Kimi-K3:\n        context_length: 1048576\n        supports_vision: true\n" -}}
+{{- $newModels := "      bedrock/moonshotai.kimi-k3:\n        context_length: 1048576\n        supports_vision: true\n      azure/deepseek-v4.1-flash:\n        context_length: 1048576\n        supports_vision: false\n" -}}
+{{- $oldKimiReasoning := "    azure/FW-Kimi-K3: max\n" -}}
+{{- $newReasoning := "    bedrock/moonshotai.kimi-k3: max\n    azure/deepseek-v4.1-flash: max\n" -}}
+{{- .chezmoi.stdin | replace $oldKimiModel $newModels | replace $oldKimiReasoning $newReasoning -}}
