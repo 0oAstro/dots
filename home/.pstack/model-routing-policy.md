@@ -83,5 +83,5 @@ Sources:
 - **Pi:** delegation goes through the pstack extension's `agent` tool. `model` takes a full `provider/id`. A role's `@level` selects the `pstack:poteto-agent-<level>` or `pstack:effort-<level>` subagent type, which sets the child's thinking level.
 - **Pi thinking maps:** GLM-5.3 Flash is thinking-only and accepts `low` through `high` and `max`. Kimi K3 also accepts `low` through `high` and `max`. Fable 5.1 exposes only `xhigh` and `max`.
 - **Pi startup effort:** `modelThinkingLevels` in `~/.pi/agent/settings.json` sets it.
-- **Azure Fireworks quota:** the GlobalStandard Fireworks quota in southindia is 2000K TPM. `fw-glm-5.3-flash` takes 1000K. Kimi K3 now uses the existing AWS US profile, `bedrock/moonshotai.kimi-k3`, through Bifrost.
-- **Current backends:** DeepSeek V4.1 Flash uses Azure, `azure/deepseek-v4.1-flash`, through Bifrost. Its session level is max.
+- **Azure Fireworks quota:** the GlobalStandard Fireworks quota in southindia is 2000K TPM. `fw-glm-5.3-flash` takes 2000K, as reported by `az cognitiveservices account deployment show -g rg-suzuka-ai-garage-si -n suzuka-ai-garage-si-32cbd92e --deployment-name fw-glm-5.3-flash --query properties.rateLimits`. Kimi K3 now uses the existing AWS US profile, `bedrock/moonshotai.kimi-k3`, through Bifrost.
+- **Current backends:** DeepSeek V4.1 Flash uses Azure, `azure/deepseek-v4.1-flash`, through Bifrost. Its startup default is max.
