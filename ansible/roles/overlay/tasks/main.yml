@@ -81,6 +81,11 @@
     daemon_reload: true
   when: overlay_changed | select('match', '/etc/systemd/zram-generator.conf') | list | length > 0
 
+- name: Rebuild the CA trust store
+  ansible.builtin.command: update-ca-trust extract
+  when: overlay_changed | select('match', '/etc/pki/ca-trust/source/') | list | length > 0
+  changed_when: true
+
 - name: Re-export NFS
   ansible.builtin.command: exportfs -ra
   when: overlay_changed | select('match', '/etc/exports') | list | length > 0
