@@ -98,6 +98,9 @@ commit=$(curl -fsSL -H "Accept: application/vnd.github.sha"   "https://api.githu
 .venv/bin/python scripts/write_install_stamp.py --output install-stamp.json   --commit "$commit" --base-version "$MISE_TOOL_VERSION" --distance 0   --source ci --update-mechanism external
 # Refresh bundled skills in ~/.hermes/skills, as `hermes update` would.
 .venv/bin/python tools/skills_sync.py
+# The gateway unit runs .hermes/bin/hermes, which needs a committed PM
+# environment. Without it, the gateway crash-loops.
+bin/hermes pm repair
 # The gateway unit names this install's venv. Point it at the new install.
 if [ -f "$HOME/.config/systemd/user/hermes-gateway.service" ]; then
   bin/hermes gateway restart || echo "hermes: gateway restart failed" >&2
