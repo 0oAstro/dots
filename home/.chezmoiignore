@@ -81,5 +81,6 @@ Library
 .prime
 .grok
 .hermes
+.mochi
 .config/mise/conf.d/server.toml
 {{- end }}
