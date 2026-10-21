@@ -331,8 +331,8 @@
           }
         },
         {
-          "id": "azure/fw-kimi-k3",
-          "name": "Kimi K3 (Fireworks)",
+          "id": "bedrock/moonshotai.kimi-k3",
+          "name": "Kimi K3 (AWS US)",
           "api": "openai-completions",
           "reasoning": true,
           "input": [
@@ -340,13 +340,13 @@
             "image"
           ],
           "cost": {
-            "input": 3,
-            "output": 15,
-            "cacheRead": 0.3,
-            "cacheWrite": 0
+            "input": 3.3,
+            "output": 16.5,
+            "cacheRead": 0.33,
+            "cacheWrite": 4.125
           },
           "contextWindow": 1048576,
-          "maxTokens": 131072,
+          "maxTokens": 128000,
           "thinkingLevelMap": {
             "off": "none",
             "minimal": null,
@@ -362,6 +362,35 @@
             "supportsStrictMode": true,
             "maxTokensField": "max_tokens",
             "supportsLongCacheRetention": false
+          }
+        },
+        {
+          "id": "azure/deepseek-v4.1-flash",
+          "name": "DeepSeek V4.1 Flash (Azure)",
+          "api": "openai-completions",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 1048576,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": null,
+            "max": "max"
+          },
+          "compat": {
+            "supportsStore": false,
+            "supportsDeveloperRole": false,
+            "supportsStrictMode": true,
+            "maxTokensField": "max_tokens",
+            "supportsLongCacheRetention": false,
+            "requiresReasoningContentOnAssistantMessages": true,
+            "thinkingFormat": "openai"
           }
         },
         {

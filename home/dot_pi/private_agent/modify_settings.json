@@ -2,5 +2,7 @@
 {{- $current := dict -}}
 {{- if .chezmoi.stdin }}{{ $current = fromJson .chezmoi.stdin }}{{ end -}}
 {{- range $key := list "subagents" "skills" }}{{ $_ := unset $current $key }}{{ end -}}
+{{- $thinkingLevels := get $current "modelThinkingLevels" -}}
+{{- if kindIs "map" $thinkingLevels }}{{ $_ := unset $thinkingLevels "bifrost/azure/fw-kimi-k3" }}{{ end -}}
 {{- /* Pi saves this file without a final newline. */ -}}
 {{- includeTemplate "merge" (dict "current" (toJson $current) "managed" (includeTemplate "pi-settings.json" .) "format" "json") | trimSuffix "\n" -}}

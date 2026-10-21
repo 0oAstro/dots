@@ -4,7 +4,7 @@ Updated 2026-10-11. Opus 5.5 is the default session model. A cheaper model takes
 
 ## Model chart
 
-The user's cycling order is Kimi K3, GLM-5.3 Flash, Haiku 5.5, GPT-6.1 Sol, Opus 5.5, Fable 5.1, Astra. This order is a preference, not routing. Luna and Sonnet are not in the selector.
+The user's cycling order is Kimi K3, DeepSeek V4.1 Flash, GLM-5.3 Flash, Haiku 5.5, GPT-6.1 Sol, Opus 5.5, Fable 5.1, Astra. This order is a preference, not routing. Luna and Sonnet are not in the selector.
 
 ## Routes
 
@@ -83,4 +83,5 @@ Sources:
 - **Pi:** delegation goes through the pstack extension's `agent` tool. `model` takes a full `provider/id`. A role's `@level` selects the `pstack:poteto-agent-<level>` or `pstack:effort-<level>` subagent type, which sets the child's thinking level.
 - **Pi thinking maps:** GLM-5.3 Flash is thinking-only and accepts `low` through `high` and `max`. Kimi K3 also accepts `low` through `high` and `max`. Fable 5.1 exposes only `xhigh` and `max`.
 - **Pi startup effort:** `modelThinkingLevels` in `~/.pi/agent/settings.json` sets it.
-- **Azure Fireworks quota:** the GlobalStandard Fireworks quota in southindia is 2000K TPM. `fw-kimi-k3` and `fw-glm-5.3-flash` take 1000K each, so a third Fireworks deployment needs a quota increase.
+- **Azure Fireworks quota:** the GlobalStandard Fireworks quota in southindia is 2000K TPM. `fw-glm-5.3-flash` takes 1000K. Kimi K3 now uses the existing AWS US profile, `bedrock/moonshotai.kimi-k3`, through Bifrost.
+- **Current backends:** DeepSeek V4.1 Flash uses Azure, `azure/deepseek-v4.1-flash`, through Bifrost. Its session level is max.

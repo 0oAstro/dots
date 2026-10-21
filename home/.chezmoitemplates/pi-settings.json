@@ -4,7 +4,8 @@
   "defaultModel": "anthropic/claude-opus-5-5",
   "defaultThinkingLevel": "high",
   "enabledModels": [
-    "bifrost/azure/fw-kimi-k3",
+    "bifrost/bedrock/moonshotai.kimi-k3",
+    "bifrost/azure/deepseek-v4.1-flash",
     "bifrost/azure/fw-glm-5.3-flash",
     "bifrost/anthropic/claude-haiku-5-5",
     "bifrost/azure/gpt-6.1-sol",
@@ -51,7 +52,8 @@
     "bifrost/azure/gpt-6-astra": "medium",
     "bifrost/azure/gpt-6.1-sol": "high",
     "bifrost/azure/fw-glm-5.3-flash": "max",
-    "bifrost/azure/fw-kimi-k3": "max",
+    "bifrost/bedrock/moonshotai.kimi-k3": "max",
+    "bifrost/azure/deepseek-v4.1-flash": "max",
     "bifrost/anthropic/claude-haiku-5-5": "xhigh"
   },
   "httpIdleTimeoutMs": 900000,
