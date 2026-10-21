@@ -101,6 +101,12 @@ commit=$(curl -fsSL -H "Accept: application/vnd.github.sha"   "https://api.githu
 # The gateway unit runs .hermes/bin/hermes, which needs a committed PM
 # environment. Without it, the gateway crash-loops.
 bin/hermes pm repair
+# computer_use runs trycua's cua-driver. Hermes pins an older release, so pin
+# the latest one and install it.
+cua=$(curl -fsSL "https://api.github.com/repos/trycua/cua/releases?per_page=50" \
+  | jq -r '[.[].tag_name | select(startswith("cua-driver-rs-v"))][0] | ltrimstr("cua-driver-rs-v")')
+bin/hermes pm lock --bump cua-driver "$cua"
+bin/hermes computer-use install
 # The gateway unit names this install's venv. Point it at the new install.
 if [ -f "$HOME/.config/systemd/user/hermes-gateway.service" ]; then
   bin/hermes gateway restart || echo "hermes: gateway restart failed" >&2
