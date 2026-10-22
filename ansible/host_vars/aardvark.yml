@@ -71,7 +71,7 @@ docker_stacks_owner: ec2-user
 # their memberships. Subnets are fixed because pins live inside them: caddy
 # 172.28.0.5, email-dns 172.21.0.53, Jellyfin KnownProxies 172.18.0.0/16.
 # Docker assigns dynamic IPs only from x.y.1.0/24. internal: no host or
-# internet access, so uguu on proxy_net reaches Caddy and nothing else.
+# internet access, so rustypaste on proxy_net reaches Caddy and nothing else.
 docker_stacks_networks:
   - {name: proxy_net, prefix: "172.24", internal: true}
   - {name: media_net, prefix: "172.18"}
