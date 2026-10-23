@@ -5,18 +5,18 @@
   "defaultThinkingLevel": "high",
   "enabledModels": [
     "bifrost/bedrock/moonshotai.kimi-k3",
-    "bifrost/azure/deepseek-v4.1-flash",
     "bifrost/azure/fw-glm-5.3-flash",
-    "bifrost/anthropic/claude-haiku-5-5",
-    "bifrost/azure/gpt-6.1-sol",
     "bifrost/anthropic/claude-opus-5-5",
     "bifrost/anthropic/claude-fable-5-1",
     "bifrost/azure/gpt-6-astra"
   ],
   "packages": [
-    "~/.local/share/mise/installs/npm-aliou-pi-processes/latest/lib/node_modules/@aliou/pi-processes",
+    "~/.local/share/mise/installs/npm-tintinweb-pi-subagents/latest/lib/node_modules/@tintinweb/pi-subagents",
+    "~/.local/share/mise/installs/npm-cahalane-pi-monitor/latest/lib/node_modules/@cahalane/pi-monitor",
+    "~/.local/share/mise/installs/npm-juicesharp-rpiv-ask-user-question/latest/lib/node_modules/@juicesharp/rpiv-ask-user-question",
     {
       "source": "~/.local/share/mise/installs/http-pstack/latest",
+      "extensions": [],
       "skills": ["!principle-*","!arena","!swarm","!thermos","!thermo-nuclear-review","!thermo-nuclear-code-quality-review","!reflect","!ketchup","!bro","!what-did-i-get-done","!setup-pstack","!poteto-help","!automate-me","!babysit","!correct","!interrogate","!make-pr-easy-to-review","!maintain-verification-skill","!create-verification-skill"]
     },
     "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/@sting8k/pi-vcc",

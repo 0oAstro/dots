@@ -81,12 +81,18 @@ import tomllib
 
 home = pathlib.Path(sys.argv[1])
 tools = tomllib.loads((home / ".config/mise/conf.d/ai.toml").read_text())["tools"]
-package = tools["npm:@aliou/pi-processes"]
-assert package["version"] == "latest", package
-assert package["npm_args"] == "--legacy-peer-deps", package
 settings = json.loads((home / ".pi/agent/settings.json").read_text())
-assert "~/.local/share/mise/installs/npm-aliou-pi-processes/latest/lib/node_modules/@aliou/pi-processes" in settings["packages"], settings["packages"]
-assert "npm:@aliou/pi-processes" not in settings["packages"], settings["packages"]
+for name, path in [
+    ("@tintinweb/pi-subagents", "npm-tintinweb-pi-subagents"),
+    ("@cahalane/pi-monitor", "npm-cahalane-pi-monitor"),
+    ("@juicesharp/rpiv-ask-user-question", "npm-juicesharp-rpiv-ask-user-question"),
+]:
+    package = tools[f"npm:{name}"]
+    assert package["version"] == "latest", package
+    assert package["npm_args"] == "--legacy-peer-deps", package
+    assert f"~/.local/share/mise/installs/{path}/latest/lib/node_modules/{name}" in settings["packages"], settings["packages"]
+for agent in ["poteto-agent", "comment-sicko"]:
+    assert (home / ".pi/agent/agents" / f"{agent}.md").is_symlink(), agent
 package = tools["npm:@sting8k/pi-vcc"]
 assert package["version"] == "latest", package
 assert package["npm_args"] == "--legacy-peer-deps", package

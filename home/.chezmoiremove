@@ -65,5 +65,4 @@
 .claude/agents/poteto-agent.md
 .claude/agents/comment-sicko.md
 .pi/agent/agents/Poteto.md
-.pi/agent/agents/comment-sicko.md
 {{- end }}

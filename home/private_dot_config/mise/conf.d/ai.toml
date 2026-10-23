@@ -4,7 +4,10 @@
 [tools]
 claude-code = "latest"
 "aqua:earendil-works/pi" = "latest"
-"npm:@aliou/pi-processes" = { version = "latest", npm_args = "--legacy-peer-deps" }
+# Pi extensions, one job each: subagents, command monitors, and questions.
+"npm:@tintinweb/pi-subagents" = { version = "latest", npm_args = "--legacy-peer-deps" }
+"npm:@cahalane/pi-monitor" = { version = "latest", npm_args = "--legacy-peer-deps" }
+"npm:@juicesharp/rpiv-ask-user-question" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "npm:@sting8k/pi-vcc" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "npm:pi-intercom" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "aqua:vercel-labs/agent-browser" = "latest"
