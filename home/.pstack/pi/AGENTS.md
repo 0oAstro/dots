@@ -9,8 +9,8 @@ The same block is in .pstack/pi/AGENTS.md, .pstack/claude/CLAUDE.md, and .pstack
 - Two daily machines share a tailnet. thunderchief is the Mac where Shaurya sits, running Herdr. aardvark is a Linux arm64 EC2 box in Mumbai, which Herdr reaches through its remote machine feature. Run `hostname` to learn where you are. Reach the other machine with `ssh thunderchief` or `ssh aardvark`, and do machine-specific work on the real machine.
 - mise owns every dev tool and runtime. Python goes through uv. Node goes through pnpm. A new CLI goes into mise config.
 - chezmoi and Ansible own the dotfiles at ~/.local/share/chezmoi. Change the chezmoi source, then run `chezmoi apply`.
-- The aws and az CLIs are signed in. Ask them for cloud facts.
-- Model calls go through Bifrost at bifrost.shau.me with `BIFROST_VIRTUAL_KEY`. Other secrets live in env vars and project env files. Refer to a secret by its variable name, and keep its value inside the process that uses it.
+- The aws, az, and gcloud CLIs are signed in. Ask them for cloud facts before any SDK or console.
+- Model calls go through Bifrost at bifrost.shau.me with `BIFROST_VIRTUAL_KEY`. Other secrets live in env vars and project env files. Refer to a secret by its variable name, and keep its value inside the process that uses it. Never read a secret's value into the conversation or write it into a config file.
 - The executor MCP (executor.shau.me/mcp) holds the app integrations: GitHub, Email, Grafana, Beszel, Jellyfin, Moodle, Gradescope, Firecrawl, tldraw. When a task touches one of these apps, call its `skills` tool first.
 - Internal hosts are `<name>.shau.me` (aio, auth, bark, beszel, bifrost, executor, f, files, gatus, glance, grafana, jelly, ntfy, prometheus, romm, sso, t3, vault, wa, wud, www), tailnet 100.x addresses, and localhost. Reach them with curl.
 - The budget is open. Spend what the best result needs.
@@ -38,12 +38,12 @@ The same block is in .pstack/pi/AGENTS.md, .pstack/claude/CLAUDE.md, and .pstack
 <code>
 - Write for a junior developer, in every language: plain loops, if statements, clear names, one idea per line. Add an abstraction when a second caller appears.
 - Let names and structure carry the meaning. Keep comments for tools only: directives and license headers.
-- Edit files in place. Git and each service's own export keep the history. Clean up each temporary file before you report.
-- Commit your own work with Conventional Commits (`feat:`, `fix:`, `chore:`).
+- Edit files in place. Git and each service's own export keep the history. Clean up each temporary file before you report. Leave no backup files, scratch scripts, or services behind.
+- Commit your own work with Conventional Commits (`feat:`, `fix:`, `chore:`). Standing approval: commit and push when the work is done. A force-push to a shared branch stays a one-way door. Never fork or publish anything under Shaurya's name without his explicit ask.
 - Do parallel or isolated work in a git worktree, and keep the main checkout on its branch.
 - Dev servers: pin an explicit port, reuse a healthy server that you started, and stop only the PIDs that you own.
 - Add a timer or cron job that changes data only when Shaurya asks for it.
-- Wait for background work through the harness's background or notify feature.
+- Wait for background work through the harness's background or notify feature. End every turn with the current state and the next step, so Shaurya never has to type continue.
 - Delegate after the spec is settled and done is checkable.
 </code>
 
@@ -77,7 +77,7 @@ Rules:
 
 <work>
 - Before changing behavior, trace real callers and check existing artifacts and configs.
-- Prefer native config over new scripts, third-party patches, fallbacks, or UI. Make the smallest change; delete when possible.
+- Prefer native config over new scripts, third-party patches, fallbacks, or UI. Make the smallest change; delete when possible. Never monkeypatch an installed tool or third-party service. Fix its config or report upstream.
 - On a redirect, drop the old line of work.
 - Done means every requested deliverable exists and its real behavior was checked. Mark gaps NOT VERIFIED. Never invent evidence.
 - Separate fact from inference.
@@ -88,7 +88,7 @@ Read only on trigger. Resolve links from each skill's directory.
 - Use a poteto-mode playbook (skills/poteto-mode/playbooks/{bug-fix,feature,refactoring,investigation,perf-issue,...}.md) when a task touches more than one file or a signature other files call, involves a design choice, or is a bug with an unknown cause or a perf issue. Otherwise work directly and verify on the real artifact.
 - Principle skills are unlisted; poteto-mode's Principles index names them, read them at skills/principle-<name>/SKILL.md.
 - Stateful code: principle-model-the-domain. Interfaces or ownership: architect. UI polish: ui-craft. Review: no-comments. Prose or docs: unslop, technical-writing.
-- Delegation: pass the role's provider/id below as `model`; its `@<level>` picks subagent_type `pstack:poteto-agent-<level>` for code-writing delegates, `pstack:effort-<level>` otherwise. Check the artifacts yourself.
+- Delegation: pass the role's provider/id below as `model` and its `@<level>` as `effort`, never as part of `model`. Use subagent_type `pstack:poteto-agent` for code-writing delegates and `general-purpose` otherwise. No `pstack:poteto-agent-<level>` or `pstack:effort-<level>` types exist. Check the artifacts yourself.
 - Long or unattended work: keep a show-me-your-work trail. schedule_wakeup and /loop need explicit opt-in.
 
 Roles (override pstack skill defaults):
