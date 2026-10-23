@@ -8,6 +8,9 @@ claude-code = "latest"
 "npm:@sting8k/pi-vcc" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "npm:pi-intercom" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "aqua:vercel-labs/agent-browser" = "latest"
+# fff: fast file search with an in-memory index. Releases ship only the MCP
+# server binary (fff-mcp); mochi uses the Node binding @ff-labs/fff-node.
+"github:dmtrKovalenko/fff" = { version = "latest", bin = "fff-mcp", matching = "fff-mcp" }
 # OpenCode v2. The aqua registry entry tracks v1 GitHub releases only. The
 # package postinstall links the native binary for this platform.
 "npm:@opencode/cli" = { version = "latest", allow_builds = ["@opencode/cli"] }
