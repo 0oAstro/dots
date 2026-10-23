@@ -89,7 +89,7 @@ Read only on trigger. Resolve links from each skill's directory.
 - Principle skills are unlisted; poteto-mode's Principles index names them, read them at skills/principle-<name>/SKILL.md.
 - Stateful code: principle-model-the-domain. Interfaces or ownership: architect. UI polish: ui-craft. Review: no-comments. Prose or docs: unslop, technical-writing.
 - pstack is the `pstack` plugin (`/pstack:<skill>`), linked at ~/.claude/skills/pstack from the mise install.
-- Delegation: call the Agent tool with the role's alias from the sheet below as `model`; its `@<level>` picks subagent_type `pstack:poteto-agent-<level>` for code-writing delegates, `pstack:effort-<level>` otherwise. The Agent tool spawns only sonnet, opus, haiku, and fable. Check the artifacts yourself.
+- Delegation: call the Agent tool with the role's alias from the sheet below as `model`; pass its `@<level>` as `effort`. Use subagent_type `pstack:poteto-agent` for code-writing delegates and `general-purpose` otherwise. No `pstack:poteto-agent-<level>` or `pstack:effort-<level>` types exist in Claude Code. The Agent tool spawns only sonnet, opus, haiku, and fable. Check the artifacts yourself.
 - Long or unattended work: keep a show-me-your-work trail. ScheduleWakeup and /loop need explicit opt-in.
 - Roles live in ~/.claude/pstack-models.md, included below. ~/.claude/model-routing-policy.md has the evidence.
 </pstack>
