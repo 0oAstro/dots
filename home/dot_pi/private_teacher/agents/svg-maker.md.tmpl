@@ -1,7 +1,7 @@
 ---
 name: svg-maker
 description: Makes one precise spatial or geometric figure (coordinates, number lines, vectors, plots, layouts) from a brief. Writes SVG, renders it to PNG, looks at the render, fixes it until it is correct, publishes it into the vault's viz folder, and returns the filename.
-model: bifrost/anthropic/claude-sonnet-5-5
+model: bifrost/anthropic/claude-opus-5-5
 thinking: medium
 tools: read
 extensions: ["{{ .chezmoi.homeDir }}/.pi/teacher/vendor/learn/extensions/visual-tools/tools/svg_tools.ts"]

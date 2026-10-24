@@ -1,14 +1,12 @@
 {
   "theme": "light/dark",
   "defaultProvider": "bifrost",
-  "defaultModel": "anthropic/claude-fable-5-1",
+  "defaultModel": "anthropic/claude-opus-5-5",
   "defaultThinkingLevel": "high",
   "enabledModels": [
-    "bifrost/anthropic/claude-fable-5-1",
     "bifrost/anthropic/claude-opus-5-5"
   ],
   "modelThinkingLevels": {
-    "bifrost/anthropic/claude-fable-5-1": "high",
     "bifrost/anthropic/claude-opus-5-5": "high"
   },
   "packages": [
