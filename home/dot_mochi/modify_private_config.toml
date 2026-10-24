@@ -1,4 +1,0 @@
-{{- /* chezmoi:modify-template */ -}}
-{{- $oldKimi := "kimi = \"bifrost-gpt/azure/FW-Kimi-K3\"\n" -}}
-{{- $newAliases := "kimi = \"bifrost-gpt/bedrock/moonshotai.kimi-k3\"\ndeepseek = \"bifrost-gpt/azure/deepseek-v4.1-flash\"\n" -}}
-{{- .chezmoi.stdin | replace $oldKimi $newAliases -}}

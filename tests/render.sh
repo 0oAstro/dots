@@ -15,10 +15,10 @@ trap cleanup EXIT
 fail=0
 # name|os|arch|switches json
 profiles=(
-  'aardvark|linux|arm64|"ai":true,"server":true,"harnesses":["claude","cursor","grok","hermes","mochi","pi","prime"]'
-  'thunderchief|darwin|arm64|"ai":true,"server":false,"harnesses":["claude","hermes","pi"],"modules":["ai_off","apps_comms","apps_dev","apps_media","dropbox","finder","games","google_drive","input","look","perf","vendor_updaters_off"]'
-  'newbox|linux|amd64|"ai":false,"server":false,"harnesses":[]'
-  'newmac|darwin|arm64|"ai":true,"server":true,"harnesses":["cursor","prime"]'
+  'aardvark|linux|arm64|"server":true,"harnesses":["claude","cursor","hermes","pi","prime"]'
+  'thunderchief|darwin|arm64|"server":false,"harnesses":["claude","hermes","pi"],"modules":["ai_off","apps_comms","apps_dev","apps_media","dropbox","finder","games","google_drive","input","look","perf","vendor_updaters_off"]'
+  'newbox|linux|amd64|"server":false,"harnesses":[]'
+  'newmac|darwin|arm64|"server":true,"harnesses":["cursor","prime"]'
 )
 
 check() { # label command...

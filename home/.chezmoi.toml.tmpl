@@ -34,6 +34,4 @@ useBuiltinAge = true
     server = {{ $server }}
     modules = {{ $modules | toToml }}
     harnesses = {{ $harnesses | toToml }}
-    # Any harness: shared agent tooling (pstack, agent-browser) follows this.
-    ai = {{ gt (len $harnesses) 0 }}
 

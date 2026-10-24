@@ -18,7 +18,7 @@
 .local/bin/cmas.sh
 {{- end }}
 
-{{- if .ai }}
+{{- if .harnesses }}
 # Retired Pi extensions and their configuration. Keep histories, agents, and skills.
 .pi/agent/extensions/codemode-gpt.ts
 .pi/agent/extensions/cache-ttl.ts

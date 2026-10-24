@@ -52,9 +52,5 @@ all:
       hosts: {thunderchief: , blackbird: , aardvark: }
     harness_prime:
       hosts: {aardvark: }
-    harness_grok:
-      hosts: {aardvark: }
     harness_cursor:
-      hosts: {aardvark: }
-    harness_mochi:
       hosts: {aardvark: }

@@ -68,11 +68,9 @@ Library
 {{- $harnessPaths := dict
       "claude" (list ".claude" ".config/bifrost-mitm")
       "pi" (list ".pi" ".local/bin/pi-teacher" ".config/mise/conf.d/pi-global-tools.toml")
-      "hermes" (list ".hermes")
+      "hermes" (list)
       "prime" (list ".prime")
-      "grok" (list ".grok")
-      "cursor" (list)
-      "mochi" (list ".mochi") }}
+      "cursor" (list) }}
 {{- range $name, $paths := $harnessPaths }}
 {{-   if not (has $name $.harnesses) }}
 .config/mise/conf.d/harness-{{ $name }}.toml
@@ -82,7 +80,7 @@ Library
 {{-   end }}
 {{- end }}
 
-{{- if not .ai }}
+{{- if not .harnesses }}
 # Tooling that every harness shares.
 .config/mise/conf.d/ai.toml
 {{- end }}

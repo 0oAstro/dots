@@ -67,7 +67,7 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 | --- | --- |
 | every machine | zsh, git, tmux, bat, ripgrep, glow, dtop, btop; `conf.d/core.toml` |
 | any harness | pstack, agent-browser; `conf.d/ai.toml` |
-| `harness_<name>` group | that harness's CLI in `conf.d/harness-<name>.toml` and its settings (`claude`, `pi`, `hermes`, `prime`, `grok`, `cursor`, `mochi`) |
+| `harness_<name>` group | that harness's CLI in `conf.d/harness-<name>.toml` and its settings (`claude`, `pi`, `hermes`, `prime`, `cursor`) |
 | macOS | Ghostty, lazysql, routerctl; `conf.d/macos.toml` |
 | Linux | `conf.d/linux.toml` |
 | `input` module | Karabiner |
@@ -82,7 +82,7 @@ chezmoi decrypts the API keys to `~/.config/zsh/.zshrc.local` (mode `600`), whic
 
 ## Files the apps also write
 
-Claude Code, Pi, and Grok Build rewrite their own settings. `modify_` templates merge the keys kept in `home/.chezmoitemplates/` into the live file. Keys the app owns survive: Pi's last-seen version, a model picked with `/model`. `btop.conf` is written only when missing, because btop saves its settings on exit.
+Claude Code and Pi rewrite their own settings. `modify_` templates merge the keys kept in `home/.chezmoitemplates/` into the live file. Keys the app owns survive: Pi's last-seen version, a model picked with `/model`. `btop.conf` is written only when missing, because btop saves its settings on exit.
 
 Symlinks that must survive tool upgrades point at mise's `latest` folder: the Docker CLI plugins.
 
