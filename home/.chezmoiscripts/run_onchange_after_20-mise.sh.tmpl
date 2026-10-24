@@ -3,8 +3,8 @@
 {{- range (glob (joinPath .chezmoi.sourceDir "private_dot_config/mise/conf.d/*")) }}
 # {{ base . }}: {{ include . | sha256sum }}
 {{- end }}
-# ai={{ .ai }} server={{ .server }}
-{{ if .ai }}
+# harnesses={{ .harnesses | join "," }} server={{ .server }}
+{{ if has "pi" .harnesses }}
 # pi-global-tools: {{ includeTemplate "pi-global-tools-version" . }}
 {{ end }}
 set -eu
@@ -18,6 +18,6 @@ fi
 export PATH="$HOME/.local/share/mise/shims:$PATH"
 "$mise" install --yes node python &&
   "$mise" install --yes || echo "dots: some mise tools failed; rerun 'mise install'" >&2
-{{ if .ai }}
+{{ if has "pi" .harnesses }}
 "$mise" install --yes "pi-global-tools@{{ includeTemplate "pi-global-tools-version" . }}"
 {{ end }}

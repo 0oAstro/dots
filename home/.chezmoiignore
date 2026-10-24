@@ -1,5 +1,6 @@
-# Target paths chezmoi leaves alone on this machine: by OS, by the `ai` and
-# `server` switches (.chezmoi.toml.tmpl), and by whether the age key exists.
+# Target paths chezmoi leaves alone on this machine: by OS, by the `server`
+# switch, the modules and the harnesses (.chezmoi.toml.tmpl), and by whether
+# the age key exists.
 
 .config/zsh/README.md
 
@@ -44,7 +45,6 @@ Library
 .config/zsh/.zprofile
 .config/zsh/config/ui/clipboard.zsh
 .config/ghostty
-.config/herdr/launch
 .config/lazysql
 .config/mise/conf.d/macos.toml
 .local/bin/routerctl
@@ -64,24 +64,25 @@ Library
 .local/bin/cmas.sh
 {{- end }}
 
+{{- /* Agent harnesses: each has conf.d/harness-<name>.toml and the paths below. */ -}}
+{{- $harnessPaths := dict
+      "claude" (list ".claude" ".config/bifrost-mitm")
+      "pi" (list ".pi" ".local/bin/pi-teacher" ".config/mise/conf.d/pi-global-tools.toml")
+      "hermes" (list ".hermes")
+      "prime" (list ".prime")
+      "grok" (list ".grok")
+      "cursor" (list)
+      "mochi" (list ".mochi") }}
+{{- range $name, $paths := $harnessPaths }}
+{{-   if not (has $name $.harnesses) }}
+.config/mise/conf.d/harness-{{ $name }}.toml
+{{-     range $paths }}
+{{ . }}
+{{-     end }}
+{{-   end }}
+{{- end }}
+
 {{- if not .ai }}
-.claude
-.pi
-.local/bin/pi-teacher
+# Tooling that every harness shares.
 .config/mise/conf.d/ai.toml
-.config/mise/conf.d/pi-global-tools.toml
-{{- end }}
-
-{{- if not .ai }}
-# Claude Code's Bifrost proxy (servers: user_units/servers; Macs: launchd_agents).
-.config/bifrost-mitm
-{{- end }}
-
-{{- if not (and .ai .server) }}
-# Server-only harnesses.
-.prime
-.grok
-.hermes
-.mochi
-.config/mise/conf.d/server.toml
 {{- end }}

@@ -18,7 +18,7 @@ defaults:
 jobs:
   # A machine from nothing: install.sh bootstraps, Ansible provisions the
   # runner as a host it has never seen, chezmoi applies. A second run must
-  # change nothing. ai is off: the agent repos are private.
+  # change nothing. The runner is in no harness group: the agent repos are private.
   fresh-linux:
     if: github.event_name != 'push'
     runs-on: ubuntu-latest
@@ -27,7 +27,7 @@ jobs:
       DOTS_REPO: file://${{ github.workspace }}
       GH_TOKEN: ${{ github.token }}
       GITHUB_TOKEN: ${{ github.token }}
-      SWITCHES: '{"chezmoi_data": {"ai": false, "server": false}}'
+      SWITCHES: '{"chezmoi_data": {"server": false}}'
     steps: &fresh-steps
       - uses: actions/checkout@v4
         with:

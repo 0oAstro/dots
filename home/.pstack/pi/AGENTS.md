@@ -6,7 +6,7 @@ The same block is in .pstack/pi/AGENTS.md, .pstack/claude/CLAUDE.md, and .pstack
 
 <where>
 - Projects live in ~/Developer.
-- Two daily machines share a tailnet. thunderchief is the Mac where Shaurya sits, running Herdr. aardvark is a Linux arm64 EC2 box in Mumbai, which Herdr reaches through its remote machine feature. Run `hostname` to learn where you are. Reach the other machine with `ssh thunderchief` or `ssh aardvark`, and do machine-specific work on the real machine.
+- Two daily machines share a tailnet. thunderchief is the Mac where Shaurya sits. aardvark is a Linux arm64 EC2 box in Mumbai. Run `hostname` to learn where you are. Reach the other machine with `ssh thunderchief` or `ssh aardvark`, and do machine-specific work on the real machine.
 - mise owns every dev tool and runtime. Python goes through uv. Node goes through pnpm. A new CLI goes into mise config.
 - chezmoi and Ansible own the dotfiles at ~/.local/share/chezmoi. Change the chezmoi source, then run `chezmoi apply`.
 - The budget is open. Spend what the best result needs.

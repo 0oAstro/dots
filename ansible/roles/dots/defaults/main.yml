@@ -1,5 +1,7 @@
 dots_repo: 0oAstro/dots
-dots_prompt_args: "--no-tty --promptBool ai={{ chezmoi_data.ai | bool | lower }},server={{ chezmoi_data.server | bool | lower }} --promptString modules={{ dots_modules | join(',') }}"
-# Inventory groups except the kinds: what chezmoi sees as .modules.
-dots_modules: "{{ group_names | difference(['macs', 'linux', 'servers', 'desktops']) | sort }}"
+dots_prompt_args: "--no-tty --promptBool server={{ chezmoi_data.server | bool | lower }} --promptString modules={{ dots_modules | join(',') }} --promptString harnesses={{ dots_harnesses | join(',') }}"
+# Inventory groups except the kinds and the harnesses: what chezmoi sees as .modules.
+dots_modules: "{{ group_names | difference(['macs', 'linux', 'servers', 'desktops']) | reject('match', '^harness_') | sort }}"
+# harness_<name> groups: what chezmoi sees as .harnesses.
+dots_harnesses: "{{ group_names | select('match', '^harness_') | map('regex_replace', '^harness_', '') | sort }}"
 dots_controller_age_key: "{{ lookup('ansible.builtin.file', '~/.config/age/keys.txt', errors='ignore') | default('', true) }}"

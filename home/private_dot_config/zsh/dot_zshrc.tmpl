@@ -1,10 +1,5 @@
 [[ ${ZPROFRC:-0} == 1 ]] && zmodload zsh/zprof
 
-if [[ ${HERDR_ENV:-} == 1 && -t 1 ]]; then
-  unset NO_COLOR
-  export COLORTERM=truecolor
-fi
-
 if [[ -z ${ZSH_EXECUTION_STRING:-} ]]; then
   () {
     setopt localoptions noprompt_sp noprompt_cr
@@ -41,7 +36,6 @@ source "$ZDOTDIR/.p10k.zsh"
 source "$ZDOTDIR/config/integrations/secrets.zsh"
 source "$ZDOTDIR/config/integrations/ai-gateway.zsh"
 source "$ZDOTDIR/config/integrations/terminal.zsh"
-source "$ZDOTDIR/config/integrations/herdr-shell.zsh"
 
 source "$ZDOTDIR/config/ui/aliases.zsh"
 source "$ZDOTDIR/config/ui/functions.zsh"

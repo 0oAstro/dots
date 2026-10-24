@@ -19,8 +19,7 @@ export HOMEBREW_CELLAR=$HOMEBREW_PREFIX/Cellar
 export HOMEBREW_REPOSITORY=$HOMEBREW_PREFIX
 
 # Bitwarden's agent holds the keys, including git's signing key. A forwarded
-# agent wins; launchd's own agent is empty and Herdr's herdr.sock.agent
-# symlinks to it, so that one doesn't count.
+# agent wins; launchd's own agent is empty, so that one doesn't count.
 if [[ ! -S ${SSH_AUTH_SOCK:-} || ${SSH_AUTH_SOCK:A} == */com.apple.launchd.*/Listeners ]]; then
   export SSH_AUTH_SOCK=$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock
 fi

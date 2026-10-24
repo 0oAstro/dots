@@ -1,33 +1,8 @@
-# Coding agents. Their configs live under ~/.claude and ~/.pi.
-# Server-only harnesses (prime, grok, cursor) are in server.toml.
+# Agent tooling that every harness shares. Each harness has its own
+# harness-<name>.toml; inventory.yml says which hosts get which harness.
 
 [tools]
-claude-code = "latest"
-"aqua:earendil-works/pi" = "latest"
-# Pi extensions, one job each: subagents, command monitors, and questions.
-"npm:@tintinweb/pi-subagents" = { version = "latest", npm_args = "--legacy-peer-deps" }
-"npm:@cahalane/pi-monitor" = { version = "latest", npm_args = "--legacy-peer-deps" }
-"npm:@juicesharp/rpiv-ask-user-question" = { version = "latest", npm_args = "--legacy-peer-deps" }
-"npm:@sting8k/pi-vcc" = { version = "latest", npm_args = "--legacy-peer-deps" }
-"npm:pi-intercom" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "aqua:vercel-labs/agent-browser" = "latest"
-# bifrost-mitm (ai-gateway.zsh) runs mitmdump to send Claude Code's model calls
-# through Bifrost.
-"pipx:mitmproxy" = "latest"
-# REA (reverse engineering MCP). Pi registers it in ~/.pi/agent/mcp.json and
-# loads its skill as a settings package. Its native analysis drives Ghidra.
-"npm:rea-agents" = "latest"
-
-# REA accepts Ghidra 12.1.x only. Releases ship no macOS or Linux arm64
-# decompiler, so postinstall builds it with JDK 21 (gcc/clang required).
-[tools."github:NationalSecurityAgency/ghidra"]
-version = "Ghidra_12.1"
-depends = ["java"]
-postinstall = '''
-set -eu
-cd "$MISE_TOOL_INSTALL_PATH/support/gradle"
-JAVA_HOME="$HOME/.local/share/mise/installs/java/zulu-21" ./gradlew --no-daemon -q buildNatives
-'''
 
 # pstack: michael-denyer's Claude Code/Codex/Pi port of cursor/plugins/pstack.
 # Claude Code (~/.claude/skills/pstack) and Pi (settings packages) both read it
@@ -42,73 +17,3 @@ version_order = "semver"
 strip_components = 1
 # No executables; keep the tarball root off PATH.
 bin_path = "bin"
-
-# Emil Kowalski's design and motion skills. The repo has no releases, so each
-# version is one commit, named <date>.<time>.<sha> so that newer sorts later.
-# Pi reads them through ~/.pi/agent/prompts/<skill>.md slash commands.
-[tools."http:emil-skills"]
-version = "latest"
-url = '{% raw %}https://github.com/emilkowalski/skills/archive/{{ version | split(pat=".") | last }}.tar.gz{% endraw %}'
-version_list_url = "https://github.com/emilkowalski/skills/commits/HEAD.atom"
-version_expr = 'reverse(map(split(body, "<entry>")[1:], { let sha = #[indexOf(#, "Grit::Commit/") + 13:indexOf(#, "Grit::Commit/") + 25]; let date = #[indexOf(#, "<updated>") + 9:indexOf(#, "<updated>") + 28]; replace(date[0:10], "-", "") + "." + replace(date[11:19], ":", "") + "." + sha }))'
-strip_components = 1
-bin_path = "bin"
-
-# HumanLayer's skills, versioned the same way as http:emil-skills.
-[tools."http:humanlayer-skills"]
-version = "latest"
-url = '{% raw %}https://github.com/humanlayer/skills/archive/{{ version | split(pat=".") | last }}.tar.gz{% endraw %}'
-version_list_url = "https://github.com/humanlayer/skills/commits/HEAD.atom"
-version_expr = 'reverse(map(split(body, "<entry>")[1:], { let sha = #[indexOf(#, "Grit::Commit/") + 13:indexOf(#, "Grit::Commit/") + 25]; let date = #[indexOf(#, "<updated>") + 9:indexOf(#, "<updated>") + 28]; replace(date[0:10], "-", "") + "." + replace(date[11:19], ":", "") + "." + sha }))'
-strip_components = 1
-bin_path = "bin"
-
-# Nous Research Hermes Agent; data lives in ~/.hermes. Upstream ships no wheel
-# (PyPI is stale and setup.py refuses wheel builds), so this follows their
-# Dockerfile: release source tarball, locked uv venv on the Python version
-# that the release's .python-version names, built web dashboard and TUI. mise owns upgrades: use `mise up`,
-# not `hermes update`. Instead of upstream's [all], the venv gets only MCP,
-# ACP, the dashboard, uvloop and aiohttp (sms extra) for the API server;
-# Hermes lazy-installs anything else on first use.
-[tools."http:hermes"]
-version = "latest"
-url = "https://github.com/NousResearch/hermes-agent/archive/refs/tags/v{{ version }}.tar.gz"
-# Upstream moved from date tags (v2026.9.24) to semver tags (v0.22.0), so a
-# sorted list ranks the old date tags higher. Ask GitHub for the Latest release.
-version_list_url = "https://api.github.com/repos/NousResearch/hermes-agent/releases/latest"
-version_json_path = ".tag_name"
-strip_components = 1
-bin_path = "bin"
-postinstall = '''
-set -eu
-cd "$MISE_TOOL_INSTALL_PATH"
-unset UV_PYTHON VIRTUAL_ENV
-npm_config_install_links=false npm install --no-audit --no-fund \
-  --workspace ui-tui --workspace web --include-workspace-root
-uv sync --locked --extra mcp --extra acp --extra web --extra uvloop \
-  --extra sms
-(cd web && npm run build)
-(cd ui-tui && npm run build)
-mkdir -p bin
-ln -sf ../.venv/bin/hermes bin/hermes
-ln -sf ../.venv/bin/hermes-acp bin/hermes-acp
-# Without a stamp, `hermes --version` says "unknown". "external" tells Hermes
-# that mise, not `hermes update`, owns upgrades.
-commit=$(curl -fsSL -H "Accept: application/vnd.github.sha"   "https://api.github.com/repos/NousResearch/hermes-agent/commits/v$MISE_TOOL_VERSION")
-.venv/bin/python scripts/write_install_stamp.py --output install-stamp.json   --commit "$commit" --base-version "$MISE_TOOL_VERSION" --distance 0   --source ci --update-mechanism external
-# Refresh bundled skills in ~/.hermes/skills, as `hermes update` would.
-.venv/bin/python tools/skills_sync.py
-# The gateway unit runs .hermes/bin/hermes, which needs a committed PM
-# environment. Without it, the gateway crash-loops.
-bin/hermes pm repair
-# computer_use runs trycua's cua-driver. Hermes pins an older release, so pin
-# the latest one and install it.
-cua=$(curl -fsSL "https://api.github.com/repos/trycua/cua/releases?per_page=50" \
-  | jq -r '[.[].tag_name | select(startswith("cua-driver-rs-v"))][0] | ltrimstr("cua-driver-rs-v")')
-bin/hermes pm lock --bump cua-driver "$cua"
-bin/hermes computer-use install
-# The gateway unit names this install's venv. Point it at the new install.
-if [ -f "$HOME/.config/systemd/user/hermes-gateway.service" ]; then
-  bin/hermes gateway restart || echo "hermes: gateway restart failed" >&2
-fi
-'''

@@ -12,7 +12,7 @@ That is for the machine you are sitting at. `install.sh` bootstraps only what An
 
 For a server, add it to `servers` in `ansible/inventory.yml` and provision it from another machine. The playbook installs mise there, copies the age key and a GitHub login from the controller, clones this repo, and applies chezmoi.
 
-The inventory decides chezmoi's two switches, `ai` (coding agents) and `server` (always-on host), through `chezmoi_data` in `ansible/group_vars/`. The playbook writes them into chezmoi's config, so nothing prompts. The host running the playbook manages itself locally and the rest over SSH:
+The inventory decides what chezmoi installs: the `server` switch (always-on host) through `chezmoi_data` in `ansible/group_vars/`, and the host's modules and agent harnesses through its groups in `ansible/inventory.yml`. The playbook writes them into chezmoi's config, so nothing prompts. The host running the playbook manages itself locally and the rest over SSH:
 
 ```sh
 mise run provision -- --check --diff   # dry run on every host
@@ -53,6 +53,8 @@ chezmoi update                              # on the other machines
 | Tools | `~/.config/mise/conf.d/core.toml` (both OSes), `macos.toml`, `linux.toml`, `ai.toml` |
 | macOS apps | `ansible/files/brewfiles/macs.Brewfile` (every Mac), `<module>.Brewfile`, or `<host>.Brewfile` |
 | A Mac's modules | `ansible/inventory.yml`, then `mise run provision -- --limit <host>` |
+| A host's agent harnesses | the `harness_<name>` groups in `ansible/inventory.yml`, then `mise run provision -- --limit <host> --tags dots` |
+| A new harness | `conf.d/harness-<name>.toml`, its paths in `home/.chezmoiignore` (`$harnessPaths`), and a `harness_<name>` group |
 | Machine settings, packages, firewall, units | `ansible/` (see System layer) |
 | API keys | `edit-secrets` (re-encrypts and applies) |
 | SSH hosts | `chezmoi edit ~/.ssh/config.d/$(uname -n)` |
@@ -63,10 +65,10 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 
 | | Files |
 | --- | --- |
-| every machine | zsh, git, herdr, tmux, bat, ripgrep, glow, dtop, btop; `conf.d/core.toml` |
-| `ai` | Claude Code and Pi settings; pstack; `conf.d/ai.toml` |
-| `ai` servers | Grok Build and Prime settings; prime, grok, cursor-agent in `conf.d/server.toml` |
-| macOS | Ghostty, herdr launcher, lazysql, routerctl; `conf.d/macos.toml` |
+| every machine | zsh, git, tmux, bat, ripgrep, glow, dtop, btop; `conf.d/core.toml` |
+| any harness | pstack, agent-browser; `conf.d/ai.toml` |
+| `harness_<name>` group | that harness's CLI in `conf.d/harness-<name>.toml` and its settings (`claude`, `pi`, `hermes`, `prime`, `grok`, `cursor`, `mochi`) |
+| macOS | Ghostty, lazysql, routerctl; `conf.d/macos.toml` |
 | Linux | `conf.d/linux.toml` |
 | `input` module | Karabiner |
 

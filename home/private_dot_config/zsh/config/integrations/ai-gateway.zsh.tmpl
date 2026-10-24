@@ -1,7 +1,7 @@
 # AI gateway integration.
 
 export PI_CACHE_RETENTION=long
-{{- if .ai }}
+{{- if has "claude" .harnesses }}
 
 # Route Claude Code through Bifrost while it still talks to api.anthropic.com,
 # so the claude.ai login, Remote Control and other first-party-only features

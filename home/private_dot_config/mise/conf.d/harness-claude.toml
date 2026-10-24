@@ -1,0 +1,7 @@
+# Claude Code. Settings live in ~/.claude.
+
+[tools]
+claude-code = "latest"
+# bifrost-mitm (ai-gateway.zsh) runs mitmdump to send Claude Code's model calls
+# through Bifrost.
+"pipx:mitmproxy" = "latest"

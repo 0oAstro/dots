@@ -40,3 +40,21 @@ all:
       hosts: {thunderchief: }
     dropbox: # Maestral without its menu-bar app, syncing ~/Dropbox
       hosts: {thunderchief: }
+
+    # Agent harnesses, one group each: harness_<name> gives the host
+    # ~/.config/mise/conf.d/harness-<name>.toml and the harness's settings
+    # (home/.chezmoiignore lists its paths). Add or remove a host here.
+    harness_claude:
+      hosts: {thunderchief: , blackbird: , aardvark: }
+    harness_pi:
+      hosts: {thunderchief: , blackbird: , aardvark: }
+    harness_hermes:
+      hosts: {thunderchief: , blackbird: , aardvark: }
+    harness_prime:
+      hosts: {aardvark: }
+    harness_grok:
+      hosts: {aardvark: }
+    harness_cursor:
+      hosts: {aardvark: }
+    harness_mochi:
+      hosts: {aardvark: }

@@ -1,15 +1,15 @@
 {{- /*
-  Machine profile. Ansible decides it from the inventory (ansible/group_vars,
-  chezmoi_data) and runs `chezmoi init --promptBool ai=…,server=…
-  --promptString modules=…`; a manual `chezmoi init` asks instead.
+  Machine profile. Ansible decides it from the inventory (ansible/inventory.yml,
+  group_vars, chezmoi_data) and runs `chezmoi init --promptBool server=…
+  --promptString modules=…,harnesses=…`; a manual `chezmoi init` asks instead.
 */ -}}
 {{- /* Not .chezmoi.hostname: it resolves through /etc/hosts, where blocklists remap 127.0.0.1. */ -}}
 {{- $host := output "uname" "-n" | trim | lower | splitList "." | first -}}
 
-{{- /* Two switches; everything else follows the OS. */ -}}
-{{- /* The prompt text is also the --promptBool key, so keep it one word. */ -}}
-{{- $ai := promptBool "ai" true -}} {{- /* Claude Code, Codex, Pi */ -}}
+{{- /* The prompt text is also the --prompt* key, so keep it one word. */ -}}
 {{- $server := promptBool "server" false -}} {{- /* always-on host */ -}}
+{{- /* The host's agent harnesses, comma-separated (ansible/inventory.yml). */ -}}
+{{- $harnesses := promptString "harnesses" "claude,pi" | splitList "," | compact -}}
 {{- /* The host's inventory modules, comma-separated (ansible/inventory.yml). */ -}}
 {{- $modules := promptString "modules" "" | splitList "," | compact -}}
 
@@ -31,7 +31,9 @@ useBuiltinAge = true
 
 [data]
     host = {{ $host | quote }}
-    ai = {{ $ai }}
     server = {{ $server }}
     modules = {{ $modules | toToml }}
+    harnesses = {{ $harnesses | toToml }}
+    # Any harness: shared agent tooling (pstack, agent-browser) follows this.
+    ai = {{ gt (len $harnesses) 0 }}
 

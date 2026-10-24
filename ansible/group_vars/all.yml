@@ -6,9 +6,8 @@ overlay_layers: "{{ group_names | select('in', ['linux', 'servers', 'desktops'])
 
 dots_pull: true
 
-# chezmoi's two switches (home/.chezmoi.toml.tmpl). Servers override server.
+# chezmoi's server switch (home/.chezmoi.toml.tmpl). Servers override it.
 chezmoi_data:
-  ai: true
   server: false
 
 # chezmoi through mise, so it works before chezmoi has written mise's config.

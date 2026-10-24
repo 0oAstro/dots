@@ -26,7 +26,6 @@ Host *
   # Fastest cipher first, rest of the default list kept as fallback.
   Ciphers ^aes128-gcm@openssh.com
   # Tailscale links are fast; git and rsync compress on their own.
-  # herdr passes -C itself for its screen stream.
   Compression no
   SendEnv ZDOTS_APPEARANCE
 {{- if eq .chezmoi.os "darwin" }}

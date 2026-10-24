@@ -1,0 +1,12 @@
+# Prime agent, the native Rust build from GitHub releases. The binary reads
+# its runtime and skills from the same directory, so only bin/ goes on PATH,
+# with `prime` and `prime-agent` both linked to it.
+[tools."github:PrimeIntellect-ai/prime-agent"]
+version = "latest"
+asset_pattern = "prime-agent-*-{{ if eq .chezmoi.os "darwin" }}darwin{{ else }}linux{{ end }}-{{ if eq .chezmoi.arch "arm64" }}arm64{{ else }}x64{{ end }}.tar.gz"
+bin_path = "bin"
+postinstall = '''
+mkdir -p "$MISE_TOOL_INSTALL_PATH/bin"
+ln -sf ../prime-agent "$MISE_TOOL_INSTALL_PATH/bin/prime-agent"
+ln -sf ../prime-agent "$MISE_TOOL_INSTALL_PATH/bin/prime"
+'''

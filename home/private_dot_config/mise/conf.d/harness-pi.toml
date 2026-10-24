@@ -1,0 +1,44 @@
+# Pi. Settings live in ~/.pi; pi-global-tools.toml holds its local extensions.
+
+[tools]
+"aqua:earendil-works/pi" = "latest"
+# Pi extensions, one job each: subagents, command monitors, and questions.
+"npm:@tintinweb/pi-subagents" = { version = "latest", npm_args = "--legacy-peer-deps" }
+"npm:@cahalane/pi-monitor" = { version = "latest", npm_args = "--legacy-peer-deps" }
+"npm:@juicesharp/rpiv-ask-user-question" = { version = "latest", npm_args = "--legacy-peer-deps" }
+"npm:@sting8k/pi-vcc" = { version = "latest", npm_args = "--legacy-peer-deps" }
+"npm:pi-intercom" = { version = "latest", npm_args = "--legacy-peer-deps" }
+# REA (reverse engineering MCP). Pi registers it in ~/.pi/agent/mcp.json and
+# loads its skill as a settings package. Its native analysis drives Ghidra.
+"npm:rea-agents" = "latest"
+
+# REA accepts Ghidra 12.1.x only. Releases ship no macOS or Linux arm64
+# decompiler, so postinstall builds it with JDK 21 (gcc/clang required).
+[tools."github:NationalSecurityAgency/ghidra"]
+version = "Ghidra_12.1"
+depends = ["java"]
+postinstall = '''
+set -eu
+cd "$MISE_TOOL_INSTALL_PATH/support/gradle"
+JAVA_HOME="$HOME/.local/share/mise/installs/java/zulu-21" ./gradlew --no-daemon -q buildNatives
+'''
+
+# Emil Kowalski's design and motion skills. The repo has no releases, so each
+# version is one commit, named <date>.<time>.<sha> so that newer sorts later.
+# Pi reads them through ~/.pi/agent/prompts/<skill>.md slash commands.
+[tools."http:emil-skills"]
+version = "latest"
+url = '{% raw %}https://github.com/emilkowalski/skills/archive/{{ version | split(pat=".") | last }}.tar.gz{% endraw %}'
+version_list_url = "https://github.com/emilkowalski/skills/commits/HEAD.atom"
+version_expr = 'reverse(map(split(body, "<entry>")[1:], { let sha = #[indexOf(#, "Grit::Commit/") + 13:indexOf(#, "Grit::Commit/") + 25]; let date = #[indexOf(#, "<updated>") + 9:indexOf(#, "<updated>") + 28]; replace(date[0:10], "-", "") + "." + replace(date[11:19], ":", "") + "." + sha }))'
+strip_components = 1
+bin_path = "bin"
+
+# HumanLayer's skills, versioned the same way as http:emil-skills.
+[tools."http:humanlayer-skills"]
+version = "latest"
+url = '{% raw %}https://github.com/humanlayer/skills/archive/{{ version | split(pat=".") | last }}.tar.gz{% endraw %}'
+version_list_url = "https://github.com/humanlayer/skills/commits/HEAD.atom"
+version_expr = 'reverse(map(split(body, "<entry>")[1:], { let sha = #[indexOf(#, "Grit::Commit/") + 13:indexOf(#, "Grit::Commit/") + 25]; let date = #[indexOf(#, "<updated>") + 9:indexOf(#, "<updated>") + 28]; replace(date[0:10], "-", "") + "." + replace(date[11:19], ":", "") + "." + sha }))'
+strip_components = 1
+bin_path = "bin"

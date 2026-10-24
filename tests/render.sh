@@ -15,10 +15,10 @@ trap cleanup EXIT
 fail=0
 # name|os|arch|switches json
 profiles=(
-  'aardvark|linux|arm64|"ai":true,"server":true'
-  'thunderchief|darwin|arm64|"ai":true,"server":false,"modules":["ai_off","apps_comms","apps_dev","apps_media","dropbox","finder","games","google_drive","input","look","perf","vendor_updaters_off"]'
-  'newbox|linux|amd64|"ai":false,"server":false'
-  'newmac|darwin|arm64|"ai":false,"server":true'
+  'aardvark|linux|arm64|"ai":true,"server":true,"harnesses":["claude","cursor","grok","hermes","mochi","pi","prime"]'
+  'thunderchief|darwin|arm64|"ai":true,"server":false,"harnesses":["claude","hermes","pi"],"modules":["ai_off","apps_comms","apps_dev","apps_media","dropbox","finder","games","google_drive","input","look","perf","vendor_updaters_off"]'
+  'newbox|linux|amd64|"ai":false,"server":false,"harnesses":[]'
+  'newmac|darwin|arm64|"ai":true,"server":true,"harnesses":["cursor","prime"]'
 )
 
 check() { # label command...
@@ -32,7 +32,7 @@ check() { # label command...
 
 # chezmoi ignores unknown config keys, so check the age setting by name: without
 # it, decrypting needs an age binary that a fresh machine does not have yet.
-if ! chezmoi execute-template --init --promptBool ai=true --promptBool server=false \
+if ! chezmoi execute-template --init --promptBool server=false --promptString harnesses=pi \
   <"$repo/home/.chezmoi.toml.tmpl" | grep -qx 'useBuiltinAge = true'; then
   echo "FAIL .chezmoi.toml.tmpl must set useBuiltinAge = true"
   fail=1
@@ -71,7 +71,7 @@ for p in "${profiles[@]}"; do
     fail=1
   fi
 
-  if [[ -f $home/.config/mise/conf.d/ai.toml ]]; then
+  if [[ -f $home/.config/mise/conf.d/harness-pi.toml ]]; then
     check "Pi packages are mise-managed" python3 - "$home" "$("${cz[@]}" execute-template <"$repo/home/.chezmoiremove")" <<'PY'
 import json
 import pathlib
@@ -80,7 +80,7 @@ import sys
 import tomllib
 
 home = pathlib.Path(sys.argv[1])
-tools = tomllib.loads((home / ".config/mise/conf.d/ai.toml").read_text())["tools"]
+tools = tomllib.loads((home / ".config/mise/conf.d/harness-pi.toml").read_text())["tools"]
 settings = json.loads((home / ".pi/agent/settings.json").read_text())
 for name, path in [
     ("@tintinweb/pi-subagents", "npm-tintinweb-pi-subagents"),

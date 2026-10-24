@@ -17,7 +17,6 @@ chezmoi = "latest"
 "aqua:git-lfs/git-lfs" = "latest"
 "pipx:git-filter-repo" = "latest"
 
-herdr = "latest"
 "aqua:neovim/neovim" = "latest"
 "aqua:junegunn/fzf" = "latest"
 "aqua:ajeetdsouza/zoxide" = "latest"
