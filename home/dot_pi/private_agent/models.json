@@ -224,6 +224,9 @@
                 "jpegQuality": 80
               }
             }
+          },
+          "headers": {
+            "User-Agent": "pi (claude-cli compatible)"
           }
         },
         {
@@ -276,6 +279,9 @@
                 "jpegQuality": 80
               }
             }
+          },
+          "headers": {
+            "User-Agent": "pi (claude-cli compatible)"
           }
         },
         {
@@ -328,6 +334,9 @@
                 "jpegQuality": 80
               }
             }
+          },
+          "headers": {
+            "User-Agent": "pi (claude-cli compatible)"
           }
         },
         {
@@ -443,6 +452,9 @@
                 "jpegQuality": 80
               }
             }
+          },
+          "headers": {
+            "User-Agent": "pi (claude-cli compatible)"
           }
         }
       ]

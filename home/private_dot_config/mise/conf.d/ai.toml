@@ -1,4 +1,4 @@
-# Coding agents. Their configs live under ~/.claude, ~/.pi and ~/.config/opencode.
+# Coding agents. Their configs live under ~/.claude and ~/.pi.
 # Server-only harnesses (prime, grok, cursor) are in server.toml.
 
 [tools]
@@ -11,9 +11,6 @@ claude-code = "latest"
 "npm:@sting8k/pi-vcc" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "npm:pi-intercom" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "aqua:vercel-labs/agent-browser" = "latest"
-# OpenCode v2. The aqua registry entry tracks v1 GitHub releases only. The
-# package postinstall links the native binary for this platform.
-"npm:@opencode/cli" = { version = "latest", allow_builds = ["@opencode/cli"] }
 # bifrost-mitm (ai-gateway.zsh) runs mitmdump to send Claude Code's model calls
 # through Bifrost.
 "pipx:mitmproxy" = "latest"

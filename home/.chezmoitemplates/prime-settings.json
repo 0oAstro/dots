@@ -1,17 +1,24 @@
 {
   "defaultProvider": "bifrost",
-  "defaultModel": "azure/gpt-6.1-sol",
+  "defaultModel": "anthropic/claude-opus-5-5",
   "defaultThinkingLevel": "high",
-  "subagentDefaultModel": "bifrost/azure/gpt-6.1-sol",
+  "subagentDefaultModel": "bifrost/anthropic/claude-opus-5-5",
   "skills": [],
+  "packages": [
+    {
+      "source": "~/.local/share/mise/installs/http-pstack/latest",
+      "skills": ["!principle-*","!arena","!swarm","!thermos","!thermo-nuclear-review","!thermo-nuclear-code-quality-review","!reflect","!ketchup","!bro","!what-did-i-get-done","!setup-pstack","!poteto-help","!automate-me","!babysit","!correct","!interrogate","!make-pr-easy-to-review","!maintain-verification-skill","!create-verification-skill"]
+    }
+  ],
+  "prompts": ["~/.pi/agent/prompts"],
   "enabledModels": [
     "bifrost/bedrock/moonshotai.kimi-k3:max",
     "bifrost/azure/deepseek-v4.1-flash:max",
-    "bifrost/azure/fw-glm-5.3-flash:high",
-    "bifrost/anthropic/claude-haiku-5-5:high",
+    "bifrost/azure/fw-glm-5.3-flash:max",
+    "bifrost/anthropic/claude-haiku-5-5:xhigh",
     "bifrost/azure/gpt-6.1-sol:high",
     "bifrost/anthropic/claude-opus-5-5:medium",
-    "bifrost/anthropic/claude-fable-5-1:medium",
+    "bifrost/anthropic/claude-fable-5-1:xhigh",
     "bifrost/azure/gpt-6-astra:medium"
   ],
   "httpIdleTimeoutMs": 900000,

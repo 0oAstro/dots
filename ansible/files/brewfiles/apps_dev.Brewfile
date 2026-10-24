@@ -1,5 +1,4 @@
 cask "cursor"
-cask "chatgpt"
 cask "t3-code@nightly"
 
 mas "TestFlight", id: 899247664

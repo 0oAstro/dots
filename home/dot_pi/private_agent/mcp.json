@@ -12,8 +12,15 @@
         "JAVA_HOME": "${HOME}/.local/share/mise/installs/java/zulu-21"
       },
       "timeout": 600,
+      "enabled": false,
       "exposure": "codemode",
       "description": "Reverse engineer shipped software: native binaries through headless Ghidra, Electron and JavaScript apps, .NET, APKs, websites, network captures, and process runs."
+    },
+    "radius": {
+      "url": "https://radius.pi.dev/mcp",
+      "auth": {
+        "provider": "radius"
+      }
     }
   }
 }
