@@ -1,5 +1,5 @@
 dots_repo: 0oAstro/dots
-dots_prompt_args: "--no-tty --promptBool server={{ chezmoi_data.server | bool | lower }} --promptString modules={{ dots_modules | join(',') }} --promptString harnesses={{ dots_harnesses | join(',') }}"
+dots_prompt_args: "--no-tty --promptBool server={{ ('servers' in group_names) | lower }} --promptString modules={{ dots_modules | join(',') }} --promptString harnesses={{ dots_harnesses | join(',') }}"
 # Inventory groups except the kinds and the harnesses: what chezmoi sees as .modules.
 dots_modules: "{{ group_names | difference(['macs', 'linux', 'servers', 'desktops']) | reject('match', '^harness_') | sort }}"
 # harness_<name> groups: what chezmoi sees as .harnesses.

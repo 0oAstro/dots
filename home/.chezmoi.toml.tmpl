@@ -1,6 +1,6 @@
 {{- /*
-  Machine profile. Ansible decides it from the inventory (ansible/inventory.yml,
-  group_vars, chezmoi_data) and runs `chezmoi init --promptBool server=…
+  Machine profile. Ansible decides it from the host's groups in
+  ansible/inventory.yml and runs `chezmoi init --promptBool server=…
   --promptString modules=…,harnesses=…`; a manual `chezmoi init` asks instead.
 */ -}}
 {{- /* Not .chezmoi.hostname: it resolves through /etc/hosts, where blocklists remap 127.0.0.1. */ -}}

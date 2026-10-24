@@ -27,16 +27,15 @@ jobs:
       DOTS_REPO: file://${{ github.workspace }}
       GH_TOKEN: ${{ github.token }}
       GITHUB_TOKEN: ${{ github.token }}
-      SWITCHES: '{"chezmoi_data": {"server": false}}'
     steps: &fresh-steps
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: First run
-        run: sh install.sh -e "$SWITCHES" 2>&1 | tee first.log
+        run: sh install.sh 2>&1 | tee first.log
       - name: Second run changes nothing
         run: |
-          sh install.sh -e "$SWITCHES" 2>&1 | tee second.log
+          sh install.sh 2>&1 | tee second.log
           grep -E 'changed=0 +unreachable=0 +failed=0' second.log
       - name: The machine ended up as configured
         run: |

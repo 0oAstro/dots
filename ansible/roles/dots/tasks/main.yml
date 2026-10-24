@@ -1,7 +1,7 @@
 # The user layer. Bootstraps what chezmoi needs on the host (mise, the age key
 # and a GitHub login, both copied from the controller), keeps the dots
-# checkout current, writes chezmoi's config with the server switch from
-# chezmoi_data and the host's modules and harnesses, then applies. chezmoi owns the files; this decides when.
+# checkout current, writes chezmoi's config from the host's inventory groups
+# (servers, modules, harnesses), then applies. chezmoi owns the files; this decides when.
 - name: mise
   ansible.builtin.shell: curl -fsSL https://mise.run | MISE_INSTALL_PATH="{{ dots_mise }}" sh
   args:
@@ -53,7 +53,7 @@
   changed_when: "'Already up to date' not in dots_pulled.stdout"
   when: dots_pull and not ansible_check_mode
 
-- name: Config chezmoi_data asks for
+- name: Config the inventory asks for
   ansible.builtin.shell: "{{ dots_chezmoi }} execute-template --init {{ dots_prompt_args }} < \"$({{ dots_chezmoi }} source-path)/.chezmoi.toml.tmpl\""
   register: dots_config_wanted
   changed_when: false

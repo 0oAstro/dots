@@ -12,7 +12,7 @@ That is for the machine you are sitting at. `install.sh` bootstraps only what An
 
 For a server, add it to `servers` in `ansible/inventory.yml` and provision it from another machine. The playbook installs mise there, copies the age key and a GitHub login from the controller, clones this repo, and applies chezmoi.
 
-The inventory decides what chezmoi installs: the `server` switch (always-on host) through `chezmoi_data` in `ansible/group_vars/`, and the host's modules and agent harnesses through its groups in `ansible/inventory.yml`. The playbook writes them into chezmoi's config, so nothing prompts. The host running the playbook manages itself locally and the rest over SSH:
+The host's groups in `ansible/inventory.yml` decide what chezmoi installs: `servers` (always-on host), its modules, and its `harness_<name>` groups. The playbook writes them into chezmoi's config, so nothing prompts. The host running the playbook manages itself locally and the rest over SSH:
 
 ```sh
 mise run provision -- --check --diff   # dry run on every host

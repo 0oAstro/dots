@@ -4,9 +4,6 @@ tailscale_enabled: true
 systemd_enabled_servers:
   - systemd-oomd.service
 
-chezmoi_data:
-  server: true
-
 # Login user's systemd units (files/user_units/servers/) keep running without
 # a session.
 user_units_enabled_servers:
