@@ -2,10 +2,10 @@
 
 [tools]
 "aqua:earendil-works/pi" = "latest"
-# Pi extensions, one job each: subagents, command monitors, and questions.
+# Pi extensions. pstack's own extension (http:pstack in ai.toml) gives the
+# agent, question and wake-up tools; pi-subagents serves only the pi-teacher profile.
 "npm:@tintinweb/pi-subagents" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "npm:@cahalane/pi-monitor" = { version = "latest", npm_args = "--legacy-peer-deps" }
-"npm:@juicesharp/rpiv-ask-user-question" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "npm:@sting8k/pi-vcc" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "npm:pi-intercom" = { version = "latest", npm_args = "--legacy-peer-deps" }
 # REA (reverse engineering MCP). Pi registers it in ~/.pi/agent/mcp.json and
@@ -34,11 +34,12 @@ version_expr = 'reverse(map(split(body, "<entry>")[1:], { let sha = #[indexOf(#,
 strip_components = 1
 bin_path = "bin"
 
-# HumanLayer's skills, versioned the same way as http:emil-skills.
-[tools."http:humanlayer-skills"]
+# Matt Pocock's skills, versioned the same way as http:emil-skills. Pi loads
+# only the ones that ~/.pi/agent/settings.json names.
+[tools."http:mattpocock-skills"]
 version = "latest"
-url = '{% raw %}https://github.com/humanlayer/skills/archive/{{ version | split(pat=".") | last }}.tar.gz{% endraw %}'
-version_list_url = "https://github.com/humanlayer/skills/commits/HEAD.atom"
+url = '{% raw %}https://github.com/mattpocock/skills/archive/{{ version | split(pat=".") | last }}.tar.gz{% endraw %}'
+version_list_url = "https://github.com/mattpocock/skills/commits/HEAD.atom"
 version_expr = 'reverse(map(split(body, "<entry>")[1:], { let sha = #[indexOf(#, "Grit::Commit/") + 13:indexOf(#, "Grit::Commit/") + 25]; let date = #[indexOf(#, "<updated>") + 9:indexOf(#, "<updated>") + 28]; replace(date[0:10], "-", "") + "." + replace(date[11:19], ":", "") + "." + sha }))'
 strip_components = 1
 bin_path = "bin"

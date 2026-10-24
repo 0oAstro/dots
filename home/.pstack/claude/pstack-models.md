@@ -22,4 +22,4 @@ architect runners: opus @medium
 interrogate reviewers: opus @medium, opus @low
 
 default effort: session
-session hook: off
+session hook: on

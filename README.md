@@ -68,7 +68,7 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 | every machine | zsh, git, tmux, bat, ripgrep, glow, dtop, btop; `conf.d/core.toml` |
 | any harness | pstack, agent-browser; `conf.d/ai.toml` |
 | `harness_<name>` group | that harness's CLI in `conf.d/harness-<name>.toml` and its settings (`claude`, `pi`, `hermes`, `prime`, `cursor`) |
-| macOS | Ghostty, lazysql, routerctl; `conf.d/macos.toml` |
+| macOS | Ghostty, lazysql; `conf.d/macos.toml` |
 | Linux | `conf.d/linux.toml` |
 | `input` module | Karabiner |
 

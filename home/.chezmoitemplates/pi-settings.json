@@ -12,18 +12,20 @@
     "bifrost/azure/gpt-6-astra"
   ],
   "packages": [
-    "~/.local/share/mise/installs/npm-tintinweb-pi-subagents/latest/lib/node_modules/@tintinweb/pi-subagents",
     "~/.local/share/mise/installs/npm-cahalane-pi-monitor/latest/lib/node_modules/@cahalane/pi-monitor",
-    "~/.local/share/mise/installs/npm-juicesharp-rpiv-ask-user-question/latest/lib/node_modules/@juicesharp/rpiv-ask-user-question",
-    {
-      "source": "~/.local/share/mise/installs/http-pstack/latest",
-      "extensions": [],
-      "skills": ["!principle-*","!arena","!swarm","!thermos","!thermo-nuclear-review","!thermo-nuclear-code-quality-review","!reflect","!ketchup","!bro","!what-did-i-get-done","!setup-pstack","!poteto-help","!automate-me","!babysit","!correct","!interrogate","!make-pr-easy-to-review","!maintain-verification-skill","!create-verification-skill"]
-    },
+    "~/.local/share/mise/installs/http-pstack/latest",
     "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/@sting8k/pi-vcc",
     "~/.local/share/mise/installs/npm-pi-intercom/latest/lib/node_modules/pi-intercom",
     "~/.local/share/mise/installs/npm-rea-agents/latest/lib/node_modules/rea-agents",
     "~/.local/share/mise/installs/pi-global-tools/{{ includeTemplate "pi-global-tools-version" . }}"
+  ],
+  "skills": [
+    "~/.local/share/mise/installs/http-emil-skills/latest/skills",
+    "~/.local/share/mise/installs/http-mattpocock-skills/latest/skills/productivity/grill-me",
+    "~/.local/share/mise/installs/http-mattpocock-skills/latest/skills/productivity/grilling",
+    "~/.local/share/mise/installs/http-mattpocock-skills/latest/skills/engineering/to-spec",
+    "~/.local/share/mise/installs/http-mattpocock-skills/latest/skills/engineering/to-tickets",
+    "~/.local/share/mise/installs/http-mattpocock-skills/latest/skills/engineering/setup-matt-pocock-skills"
   ],
   "compaction": {
     "enabled": true,

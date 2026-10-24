@@ -47,9 +47,6 @@ Library
 .config/ghostty
 .config/lazysql
 .config/mise/conf.d/macos.toml
-.local/bin/routerctl
-.local/bin/airtel-routerctl
-.local/bin/routerctl_credentials.py
 {{- end }}
 
 {{- if not (has "input" (get . "modules" | default list)) }}

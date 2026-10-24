@@ -112,14 +112,9 @@ Act as the creative director and the maker. Treat the work as craft.
 </shaurya>
 
 <pstack root="~/.local/share/mise/installs/http-pstack/latest/plugins/pstack">
-Read only on trigger. Resolve links from each skill's directory.
-- Use a poteto-mode playbook (skills/poteto-mode/playbooks/{bug-fix,feature,refactoring,investigation,perf-issue,...}.md) when a task touches more than one file or a signature other files call, involves a design choice, or is a bug with an unknown cause or a perf issue. Otherwise work directly and verify on the real artifact.
-- Principle skills are unlisted; poteto-mode's Principles index names them, read them at skills/principle-<name>/SKILL.md.
-- Stateful code: principle-model-the-domain. Interfaces or ownership: architect. UI polish: ui-craft. Review: no-comments. Prose or docs: unslop, technical-writing.
-- pstack is the `pstack` plugin (`/pstack:<skill>`), linked at ~/.claude/skills/pstack from the mise install.
-- Delegation: call the Agent tool with the role's alias from the sheet below as `model`; pass its `@<level>` as `effort`. Use subagent_type `pstack:poteto-agent` for code-writing delegates and `general-purpose` otherwise. No `pstack:poteto-agent-<level>` or `pstack:effort-<level>` types exist in Claude Code. The Agent tool spawns only sonnet, opus, haiku, and fable. Check the artifacts yourself.
-- Long or unattended work: keep a show-me-your-work trail. ScheduleWakeup and /loop need explicit opt-in.
-- Roles live in ~/.claude/pstack-models.md, included below. ~/.claude/model-routing-policy.md has the evidence.
+- pstack is the `pstack` plugin (`/pstack:<skill>`), linked at ~/.claude/skills/pstack from the mise install. Its SessionStart hook routes tasks to poteto-mode. Follow it.
+- Roles live in ~/.claude/pstack-models.md, included below. Pass a role's alias as the Agent tool's `model` and its `@<level>` as `effort`. Use subagent_type `pstack:poteto-agent` for code-writing delegates and `general-purpose` otherwise.
+- Long or unattended work: keep a show-me-your-work trail.
 </pstack>
 
 @~/.claude/pstack-models.md

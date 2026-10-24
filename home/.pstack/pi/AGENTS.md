@@ -112,21 +112,8 @@ Act as the creative director and the maker. Treat the work as craft.
 </shaurya>
 
 <pstack root="~/.local/share/mise/installs/http-pstack/latest/plugins/pstack">
-Read a skill only when its trigger fits. Resolve links from each skill's directory.
-- Work directly by default. Load a poteto-mode playbook (skills/poteto-mode/playbooks/<name>.md) only when Shaurya asks for it, or for a bug with an unknown cause or a perf issue.
-- Principle skills are unlisted. Read them at skills/principle-<name>/SKILL.md when poteto-mode's Principles index names one.
-- On Pi, the Claude Code tool names in pstack skills map one to one: Agent, steer_subagent, get_subagent_result, ask_user_question. Run long commands with monitor, not sleep loops.
-- Delegation: call Agent with the role's provider/id as `model` and its `@<level>` as `thinking`. Use subagent_type `poteto-agent` for code-writing delegates and `general-purpose` otherwise. Check the artifacts yourself.
+- pstack loads as a Pi package with its extension. Its session hook routes tasks to poteto-mode, and its role sheet (~/.pi/agent/pstack-models.md) is in the system prompt. Follow both.
 - Long or unattended work: keep a show-me-your-work trail.
-
-Roles (override pstack skill defaults):
-- Opus medium (bifrost/anthropic/claude-opus-5-5 @medium): why investigators, reflect tooling, architect runners.
-- Sol xhigh (bifrost/azure/gpt-6.1-sol @xhigh): feature, refactoring, bug-fix, perf-issue, hillclimb, swarm workers.
-- Opus high (bifrost/anthropic/claude-opus-5-5 @high): judgment and prose, how explainer, why synthesizer, reflect judgment, divergent, synthesizer.
-- Fable xhigh (bifrost/anthropic/claude-fable-5-1 @xhigh): strongest judgment.
-- Haiku xhigh (bifrost/anthropic/claude-haiku-5-5 @xhigh): how explorer.
-- DeepSeek max (bifrost/azure/deepseek-v4.1-flash @max): bounded lookups (CLI help, docs, config and quota reads).
-- Panels, one runner each of Opus medium and bifrost/azure/gpt-6.1-sol @xhigh: arena runners, arena cross-judge pool, interrogate reviewers.
 </pstack>
 
 <memory>
@@ -136,7 +123,7 @@ This block is shared through git on every machine. Edit it only when Shaurya ask
 - AI Gateway key is production-only for DeepSeek, Luna, Typesafe AI and Amazon Nova Micro. Never use it for Claude, evaluation or judge models. Judges use Astra subagents, not Sol or gateway API calls.
 - Harness paper arXiv 2609.20804 vs 1,120 sessions (2026-10-11): mid-history elision loses money to prompt-cache rewrites; only change kept is compaction.modelOverrides reserveTokens 40960 for 272k GPT models. No new extensions for harness tweaks.
 - Model chart (2026-10-11): Kimi K3, GLM-5.3 Flash, Haiku 5.5, Sol, Opus 5.5 (default), Fable 5.1, Astra. Never put Luna or Sonnet in a selector. Codex is removed. Roles (2026-10-24): impl, swarm = Sol xhigh; investigation, architect = Opus med; judgment = Opus high; strongest = Fable xhigh; bounded lookups = DeepSeek max; panels = Opus med+Sol xhigh. Astra, Kimi, GLM are selector-only. Policy: ~/.pi/agent/model-routing-policy.md.
-- Worktrees: Agent `isolation: "worktree"` makes a temporary worktree and leaves a `pi-agent-<id>` branch when the agent changed files. For a long-lived worktree, run `git worktree add -b <branch> ~/.pi/agent/worktrees/<project>/<task> HEAD` and point the delegate at it.
-- Pi skills and extensions ship only through mise (http:pstack, http:emil-skills, http:humanlayer-skills, pi-global-tools). Manual-only skills load through ~/.pi/agent/prompts/<name>.md slash templates. Never vendor skills into ~/.pi/agent/skills.
+- Worktrees: the pstack `agent` tool's `isolation: "worktree"` makes a worktree under `.claude/worktrees/` and keeps it when the agent left changes. For a long-lived worktree, run `git worktree add -b <branch> ~/.pi/agent/worktrees/<project>/<task> HEAD` and point the delegate at it.
+- Pi skills and extensions ship only through mise (http:pstack, http:emil-skills, http:mattpocock-skills, pi-global-tools) and load natively from ~/.pi/agent/settings.json. Never vendor skills into ~/.pi/agent/skills.
 - Algoplex verification tools belong in its product repos or directly under algoplex/.pi/skills/, not in a shared pstack checkout or new generic framework.
 </memory>

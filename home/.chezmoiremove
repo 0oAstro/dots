@@ -6,6 +6,9 @@
 .config/herdr/config.toml
 .config/zsh/config/integrations/herdr-shell.zsh*
 .claude/hooks/herdr-agent-state.sh
+.local/bin/routerctl
+.local/bin/airtel-routerctl
+.local/bin/routerctl_credentials.py
 .bashrc
 .bash_profile
 .config/bash
@@ -39,7 +42,7 @@
 .pi/agent/git/github.com/tmustier/pi-extensions/session-recap
 .pi/agent/scripts/test-anthropic-subagents.ts
 # Pi extensions and skills now ship through mise (pi-global-tools, http:emil-skills,
-# http:humanlayer-skills); the old chezmoi copies are gone.
+# http:mattpocock-skills); the old chezmoi copies are gone.
 .pi/agent/extensions/pure-footer.ts
 .pi/agent/extensions/quiet-tools.ts
 .pi/agent/skills
@@ -69,4 +72,8 @@
 .claude/agents/poteto-agent.md
 .claude/agents/comment-sicko.md
 .pi/agent/agents/Poteto.md
+# Pi loads pstack, Emil's and Matt's skills natively now; the slash-command
+# wrappers and the linked agent files are gone.
+.pi/agent/prompts
+.pi/agent/agents
 {{- end }}

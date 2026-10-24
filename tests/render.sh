@@ -82,17 +82,13 @@ import tomllib
 home = pathlib.Path(sys.argv[1])
 tools = tomllib.loads((home / ".config/mise/conf.d/harness-pi.toml").read_text())["tools"]
 settings = json.loads((home / ".pi/agent/settings.json").read_text())
-for name, path in [
-    ("@tintinweb/pi-subagents", "npm-tintinweb-pi-subagents"),
-    ("@cahalane/pi-monitor", "npm-cahalane-pi-monitor"),
-    ("@juicesharp/rpiv-ask-user-question", "npm-juicesharp-rpiv-ask-user-question"),
-]:
-    package = tools[f"npm:{name}"]
-    assert package["version"] == "latest", package
-    assert package["npm_args"] == "--legacy-peer-deps", package
-    assert f"~/.local/share/mise/installs/{path}/latest/lib/node_modules/{name}" in settings["packages"], settings["packages"]
-for agent in ["poteto-agent", "comment-sicko"]:
-    assert (home / ".pi/agent/agents" / f"{agent}.md").is_symlink(), agent
+package = tools["npm:@cahalane/pi-monitor"]
+assert package["version"] == "latest", package
+assert "~/.local/share/mise/installs/npm-cahalane-pi-monitor/latest/lib/node_modules/@cahalane/pi-monitor" in settings["packages"], settings["packages"]
+assert "~/.local/share/mise/installs/http-pstack/latest" in settings["packages"], settings["packages"]
+assert "http:mattpocock-skills" in tools, tools.keys()
+for skill in settings["skills"]:
+    assert skill.startswith("~/.local/share/mise/installs/http-"), skill
 package = tools["npm:@sting8k/pi-vcc"]
 assert package["version"] == "latest", package
 assert package["npm_args"] == "--legacy-peer-deps", package
@@ -100,10 +96,6 @@ assert "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/
 assert "npm:@sting8k/pi-vcc" not in settings["packages"], settings["packages"]
 assert settings["compaction"]["enabled"] is True, settings["compaction"]
 assert "~/.local/share/mise/installs/npm-pi-intercom/latest/lib/node_modules/pi-intercom" in settings["packages"], settings["packages"]
-pstack = next(package for package in settings["packages"] if isinstance(package, dict))
-assert pstack["skills"][0] == "!principle-*", pstack
-for skill in pstack["skills"][1:]:
-    assert (home / ".pi/agent/prompts" / f"{skill[1:]}.md").exists(), skill
 assert settings["firecrawl-web"]["fetchModel"] == "bifrost/azure/gpt-6-luna", settings["firecrawl-web"]
 extension_config = tomllib.loads((home / ".config/mise/conf.d/pi-global-tools.toml").read_text())
 version = extension_config["tools"]["pi-global-tools"]["version"]

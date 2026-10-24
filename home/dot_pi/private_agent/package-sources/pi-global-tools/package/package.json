@@ -7,9 +7,6 @@
       "./firecrawl-web/index.ts",
       "./extensions/pure-footer.ts",
       "./extensions/quiet-tools.ts"
-    ],
-    "skills": [
-      "./skills"
     ]
   },
   "peerDependencies": {
