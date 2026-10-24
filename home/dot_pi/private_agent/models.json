@@ -160,6 +160,10 @@
             "cacheRead": 0.03,
             "cacheWrite": 0
           },
+          "promptCache": {
+            "short": 300,
+            "long": 900
+          },
           "contextWindow": 1048576,
           "maxTokens": 131072,
           "thinkingLevelMap": {
@@ -354,6 +358,10 @@
             "cacheRead": 0.33,
             "cacheWrite": 4.125
           },
+          "promptCache": {
+            "short": 300,
+            "long": 300
+          },
           "contextWindow": 1048576,
           "maxTokens": 128000,
           "thinkingLevelMap": {
@@ -381,6 +389,16 @@
           "input": [
             "text"
           ],
+          "cost": {
+            "input": 0.3,
+            "output": 1.2,
+            "cacheRead": 0.006,
+            "cacheWrite": 0
+          },
+          "promptCache": {
+            "short": 300,
+            "long": 300
+          },
           "contextWindow": 1048576,
           "maxTokens": 128000,
           "thinkingLevelMap": {
