@@ -25,7 +25,7 @@ JAVA_HOME="$HOME/.local/share/mise/installs/java/zulu-21" ./gradlew --no-daemon 
 
 # Emil Kowalski's design and motion skills. The repo has no releases, so each
 # version is one commit, named <date>.<time>.<sha> so that newer sorts later.
-# Pi reads them through ~/.pi/agent/prompts/<skill>.md slash commands.
+# Pi loads them through the skills list in ~/.pi/agent/settings.json.
 [tools."http:emil-skills"]
 version = "latest"
 url = '{% raw %}https://github.com/emilkowalski/skills/archive/{{ version | split(pat=".") | last }}.tar.gz{% endraw %}'
