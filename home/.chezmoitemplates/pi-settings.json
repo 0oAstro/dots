@@ -6,6 +6,7 @@
   "enabledModels": [
     "bifrost/bedrock/moonshotai.kimi-k3",
     "bifrost/azure/fw-glm-5.3-flash",
+    "bifrost/azure/gpt-6.1-sol",
     "bifrost/anthropic/claude-opus-5-5",
     "bifrost/anthropic/claude-fable-5-1",
     "bifrost/azure/gpt-6-astra"
