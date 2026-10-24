@@ -12,7 +12,7 @@ The user's cycling order is Kimi K3, DeepSeek V4.1 Flash, GLM-5.3 Flash, Haiku 5
 | --- | --- | --- |
 | Implementation: feature, refactoring, bug-fix, perf-issue, hillclimb, swarm workers | `azure/gpt-6.1-sol @xhigh` | `opus @medium` |
 | Investigation: why investigators, reflect tooling | `anthropic/claude-opus-5-5 @medium` | `opus @medium` |
-| Bounded reading: how explorer, bounded lookups (CLI help, docs, config and quota reads) | `anthropic/claude-haiku-5-5 @xhigh` | `haiku @xhigh` |
+| Bounded reading: how explorer, bounded lookups (CLI help, docs, config and quota reads) | `azure/deepseek-v4.1-flash @max` (bounded lookups), `anthropic/claude-haiku-5-5 @xhigh` (how explorer) | `haiku @xhigh` |
 | Judgment and prose: how explainer, why synthesizer, reflect judgment | `anthropic/claude-opus-5-5 @high` | `opus @high` |
 | Strongest judgment: hardest ambiguous design, cross-cutting architecture | `anthropic/claude-fable-5-1 @xhigh` | `fable @xhigh` |
 | Architect runners | `anthropic/claude-opus-5-5 @medium` | `opus @medium` |
@@ -25,6 +25,7 @@ The Pi role lines live in `~/.pi/agent/AGENTS.md`. The Claude Code role lines li
 - **Opus leads on capability.** Opus 5.5 is first on the AA Intelligence Index at every effort from high up, first on the Epoch Capabilities Index, and first on Epoch's FrontierCode.
 - **GPT-6.1 Sol owns the middle of the frontier and, since 2026-10-24, the implementation seat.** Sol medium scores 48 for $0.21 and Sol xhigh 51 for $0.39. The cheapest Claude configuration that matches Sol xhigh is Opus medium at $1.34, more than three times the cost. On AA's Coding Agent Index, Sol medium (61.4, $0.70) and Sol xhigh (62.9, $1.04) beat every Claude configuration below Opus max ($13.04). The user routes implementation and swarm work to Sol xhigh: Opus is better at picking things up, Sol is the efficient worker. Investigation and architecture stay on Opus medium.
 - **Haiku 5.5 replaces Luna at the bottom.** Haiku xhigh scores 41 for $0.12, against 38 for $0.07 from Luna max. Haiku is also the fastest model on the chart (about 190 to 240 tokens per second), which suits bounded reading. Luna is no longer routed or listed.
+- **DeepSeek V4.1 Flash takes bounded lookups (2026-10-24, user choice).** Flash is thinking-only, cheap, and its session level is max. How explorer stays on Haiku xhigh.
 - **Fable and Astra are dominated on the frontier but routed by user preference (2026-10-11).** Opus high (54, $1.82) beats Fable high (51, $3.91) and Astra high (51, $1.73) for about the same cost or less. The user accepts this big-model smell for the strongest-judgment seat, which Fable xhigh now holds. Astra holds no role line. Both stay in the selector. Fable's Pi thinking map exposes only xhigh and max, so the Fable seat runs xhigh.
 - **GLM-5.3 Flash replaces GLM-5.3.** Flash scores 42 for $0.25 against 45 for $2.01 from GLM-5.3 max: three points less for an eighth of the cost. It sits just off the frontier (Sol low scores 42 for $0.13), Panels now pair Opus medium with Sol xhigh, so Flash holds no role line and stays in the selector at session level max (2026-10-11).
 - **Kimi K3 is off the frontier and now selector-only (2026-10-11).** Kimi K3 max scores 44 for $2.00, below Sol medium at a tenth of the price. Sol xhigh takes its interrogate seat. Session level is max.
