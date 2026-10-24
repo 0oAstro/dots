@@ -31,3 +31,12 @@
 {{-   end }}
 {{- end }}
 {{- end }}
+{{- if .ai }}
+
+# Teaching extensions for the pi-teacher profile (amosblomqvist/learn, no license, so not vendored).
+[".pi/teacher/vendor/learn"]
+    type = "git-repo"
+    url = "https://github.com/amosblomqvist/learn.git"
+    clone.args = ["--depth", "1"]
+    pull.args = ["--ff-only"]
+{{- end }}

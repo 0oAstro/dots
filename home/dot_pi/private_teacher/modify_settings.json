@@ -1,0 +1,5 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- $current := "{}" -}}
+{{- if .chezmoi.stdin }}{{ $current = .chezmoi.stdin }}{{ end -}}
+{{- /* Pi saves this file without a final newline. */ -}}
+{{- includeTemplate "merge" (dict "current" $current "managed" (includeTemplate "pi-teacher-settings.json" .) "format" "json") | trimSuffix "\n" -}}

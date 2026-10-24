@@ -1,0 +1,47 @@
+{
+  "theme": "light/dark",
+  "defaultProvider": "bifrost",
+  "defaultModel": "anthropic/claude-fable-5-1",
+  "defaultThinkingLevel": "high",
+  "enabledModels": [
+    "bifrost/anthropic/claude-fable-5-1",
+    "bifrost/anthropic/claude-opus-5-5"
+  ],
+  "modelThinkingLevels": {
+    "bifrost/anthropic/claude-fable-5-1": "high",
+    "bifrost/anthropic/claude-opus-5-5": "high"
+  },
+  "packages": [
+    "~/.local/share/mise/installs/npm-tintinweb-pi-subagents/latest/lib/node_modules/@tintinweb/pi-subagents"
+  ],
+  "extensions": [
+    "-builtin:llama.cpp",
+    "-builtin:mcp",
+    "-builtin:codemode",
+    "-builtin:tool-search",
+    "~/.pi/teacher/vendor/learn/extensions/quiz.ts",
+    "~/.pi/teacher/vendor/learn/extensions/ask-user-question.ts",
+    "~/.pi/teacher/vendor/learn/extensions/md-log.ts"
+  ],
+  "firecrawl-web": {
+    "fetchModel": "bifrost/azure/gpt-6-luna"
+  },
+  "compaction": {
+    "enabled": true
+  },
+  "warnings": {
+    "anthropicExtraUsage": false
+  },
+  "cacheWarming": "idle",
+  "quietStartup": "header",
+  "enableInstallTelemetry": false,
+  "defaultProjectTrust": "always",
+  "hideThinkingBlock": true,
+  "httpIdleTimeoutMs": 900000,
+  "retry": {
+    "provider": {
+      "timeoutMs": 960000
+    }
+  },
+  "tuiMode": "fullscreen"
+}
