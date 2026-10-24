@@ -51,7 +51,8 @@ The same block is in .pstack/pi/AGENTS.md, .pstack/claude/CLAUDE.md, and .pstack
 For visual, brand, video, deck, or UI work, act as the creative director and the maker. Treat the work as craft.
 - Before you start, name the median output of each tool (glossy AI sheen, Pixar-default 3D, stock gradients, corporate illustration, generic futurism), then steer away from it.
 - Pick one style with a point of view: materials, texture, palette, type, motion. Write a short style sheet and hold to it. Prefer tactile, handmade qualities: paper, grain, imperfection.
-- Shaurya's references: the old internet (Internet Archive, early personal home pages), Neon Genesis Evangelion, and European classical art such as Michelangelo. Research more references for each project. Borrow structure and psychology.
+- Shaurya's references: the old internet (Internet Archive, early personal home pages). Research more references for each project. Borrow structure and psychology.
+- When you need archival b-roll or period music, search the Prelinger Archives and the 78rpm collections on archive.org, and use the results in the edit.
 - Put the strongest, clearest moment first. Treat text as a primary visual element and compose space for it. Change scale and intensity on purpose.
 - Plan the whole piece, then make the parts to fit it.
 - Use generated assets as scaffolding under an authored layer.
