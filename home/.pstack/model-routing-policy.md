@@ -1,6 +1,6 @@
 # Model routing policy (Claude Code and Pi)
 
-Updated 2026-10-24. Opus 5.5 is the default session model. A cheaper model takes a role only where it sits on the cost/capability Pareto frontier for that kind of work. Effort is a costed escalation: go one level up after an observed failure, and use max only where a role line names it or on explicit request. Codex is retired. Since 2026-10-24 implementation and swarm work run on Sol xhigh by user preference (Opus picks things up, Sol is the efficient worker). Investigation and architecture stay on Opus medium, Fable xhigh takes the strongest-judgment seat, and every panel pairs Opus medium with Sol xhigh. Astra, Kimi K3, and GLM-5.3 Flash hold no role lines and stay in the selector.
+Updated 2026-10-25. Opus 5.5 is the default session model. A cheaper model takes a role only where it sits on the cost/capability Pareto frontier for that kind of work. Effort is a costed escalation: go one level up after an observed failure, and use max only where a role line names it or on explicit request. Codex is retired. Since 2026-10-24 implementation and swarm work run on Sol xhigh by user preference (Opus picks things up, Sol is the efficient worker). Investigation and architecture stay on Opus medium, Fable xhigh takes the strongest-judgment seat, and every panel pairs Opus medium with Sol xhigh. Astra, Kimi K3, and GLM-5.3 Flash hold no role lines and stay in the selector.
 
 ## Model chart
 
@@ -8,14 +8,14 @@ The user's cycling order is Kimi K3, DeepSeek V4.1 Flash, GLM-5.3 Flash, Haiku 5
 
 ## Routes
 
-| Work | Pi (`bifrost/...`) | Claude Code (Agent aliases) |
+| Work | Pi (`provider/id`) | Claude Code (Agent aliases) |
 | --- | --- | --- |
 | Implementation: feature, refactoring, bug-fix, perf-issue, hillclimb, swarm workers | `azure/gpt-6.1-sol @xhigh` | `opus @medium` |
-| Investigation: why investigators, reflect tooling | `anthropic/claude-opus-5-5 @medium` | `opus @medium` |
-| Bounded reading: how explorer, bounded lookups (CLI help, docs, config and quota reads) | `azure/deepseek-v4.1-flash @max` (bounded lookups), `anthropic/claude-haiku-5-5 @xhigh` (how explorer) | `haiku @xhigh` |
-| Judgment and prose: how explainer, why synthesizer, reflect judgment | `anthropic/claude-opus-5-5 @high` | `opus @high` |
-| Strongest judgment: hardest ambiguous design, cross-cutting architecture | `anthropic/claude-fable-5-1 @xhigh` | `fable @xhigh` |
-| Architect runners | `anthropic/claude-opus-5-5 @medium` | `opus @medium` |
+| Investigation: why investigators, reflect tooling | `amazon-bedrock/us.anthropic.claude-opus-5-5 @medium` | `opus @medium` |
+| Bounded reading: how explorer, bounded lookups (CLI help, docs, config and quota reads) | `azure/deepseek-v4.1-flash @max` (bounded lookups), `amazon-bedrock/us.anthropic.claude-haiku-5-5 @xhigh` (how explorer) | `haiku @xhigh` |
+| Judgment and prose: how explainer, why synthesizer, reflect judgment | `amazon-bedrock/us.anthropic.claude-opus-5-5 @high` | `opus @high` |
+| Strongest judgment: hardest ambiguous design, cross-cutting architecture | `amazon-bedrock/us.anthropic.claude-fable-5-1 @xhigh` | `fable @xhigh` |
+| Architect runners | `amazon-bedrock/us.anthropic.claude-opus-5-5 @medium` | `opus @medium` |
 | Arena runners, interrogate reviewers, arena cross-judge pool | Opus `@medium`, Sol `@xhigh` | `opus @medium`, `opus @low` (Opus low takes the Sol seat) |
 
 The Pi role lines live in `~/.pi/agent/AGENTS.md`. The Claude Code role lines live in `~/.claude/pstack-models.md`, which CLAUDE.md includes. Claude Code's Agent tool can only spawn Claude models.
@@ -84,5 +84,6 @@ Sources:
 - **Pi:** delegation goes through the pstack extension's `agent` tool. `model` takes a full `provider/id`. A role's `@level` selects the `pstack:poteto-agent-<level>` or `pstack:effort-<level>` subagent type, which sets the child's thinking level.
 - **Pi thinking maps:** GLM-5.3 Flash is thinking-only and accepts `low` through `high` and `max`. Kimi K3 also accepts `low` through `high` and `max`. Fable 5.1 exposes only `xhigh` and `max`.
 - **Pi startup effort:** `modelThinkingLevels` in `~/.pi/agent/settings.json` sets it.
-- **Azure Fireworks quota:** the GlobalStandard Fireworks quota in southindia is 2000K TPM. `fw-glm-5.3-flash` takes 2000K, as reported by `az cognitiveservices account deployment show -g rg-suzuka-ai-garage-si -n suzuka-ai-garage-si-32cbd92e --deployment-name fw-glm-5.3-flash --query properties.rateLimits`. Kimi K3 now uses the existing AWS US profile, `bedrock/moonshotai.kimi-k3`, through Bifrost.
-- **Current backends:** DeepSeek V4.1 Flash uses Azure, `azure/deepseek-v4.1-flash`, through Bifrost. Its startup default is max.
+- **Azure Fireworks quota:** the GlobalStandard Fireworks quota in southindia is 2000K TPM. `fw-glm-5.3-flash` takes 2000K, as reported by `az cognitiveservices account deployment show -g rg-suzuka-ai-garage-si -n suzuka-ai-garage-si-32cbd92e --deployment-name fw-glm-5.3-flash --query properties.rateLimits`. Kimi K3 uses the AWS US profile, `amazon-bedrock/us.moonshotai.kimi-k3`.
+- **Current backends (2026-10-25):** Pi calls providers directly. Claude runs on Amazon Bedrock (`amazon-bedrock/us.anthropic.*`, `AWS_PROFILE=personal`), billed per token. Sol, Astra, Luna, GLM-5.3 Flash, and DeepSeek V4.1 Flash run on Azure (`azure/<deployment>`, `AZURE_OPENAI_API_KEY`). Kimi K3 runs on Bedrock. Claude Code uses its own login. DeepSeek's startup default is max.
+- **Prime:** Prime runs only the Azure models. Its Bedrock requests fail with InvalidSignatureException on every model (prime-agent 0.10.1, 2026-10-25), so its role lines use Sol, Astra, and DeepSeek.

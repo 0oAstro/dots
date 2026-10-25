@@ -53,6 +53,9 @@
 .pi/agent/scripts/setup-worktree-cow.mjs
 .pi/agent/scripts/test-worktree-cow.mjs
 .pi/agent/worktrees/README.md
+# Bifrost and its Claude Code proxy are gone (2026-10-25).
+.config/bifrost-mitm
+.config/zsh/config/integrations/ai-gateway.zsh
 # Codex is gone. On macOS the ChatGPT app keeps its own state in ~/.codex,
 # so remove only the files chezmoi placed there.
 .codex/AGENTS.md

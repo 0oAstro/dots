@@ -15,8 +15,8 @@ trap cleanup EXIT
 fail=0
 # name|os|arch|switches json
 profiles=(
-  'aardvark|linux|arm64|"server":true,"harnesses":["claude","cursor","hermes","pi","prime"]'
-  'thunderchief|darwin|arm64|"server":false,"harnesses":["claude","hermes","pi"],"modules":["ai_off","apps_comms","apps_dev","apps_media","dropbox","finder","games","google_drive","input","look","perf","vendor_updaters_off"]'
+  'aardvark|linux|arm64|"server":true,"harnesses":["claude","cursor","pi","prime"]'
+  'thunderchief|darwin|arm64|"server":false,"harnesses":["claude","pi"],"modules":["ai_off","apps_comms","apps_dev","apps_media","dropbox","finder","games","google_drive","input","look","perf","vendor_updaters_off"]'
   'newbox|linux|amd64|"server":false,"harnesses":[]'
   'newmac|darwin|arm64|"server":true,"harnesses":["cursor","prime"]'
 )
@@ -96,7 +96,7 @@ assert "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/
 assert "npm:@sting8k/pi-vcc" not in settings["packages"], settings["packages"]
 assert settings["compaction"]["enabled"] is True, settings["compaction"]
 assert {"source": "~/.local/share/mise/installs/npm-pi-intercom/latest/lib/node_modules/pi-intercom", "skills": []} in settings["packages"], settings["packages"]
-assert settings["firecrawl-web"]["fetchModel"] == "bifrost/azure/gpt-6-luna", settings["firecrawl-web"]
+assert settings["firecrawl-web"]["fetchModel"] == "azure/gpt-6-luna", settings["firecrawl-web"]
 extension_config = tomllib.loads((home / ".config/mise/conf.d/pi-global-tools.toml").read_text())
 version = extension_config["tools"]["pi-global-tools"]["version"]
 assert re.fullmatch(r"[0-9a-f]{64}", version), version

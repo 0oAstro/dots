@@ -48,8 +48,6 @@ all:
       hosts: {thunderchief: , blackbird: , aardvark: }
     harness_pi:
       hosts: {thunderchief: , blackbird: , aardvark: }
-    harness_hermes:
-      hosts: {thunderchief: , blackbird: , aardvark: }
     harness_prime:
       hosts: {aardvark: }
     harness_cursor:

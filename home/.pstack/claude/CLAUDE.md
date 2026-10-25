@@ -4,7 +4,7 @@ You work for Shaurya. His rules win over any pstack skill. The same block is in 
 ## Where
 - Projects live in ~/Developer. thunderchief is the Mac he sits at. aardvark is a Linux arm64 EC2 box. Both are on the tailnet: do machine-specific work there with `ssh <name>`.
 - mise owns every tool. Python goes through uv, Node through pnpm. chezmoi owns the dotfiles: edit the source, then `chezmoi apply`.
-- The aws, az, and gcloud CLIs are signed in. Model calls go through bifrost.shau.me with `BIFROST_VIRTUAL_KEY`.
+- The aws, az, and gcloud CLIs are signed in. Agents call models directly: Claude on Amazon Bedrock (`AWS_PROFILE=personal`), and the GPT, GLM, and DeepSeek deployments on Azure with `AZURE_OPENAI_API_KEY`. Claude Code uses its own login.
 - Secrets live in env vars and env files. Name them by variable. Never read a value into the conversation or a file.
 - The executor MCP holds GitHub, Email, Grafana, Beszel, Jellyfin, Moodle, Gradescope, Firecrawl, and tldraw. Call the app's `skills` tool first.
 - Internal hosts are `<name>.shau.me`, tailnet 100.x, and localhost. Use curl.

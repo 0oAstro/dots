@@ -1,15 +1,15 @@
 {
   "theme": "light/dark",
-  "defaultProvider": "bifrost",
-  "defaultModel": "anthropic/claude-opus-5-5",
+  "defaultProvider": "amazon-bedrock",
+  "defaultModel": "us.anthropic.claude-opus-5-5",
   "defaultThinkingLevel": "high",
   "enabledModels": [
-    "bifrost/bedrock/moonshotai.kimi-k3",
-    "bifrost/azure/fw-glm-5.3-flash",
-    "bifrost/azure/gpt-6.1-sol",
-    "bifrost/anthropic/claude-opus-5-5",
-    "bifrost/anthropic/claude-fable-5-1",
-    "bifrost/azure/gpt-6-astra"
+    "amazon-bedrock/us.moonshotai.kimi-k3",
+    "azure/fw-glm-5.3-flash",
+    "azure/gpt-6.1-sol",
+    "amazon-bedrock/us.anthropic.claude-opus-5-5",
+    "amazon-bedrock/us.anthropic.claude-fable-5-1",
+    "azure/gpt-6-astra"
   ],
   "packages": [
     "~/.local/share/mise/installs/npm-cahalane-pi-monitor/latest/lib/node_modules/@cahalane/pi-monitor",
@@ -38,12 +38,12 @@
   "compaction": {
     "enabled": true,
     "modelOverrides": {
-      "bifrost/azure/gpt-6.1-sol": { "reserveTokens": 40960 },
-      "bifrost/azure/gpt-6-astra": { "reserveTokens": 40960 }
+      "azure/gpt-6.1-sol": { "reserveTokens": 40960 },
+      "azure/gpt-6-astra": { "reserveTokens": 40960 }
     }
   },
   "firecrawl-web": {
-    "fetchModel": "bifrost/azure/gpt-6-luna"
+    "fetchModel": "azure/gpt-6-luna"
   },
   "warnings": {
     "anthropicExtraUsage": false
@@ -58,14 +58,14 @@
   "defaultProjectTrust": "always",
   "hideThinkingBlock": true,
   "modelThinkingLevels": {
-    "bifrost/anthropic/claude-fable-5-1": "xhigh",
-    "bifrost/anthropic/claude-opus-5-5": "medium",
-    "bifrost/azure/gpt-6-astra": "medium",
-    "bifrost/azure/gpt-6.1-sol": "high",
-    "bifrost/azure/fw-glm-5.3-flash": "max",
-    "bifrost/bedrock/moonshotai.kimi-k3": "max",
-    "bifrost/azure/deepseek-v4.1-flash": "max",
-    "bifrost/anthropic/claude-haiku-5-5": "xhigh"
+    "amazon-bedrock/us.anthropic.claude-fable-5-1": "xhigh",
+    "amazon-bedrock/us.anthropic.claude-opus-5-5": "medium",
+    "azure/gpt-6-astra": "medium",
+    "azure/gpt-6.1-sol": "high",
+    "azure/fw-glm-5.3-flash": "max",
+    "amazon-bedrock/us.moonshotai.kimi-k3": "max",
+    "azure/deepseek-v4.1-flash": "max",
+    "amazon-bedrock/us.anthropic.claude-haiku-5-5": "xhigh"
   },
   "httpIdleTimeoutMs": 900000,
   "retry": {

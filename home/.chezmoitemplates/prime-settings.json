@@ -1,8 +1,8 @@
 {
-  "defaultProvider": "bifrost",
-  "defaultModel": "anthropic/claude-opus-5-5",
+  "defaultProvider": "azure",
+  "defaultModel": "gpt-6.1-sol",
   "defaultThinkingLevel": "high",
-  "subagentDefaultModel": "bifrost/anthropic/claude-opus-5-5",
+  "subagentDefaultModel": "azure/gpt-6.1-sol",
   "enableBuiltinSkills": false,
   "skills": [
     "~/.local/share/mise/installs/skill-profile/global/current/prime",
@@ -17,14 +17,10 @@
   ],
   "prompts": ["~/.pi/agent/prompts"],
   "enabledModels": [
-    "bifrost/bedrock/moonshotai.kimi-k3:max",
-    "bifrost/azure/deepseek-v4.1-flash:max",
-    "bifrost/azure/fw-glm-5.3-flash:max",
-    "bifrost/anthropic/claude-haiku-5-5:xhigh",
-    "bifrost/azure/gpt-6.1-sol:high",
-    "bifrost/anthropic/claude-opus-5-5:medium",
-    "bifrost/anthropic/claude-fable-5-1:xhigh",
-    "bifrost/azure/gpt-6-astra:medium"
+    "azure/deepseek-v4.1-flash:max",
+    "azure/fw-glm-5.3-flash:max",
+    "azure/gpt-6.1-sol:high",
+    "azure/gpt-6-astra:medium"
   ],
   "httpIdleTimeoutMs": 900000,
   "retry": {

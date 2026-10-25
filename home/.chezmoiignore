@@ -63,9 +63,8 @@ Library
 
 {{- /* Agent harnesses: each has conf.d/harness-<name>.toml and the paths below. */ -}}
 {{- $harnessPaths := dict
-      "claude" (list ".claude" ".config/bifrost-mitm")
+      "claude" (list ".claude")
       "pi" (list ".pi" ".local/bin/pi-teacher" ".config/mise/conf.d/pi-global-tools.toml")
-      "hermes" (list)
       "prime" (list ".prime")
       "cursor" (list) }}
 {{- range $name, $paths := $harnessPaths }}

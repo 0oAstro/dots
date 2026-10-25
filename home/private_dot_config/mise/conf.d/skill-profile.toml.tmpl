@@ -11,8 +11,5 @@ postinstall = '''
 profile=$("$HOME/.local/bin/mise" where skill-profile)
 if [ -x "$profile/bin/skill-profile" ]; then
   "$profile/bin/skill-profile" sync
-  if [ -x "$HOME/.local/share/mise/installs/http-hermes/latest/bin/hermes" ]; then
-    "$profile/bin/skill-profile" hermes-sync
-  fi
 fi
 '''

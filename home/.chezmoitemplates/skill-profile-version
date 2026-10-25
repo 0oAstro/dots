@@ -1,6 +1,6 @@
 {{- $root := joinPath .chezmoi.sourceDir "private_dot_config/mise/skill-profile" -}}
 {{- $content := "" -}}
-{{- range $path := list "profile.json" "profile.py" "hermes_profile.py" "README.md" "bin/executable_install" "bin/executable_list-all" -}}
+{{- range $path := list "profile.json" "profile.py" "README.md" "bin/executable_install" "bin/executable_list-all" -}}
 {{- $content = printf "%s%s\n" $content (include (joinPath $root $path)) -}}
 {{- end -}}
 {{- sha256sum $content -}}

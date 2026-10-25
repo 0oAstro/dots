@@ -60,7 +60,7 @@ When `web_fetch` receives an `instruction`, it reads the model from `~/.pi/agent
 ```json
 {
   "firecrawl-web": {
-    "fetchModel": "bifrost/azure/gpt-6-luna"
+    "fetchModel": "azure/gpt-6-luna"
   }
 }
 ```

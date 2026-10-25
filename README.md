@@ -26,7 +26,7 @@ Roles are generic; groups and hosts hold the data. A second run reports `changed
 
 | Where | What |
 | --- | --- |
-| `group_vars/macs.yml` | What every Mac is: Homebrew taps to drop, application firewall, the `dev.dots.brew-upgrade` and `dev.dots.bifrost-mitm` launchd agents |
+| `group_vars/macs.yml` | What every Mac is: Homebrew taps to drop, application firewall, the `dev.dots.brew-upgrade` launchd agent |
 | `group_vars/<module>.yml` | One feature each. `inventory.yml` gives every Mac the shared modules (`look`, `input`, `finder`, `perf`, `vendor_updaters_off`, `ai_off`) and lists hosts under the opt-in ones (`apps_dev`, `apps_comms`, `apps_media`, `games`, `google_drive`, `dropbox`) |
 | `files/brewfiles/<group>.Brewfile`, `<host>.Brewfile` | Homebrew: a Mac gets `macs.Brewfile`, one per module it is in, and its own. Together they are the whole truth: anything installed but unlisted is uninstalled |
 | `group_vars/linux.yml`, `servers.yml`, `desktops.yml` | Base packages, Tailscale (official repo), Claude Remote Control on servers |
@@ -67,7 +67,7 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 | --- | --- |
 | every machine | zsh, git, tmux, bat, ripgrep, glow, dtop, btop; `conf.d/core.toml` |
 | any harness | pstack, agent-browser; `conf.d/ai.toml` |
-| `harness_<name>` group | that harness's CLI in `conf.d/harness-<name>.toml` and its settings (`claude`, `pi`, `hermes`, `prime`, `cursor`) |
+| `harness_<name>` group | that harness's CLI in `conf.d/harness-<name>.toml` and its settings (`claude`, `pi`, `prime`, `cursor`) |
 | macOS | Ghostty, lazysql; `conf.d/macos.toml` |
 | Linux | `conf.d/linux.toml` |
 | `input` module | Karabiner |

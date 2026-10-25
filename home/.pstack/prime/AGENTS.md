@@ -4,7 +4,7 @@ You work for Shaurya. His rules win over any pstack skill. The same block is in 
 ## Where
 - Projects live in ~/Developer. thunderchief is the Mac he sits at. aardvark is a Linux arm64 EC2 box. Both are on the tailnet: do machine-specific work there with `ssh <name>`.
 - mise owns every tool. Python goes through uv, Node through pnpm. chezmoi owns the dotfiles: edit the source, then `chezmoi apply`.
-- The aws, az, and gcloud CLIs are signed in. Model calls go through bifrost.shau.me with `BIFROST_VIRTUAL_KEY`.
+- The aws, az, and gcloud CLIs are signed in. Agents call models directly: Claude on Amazon Bedrock (`AWS_PROFILE=personal`), and the GPT, GLM, and DeepSeek deployments on Azure with `AZURE_OPENAI_API_KEY`. Claude Code uses its own login.
 - Secrets live in env vars and env files. Name them by variable. Never read a value into the conversation or a file.
 - The executor MCP holds GitHub, Email, Grafana, Beszel, Jellyfin, Moodle, Gradescope, Firecrawl, and tldraw. Call the app's `skills` tool first.
 - Internal hosts are `<name>.shau.me`, tailnet 100.x, and localhost. Use curl.
@@ -55,25 +55,25 @@ Automatic skills are emil-design-eng, grilling, and poteto-mode. Other skills lo
 - `await bash(...)` blocks the turn until the command ends, and heartbeats cannot run. Use `await bash(...)` only for commands that end in about a minute. For a longer command, call `job = bash(...)` without `await`, then end the turn. The harness sends a `[bash-done pid:… exit:…]` message when the command ends. Check progress with `job.tail()`.
 - Delegation: in ipython, call `rlm.spawn(prompt, name=..., model="<role model>", thinking="<level>")` with the role's provider/id below as `model` and its `@<level>` as `thinking`. Prime has no pstack agent types, so tell a code-writing child to read skills/poteto-mode/SKILL.md first, and a no-comments reviewer to read skills/poteto-mode/references/agents/comment-sicko.md first. Check the artifacts yourself.
 
-Roles (override pstack skill defaults):
-feature, refactoring: bifrost/anthropic/claude-opus-5-5 @medium
-bug-fix: bifrost/anthropic/claude-opus-5-5 @medium
-perf-issue: bifrost/anthropic/claude-opus-5-5 @medium
-hillclimb: bifrost/anthropic/claude-opus-5-5 @medium
-judgment and prose: bifrost/anthropic/claude-opus-5-5 @high
-strongest judgment: bifrost/anthropic/claude-fable-5-1 @xhigh
-how explorer: bifrost/anthropic/claude-haiku-5-5 @xhigh
-bounded lookups (CLI help, docs, config and quota reads): bifrost/anthropic/claude-haiku-5-5 @xhigh
-how explainer: bifrost/anthropic/claude-opus-5-5 @high
-why investigators: bifrost/anthropic/claude-opus-5-5 @medium
-why synthesizer: bifrost/anthropic/claude-opus-5-5 @high
-reflect tooling: bifrost/anthropic/claude-opus-5-5 @medium
-reflect judgment, divergent, synthesizer: bifrost/anthropic/claude-opus-5-5 @high
-arena runners: bifrost/anthropic/claude-opus-5-5 @medium, bifrost/azure/gpt-6.1-sol @xhigh
-arena cross-judge pool: bifrost/anthropic/claude-opus-5-5 @medium, bifrost/azure/gpt-6.1-sol @xhigh
-swarm workers: bifrost/anthropic/claude-opus-5-5 @medium
-architect runners: bifrost/anthropic/claude-opus-5-5 @medium
-interrogate reviewers: bifrost/anthropic/claude-opus-5-5 @medium, bifrost/azure/gpt-6.1-sol @xhigh
+Roles (override pstack skill defaults). Prime runs only the Azure models: its Bedrock signing fails on prime-agent 0.10.1.
+feature, refactoring: azure/gpt-6.1-sol @xhigh
+bug-fix: azure/gpt-6.1-sol @xhigh
+perf-issue: azure/gpt-6.1-sol @xhigh
+hillclimb: azure/gpt-6.1-sol @xhigh
+judgment and prose: azure/gpt-6.1-sol @high
+strongest judgment: azure/gpt-6-astra @medium
+how explorer: azure/deepseek-v4.1-flash @max
+bounded lookups (CLI help, docs, config and quota reads): azure/deepseek-v4.1-flash @max
+how explainer: azure/gpt-6.1-sol @high
+why investigators: azure/gpt-6.1-sol @medium
+why synthesizer: azure/gpt-6.1-sol @high
+reflect tooling: azure/gpt-6.1-sol @medium
+reflect judgment, divergent, synthesizer: azure/gpt-6.1-sol @high
+arena runners: azure/gpt-6.1-sol @xhigh, azure/gpt-6-astra @medium
+arena cross-judge pool: azure/gpt-6.1-sol @xhigh, azure/gpt-6-astra @medium
+swarm workers: azure/gpt-6.1-sol @xhigh
+architect runners: azure/gpt-6.1-sol @medium
+interrogate reviewers: azure/gpt-6.1-sol @xhigh, azure/gpt-6-astra @medium
 </pstack>
 
 <memory>

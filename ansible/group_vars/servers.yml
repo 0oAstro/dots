@@ -7,5 +7,4 @@ systemd_enabled_servers:
 # Login user's systemd units (files/user_units/servers/) keep running without
 # a session.
 user_units_enabled_servers:
-  - bifrost-mitm.service
   - claude-rc.service

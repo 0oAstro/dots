@@ -80,18 +80,22 @@ unset _zdots_dir
 # Avoid duplicate wireless-debug transports; use explicit `adb connect host:port`.
 export ADB_MDNS_AUTO_CONNECT=0
 
-# Amazon Bedrock defaults for the global Anthropic inference profiles.
+# Amazon Bedrock defaults: agents run Claude and Kimi K3 there.
 export AWS_PROFILE=${AWS_PROFILE:-personal}
 export AWS_REGION=${AWS_REGION:-us-east-1}
 
-# Agents read this key for Bifrost, and T3 Desktop starts its server
-# from a non-interactive SSH shell that never sources .zshrc.local. Load only
-# this key here; the other secrets stay interactive.
+# Agents read the Azure pair for the GPT, GLM and DeepSeek deployments. T3
+# Desktop starts its server from a non-interactive SSH shell that never
+# sources .zshrc.local, so load only these keys here; the other secrets stay
+# interactive.
 () {
-  local secrets=$ZDOTDIR/.zshrc.local line
-  [[ -z ${BIFROST_VIRTUAL_KEY:-} && -r $secrets ]] || return 0
-  line=${(M)${(f)"$(<$secrets)"}:#export BIFROST_VIRTUAL_KEY=*}
-  [[ -n $line ]] && eval "$line"
+  local secrets=$ZDOTDIR/.zshrc.local name line
+  [[ -r $secrets ]] || return 0
+  for name in AZURE_OPENAI_API_KEY AZURE_OPENAI_BASE_URL; do
+    [[ -z ${(P)name:-} ]] || continue
+    line=${(M)${(f)"$(<$secrets)"}:#export $name=*}
+    [[ -n $line ]] && eval "$line"
+  done
 }
 
 source "$ZDOTDIR/lib/path.zsh"

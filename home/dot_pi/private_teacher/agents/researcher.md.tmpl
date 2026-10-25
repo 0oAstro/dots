@@ -1,7 +1,7 @@
 ---
 name: researcher
 description: Web researcher. Verifies one fact or maps a field, and returns a short brief with sources. The teacher uses it before it teaches anything it is not sure of.
-model: bifrost/anthropic/claude-opus-5-5
+model: amazon-bedrock/us.anthropic.claude-opus-5-5
 thinking: medium
 tools: read
 extensions: ["{{ .chezmoi.homeDir }}/.local/share/mise/installs/pi-global-tools/{{ includeTemplate "pi-global-tools-version" . }}/firecrawl-web/index.ts"]

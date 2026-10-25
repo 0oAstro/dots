@@ -3,6 +3,6 @@
 {{- if .chezmoi.stdin }}{{ $current = fromJson .chezmoi.stdin }}{{ end -}}
 {{- range $key := list "subagents" "skills" }}{{ $_ := unset $current $key }}{{ end -}}
 {{- $thinkingLevels := get $current "modelThinkingLevels" -}}
-{{- if kindIs "map" $thinkingLevels }}{{ $_ := unset $thinkingLevels "bifrost/azure/fw-kimi-k3" }}{{ end -}}
+{{- if kindIs "map" $thinkingLevels }}{{ range $old := list "bifrost/azure/fw-kimi-k3" "bifrost/azure/gpt-6.1-sol" "bifrost/azure/gpt-6-astra" "bifrost/azure/fw-glm-5.3-flash" "bifrost/azure/deepseek-v4.1-flash" "bifrost/bedrock/moonshotai.kimi-k3" "bifrost/anthropic/claude-fable-5-1" "bifrost/anthropic/claude-opus-5-5" "bifrost/anthropic/claude-haiku-5-5" }}{{ $_ := unset $thinkingLevels $old }}{{ end }}{{ end -}}
 {{- /* Pi saves this file without a final newline. */ -}}
 {{- includeTemplate "merge" (dict "current" (toJson $current) "managed" (includeTemplate "pi-settings.json" .) "format" "json") | trimSuffix "\n" -}}

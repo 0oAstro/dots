@@ -1,13 +1,13 @@
 {
   "theme": "light/dark",
-  "defaultProvider": "bifrost",
-  "defaultModel": "anthropic/claude-opus-5-5",
+  "defaultProvider": "amazon-bedrock",
+  "defaultModel": "us.anthropic.claude-opus-5-5",
   "defaultThinkingLevel": "high",
   "enabledModels": [
-    "bifrost/anthropic/claude-opus-5-5"
+    "amazon-bedrock/us.anthropic.claude-opus-5-5"
   ],
   "modelThinkingLevels": {
-    "bifrost/anthropic/claude-opus-5-5": "high"
+    "amazon-bedrock/us.anthropic.claude-opus-5-5": "high"
   },
   "packages": [
     "~/.local/share/mise/installs/npm-tintinweb-pi-subagents/latest/lib/node_modules/@tintinweb/pi-subagents"
@@ -22,7 +22,7 @@
     "~/.pi/teacher/vendor/learn/extensions/md-log.ts"
   ],
   "firecrawl-web": {
-    "fetchModel": "bifrost/azure/gpt-6-luna"
+    "fetchModel": "azure/gpt-6-luna"
   },
   "compaction": {
     "enabled": true
