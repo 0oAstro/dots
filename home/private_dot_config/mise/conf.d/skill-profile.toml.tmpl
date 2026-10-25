@@ -1,0 +1,14 @@
+[plugins]
+skill-profile = "{{ .chezmoi.homeDir }}/.config/mise/skill-profile"
+
+[tools.skill-profile]
+version = "{{ includeTemplate "skill-profile-version" . }}"
+bin_path = "bin"
+depends = ["http:pstack", "http:emil-skills", "http:mattpocock-skills", "uv"]
+
+[hooks]
+postinstall = '''
+if [ -x "$HOME/.local/share/mise/installs/skill-profile/latest/bin/skill-profile" ]; then
+  "$HOME/.local/share/mise/installs/skill-profile/latest/bin/skill-profile" sync
+fi
+'''

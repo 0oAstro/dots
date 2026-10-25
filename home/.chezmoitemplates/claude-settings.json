@@ -20,7 +20,31 @@
     "padding": 0
   },
   "enabledPlugins": {
-    "frontend-design@claude-plugins-official": true
+    "frontend-design@claude-plugins-official": false
+  },
+  "skillOverrides": {
+    "artifact-capabilities": "user-invocable-only",
+    "artifact-diagramming": "user-invocable-only",
+    "batch": "user-invocable-only",
+    "claude-api": "user-invocable-only",
+    "claude-in-chrome": "user-invocable-only",
+    "code-review": "user-invocable-only",
+    "dataviz": "user-invocable-only",
+    "debug": "user-invocable-only",
+    "deep-research": "user-invocable-only",
+    "design": "user-invocable-only",
+    "design-sync": "user-invocable-only",
+    "doctor": "user-invocable-only",
+    "fewer-permission-prompts": "user-invocable-only",
+    "loop": "user-invocable-only",
+    "run": "user-invocable-only",
+    "run-skill-generator": "user-invocable-only",
+    "schedule": "user-invocable-only",
+    "simplify": "user-invocable-only",
+    "slides": "user-invocable-only",
+    "update-config": "user-invocable-only",
+    "verify": "user-invocable-only",
+    "workflow-authoring": "user-invocable-only"
   },
   "effortLevel": "medium",
   "tui": "fullscreen",

@@ -85,17 +85,17 @@ settings = json.loads((home / ".pi/agent/settings.json").read_text())
 package = tools["npm:@cahalane/pi-monitor"]
 assert package["version"] == "latest", package
 assert "~/.local/share/mise/installs/npm-cahalane-pi-monitor/latest/lib/node_modules/@cahalane/pi-monitor" in settings["packages"], settings["packages"]
-assert "~/.local/share/mise/installs/http-pstack/latest" in settings["packages"], settings["packages"]
+assert "~/.local/share/mise/installs/skill-profile/latest/current/pstack" in settings["packages"], settings["packages"]
 assert "http:mattpocock-skills" in tools, tools.keys()
 for skill in settings["skills"]:
-    assert skill.startswith("~/.local/share/mise/installs/http-"), skill
+    assert skill.startswith("~/.local/share/mise/installs/skill-profile/latest/current/"), skill
 package = tools["npm:@sting8k/pi-vcc"]
 assert package["version"] == "latest", package
 assert package["npm_args"] == "--legacy-peer-deps", package
 assert "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/@sting8k/pi-vcc" in settings["packages"], settings["packages"]
 assert "npm:@sting8k/pi-vcc" not in settings["packages"], settings["packages"]
 assert settings["compaction"]["enabled"] is True, settings["compaction"]
-assert "~/.local/share/mise/installs/npm-pi-intercom/latest/lib/node_modules/pi-intercom" in settings["packages"], settings["packages"]
+assert {"source": "~/.local/share/mise/installs/npm-pi-intercom/latest/lib/node_modules/pi-intercom", "skills": []} in settings["packages"], settings["packages"]
 assert settings["firecrawl-web"]["fetchModel"] == "bifrost/azure/gpt-6-luna", settings["firecrawl-web"]
 extension_config = tomllib.loads((home / ".config/mise/conf.d/pi-global-tools.toml").read_text())
 version = extension_config["tools"]["pi-global-tools"]["version"]

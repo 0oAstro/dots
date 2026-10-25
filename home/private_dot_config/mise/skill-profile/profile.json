@@ -1,0 +1,56 @@
+{
+  "automatic": [
+    "emil-design-eng",
+    "grilling",
+    "poteto-mode"
+  ],
+  "removed": [
+    "setup-pstack",
+    "setup-matt-pocock-skills"
+  ],
+  "sources": [
+    {
+      "name": "pstack",
+      "path": "http-pstack/latest",
+      "root": ".",
+      "skills": "plugins/pstack/skills"
+    },
+    {
+      "name": "emil",
+      "path": "http-emil-skills/latest",
+      "root": "skills",
+      "skills": "."
+    },
+    {
+      "name": "matt",
+      "path": "http-mattpocock-skills/latest",
+      "root": "skills",
+      "skills": ".",
+      "include": [
+        "productivity/grill-me",
+        "productivity/grilling",
+        "engineering/to-spec",
+        "engineering/to-tickets"
+      ]
+    },
+    {
+      "name": "prime",
+      "path": "github-prime-intellect-ai-prime-agent/latest",
+      "root": "skills",
+      "skills": ".",
+      "optional": true
+    },
+    {
+      "name": "intercom",
+      "path": "npm-pi-intercom/latest/lib/node_modules/pi-intercom",
+      "root": "skills",
+      "skills": "."
+    },
+    {
+      "name": "rea",
+      "path": "npm-rea-agents/latest/lib/node_modules/rea-agents",
+      "root": "skills",
+      "skills": "."
+    }
+  ]
+}

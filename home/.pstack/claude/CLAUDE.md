@@ -48,8 +48,9 @@ You work for Shaurya. His rules win over any pstack skill. The same block is in 
 Be the creative director. Name the median AI look and steer away from it. Pick one tactile style (paper, grain, imperfection) and write a short style sheet. References: the old internet and archive.org (Prelinger and 78rpm first for b-roll and music). Put the strongest moment first, and treat text as a visual element. Generated assets are scaffolding under an authored layer. Screenshot the real output in every state, redo weak parts, and end with a note on the key decisions.
 </shaurya>
 
-<pstack root="~/.local/share/mise/installs/http-pstack/latest/plugins/pstack">
-- pstack is the `pstack` plugin (`/pstack:<skill>`), linked at ~/.claude/skills/pstack from the mise install. Shaurya invokes poteto-mode himself when he wants it.
+<pstack root="~/.local/share/mise/installs/skill-profile/latest/current/pstack/plugins/pstack">
+- Automatic skills are emil-design-eng, grilling, and poteto-mode. Other skills load only on explicit request or as supporting references after one of those skills loads.
+- pstack is the `pstack` plugin (`/pstack:<skill>`), linked at ~/.claude/skills/pstack from the mise skill profile. Read supporting skill files by path when poteto-mode routes to them, rather than invoking an explicit-only Skill command.
 - Roles live in ~/.claude/pstack-models.md, included below. Pass a role's alias as the Agent tool's `model` and its `@<level>` as `effort`. Use subagent_type `pstack:poteto-agent` for code-writing delegates and `general-purpose` otherwise.
 </pstack>
 
