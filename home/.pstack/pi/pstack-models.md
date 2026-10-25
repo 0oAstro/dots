@@ -22,5 +22,5 @@ interrogate reviewers: bifrost/anthropic/claude-opus-5-5 @medium, bifrost/azure/
 bounded lookups (CLI help, docs, config and quota reads): bifrost/azure/deepseek-v4.1-flash @max
 
 default effort: session
-session hook: on
+session hook: off
 pi models: opus=bifrost/anthropic/claude-opus-5-5, fable=bifrost/anthropic/claude-fable-5-1, sonnet=bifrost/anthropic/claude-sonnet-5-5, haiku=bifrost/anthropic/claude-haiku-5-5
