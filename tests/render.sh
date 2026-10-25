@@ -85,7 +85,7 @@ settings = json.loads((home / ".pi/agent/settings.json").read_text())
 package = tools["npm:@cahalane/pi-monitor"]
 assert package["version"] == "latest", package
 assert "~/.local/share/mise/installs/npm-cahalane-pi-monitor/latest/lib/node_modules/@cahalane/pi-monitor" in settings["packages"], settings["packages"]
-assert "~/.local/share/mise/installs/skill-profile/latest/current/pstack" in settings["packages"], settings["packages"]
+assert {"source": "~/.local/share/mise/installs/http-pstack/latest", "skills": []} in settings["packages"], settings["packages"]
 assert "http:mattpocock-skills" in tools, tools.keys()
 for skill in settings["skills"]:
     assert skill.startswith("~/.local/share/mise/installs/skill-profile/latest/current/"), skill
