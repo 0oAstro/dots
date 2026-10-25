@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+: "${ASDF_INSTALL_PATH:?}"
+plugin_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+mkdir -p "$ASDF_INSTALL_PATH/bin"
+cp "$plugin_dir/profile.json" "$plugin_dir/profile.py" "$ASDF_INSTALL_PATH/"
+printf '#!/bin/sh\nexec uv run --no-project python "%s/profile.py" "$@"\n' "$ASDF_INSTALL_PATH" >"$ASDF_INSTALL_PATH/bin/skill-profile"
+chmod +x "$ASDF_INSTALL_PATH/bin/skill-profile"
+uv run --no-project python "$ASDF_INSTALL_PATH/profile.py" sync

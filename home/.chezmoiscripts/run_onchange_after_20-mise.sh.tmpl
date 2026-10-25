@@ -4,6 +4,9 @@
 # {{ base . }}: {{ include . | sha256sum }}
 {{- end }}
 # harnesses={{ .harnesses | join "," }} server={{ .server }}
+{{ if .harnesses }}
+# skill-profile: {{ includeTemplate "skill-profile-version" . }}
+{{ end }}
 {{ if has "pi" .harnesses }}
 # pi-global-tools: {{ includeTemplate "pi-global-tools-version" . }}
 {{ end }}
@@ -20,4 +23,8 @@ export PATH="$HOME/.local/share/mise/shims:$PATH"
   "$mise" install --yes || echo "dots: some mise tools failed; rerun 'mise install'" >&2
 {{ if has "pi" .harnesses }}
 "$mise" install --yes "pi-global-tools@{{ includeTemplate "pi-global-tools-version" . }}"
+{{ end }}
+{{ if .harnesses }}
+"$mise" install --yes "skill-profile@{{ includeTemplate "skill-profile-version" . }}"
+"$HOME/.local/share/mise/installs/skill-profile/latest/bin/skill-profile" sync
 {{ end }}
