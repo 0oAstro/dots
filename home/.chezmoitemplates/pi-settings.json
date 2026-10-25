@@ -13,7 +13,10 @@
   ],
   "packages": [
     "~/.local/share/mise/installs/npm-cahalane-pi-monitor/latest/lib/node_modules/@cahalane/pi-monitor",
-    "~/.local/share/mise/installs/skill-profile/latest/current/pstack",
+    {
+      "source": "~/.local/share/mise/installs/http-pstack/latest",
+      "skills": []
+    },
     "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/@sting8k/pi-vcc",
     {
       "source": "~/.local/share/mise/installs/npm-pi-intercom/latest/lib/node_modules/pi-intercom",
@@ -26,6 +29,7 @@
     "~/.local/share/mise/installs/pi-global-tools/{{ includeTemplate "pi-global-tools-version" . }}"
   ],
   "skills": [
+    "~/.local/share/mise/installs/skill-profile/latest/current/pstack/plugins/pstack/skills",
     "~/.local/share/mise/installs/skill-profile/latest/current/emil",
     "~/.local/share/mise/installs/skill-profile/latest/current/matt",
     "~/.local/share/mise/installs/skill-profile/latest/current/intercom",
