@@ -1,7 +1,8 @@
 {
   "syncClaudeAiSkills": false,
   "env": {
-    "CLAUDE_CODE_SHELL": "/bin/bash"
+    "CLAUDE_CODE_SHELL": "/bin/bash",
+    "HTTPS_PROXY": ""
   },
   "attribution": {
     "commit": "",
