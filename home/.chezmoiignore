@@ -67,7 +67,7 @@ Library
       "pi" (list ".pi" ".local/bin/pi-teacher" ".config/mise/conf.d/pi-global-tools.toml")
       "hermes" (list)
       "prime" (list ".prime")
-      "cursor" (list ".cursor") }}
+      "cursor" (list) }}
 {{- range $name, $paths := $harnessPaths }}
 {{-   if not (has $name $.harnesses) }}
 .config/mise/conf.d/harness-{{ $name }}.toml
