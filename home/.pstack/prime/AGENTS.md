@@ -48,7 +48,7 @@ You work for Shaurya. His rules win over any pstack skill. The same block is in 
 Be the creative director. Name the median AI look and steer away from it. Pick one tactile style (paper, grain, imperfection) and write a short style sheet. References: the old internet and archive.org (Prelinger and 78rpm first for b-roll and music). Put the strongest moment first, and treat text as a visual element. Generated assets are scaffolding under an authored layer. Screenshot the real output in every state, redo weak parts, and end with a note on the key decisions.
 </shaurya>
 
-<pstack root="~/.local/share/mise/installs/skill-profile/latest/current/pstack/plugins/pstack">
+<pstack root="~/.local/share/mise/installs/skill-profile/global/current/pstack/plugins/pstack">
 Automatic skills are emil-design-eng, grilling, and poteto-mode. Other skills load only on explicit request or as supporting references after one of those skills loads. Resolve links from each skill's directory.
 - Principle skills are unlisted; poteto-mode's Principles index names them, read them at skills/principle-<name>/SKILL.md.
 - pstack skills name Claude Code tools. On Prime Agent, the `ipython` kernel does reads, edits, and shell commands. Agent or Task is `rlm.spawn`. AskUserQuestion is a plain-text question. /loop and schedule_wakeup do not exist; `prime schedule` needs explicit opt-in.

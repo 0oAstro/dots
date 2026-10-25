@@ -29,11 +29,11 @@
     "~/.local/share/mise/installs/pi-global-tools/{{ includeTemplate "pi-global-tools-version" . }}"
   ],
   "skills": [
-    "~/.local/share/mise/installs/skill-profile/latest/current/pstack/plugins/pstack/skills",
-    "~/.local/share/mise/installs/skill-profile/latest/current/emil",
-    "~/.local/share/mise/installs/skill-profile/latest/current/matt",
-    "~/.local/share/mise/installs/skill-profile/latest/current/intercom",
-    "~/.local/share/mise/installs/skill-profile/latest/current/rea"
+    "~/.local/share/mise/installs/skill-profile/global/current/pstack/plugins/pstack/skills",
+    "~/.local/share/mise/installs/skill-profile/global/current/emil",
+    "~/.local/share/mise/installs/skill-profile/global/current/matt",
+    "~/.local/share/mise/installs/skill-profile/global/current/intercom",
+    "~/.local/share/mise/installs/skill-profile/global/current/rea"
   ],
   "compaction": {
     "enabled": true,

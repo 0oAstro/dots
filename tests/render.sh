@@ -88,7 +88,7 @@ assert "~/.local/share/mise/installs/npm-cahalane-pi-monitor/latest/lib/node_mod
 assert {"source": "~/.local/share/mise/installs/http-pstack/latest", "skills": []} in settings["packages"], settings["packages"]
 assert "http:mattpocock-skills" in tools, tools.keys()
 for skill in settings["skills"]:
-    assert skill.startswith("~/.local/share/mise/installs/skill-profile/latest/current/"), skill
+    assert skill.startswith("~/.local/share/mise/installs/skill-profile/global/current/"), skill
 package = tools["npm:@sting8k/pi-vcc"]
 assert package["version"] == "latest", package
 assert package["npm_args"] == "--legacy-peer-deps", package
