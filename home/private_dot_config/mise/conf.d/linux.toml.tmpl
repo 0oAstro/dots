@@ -21,7 +21,6 @@ platforms.linux-arm64.url = "https://github.com/pingdotgg/t3code/releases/downlo
 platforms.linux-x64.url = "https://github.com/pingdotgg/t3code/releases/download/v{{ "{{" }} version {{ "}}" }}/t3-{{ "{{" }} version {{ "}}" }}-linux-x64.tar.gz"
 strip_components = 1
 bin_path = "."
-filter_bins = "t3"
 postinstall = '''
 [ -f "$HOME/.config/systemd/user/t3code.service" ] || exit 0
 "$MISE_TOOL_INSTALL_PATH/t3" update --yes "$MISE_TOOL_VERSION" ||
