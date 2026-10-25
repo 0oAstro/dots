@@ -8,10 +8,10 @@ depends = ["http:pstack", "http:emil-skills", "http:mattpocock-skills", "uv"]
 
 [hooks]
 postinstall = '''
-if [ -x "$HOME/.local/share/mise/installs/skill-profile/latest/bin/skill-profile" ]; then
-  "$HOME/.local/share/mise/installs/skill-profile/latest/bin/skill-profile" sync
+if [ -x "$HOME/.local/share/mise/installs/skill-profile/global/bin/skill-profile" ]; then
+  "$HOME/.local/share/mise/installs/skill-profile/global/bin/skill-profile" sync
   if [ -x "$HOME/.local/share/mise/installs/http-hermes/latest/bin/hermes" ]; then
-    "$HOME/.local/share/mise/installs/skill-profile/latest/bin/skill-profile" hermes-sync
+    "$HOME/.local/share/mise/installs/skill-profile/global/bin/skill-profile" hermes-sync
   fi
 fi
 '''
