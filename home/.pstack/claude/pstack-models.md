@@ -1,6 +1,6 @@
 # pstack model configuration
 
-Per-role model overrides for pstack skills on Claude Code, loaded through `@~/.claude/pstack-models.md` in CLAUDE.md. Values are Agent tool aliases; `@effort` goes into the Agent tool's `effort` parameter, with subagent_type `pstack:poteto-agent` for code-writing delegates and `general-purpose` otherwise. Evidence and the Pi routes are in ~/.claude/model-routing-policy.md. Delete a line to fall back to the skill default.
+Role overrides for pstack on Claude Code. Pass the alias as the Agent `model` and `@level` as `effort`. Policy: ~/.claude/model-routing-policy.md.
 
 feature, refactoring: opus @medium
 bug-fix: opus @medium

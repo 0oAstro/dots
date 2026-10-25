@@ -1,6 +1,6 @@
 # pstack model configuration
 
-Per-role model overrides for pstack skills on Pi. The pstack Pi extension adds this sheet to every session's system prompt, child agents included. Pass a role's value as the `agent` tool's `model` and its `@<level>` as `effort`. Use subagent_type `pstack:poteto-agent` for code-writing delegates and `general-purpose` otherwise. Evidence: ~/.pi/agent/model-routing-policy.md.
+Role overrides for pstack on Pi. Pass the value as the agent `model` and `@level` as `thinking`. Policy: ~/.pi/agent/model-routing-policy.md.
 
 feature, refactoring: bifrost/azure/gpt-6.1-sol @xhigh
 bug-fix: bifrost/azure/gpt-6.1-sol @xhigh
