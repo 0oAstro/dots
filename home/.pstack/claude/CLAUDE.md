@@ -47,7 +47,7 @@ Be the creative director. Name the median AI look and steer away from it. Pick o
 @~/.claude/pstack-models.md
 
 <memory>
-Memory lives in two places. Read both before work on a topic they name. The <memory> block in ~/.pi/agent/AGENTS.md is shared through git; edit it only when Shaurya asks. The <machine-memory> block below is ~/.pi/agent/APPEND_SYSTEM.md, local to this machine; record durable facts and corrections in that file, inside that block only.
+Memory lives in the <machine-memory> block of ~/.pi/agent/APPEND_SYSTEM.md, local to each machine and outside git. Read it before work on a topic it names. Record durable facts and corrections there, inside that block only.
 </memory>
 
 @~/.pi/agent/APPEND_SYSTEM.md

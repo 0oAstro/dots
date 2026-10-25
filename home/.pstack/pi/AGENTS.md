@@ -43,14 +43,3 @@ Be the creative director. Name the median AI look and steer away from it. Pick o
 - pstack loads as a Pi package with its extension. Shaurya invokes poteto-mode himself when he wants it. The role sheet (~/.pi/agent/pstack-models.md) is in the system prompt.
 </pstack>
 
-<memory>
-Shared through git. Edit only when Shaurya asks. Write new facts to <machine-memory> in ~/.pi/agent/APPEND_SYSTEM.md.
-- AlgoChat GA4 (property 537760472): user OAuth is blocked. Impersonate ga4-reader@algoplex-algochat.iam.gserviceaccount.com with `gcloud auth print-access-token --impersonate-service-account=... --scopes=...`.
-- Executor auth is at /api/auth (2026-10-03). On a stale sign-in, run `pi mcp logout executor`, then log in. Multi-account tools take `{accountId, input:{...}}`.
-- The AI Gateway key is for production DeepSeek, Luna, Typesafe AI, and Nova Micro only. Never use it for Claude, evals, or judges. Judges are Astra subagents.
-- Models (2026-10-11): Kimi K3, GLM-5.3 Flash, Haiku 5.5, Sol, Opus 5.5 (default), Fable 5.1, Astra. Never put Luna or Sonnet in a selector. Astra, Kimi, and GLM are selector-only. Roles are in pstack-models.md. Policy: ~/.pi/agent/model-routing-policy.md.
-- Harness tweaks: keep only compaction.modelOverrides reserveTokens 40960 for 272k GPT models. Add no extensions for harness tweaks.
-- Long-lived worktree: `git worktree add -b <branch> ~/.pi/agent/worktrees/<project>/<task> HEAD`.
-- Pi skills and extensions ship only through mise and load from ~/.pi/agent/settings.json. Never vendor skills into ~/.pi/agent/skills.
-- Algoplex verification tools go in its product repos or algoplex/.pi/skills/.
-</memory>
