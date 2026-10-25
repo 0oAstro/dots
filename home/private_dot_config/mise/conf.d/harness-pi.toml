@@ -1,7 +1,6 @@
 # Pi. Settings live in ~/.pi; pi-global-tools.toml holds its local extensions.
 
 [tools]
-"aqua:earendil-works/pi" = "latest"
 # Pi extensions. pstack's own extension (http:pstack in ai.toml) gives the
 # agent, question and wake-up tools; pi-subagents serves only the pi-teacher profile.
 "npm:@tintinweb/pi-subagents" = { version = "latest", npm_args = "--legacy-peer-deps" }
@@ -11,6 +10,19 @@
 # REA (reverse engineering MCP). Pi registers it in ~/.pi/agent/mcp.json and
 # loads its skill as a settings package. Its native analysis drives Ghidra.
 "npm:rea-agents" = "latest"
+
+# Pi from npm, run by Bun. The prebuilt aqua binary reaches the prompt in about
+# 420ms; the same release under Bun takes about 210ms. postinstall swaps the
+# npm bin link for a Bun launcher.
+[tools."npm:@earendil-works/pi-coding-agent"]
+version = "latest"
+depends = ["bun"]
+postinstall = '''
+set -eu
+rm -f "$MISE_TOOL_INSTALL_PATH/bin/pi"
+printf '#!/bin/sh\nexec "%s/.local/share/mise/installs/bun/latest/bin/bun" "%s/lib/node_modules/@earendil-works/pi-coding-agent/dist/bundle/cli.js" "$@"\n' "$HOME" "$MISE_TOOL_INSTALL_PATH" > "$MISE_TOOL_INSTALL_PATH/bin/pi"
+chmod +x "$MISE_TOOL_INSTALL_PATH/bin/pi"
+'''
 
 # REA accepts Ghidra 12.1.x only. Releases ship no macOS or Linux arm64
 # decompiler, so postinstall builds it with JDK 21 (gcc/clang required).
