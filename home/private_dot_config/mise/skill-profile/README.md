@@ -2,11 +2,11 @@
 
 The profile lists `emil-design-eng`, `grilling`, and `poteto-mode` for automatic selection. Other installed skills have `disable-model-invocation: true` and `user-invocable: true`. The profile omits `setup-pstack` and `setup-matt-pocock-skills`, but retains supporting files that other skills reference.
 
-Mise builds the profile from its installed packages. Content-addressed snapshots keep upstream files unchanged. Chez moi links Claude and Cursor to the profile. Pi keeps the original pstack extension package and reads skills from the profile, so existing sessions do not load two extension copies. Prime reads full copies of its bundled skill folders, including Python modules.
+Mise builds the profile from its installed packages. Content-addressed snapshots keep upstream files unchanged. Chez moi links Claude to the profile. Cursor sync creates individual skill links under a real skill-profile directory, because Cursor does not descend into a collection symlink. Pi keeps the original pstack extension package and reads skills from the profile, so existing sessions do not load two extension copies. Prime reads full copies of its bundled skill folders, including Python modules.
 
 ## Refresh and verify
 
-Run `skill-profile sync` to refresh the shared copies. Run `skill-profile verify` to check flags, links, entry points, and omitted setup skills.
+Run `skill-profile sync` to refresh the shared copies. On a Cursor host, run `skill-profile cursor-sync` to refresh individual skill links. Run `skill-profile verify` to check flags, links, entry points, and omitted setup skills.
 
 On a host with Hermes, run `skill-profile hermes-sync`, then `skill-profile hermes-verify`. Hermes has no command-only flag. The adapter moves native skills into `~/.hermes/skills/.archive`, exposes only the entry points, and creates native slash-command bundles for archived skills. It preserves the essential native `hermes-agent` skill as a visible exception. It sets only `skills.external_dirs` and `skills.auto_load` through the Hermes CLI.
 

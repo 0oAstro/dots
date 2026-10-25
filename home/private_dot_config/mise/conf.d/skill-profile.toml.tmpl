@@ -11,6 +11,9 @@ postinstall = '''
 profile=$("$HOME/.local/bin/mise" where skill-profile)
 if [ -x "$profile/bin/skill-profile" ]; then
   "$profile/bin/skill-profile" sync
+{{ if has "cursor" .harnesses }}
+  "$profile/bin/skill-profile" cursor-sync
+{{ end }}
   if [ -x "$HOME/.local/share/mise/installs/http-hermes/latest/bin/hermes" ]; then
     "$profile/bin/skill-profile" hermes-sync
   fi
