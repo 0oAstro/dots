@@ -162,12 +162,23 @@ def verify(destination, policy):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["sync", "verify"])
+    parser.add_argument("command", choices=["sync", "verify", "hermes-sync", "hermes-verify"])
     parser.add_argument("--home", type=Path, default=Path.home())
     parser.add_argument("--destination", type=Path, default=ROOT)
     args = parser.parse_args()
     policy = read_policy()
-    if args.command == "sync":
+    if args.command.startswith("hermes-"):
+        from hermes_profile import Hermes, sync as sync_hermes, verify as verify_hermes
+
+        binary = args.home / ".local/share/mise/installs/http-hermes/latest/bin/hermes"
+        runtime = Hermes(binary, args.home)
+        destination = args.destination / "hermes"
+        if args.command == "hermes-sync":
+            result = sync_hermes(args.destination / "current", args.home, destination, runtime)
+        else:
+            result = verify_hermes(destination, runtime)
+        print(json.dumps(result))
+    elif args.command == "sync":
         sync(args.home, args.destination, policy)
     else:
         verify(args.destination, policy)

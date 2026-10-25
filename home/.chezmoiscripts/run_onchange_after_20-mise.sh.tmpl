@@ -27,4 +27,7 @@ export PATH="$HOME/.local/share/mise/shims:$PATH"
 {{ if .harnesses }}
 "$mise" install --yes "skill-profile@{{ includeTemplate "skill-profile-version" . }}"
 "$HOME/.local/share/mise/installs/skill-profile/latest/bin/skill-profile" sync
+{{ if has "hermes" .harnesses }}
+"$HOME/.local/share/mise/installs/skill-profile/latest/bin/skill-profile" hermes-sync
+{{ end }}
 {{ end }}
