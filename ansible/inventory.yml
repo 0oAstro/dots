@@ -28,7 +28,7 @@ all:
     ai_off: {children: {macs: {}}} # Apple Intelligence, Siri, dictation
 
     # Opt-in modules.
-    apps_dev: # Xcode, Cursor, T3 Code, TestFlight
+    apps_dev: # Xcode, Cursor, Diri, T3 Code, TestFlight
       hosts: {thunderchief: , blackbird: }
     apps_comms: # Slack, WhatsApp
       hosts: {thunderchief: , blackbird: }

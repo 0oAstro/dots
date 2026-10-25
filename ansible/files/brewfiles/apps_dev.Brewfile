@@ -1,3 +1,6 @@
+tap "cristicretu/diri", trusted: { casks: ["diri"] }
+
+cask "cristicretu/diri/diri"
 cask "cursor"
 cask "t3-code@nightly"
 
