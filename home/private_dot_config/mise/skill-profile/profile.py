@@ -160,9 +160,35 @@ def verify(destination, policy):
     print(json.dumps({"automatic": sorted(automatic), "registered": len(names), "removed": policy["removed"], "verified": True}))
 
 
+def sync_cursor(home, destination):
+    profile = destination / "current"
+    manifest = json.loads((profile / "manifest.json").read_text())
+    directory = home / ".cursor/skills/skill-profile"
+    directory.mkdir(parents=True, exist_ok=True)
+    expected = set()
+    for entry in manifest["skills"]:
+        if entry["path"].startswith("prime/"):
+            continue
+        name = entry["name"]
+        expected.add(name)
+        path = directory / name
+        target = profile / entry["path"]
+        if path.exists() and not path.is_symlink():
+            raise FileExistsError(f"refusing to replace original skill: {path}")
+        if path.is_symlink() and path.resolve() == target.resolve():
+            continue
+        temporary = directory / f".{name}-{os.getpid()}"
+        temporary.symlink_to(target)
+        temporary.replace(path)
+    for path in directory.iterdir():
+        if path.name not in expected and path.is_symlink():
+            path.unlink()
+    print(json.dumps({"cursor_skills": len(expected), "directory": str(directory)}))
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["sync", "verify", "hermes-sync", "hermes-verify"])
+    parser.add_argument("command", choices=["sync", "verify", "cursor-sync", "hermes-sync", "hermes-verify"])
     parser.add_argument("--home", type=Path, default=Path.home())
     parser.add_argument("--destination", type=Path, default=ROOT)
     args = parser.parse_args()
@@ -178,6 +204,8 @@ def main():
         else:
             result = verify_hermes(destination, runtime)
         print(json.dumps(result))
+    elif args.command == "cursor-sync":
+        sync_cursor(args.home, args.destination)
     elif args.command == "sync":
         sync(args.home, args.destination, policy)
     else:
