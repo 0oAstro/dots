@@ -20,7 +20,8 @@
       "url": "https://radius.pi.dev/mcp",
       "auth": {
         "provider": "radius"
-      }
+      },
+      "enabled": false
     }
   }
 }
