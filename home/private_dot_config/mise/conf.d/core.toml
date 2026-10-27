@@ -51,7 +51,8 @@ ffmpeg = "latest"
 
 aws-cli = { version = "latest", symlink_bins = "true" }
 # The registry already allows prerelease dependencies; repeating it breaks uv.
-azure-cli = "latest"
+# pymsalruntime, a macOS dependency, has no CPython 3.15 wheels yet.
+azure-cli = { version = "latest", python = "3.14" }
 azd = "latest"
 # gcloud rejects the system Python (3.9 on macOS and Amazon Linux); CLOUDSDK_PYTHON
 # below points its installer and runtime at mise's.
