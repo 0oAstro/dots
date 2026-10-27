@@ -1,3 +1,24 @@
 {{- /* chezmoi:modify-template */ -}}
 {{- /* Settings carried over from Ghostty and herdr. Diri keeps every other key it writes. */ -}}
-{{- includeTemplate "merge" (dict "current" .chezmoi.stdin "managed" (print "{\"defaultAgent\":\"claude-code\",\"automaticUpdates\":true,\"terminalTheme\":\"dirijor-dark\",\"followSystemTheme\":true,\"terminalFontFamily\":\"IoskeleyMonoTerm Nerd Font Mono\",\"terminalFontSize\":14,\"windowMaterial\":\"glass\",\"interfaceStyle\":\"blended\",\"paneDensity\":\"compact\",\"sidebarVisible\":true,\"confirmBeforeClosingSession\":false,\"terminalCopyOnSelect\":true,\"terminalPasteProtection\":false,\"terminalHidePointer\":true,\"terminalFollowsLastDirectory\":true,\"statusNotifications\":true,\"statusSounds\":true,\"quickOpenRoots\":\"" .chezmoi.homeDir "/Developer\"}") "format" "json") -}}
+{{- $home := .chezmoi.homeDir -}}
+{{- $roots := list (joinPath $home "Developer") (joinPath $home ".local/share/chezmoi") (joinPath $home "Library/CloudStorage/Dropbox") -}}
+{{- $roots = concat $roots (glob (joinPath $home "Library/CloudStorage/GoogleDrive-*/My Drive/acad")) -}}
+{{- $managed := dict
+      "defaultAgent" "claude-code"
+      "automaticUpdates" true
+      "followSystemTheme" true
+      "terminalFontFamily" "IoskeleyMonoTerm Nerd Font Mono"
+      "terminalFontSize" 14
+      "windowMaterial" "glass"
+      "interfaceStyle" "blended"
+      "paneDensity" "compact"
+      "sidebarVisible" true
+      "confirmBeforeClosingSession" false
+      "terminalCopyOnSelect" true
+      "terminalPasteProtection" false
+      "terminalHidePointer" true
+      "terminalFollowsLastDirectory" true
+      "statusNotifications" true
+      "statusSounds" true
+      "quickOpenRoots" (join "\n" $roots) -}}
+{{- includeTemplate "merge" (dict "current" .chezmoi.stdin "managed" (toJson $managed) "format" "json") -}}
