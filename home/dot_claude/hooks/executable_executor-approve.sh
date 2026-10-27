@@ -6,7 +6,7 @@ if [ "$mode" = "url" ]; then
   exit 0
 fi
 
-if printf '%s' "$input" | jq -r '[.message, (.requested_schema | tostring)] | join(" ")' | grep -qiE 'bitwarden|vaultwarden|warden'; then
+if printf '%s' "$input" | jq -r '[.message, (.requested_schema | tostring)] | join(" ")' | grep -qiE 'keychain_|bitwarden|vaultwarden|warden'; then
   exit 0
 fi
 
