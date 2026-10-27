@@ -80,8 +80,15 @@ unset _zdots_dir
 # Avoid duplicate wireless-debug transports; use explicit `adb connect host:port`.
 export ADB_MDNS_AUTO_CONNECT=0
 
-# Amazon Bedrock defaults: agents run Claude and Kimi K3 there.
-export AWS_PROFILE=${AWS_PROFILE:-personal}
+# Amazon Bedrock defaults: agents run Claude and Kimi K3 there. Macs use the
+# Bedrock-only `bedrock` profile. Linux hosts name the credential-less
+# `default` profile so the SDK falls through to the instance role; pi hides
+# amazon-bedrock unless AWS_PROFILE or static keys are set.
+{{- if eq .chezmoi.os "darwin" }}
+export AWS_PROFILE=${AWS_PROFILE:-bedrock}
+{{- else }}
+export AWS_PROFILE=${AWS_PROFILE:-default}
+{{- end }}
 export AWS_REGION=${AWS_REGION:-us-east-1}
 
 # Agents read the Azure pair for the GPT, GLM and DeepSeek deployments. T3
