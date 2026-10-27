@@ -56,21 +56,12 @@
 # Bifrost and its Claude Code proxy are gone (2026-10-25).
 .config/bifrost-mitm
 .config/zsh/config/integrations/ai-gateway.zsh
-# Codex is gone. On macOS the ChatGPT app keeps its own state in ~/.codex,
-# so remove only the files chezmoi placed there.
-.codex/AGENTS.md
-.codex/model-routing-policy.md
-.codex/pstack-models.md
-.codex/aa-frontier-2026-09-29.json
-.codex/bifrost_models.json
-.codex/herdr-agent-state.sh
-.codex/hooks.json
-.codex/skills
-.codex/packages/standalone/current
+# Codex is gone.
+.codex
+.config/codex
 .config/herdr/agent-detection/codex.toml
 # Retired pstack forks and the agent links into them; pstack is mise's http:pstack.
 .claude/pstack
-.codex/pstack
 .pi/agent/pstack-src
 .claude/agents/poteto-agent.md
 .claude/agents/comment-sicko.md
