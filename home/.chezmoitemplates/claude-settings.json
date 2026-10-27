@@ -15,7 +15,18 @@
   },
   "disableClaudeAiConnectors": true,
   "hooks": {
-    "SessionStart": []
+    "SessionStart": [],
+    "Elicitation": [
+      {
+        "matcher": "executor",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/executor-approve.sh"
+          }
+        ]
+      }
+    ]
   },
   "statusLine": {
     "type": "command",
