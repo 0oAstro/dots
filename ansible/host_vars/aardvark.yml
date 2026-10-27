@@ -95,7 +95,6 @@ firewalld_zones:
       - 80/tcp
       - 443/tcp
       - 443/udp
-      - 25565/tcp # minecraft
       - 41641/udp # tailscale direct
       - 60000-61000/udp # mosh
     rich_rules:

@@ -15,7 +15,6 @@ chezmoi = "latest"
 "aqua:cli/cli" = "latest"
 "aqua:dandavison/delta" = "latest"
 "aqua:git-lfs/git-lfs" = "latest"
-"pipx:git-filter-repo" = "latest"
 
 "aqua:neovim/neovim" = "latest"
 "aqua:junegunn/fzf" = "latest"
@@ -46,7 +45,6 @@ ffmpeg = "latest"
 "aqua:docker/compose" = "latest"
 
 "github:theseus-rs/postgresql-binaries" = { version = "latest", filter_bins = "psql" }
-"vfox:jdx/vfox-mysql" = { version = "latest", filter_bins = "mysql*" }
 "github:jorgerojas26/lazysql" = "latest"
 
 aws-cli = { version = "latest", symlink_bins = "true" }
