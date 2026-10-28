@@ -7,7 +7,7 @@ gitleaks = "latest"
 actionlint = "latest"
 python = "3.14"
 uv = "latest" # the pipx backend installs ansible-core with uvx
-"pipx:ansible-core" = "latest"
+"pipx:ansible-core" = { version = "latest", uvx_args = "--python 3.14" } # ansible-core breaks on Python 3.15
 
 [tasks.fmt]
 description = "Format every shell script, chezmoi templates included"
