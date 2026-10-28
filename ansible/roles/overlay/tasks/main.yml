@@ -91,6 +91,13 @@
   when: overlay_changed | select('match', '/etc/exports') | list | length > 0
   changed_when: true
 
+- name: Reload firewalld
+  ansible.builtin.systemd_service:
+    name: firewalld
+    state: reloaded
+  tags: [service]
+  when: overlay_changed | select('match', '/etc/firewalld/') | list | length > 0
+
 - name: Reload sshd
   ansible.builtin.systemd_service:
     name: "{{ 'ssh' if ansible_facts.os_family == 'Debian' else 'sshd' }}"
