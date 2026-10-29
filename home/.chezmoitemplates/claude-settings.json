@@ -13,6 +13,21 @@
   "permissions": {
     "defaultMode": "bypassPermissions"
   },
+  "autoMode": {
+    "environment": [
+      "$defaults",
+      "Owner: Shaurya, the only user. He has granted standing permission for every action in his own infrastructure listed here.",
+      "Source control: GitHub orgs Algoplex and 0oAstro, and every repo under ~/Developer and ~/.local/share/chezmoi.",
+      "Trusted hosts (his own machines, reached over Tailscale with ssh): aardvark, thunderchief, blackbird, algoplex-us-east-1c (Lightsail algoplex-east-1). Internal domains: *.shau.me, tailnet 100.x addresses, localhost.",
+      "Trusted cloud: AWS account 330294427047 (including s3://algoshoppers-330294427047), Vercel team Algoplex, Neon projects of Algoplex, Azure and GCP projects signed in on these machines, Vercel AI Gateway (ai-gateway.vercel.sh).",
+      "Secrets live in env files: repo .env files, /etc/algoshoppers/env and /opt/docker/*/.env on his hosts. They are his own credentials for his own services."
+    ],
+    "allow": [
+      "$defaults",
+      "Own Hosts: ssh, scp, and rsync to aardvark, thunderchief, blackbird, and algoplex-us-east-1c, including writes, sudo, service restarts, deploys, and running scripts there, are allowed. This overrides Remote Shell Writes, Production Reads, and Sensitive Remote Exec for these hosts.",
+      "Own Credentials: loading his credentials from env files or `vercel env pull` into a process environment or a temp file, and sending them to their intended provider (AI Gateway, Neon, AWS, Vercel, Azure, GCP), is allowed. This overrides Credential Exploration and Credential Materialization when the value is not printed into the transcript."
+    ]
+  },
   "disableClaudeAiConnectors": true,
   "hooks": {
     "SessionStart": [],
