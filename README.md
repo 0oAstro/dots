@@ -37,7 +37,7 @@ Lists named `packages_*`, `systemd_enabled_*`, `systemd_masked_*`, `macos_defaul
 
 chezmoi sees the host's modules as `.modules` (the `dots` role passes them to `chezmoi init`), so home files can follow a module: `~/.config/karabiner` comes with `input`.
 
-aardvark's `/opt/docker` is the private repo `0oAstro/aardvark-docker`. The `docker_stacks` role fast-forwards it, writes its secrets, installs the units the stacks own, creates the shared networks, and runs `docker compose up` for every stack without a `DISABLED` file. Secrets there are age-encrypted copies (`sealed/`, same key as this repo) listed in `secrets.yml`. The `secrets` role creates missing ones and fails, without writing, when a live secret differs from its copy: run `bin/seal` there to keep the live one, or pass `-e secrets_take_sealed=true` to restore the copy.
+aardvark's `/opt/docker` is the private repo `0oAstro/infra` (its `tofu/` holds the OpenTofu edge config). The `docker_stacks` role fast-forwards it, writes its secrets, installs the units the stacks own, creates the shared networks, and runs `docker compose up` for every stack without a `DISABLED` file. Secrets there are age-encrypted copies (`sealed/`, same key as this repo) listed in `secrets.yml`. The `secrets` role creates missing ones and fails, without writing, when a live secret differs from its copy: run `bin/seal` there to keep the live one, or pass `-e secrets_take_sealed=true` to restore the copy.
 
 ## Change something
 

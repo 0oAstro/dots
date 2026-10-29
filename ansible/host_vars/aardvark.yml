@@ -50,7 +50,7 @@ systemd_restart_on_change:
 
 docker_users: [ec2-user]
 
-docker_stacks_repo: https://github.com/0oAstro/aardvark-docker.git
+docker_stacks_repo: https://github.com/0oAstro/infra.git
 docker_stacks_dir: /opt/docker
 docker_stacks_owner: ec2-user
 # Shared Docker networks. Compose files join them with external: true and own
