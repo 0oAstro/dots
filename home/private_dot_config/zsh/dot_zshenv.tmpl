@@ -91,6 +91,18 @@ export AWS_PROFILE=${AWS_PROFILE:-default}
 {{- end }}
 export AWS_REGION=${AWS_REGION:-us-east-1}
 
+# Claude Code re-sends each background agent's transcript every 30 s to write
+# its 3-word panel status (agent_summary). This Bun preload stops that timer
+# and is a no-op in any other Bun program. Vendored from gist
+# flamerix-ai/c3905705cc4205e5de3011fa2e74efce; re-check its log after updates.
+() {
+  local hook=$HOME/.local/share/no-agent-summary/no-agent-summary.js
+  [[ -r $hook ]] || return 0
+  [[ " ${BUN_OPTIONS:-} " == *" --preload=$hook "* ]] ||
+    export BUN_OPTIONS="${BUN_OPTIONS:+$BUN_OPTIONS }--preload=$hook"
+  export CC_AGENT_SUMMARY_LOG=${CC_AGENT_SUMMARY_LOG:-${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/no-agent-summary.log}
+}
+
 # Agents read the Azure pair for the GPT, GLM and DeepSeek deployments, and
 # Pi's firecrawl-web reads FIRECRAWL_API_KEY. Export only these from
 # ~/.config/secrets/agents.env; `secret NAME` (secrets.zsh) loads the rest on demand.
