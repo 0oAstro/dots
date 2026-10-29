@@ -4,13 +4,13 @@
 # Safe to rerun. It bootstraps only what Ansible cannot do unattended (mise,
 # GitHub login, the age key, Homebrew's installer), then runs the playbook
 # for this host, which applies chezmoi at the end. Servers are better set up
-# from another machine: add them to ansible/inventory.yml and run
+# from another machine: list them in modules/servers/module.yml and run
 # `mise run provision -- --limit <host>` there.
 #
 # Arguments go to ansible-playbook, for example -e to override variables.
 # DOTS_REPO overrides the repo, for example a file:// URL when testing.
-# DOTS_GROUP is the inventory group for a host not yet listed in
-# ansible/inventory.yml (default: macs on macOS, desktops on Linux).
+# DOTS_GROUP is the module for a host that no module lists yet (default:
+# macs on macOS, desktops on Linux).
 set -eu
 
 bin=$HOME/.local/bin
@@ -75,12 +75,12 @@ cd "$src"
 "$mise" run ansible:deps
 
 set -- --limit "$host" "$@"
-if ! "$mise" exec -- ansible-inventory -i ansible/inventory.yml --host "$host" >/dev/null 2>&1; then
+if ! (cd ansible && "$mise" exec -- ansible-inventory --host "$host") >/dev/null 2>&1; then
   case $(uname -s) in Darwin) group=${DOTS_GROUP:-macs} ;; *) group=${DOTS_GROUP:-desktops} ;; esac
   extra=$(mktemp -d)/inventory.yml # the yaml plugin needs the extension
   printf 'all:\n  children:\n    %s:\n      hosts:\n        %s:\n' "$group" "$host" >"$extra"
-  set -- "$@" -i inventory.yml -i "$extra"
-  say "$host is not in ansible/inventory.yml; using group $group for this run (add it and commit)"
+  set -- "$@" -i ../modules -i "$extra"
+  say "no module lists $host; using $group for this run (add it to modules/$group/module.yml and commit)"
 fi
 if ! sudo -n true 2>/dev/null; then
   set -- "$@" --ask-become-pass

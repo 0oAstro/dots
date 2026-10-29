@@ -1,0 +1,6 @@
+# Hemant's Mac: his apps (Brewfile) and personal choices. Host vars here
+# override every module.
+host_blackbird:
+  hosts:
+    blackbird:
+      screenshot_dir: ~/Desktop

@@ -1,0 +1,6 @@
+# Cartograph CF 2.900.
+cartograph:
+  hosts: {thunderchief: }
+  vars:
+    chezmoi:
+      fonts: [cartograph]

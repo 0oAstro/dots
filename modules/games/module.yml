@@ -1,0 +1,18 @@
+# Steam, CrossOver, NotProton, Prism Launcher (Brewfile).
+games:
+  hosts: {thunderchief: }
+  vars:
+    # CrossOver and NotProton upkeep: on this host only, deleted elsewhere.
+    chezmoi:
+      home: &games_home
+        - .local/bin/crossover-sync
+        - .local/bin/cmas-apply
+        - .local/bin/cmas.sh
+      remove: *games_home
+
+    launchd_services_games:
+      - {label: com.apple.gamed, state: enabled} # Game Center stays on
+
+    # CrossOver follows NotProton's supported builds through crossover-sync
+    # (roles/crossover), so no version is pinned here.
+    games_crossover_sync: true

@@ -1,0 +1,9 @@
+# Prime: the CLI (conf.d/harness-prime.toml) and its settings.
+prime:
+  hosts: {aardvark: }
+  vars:
+    chezmoi:
+      harness: true
+      home:
+        - .prime
+        - .config/mise/conf.d/harness-prime.toml

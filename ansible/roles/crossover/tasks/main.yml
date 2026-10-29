@@ -1,4 +1,4 @@
-# CrossOver and NotProton come from games.Brewfile. crossover-sync (chezmoi,
+# CrossOver and NotProton come from modules/games/Brewfile. crossover-sync (chezmoi,
 # ~/.local/bin) upgrades NotProton, moves CrossOver to Homebrew's release only
 # when NotProton supports that build, then patches CrossOver with cmas.sh. The
 # dev.dots.brew-upgrade agent runs the same script twice a day. cmas.sh is

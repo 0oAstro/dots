@@ -1,0 +1,24 @@
+{{- /*
+  Print, one per line, the .key list (home, remove or fonts) of every module
+  this host is not in, from modules/<name>/module.yml (`chezmoi:` in its vars).
+  An entry that a module on this host also lists is left out.
+  Call: template "module-paths" (dict "key" "home" "ctx" .)
+*/ -}}
+{{- $key := .key -}}
+{{- $mine := .ctx.modules | default list -}}
+{{- $kept := list -}}
+{{- $absent := list -}}
+{{- range glob (joinPath .ctx.chezmoi.sourceDir ".." "modules" "*" "module.yml") -}}
+{{-   $name := base (dir .) -}}
+{{-   $entries := dig $name "vars" "chezmoi" $key list (include . | fromYaml) -}}
+{{-   if has $name $mine -}}
+{{-     $kept = concat $kept $entries -}}
+{{-   else -}}
+{{-     $absent = concat $absent $entries -}}
+{{-   end -}}
+{{- end -}}
+{{- range $absent | uniq -}}
+{{-   if not (has . $kept) }}
+{{ . }}
+{{-   end -}}
+{{- end -}}

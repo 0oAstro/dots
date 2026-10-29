@@ -1,0 +1,6 @@
+# PragmataPro 0.903, patched build, from woff2.
+pragmata_pro:
+  hosts: {thunderchief: }
+  vars:
+    chezmoi:
+      fonts: [pragmata_pro]

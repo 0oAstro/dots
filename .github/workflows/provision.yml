@@ -78,7 +78,7 @@ jobs:
         run: |
           printf 'all:\n  children:\n    desktops:\n      hosts:\n        ci-target:\n          ansible_connection: community.docker.docker\n' >ci-inventory.yml
           run() {
-            mise exec -- ansible-playbook site.yml -i inventory.yml -i ci-inventory.yml --limit ci-target \
+            mise exec -- ansible-playbook site.yml -i ../modules -i ci-inventory.yml --limit ci-target \
               --tags packages,login_shell,overlay,tailscale,docker --skip-tags service \
               -e '{"docker_users": ["root"]}'
           }

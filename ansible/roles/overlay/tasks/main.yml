@@ -1,13 +1,23 @@
-# Copies files/overlays/<layer>/ onto / for each layer in overlay_layers.
-# A later layer wins for the same path. Existing directories keep their modes.
+# Copies modules/<module>/overlay/ onto / for each module the host is in.
+# Two modules may not write the same path. Existing directories keep their modes.
 - name: Collect overlay files
   ansible.builtin.set_fact:
     overlay_files: >-
       {{ overlay_files | default({}) | combine(
-           query('community.general.filetree', playbook_dir ~ '/files/overlays/' ~ item)
+           query('community.general.filetree', modules_dir ~ '/' ~ item ~ '/overlay')
            | selectattr('state', 'eq', 'file')
            | items2dict(key_name='path', value_name='src')) }}
-  loop: "{{ overlay_layers }}"
+    overlay_paths: >-
+      {{ overlay_paths | default([]) +
+         query('community.general.filetree', modules_dir ~ '/' ~ item ~ '/overlay')
+         | selectattr('state', 'eq', 'file') | map(attribute='path') | list }}
+  loop: "{{ group_names }}"
+
+- name: One module per path
+  ansible.builtin.assert:
+    that: overlay_paths | length == overlay_paths | unique | length
+    fail_msg: "Written by two modules: {{ overlay_paths | community.general.counter | dict2items | selectattr('value', '>', 1) | map(attribute='key') | list }}"
+    quiet: true
 
 - name: Is sshd installed?
   ansible.builtin.stat:

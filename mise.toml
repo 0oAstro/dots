@@ -27,6 +27,15 @@ depends = ["ansible:deps"]
 dir = "ansible"
 run = "ansible-playbook site.yml"
 
+[tasks.modules]
+description = "List the modules each host is in (pass a host to see one)"
+depends = ["ansible:deps"]
+dir = "ansible"
+usage = 'arg "[host]" default="all"'
+env = { ANSIBLE_STDOUT_CALLBACK = "json", ANSIBLE_LOAD_CALLBACK_PLUGINS = "1" }
+run = """ansible "${usage_host}" -m ansible.builtin.debug -a var=group_names |
+  jq -r '.plays[0].tasks[0].hosts | to_entries[] | "\\(.key): \\(.value.group_names | sort | join(" "))"'"""
+
 [tasks.check]
 description = "Format check, lint (shell, workflows), secret scan, playbook syntax, render every profile, start zsh"
 depends = ["ansible:deps"]

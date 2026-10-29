@@ -40,3 +40,26 @@
     clone.args = ["--depth", "1"]
     pull.args = ["--ff-only"]
 {{- end }}
+
+{{- /*
+  Fonts: each module's `chezmoi: {fonts: [...]}` names branches of the private
+  0oAstro/fonts repo, one family per branch. git reads GitHub credentials
+  through mise's gh shim, which a fresh machine gets from this apply's mise
+  step, so fonts arrive on the next apply.
+*/ -}}
+{{- if stat (joinPath .chezmoi.homeDir ".local/share/mise/shims/gh") }}
+{{-   $fontDir := ternary "Library/Fonts" ".local/share/fonts" (eq .chezmoi.os "darwin") }}
+{{-   range .modules }}
+{{-     $file := joinPath $.chezmoi.sourceDir ".." "modules" . "module.yml" }}
+{{-     if stat $file }}
+{{-       range dig . "vars" "chezmoi" "fonts" list (include $file | fromYaml) }}
+
+["{{ $fontDir }}/{{ . }}"]
+    type = "git-repo"
+    url = "https://github.com/0oAstro/fonts.git"
+    clone.args = ["--depth", "1", "--single-branch", "--branch", "{{ . }}"]
+    pull.args = ["--ff-only"]
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end }}

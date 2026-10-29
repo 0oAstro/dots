@@ -1,0 +1,6 @@
+# Berkeley Mono 2.002, and the v1 Italic and Bold Italic.
+berkeley_mono:
+  hosts: {thunderchief: }
+  vars:
+    chezmoi:
+      fonts: [berkeley_mono]

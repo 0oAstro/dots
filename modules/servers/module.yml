@@ -1,0 +1,13 @@
+# Always-on hosts: Tailscale, systemd-oomd, Claude Remote Control.
+servers:
+  hosts: {aardvark: }
+  vars:
+    tailscale_enabled: true
+
+    # Kills the worst cgroup under memory pressure (user-1000.slice opts in).
+    systemd_enabled_servers:
+      - systemd-oomd.service
+
+    # Login user's systemd units (user_units/) keep running without a session.
+    user_units_enabled_servers:
+      - claude-rc.service

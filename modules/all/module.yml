@@ -1,0 +1,19 @@
+# Settings every host gets: Ansible's built-in all group.
+all:
+  vars:
+    # The machine running the playbook manages itself locally; others over SSH.
+    ansible_connection: "{{ 'local' if inventory_hostname == (lookup('pipe', 'uname -n') | lower | split('.') | first) else 'ssh' }}"
+
+    # One folder per module: module.yml, and optionally Brewfile, overlay/, user_units/.
+    modules_dir: "{{ playbook_dir }}/../modules"
+
+    dots_pull: true
+
+    # chezmoi through mise, so it works before chezmoi has written mise's config.
+    dots_home: "{{ ansible_facts.env.HOME }}"
+    dots_mise: "{{ dots_home }}/.local/bin/mise"
+    dots_chezmoi: "{{ dots_mise }} exec chezmoi@latest -- chezmoi"
+
+    # PATH for tools mise installs (chezmoi, gh, the compose plugin).
+    dots_env:
+      PATH: "{{ ansible_facts.env.HOME }}/.local/share/mise/shims:{{ ansible_facts.env.HOME }}/.local/bin:{{ ansible_facts.env.PATH }}"

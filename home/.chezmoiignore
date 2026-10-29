@@ -1,6 +1,6 @@
-# Target paths chezmoi leaves alone on this machine: by OS, by the `server`
-# switch, the modules and the harnesses (.chezmoi.toml.tmpl), and by whether
-# the age key exists.
+# Target paths chezmoi leaves alone on this machine: by OS, by the modules
+# this host is not in (their `chezmoi: {home: [...]}` in modules/<name>/module.yml),
+# and by whether the age key exists.
 
 .config/zsh/README.md
 
@@ -26,12 +26,6 @@
 .config/beszel
 {{- end }}
 
-# Hemant shares aardvark's ec2-user; his git identity lives only there.
-{{- if ne .host "aardvark" }}
-.ssh/merak-signing
-.config/git/merak-max
-{{- end }}
-
 {{- if eq .chezmoi.os "darwin" }}
 # The Bitwarden SSH agent holds the signing key on macOS.
 .ssh/github
@@ -49,32 +43,8 @@ Library
 .config/mise/conf.d/macos.toml
 {{- end }}
 
-{{- if not (has "input" (get . "modules" | default list)) }}
-# Karabiner's config follows the input module.
-.config/karabiner
-{{- end }}
-
-{{- if not (has "games" (get . "modules" | default list)) }}
-# CrossOver and NotProton upkeep follows the games module.
-.local/bin/crossover-sync
-.local/bin/cmas-apply
-.local/bin/cmas.sh
-{{- end }}
-
-{{- /* Agent harnesses: each has conf.d/harness-<name>.toml and the paths below. */ -}}
-{{- $harnessPaths := dict
-      "claude" (list ".claude")
-      "pi" (list ".pi" ".local/bin/pi-teacher" ".config/mise/conf.d/pi-global-tools.toml")
-      "prime" (list ".prime")
-      "cursor" (list) }}
-{{- range $name, $paths := $harnessPaths }}
-{{-   if not (has $name $.harnesses) }}
-.config/mise/conf.d/harness-{{ $name }}.toml
-{{-     range $paths }}
-{{ . }}
-{{-     end }}
-{{-   end }}
-{{- end }}
+# Home paths of the modules this host is not in.
+{{- template "module-paths" (dict "key" "home" "ctx" .) }}
 
 {{- if not .harnesses }}
 # Tooling that every harness shares.

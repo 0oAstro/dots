@@ -1,0 +1,9 @@
+# Claude Code: the CLI (conf.d/harness-claude.toml) and its settings.
+claude:
+  hosts: {thunderchief: , blackbird: , aardvark: }
+  vars:
+    chezmoi:
+      harness: true
+      home:
+        - .claude
+        - .config/mise/conf.d/harness-claude.toml

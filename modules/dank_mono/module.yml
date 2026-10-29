@@ -1,0 +1,6 @@
+# Dank Mono 1.000.
+dank_mono:
+  hosts: {thunderchief: }
+  vars:
+    chezmoi:
+      fonts: [dank_mono]

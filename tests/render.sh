@@ -13,12 +13,12 @@ cleanup() { rm -rf "$work" 2>/dev/null || {
 } || true; }
 trap cleanup EXIT
 fail=0
-# name|os|arch|switches json
+# name|os|arch|modules (what Ansible passes for that host)
 profiles=(
-  'aardvark|linux|arm64|"server":true,"harnesses":["claude","cursor","pi","prime"]'
-  'thunderchief|darwin|arm64|"server":false,"harnesses":["claude","pi"],"modules":["ai_off","apps_comms","apps_dev","apps_media","dropbox","finder","games","google_drive","input","look","perf","vendor_updaters_off"]'
-  'newbox|linux|amd64|"server":false,"harnesses":[]'
-  'newmac|darwin|arm64|"server":true,"harnesses":["cursor","prime"]'
+  'aardvark|linux|arm64|claude,cursor,host_aardvark,linux,pi,prime,servers'
+  'thunderchief|darwin|arm64|ai_off,apps_comms,apps_dev,apps_media,berkeley_mono,claude,dropbox,finder,games,google_drive,host_thunderchief,input,look,macs,perf,pi,vendor_updaters_off'
+  'newbox|linux|amd64|'
+  'newmac|darwin|arm64|cursor,prime,servers'
 )
 
 check() { # label command...
@@ -32,18 +32,28 @@ check() { # label command...
 
 # chezmoi ignores unknown config keys, so check the age setting by name: without
 # it, decrypting needs an age binary that a fresh machine does not have yet.
-if ! chezmoi execute-template --init --promptBool server=false --promptString harnesses=pi \
+if ! chezmoi --source "$repo/home" execute-template --init --promptString modules=pi \
   <"$repo/home/.chezmoi.toml.tmpl" | grep -qx 'useBuiltinAge = true'; then
   echo "FAIL .chezmoi.toml.tmpl must set useBuiltinAge = true"
   fail=1
 fi
 
 for p in "${profiles[@]}"; do
-  IFS='|' read -r host os arch switches <<<"$p"
+  IFS='|' read -r host os arch modules <<<"$p"
   home=$work/$host
   mkdir -p "$home"
-  printf '%s\n' "{\"chezmoi\":{\"os\":\"$os\",\"arch\":\"$arch\",\"homeDir\":\"$home\",\"hostname\":\"$host\"},
-    \"host\":\"$host\",$switches}" >"$work/$host.json"
+  # The [data] that `chezmoi init` writes for these modules (server and
+  # harnesses come from the module files), with this profile's OS and host.
+  chezmoi --source "$repo/home" execute-template --init --promptString "modules=$modules" \
+    <"$repo/home/.chezmoi.toml.tmpl" >"$work/$host.init.toml"
+  python3 - "$work/$host.init.toml" "$os" "$arch" "$home" "$host" >"$work/$host.json" <<'PY'
+import json, sys, tomllib
+config, os_name, arch, home, host = sys.argv[1:]
+data = tomllib.load(open(config, "rb"))["data"]
+data["host"] = host
+data["chezmoi"] = {"os": os_name, "arch": arch, "homeDir": home, "hostname": host}
+print(json.dumps(data))
+PY
   printf '[diff]\n  pager = "cat"\n' >"$work/$host.toml"
   cz=(chezmoi --source "$repo/home" --destination "$home" --config "$work/$host.toml"
     --override-data-file "$work/$host.json" --no-tty --keep-going)

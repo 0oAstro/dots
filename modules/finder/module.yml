@@ -1,0 +1,28 @@
+# Finder, save panels and screenshots on every Mac. The screenshot folder is
+# a personal choice: screenshot_dir in a host_<name> module.
+finder:
+  children: {macs: }
+  vars:
+    screenshot_dir: ~/Desktop
+
+    macos_defaults_finder:
+      - {domain: NSGlobalDomain, key: NSNavPanelExpandedStateForSaveMode, type: bool, value: true}
+      - {domain: NSGlobalDomain, key: NSDocumentSaveNewDocumentsToCloud, type: bool, value: false}
+      - {domain: com.apple.finder, key: ShowPathbar, type: bool, value: true, kill: Finder}
+      - {domain: com.apple.finder, key: ShowStatusBar, type: bool, value: true, kill: Finder}
+      - {domain: com.apple.finder, key: FXPreferredViewStyle, type: string, value: icnv, kill: Finder}
+      - {domain: com.apple.finder, key: FXDefaultSearchScope, type: string, value: SCcf, kill: Finder}
+      - {domain: com.apple.finder, key: FXEnableExtensionChangeWarning, type: bool, value: false, kill: Finder}
+      - {domain: com.apple.finder, key: _FXSortFoldersFirst, type: bool, value: true, kill: Finder}
+      - {domain: com.apple.finder, key: NewWindowTarget, type: string, value: PfHm, kill: Finder}
+      - {domain: com.apple.finder, key: ShowExternalHardDrivesOnDesktop, type: bool, value: false, kill: Finder}
+      - {domain: com.apple.finder, key: ShowHardDrivesOnDesktop, type: bool, value: false, kill: Finder}
+      - {domain: com.apple.finder, key: ShowRemovableMediaOnDesktop, type: bool, value: true, kill: Finder}
+      - {domain: com.apple.finder, key: QuitMenuItem, type: bool, value: true, kill: Finder}
+      - {domain: com.apple.finder, key: AppleShowAllFiles, type: bool, value: false, kill: Finder}
+      - {domain: NSGlobalDomain, key: AppleShowAllExtensions, type: bool, value: false, kill: Finder}
+      - {domain: com.apple.desktopservices, key: DSDontWriteNetworkStores, type: bool, value: true}
+      - {domain: com.apple.desktopservices, key: DSDontWriteUSBStores, type: bool, value: true}
+      - {domain: com.apple.screencapture, key: type, type: string, value: png, kill: SystemUIServer}
+      - {domain: com.apple.screencapture, key: disable-shadow, type: bool, value: true, kill: SystemUIServer}
+      - {domain: com.apple.screencapture, key: location, type: string, value: "{{ screenshot_dir }}", kill: SystemUIServer}

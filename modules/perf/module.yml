@@ -1,0 +1,27 @@
+# Keeps every Mac quick: nothing starts at login unless listed, no crash
+# dialogs, and the power settings in pmset_ac/pmset_battery (host_<name> modules).
+# Login items: every login_items_<layer> list merges; anything else is removed.
+perf:
+  children: {macs: }
+  vars:
+    login_items_perf:
+      - Bitwarden
+      - Blip
+      - Tinycast
+
+    macos_defaults_perf:
+      - {domain: com.apple.CrashReporter, key: DialogType, type: string, value: none}
+      - {domain: NSGlobalDomain, key: NSDisableAutomaticTermination, type: bool, value: true}
+      - {domain: NSGlobalDomain, key: ComputerUseAllowForbiddenTargets, type: bool, value: true}
+      - {domain: com.apple.TextEdit, key: RichText, type: int, value: 0}
+      - {domain: com.apple.ActivityMonitor, key: ShowCategory, type: int, value: 100}
+      - {domain: com.apple.LaunchServices, key: LSQuarantine, type: bool, value: false}
+
+    # pmset defaults; a host overrides the whole dict. Values match thunderchief.
+    pmset_battery: {displaysleep: 5, sleep: 10, disksleep: 10, powernap: 0, womp: 0, lessbright: 1}
+    pmset_ac: {displaysleep: 10, sleep: 15, disksleep: 10, powernap: 0, womp: 0}
+
+    # A hand-made daemon that ran /usr/sbin/purge every two hours; purge only
+    # empties the file cache macOS would reuse anyway.
+    launchd_daemons_absent_perf:
+      - com.local.purge

@@ -1,6 +1,38 @@
 # dots
 
-One repo for every machine. [Ansible](ansible/) runs everything: the system layer (Homebrew, macOS settings, packages, firewall, systemd units, Docker stacks, login shell) and then [chezmoi](https://chezmoi.io), which owns the home directory: zsh, git, the agent harnesses, and the tool list. The zsh config came from `0oAstro/zdots` with its history.
+One repo for every machine. [Ansible](ansible/) runs everything: the system layer (Homebrew, macOS settings, packages, firewall, systemd units, Docker stacks, login shell) and then [chezmoi](https://chezmoi.io), which owns the home directory: zsh, git, the agent harnesses, the fonts, and the tool list. The zsh config came from `0oAstro/zdots` with its history.
+
+## Modules
+
+Every feature is a module: one folder, `modules/<name>/`. Its `module.yml` says which hosts get it and what it sets; Ansible and chezmoi both read it. To give a host a feature, add the host to that file. To add a feature, add a folder.
+
+```yaml
+# modules/berkeley_mono/module.yml
+berkeley_mono:
+  hosts: {thunderchief: }       # or children: {macs: } for every Mac
+  vars:
+    chezmoi:
+      fonts: [berkeley_mono]
+```
+
+| In the folder | Read by | Does |
+| --- | --- | --- |
+| `module.yml`: `hosts:` or `children:` | Ansible (it is an inventory file) | Which hosts are in the module. `children: {macs: }` means every host in the `macs` module |
+| `module.yml`: `vars:` | Ansible roles | Lists named `<kind>_<module>` (`macos_defaults_look`, `launchd_services_games`); see System layer |
+| `module.yml`: `vars: chezmoi: home: [...]` | chezmoi | Home paths applied only on hosts in the module |
+| `module.yml`: `vars: chezmoi: remove: [...]` | chezmoi | Home paths deleted on hosts not in it |
+| `module.yml`: `vars: chezmoi: fonts: [...]` | chezmoi | Branches of the private `0oAstro/fonts` repo, cloned into `~/Library/Fonts/<branch>` |
+| `module.yml`: `vars: chezmoi: harness: true` | chezmoi | The module is an agent harness (`claude`, `pi`, `prime`, `cursor`) |
+| `Brewfile` | the homebrew role | Apps for every Mac in the module |
+| `overlay/` | the overlay role (Linux) | Files copied onto `/` |
+| `user_units/` | the user_units role (Linux) | systemd user units for the login user |
+
+Kinds are modules too: `macs`, `linux`, `servers` (always-on), `desktops`. So are hosts: `host_<name>` holds a host's own apps and files, and its inline host vars (`screenshot_dir`, `pmset_*`) override every other module. `modules/all/` holds the settings every host gets.
+
+```sh
+mise run modules                # every host and its modules
+mise run modules thunderchief   # one host
+```
 
 ## Set up a machine
 
@@ -8,11 +40,11 @@ One repo for every machine. [Ansible](ansible/) runs everything: the system laye
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/0oAstro/dots/master/install.sh)"
 ```
 
-That is for the machine you are sitting at. `install.sh` bootstraps only what Ansible cannot do unattended: it installs [mise](https://mise.jdx.dev), logs in to GitHub, asks for the age key, runs Homebrew's installer on a Mac, and clones this repo. It then runs the playbook for this host. A host missing from `ansible/inventory.yml` gets `macs` or `desktops` for that run (`DOTS_GROUP` overrides); add it to the inventory and commit.
+That is for the machine you are sitting at. `install.sh` bootstraps only what Ansible cannot do unattended: it installs [mise](https://mise.jdx.dev), logs in to GitHub, asks for the age key, runs Homebrew's installer on a Mac, and clones this repo. It then runs the playbook for this host. A host that no module lists gets `macs` or `desktops` for that run (`DOTS_GROUP` overrides); add it to `modules/macs/module.yml` (or `desktops`) and a `host_<name>` module, and commit.
 
-For a server, add it to `servers` in `ansible/inventory.yml` and provision it from another machine. The playbook installs mise there, copies the age key and a GitHub login from the controller, clones this repo, and applies chezmoi.
+For a server, add it to `modules/servers/module.yml` and provision it from another machine. The playbook installs mise there, copies the age key and a GitHub login from the controller, clones this repo, and applies chezmoi.
 
-The host's groups in `ansible/inventory.yml` decide what chezmoi installs: `servers` (always-on host), its modules, and its `harness_<name>` groups. The playbook writes them into chezmoi's config, so nothing prompts. The host running the playbook manages itself locally and the rest over SSH:
+The playbook writes the host's modules into chezmoi's config (`chezmoi init --promptString modules=...`), so nothing prompts. chezmoi derives `server` (the `servers` module) and `harnesses` from them. The host running the playbook manages itself locally and the rest over SSH:
 
 ```sh
 mise run provision -- --check --diff   # dry run on every host
@@ -26,16 +58,14 @@ Roles are generic; groups and hosts hold the data. A second run reports `changed
 
 | Where | What |
 | --- | --- |
-| `group_vars/macs.yml` | What every Mac is: Homebrew taps to drop, application firewall, the `dev.dots.brew-upgrade` launchd agent |
-| `group_vars/<module>.yml` | One feature each. `inventory.yml` gives every Mac the shared modules (`look`, `input`, `finder`, `perf`, `vendor_updaters_off`, `ai_off`) and lists hosts under the opt-in ones (`apps_dev`, `apps_comms`, `apps_media`, `games`, `google_drive`, `dropbox`) |
-| `files/brewfiles/<group>.Brewfile`, `<host>.Brewfile` | Homebrew: a Mac gets `macs.Brewfile`, one per module it is in, and its own. Together they are the whole truth: anything installed but unlisted is uninstalled |
-| `group_vars/linux.yml`, `servers.yml`, `desktops.yml` | Base packages, Tailscale (official repo), Claude Remote Control on servers |
-| `host_vars/<host>.yml` | That host's personal choices (`screenshot_dir`, `macos_appearance`, `dock_tilesize`, `pmset_*`), packages, enabled units, firewalld zones, Docker stacks |
-| `files/overlays/<layer>/` | Files copied onto `/`, layered `linux`, then `servers` or `desktops`, then the host. sysctl, exports, sshd, firewalld direct rules and systemd units reload when they change |
+| `modules/macs/` | What every Mac is: Homebrew taps to drop, application firewall, the `dev.dots.brew-upgrade` launchd agent, the base Brewfile |
+| `modules/<module>/` | One feature each. `look`, `input`, `finder`, `perf`, `vendor_updaters_off` and `ai_off` take every Mac (`children: {macs: }`); `apps_dev`, `apps_comms`, `apps_media`, `games`, `google_drive`, `dropbox` and the fonts list their hosts |
+| `modules/<module>/Brewfile` | Homebrew: a Mac gets the Brewfile of every module it is in. Together they are the whole truth: anything installed but unlisted is uninstalled |
+| `modules/linux/`, `servers/`, `desktops/` | Base packages, Tailscale (official repo), Claude Remote Control on servers |
+| `modules/host_<host>/` | That host's personal choices as host vars (`screenshot_dir`, `macos_appearance`, `dock_tilesize`, `pmset_*`), packages, enabled units, firewalld zones, Docker stacks, its Brewfile |
+| `modules/<module>/overlay/` | Files copied onto `/` (`linux`, `servers`, `host_aardvark`). Two modules may not write the same path. sysctl, exports, sshd, firewalld direct rules and systemd units reload when they change |
 
-Lists named `packages_*`, `systemd_enabled_*`, `systemd_masked_*`, `macos_defaults_*`, `launchd_agents_*`, `launchd_services_*`, `launchd_daemons_absent_*`, `login_items_*` and `home_links_*` merge across groups, modules and hosts, so each layer adds its own; name them after the layer (`macos_defaults_games`, `launchd_services_thunderchief`). A defaults key or launchd label set by two layers fails the run. Login items are exclusive: an app that no layer lists is removed. Firewalld services, ports and rich rules are exclusive too, so hand-added ones get removed.
-
-chezmoi sees the host's modules as `.modules` (the `dots` role passes them to `chezmoi init`), so home files can follow a module: `~/.config/karabiner` comes with `input`.
+Lists named `packages_*`, `systemd_enabled_*`, `systemd_masked_*`, `macos_defaults_*`, `launchd_agents_*`, `launchd_services_*`, `launchd_daemons_absent_*`, `login_items_*` and `home_links_*` merge across modules, so each module adds its own; name them after the module (`macos_defaults_games`, `launchd_services_thunderchief`). A defaults key or launchd label set by two modules fails the run. Login items are exclusive: an app that no layer lists is removed. Firewalld services, ports and rich rules are exclusive too, so hand-added ones get removed.
 
 aardvark's `/opt/docker` is the private repo `0oAstro/infra` (its `tofu/` holds the OpenTofu edge config). The `docker_stacks` role fast-forwards it, writes its secrets, installs the units the stacks own, creates the shared networks, and runs `docker compose up` for every stack without a `DISABLED` file. Secrets there are age-encrypted copies (`sealed/`, same key as this repo) listed in `secrets.yml`. The `secrets` role creates missing ones and fails, without writing, when a live secret differs from its copy: run `bin/seal` there to keep the live one, or pass `-e secrets_take_sealed=true` to restore the copy.
 
@@ -51,11 +81,11 @@ chezmoi update                              # on the other machines
 | To change | Edit |
 | --- | --- |
 | Tools | `~/.config/mise/conf.d/core.toml` (both OSes), `macos.toml`, `linux.toml`, `ai.toml` |
-| macOS apps | `ansible/files/brewfiles/macs.Brewfile` (every Mac), `<module>.Brewfile`, or `<host>.Brewfile` |
-| A Mac's modules | `ansible/inventory.yml`, then `mise run provision -- --limit <host>` |
-| A host's agent harnesses | the `harness_<name>` groups in `ansible/inventory.yml`, then `mise run provision -- --limit <host> --tags dots` |
-| A new harness | `conf.d/harness-<name>.toml`, its paths in `home/.chezmoiignore` (`$harnessPaths`), and a `harness_<name>` group |
-| Machine settings, packages, firewall, units | `ansible/` (see System layer) |
+| macOS apps | `modules/macs/Brewfile` (every Mac), `modules/<module>/Brewfile`, or `modules/host_<host>/Brewfile` |
+| A host's modules | the `hosts:` of each `modules/<module>/module.yml`, then `mise run provision -- --limit <host>` |
+| A new harness | `conf.d/harness-<name>.toml` and `modules/<name>/module.yml` with `harness: true` and its `home:` paths |
+| A paid font | a branch of `0oAstro/fonts` (its README), then `modules/<family>/module.yml` with `fonts: [<family>]` |
+| Machine settings, packages, firewall, units | `modules/` and the roles in `ansible/roles/` (see System layer) |
 | API keys | `edit-secrets` (re-encrypts and applies) |
 | SSH hosts | `chezmoi edit ~/.ssh/config.d/$(uname -n)` |
 
@@ -67,12 +97,15 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 | --- | --- |
 | every machine | zsh, git, tmux, bat, ripgrep, glow, dtop, btop; `conf.d/core.toml` |
 | any harness | pstack, agent-browser; `conf.d/ai.toml` |
-| `harness_<name>` group | that harness's CLI in `conf.d/harness-<name>.toml` and its settings (`claude`, `pi`, `prime`, `cursor`) |
+| a harness module | that harness's CLI in `conf.d/harness-<name>.toml` and its settings (`claude`, `pi`, `prime`, `cursor`) |
 | macOS | Ghostty, lazysql; `conf.d/macos.toml` |
 | Linux | `conf.d/linux.toml` |
 | `input` module | Karabiner |
+| a font module | that family in `~/Library/Fonts/<family>` |
 
-`home/.chezmoiignore` holds these rules. Ansible copies `ansible/files/user_units/<layer>/` into `~/.config/systemd/user/` (claude-rc for `servers`; the AlgoChat timers and T3 drop-ins for aardvark).
+`home/.chezmoiignore` holds the OS rules; module rules come from each module's `chezmoi: home:`. Ansible copies `modules/<module>/user_units/` into `~/.config/systemd/user/` (claude-rc for `servers`; the AlgoChat timers and T3 drop-ins for `host_aardvark`).
+
+Fonts need the GitHub login (`gh`, through mise) to clone the private repo. On a fresh machine that login's shim appears during the first apply, so fonts arrive on the second.
 
 ## Secrets
 

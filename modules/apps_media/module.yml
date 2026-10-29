@@ -1,0 +1,3 @@
+# IINA (Brewfile).
+apps_media:
+  hosts: {thunderchief: , blackbird: }

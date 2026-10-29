@@ -1,0 +1,6 @@
+# Gintronic 1.1.
+gintronic:
+  hosts: {thunderchief: }
+  vars:
+    chezmoi:
+      fonts: [gintronic]

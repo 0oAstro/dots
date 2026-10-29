@@ -1,0 +1,6 @@
+# Ellograph CF 1.200.
+ellograph:
+  hosts: {thunderchief: }
+  vars:
+    chezmoi:
+      fonts: [ellograph]

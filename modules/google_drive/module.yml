@@ -1,0 +1,10 @@
+# Google Drive through its app, for the Finder integration (rclone mounts show
+# up as "localhost"). ~/Drive points at My Drive once the account signs in.
+google_drive:
+  hosts: {thunderchief: }
+  vars:
+    login_items_google_drive:
+      - Google Drive
+
+    home_links_google_drive:
+      - {link: Drive, target: "Library/CloudStorage/GoogleDrive-{{ google_drive_account }}/My Drive"}

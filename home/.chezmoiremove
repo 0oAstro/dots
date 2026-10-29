@@ -16,11 +16,12 @@
 # API keys moved from zsh to ~/.config/secrets/agents.env (2026-10-30).
 .config/zsh/.zshrc.local
 
-{{- if not (has "games" (get . "modules" | default list)) }}
-# CrossOver upkeep left on a host that is not in the games module.
-.local/bin/crossover-sync
-.local/bin/cmas-apply
-.local/bin/cmas.sh
+# What a module leaves behind on a host that is not in it: its `remove`
+# paths, and its fonts.
+{{- template "module-paths" (dict "key" "remove" "ctx" .) }}
+{{- $fonts := ternary "Library/Fonts" ".local/share/fonts" (eq .chezmoi.os "darwin") }}
+{{- range includeTemplate "module-paths" (dict "key" "fonts" "ctx" .) | trim | splitList "\n" | compact }}
+{{ $fonts }}/{{ . }}
 {{- end }}
 
 {{- if .harnesses }}

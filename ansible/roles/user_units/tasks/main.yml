@@ -1,7 +1,6 @@
 # systemd --user units for the login user, kept running without a session
-# through lingering. Like the overlay role, files/user_units/<layer>/ is copied
-# into ~/.config/systemd/user/ for each layer in overlay_layers; a later layer
-# wins for the same path. Drop-ins (<unit>.d/*.conf) work for units that an
+# through lingering. Like the overlay role, modules/<module>/user_units/ is
+# copied into ~/.config/systemd/user/ for each module the host is in. Drop-ins (<unit>.d/*.conf) work for units that an
 # app writes itself, such as T3's t3code.service.
 #
 # Units listed in a user_units_enabled_* list are enabled, started, and
@@ -12,10 +11,10 @@
   ansible.builtin.set_fact:
     user_unit_files: >-
       {{ user_unit_files | default({}) | combine(
-           query('community.general.filetree', playbook_dir ~ '/files/user_units/' ~ item)
+           query('community.general.filetree', modules_dir ~ '/' ~ item ~ '/user_units')
            | selectattr('state', 'eq', 'file')
            | items2dict(key_name='path', value_name='src')) }}
-  loop: "{{ overlay_layers }}"
+  loop: "{{ group_names }}"
 
 - name: Linger
   ansible.builtin.command: loginctl enable-linger {{ ansible_facts.user_id }}

@@ -1,0 +1,3 @@
+# Slack, WhatsApp (Brewfile).
+apps_comms:
+  hosts: {thunderchief: , blackbird: }

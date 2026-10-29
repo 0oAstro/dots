@@ -1,4 +1,4 @@
-# Maestral (Dropbox) settings from group_vars/dropbox.yml, applied through
+# Maestral (Dropbox) settings from modules/dropbox/module.yml, applied through
 # maestral-cli so the running daemon picks them up. Signing in stays manual:
 # `maestral-cli auth link -c {{ maestral_name }}` (the token goes to the Keychain).
 # The daemon runs from launchd_agents_dropbox; leave `maestral autostart` off,

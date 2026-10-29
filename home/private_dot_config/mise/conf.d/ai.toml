@@ -1,5 +1,5 @@
 # Agent tooling that every harness shares. Each harness has its own
-# harness-<name>.toml; inventory.yml says which hosts get which harness.
+# harness-<name>.toml; modules/<name>/module.yml says which hosts get it.
 
 [tools]
 "aqua:vercel-labs/agent-browser" = "latest"

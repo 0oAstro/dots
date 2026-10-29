@@ -1,7 +1,0 @@
-# Steam, CrossOver, NotProton, Prism Launcher. Apps: files/brewfiles/games.Brewfile.
-launchd_services_games:
-  - {label: com.apple.gamed, state: enabled} # Game Center stays on
-
-# CrossOver follows NotProton's supported builds through crossover-sync
-# (roles/crossover), so no version is pinned here.
-games_crossover_sync: true

@@ -1,0 +1,6 @@
+# MonoLisa Code 3.000 (variable, from woff2, names restored) and MonoLisa Variable.
+monolisa_code:
+  hosts: {thunderchief: }
+  vars:
+    chezmoi:
+      fonts: [monolisa_code]

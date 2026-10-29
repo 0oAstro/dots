@@ -1,0 +1,6 @@
+# Operator Mono 1.200.
+operator_mono:
+  hosts: {thunderchief: }
+  vars:
+    chezmoi:
+      fonts: [operator_mono]

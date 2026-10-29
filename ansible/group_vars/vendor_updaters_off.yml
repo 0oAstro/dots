@@ -1,9 +1,0 @@
-# Background updaters that wake the Mac for apps Homebrew already updates
-# (dev.dots.brew-upgrade). Disabling a label that is not installed is harmless.
-launchd_services_vendor_updaters_off:
-  - {label: com.google.GoogleUpdater.wake, state: disabled}
-  - {label: com.google.keystone.agent, state: disabled}
-  - {label: com.google.keystone.xpcservice, state: disabled}
-  - {label: us.zoom.updater, state: disabled}
-  - {label: us.zoom.updater.login.check, state: disabled}
-  - {label: us.zoom.ZoomDaemon, domain: system, state: disabled}

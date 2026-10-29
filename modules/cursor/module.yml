@@ -1,0 +1,8 @@
+# Cursor's agent CLI (conf.d/harness-cursor.toml).
+cursor:
+  hosts: {aardvark: }
+  vars:
+    chezmoi:
+      harness: true
+      home:
+        - .config/mise/conf.d/harness-cursor.toml

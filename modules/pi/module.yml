@@ -1,0 +1,11 @@
+# Pi: the CLI (conf.d/harness-pi.toml), its settings and the pi-teacher profile.
+pi:
+  hosts: {thunderchief: , blackbird: , aardvark: }
+  vars:
+    chezmoi:
+      harness: true
+      home:
+        - .pi
+        - .local/bin/pi-teacher
+        - .config/mise/conf.d/harness-pi.toml
+        - .config/mise/conf.d/pi-global-tools.toml
