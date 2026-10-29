@@ -7,16 +7,15 @@ tmux = "latest"
 # Ghidra (ai.toml) needs JDK 21. macOS gets it from macos.toml.
 java = "zulu-21"
 
-# T3 Code nightly, read from the npm "nightly" dist-tag. The GitHub backend's
+# T3 Code stable, read from the npm "latest" dist-tag. The GitHub backend's
 # newest prerelease can be a maintainer preview build, and a preview's
 # migrations block every later build from opening the database.
 # The background service runs its own copy from ~/.t3/runtime; postinstall
 # moves it to this version and restarts it.
 [tools."http:t3"]
 version = "latest"
-prerelease = true
 version_list_url = "https://registry.npmjs.org/-/package/t3/dist-tags"
-version_regex = '"nightly":"([^"]+)"'
+version_regex = '"latest":"([^"]+)"'
 platforms.linux-arm64.url = "https://github.com/pingdotgg/t3code/releases/download/v{{ "{{" }} version {{ "}}" }}/t3-{{ "{{" }} version {{ "}}" }}-linux-arm64.tar.gz"
 platforms.linux-x64.url = "https://github.com/pingdotgg/t3code/releases/download/v{{ "{{" }} version {{ "}}" }}/t3-{{ "{{" }} version {{ "}}" }}-linux-x64.tar.gz"
 strip_components = 1
