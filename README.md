@@ -33,7 +33,7 @@ Roles are generic; groups and hosts hold the data. A second run reports `changed
 | `host_vars/<host>.yml` | That host's personal choices (`screenshot_dir`, `macos_appearance`, `dock_tilesize`, `pmset_*`), packages, enabled units, firewalld zones, Docker stacks |
 | `files/overlays/<layer>/` | Files copied onto `/`, layered `linux`, then `servers` or `desktops`, then the host. sysctl, exports, sshd, firewalld direct rules and systemd units reload when they change |
 
-Lists named `packages_*`, `systemd_enabled_*`, `macos_defaults_*`, `launchd_agents_*`, `launchd_services_*`, `launchd_daemons_absent_*`, `login_items_*` and `home_links_*` merge across groups, modules and hosts, so each layer adds its own; name them after the layer (`macos_defaults_games`, `launchd_services_thunderchief`). A defaults key or launchd label set by two layers fails the run. Login items are exclusive: an app that no layer lists is removed. Firewalld services, ports and rich rules are exclusive too, so hand-added ones get removed.
+Lists named `packages_*`, `systemd_enabled_*`, `systemd_masked_*`, `macos_defaults_*`, `launchd_agents_*`, `launchd_services_*`, `launchd_daemons_absent_*`, `login_items_*` and `home_links_*` merge across groups, modules and hosts, so each layer adds its own; name them after the layer (`macos_defaults_games`, `launchd_services_thunderchief`). A defaults key or launchd label set by two layers fails the run. Login items are exclusive: an app that no layer lists is removed. Firewalld services, ports and rich rules are exclusive too, so hand-added ones get removed.
 
 chezmoi sees the host's modules as `.modules` (the `dots` role passes them to `chezmoi init`), so home files can follow a module: `~/.config/karabiner` comes with `input`.
 
