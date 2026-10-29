@@ -33,6 +33,11 @@ systemd_enabled_aardvark:
   - rclone-gdrive.service
   - psacct.service # per-command CPU history: `sudo sa -m`, `sudo lastcomm`
 
+# chromium pulls in avahi through nss-mdns; nothing here uses mDNS.
+systemd_masked_aardvark:
+  - avahi-daemon.socket
+  - avahi-daemon.service
+
 # Restarted when their unit, drop-in or (for stack units) repo copy changes.
 # Left out: the rclone mounts, because containers hold files open on them.
 systemd_restart_on_change:

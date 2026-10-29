@@ -1,6 +1,7 @@
 # Reloads systemd after unit changes (overlay or stack units), enables every
-# unit listed in a systemd_enabled_* list, and restarts changed units that are
-# in systemd_restart_on_change.
+# unit listed in a systemd_enabled_* list, masks every unit in a
+# systemd_masked_* list, and restarts changed units that are in
+# systemd_restart_on_change.
 - name: Units that changed this run
   ansible.builtin.set_fact:
     systemd_changed: >-
@@ -19,6 +20,14 @@
     enabled: true
     state: started
   loop: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^systemd_enabled_.+')) | flatten | unique }}"
+
+- name: Stop, disable and mask
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    enabled: false
+    masked: true
+    state: stopped
+  loop: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^systemd_masked_.+')) | flatten | unique }}"
 
 - name: Restart changed units
   ansible.builtin.systemd_service:
