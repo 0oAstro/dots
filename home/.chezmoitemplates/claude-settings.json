@@ -2,7 +2,14 @@
   "syncClaudeAiPlugins": false,
   "syncClaudeAiSkills": false,
   "env": {
+{{- if .server }}
+    "DISABLE_TELEMETRY": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "DISABLE_AUTOUPDATER": "1",
+    "DISABLE_BUG_COMMAND": "1",
+{{- else }}
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+{{- end }}
     "CLAUDE_CODE_SHELL": "/bin/bash",
     "HTTPS_PROXY": ""
   },

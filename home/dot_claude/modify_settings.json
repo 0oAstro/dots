@@ -1,2 +1,11 @@
 {{- /* chezmoi:modify-template */ -}}
-{{- includeTemplate "merge" (dict "current" .chezmoi.stdin "managed" (includeTemplate "claude-settings.json" .) "format" "json") -}}
+{{- $current := .chezmoi.stdin -}}
+{{- /* Servers run claude-rc, and Remote Control refuses to start under the
+       umbrella flag, so they set its parts instead (claude-settings.json). */ -}}
+{{- if and .server $current }}
+{{-   $parsed := fromJson $current -}}
+{{-   $env := get $parsed "env" -}}
+{{-   if kindIs "map" $env }}{{ $_ := unset $env "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC" }}{{ end -}}
+{{-   $current = toJson $parsed -}}
+{{- end -}}
+{{- includeTemplate "merge" (dict "current" $current "managed" (includeTemplate "claude-settings.json" .) "format" "json") -}}
