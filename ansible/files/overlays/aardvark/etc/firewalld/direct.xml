@@ -7,26 +7,15 @@
   <rule ipv="ipv4" table="filter" chain="INPUT" priority="-2">-p tcp --dport 3773 -s 127.0.0.0/8 -j ACCEPT</rule>
   <rule ipv="ipv4" table="filter" chain="INPUT" priority="-2">-p tcp --dport 3773 -s 172.28.0.5 -j ACCEPT</rule>
   <rule ipv="ipv4" table="filter" chain="INPUT" priority="-1">-p tcp --dport 3773 -j REJECT --reject-with tcp-reset</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -d 172.17.0.0/16 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -d 172.18.0.0/16 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -d 172.19.0.0/16 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -d 172.20.0.0/16 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -d 172.21.0.0/16 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -d 172.22.0.0/16 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -d 172.24.0.0/16 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -d 172.25.0.0/16 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -d 172.31.0.0/16 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -d 192.168.0.0/20 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -d 192.168.16.0/20 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -d 192.168.32.0/20 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="0">-i ens34 -p tcp -m conntrack --ctstate DNAT --ctorigdstport 80 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="1">-i ens34 -p tcp -m conntrack --ctstate DNAT --ctorigdstport 443 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="2">-i ens34 -p udp -m conntrack --ctstate DNAT --ctorigdstport 443 -j ACCEPT</rule>
+  <!-- Tailnet and exit-node clients reach published ports (DNAT) and replies only, never container IPs. -->
+  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -m conntrack --ctstate DNAT -j ACCEPT</rule>
+  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="11">-i tailscale0 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT</rule>
+  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="93">-i tailscale0 -o docker0 -j DROP</rule>
+  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="94">-i tailscale0 -o br-+ -j DROP</rule>
   <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="90">-i ens34 -m conntrack --ctstate DNAT -j DROP</rule>
   <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="91">-i ens34 -o docker0 -j DROP</rule>
   <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="92">-i ens34 -o br-+ -j DROP</rule>
   <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="-1">-i ens34 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="3">-i ens34 -p tcp -m conntrack --ctstate DNAT --ctorigdstport 25565 -j ACCEPT</rule>
   <rule ipv="ipv4" table="filter" chain="INPUT" priority="0">-i tailscale0 -p tcp --dport 111 '!' -s 100.81.80.94 -j DROP</rule>
   <rule ipv="ipv4" table="filter" chain="INPUT" priority="0">-i tailscale0 -p udp --dport 111 '!' -s 100.81.80.94 -j DROP</rule>
   <rule ipv="ipv4" table="filter" chain="INPUT" priority="0">-i tailscale0 -p tcp --dport 2049 '!' -s 100.81.80.94 -j DROP</rule>

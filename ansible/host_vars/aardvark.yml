@@ -91,12 +91,10 @@ firewalld_zones:
     forward: true
     masquerade: false
     services: [dhcpv6-client, ssh]
+    # No public web or mosh port: web arrives through the Cloudflare tunnels,
+    # mosh through the trusted tailnet.
     ports:
-      - 80/tcp
-      - 443/tcp
-      - 443/udp
       - 41641/udp # tailscale direct
-      - 60000-61000/udp # mosh
     rich_rules:
       # Exit-node traffic from the tailnet leaves through ens34.
       - rule family="ipv4" source address="100.64.0.0/10" masquerade
