@@ -13,6 +13,8 @@
 .bash_profile
 .config/bash
 .cache/bash
+# API keys moved from zsh to ~/.config/secrets/agents.env (2026-10-30).
+.config/zsh/.zshrc.local
 
 {{- if not (has "games" (get . "modules" | default list)) }}
 # CrossOver upkeep left on a host that is not in the games module.

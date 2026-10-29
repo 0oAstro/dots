@@ -91,17 +91,16 @@ export AWS_PROFILE=${AWS_PROFILE:-default}
 {{- end }}
 export AWS_REGION=${AWS_REGION:-us-east-1}
 
-# Agents read the Azure pair for the GPT, GLM and DeepSeek deployments. T3
-# Desktop starts its server from a non-interactive SSH shell that never
-# sources .zshrc.local, so load only these keys here; the other secrets stay
-# interactive.
+# Agents read the Azure pair for the GPT, GLM and DeepSeek deployments, and
+# Pi's firecrawl-web reads FIRECRAWL_API_KEY. Export only these from
+# ~/.config/secrets/agents.env; `secret NAME` (secrets.zsh) loads the rest on demand.
 () {
-  local secrets=$ZDOTDIR/.zshrc.local name line
+  local secrets=$HOME/.config/secrets/agents.env name line
   [[ -r $secrets ]] || return 0
-  for name in AZURE_OPENAI_API_KEY AZURE_OPENAI_BASE_URL; do
+  for name in AZURE_OPENAI_API_KEY AZURE_OPENAI_BASE_URL FIRECRAWL_API_KEY; do
     [[ -z ${(P)name:-} ]] || continue
-    line=${(M)${(f)"$(<$secrets)"}:#export $name=*}
-    [[ -n $line ]] && eval "$line"
+    line=${(M)${(f)"$(<$secrets)"}:#$name=*}
+    [[ -n $line ]] && eval "export $line"
   done
 }
 

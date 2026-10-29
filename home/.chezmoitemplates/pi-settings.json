@@ -55,7 +55,7 @@
   "cacheWarming": "idle",
   "quietStartup": "header",
   "enableInstallTelemetry": false,
-  "defaultProjectTrust": "always",
+  "defaultProjectTrust": "ask",
   "hideThinkingBlock": true,
   "modelThinkingLevels": {
     "amazon-bedrock/us.anthropic.claude-fable-5-1": "xhigh",

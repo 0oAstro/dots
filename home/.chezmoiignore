@@ -6,7 +6,7 @@
 
 {{- if not (stat (joinPath .chezmoi.homeDir ".config/age/keys.txt")) }}
 # No age key yet: skip the encrypted files.
-.config/zsh/.zshrc.local
+.config/secrets/agents.env
 .ssh/config.d/*
 .ssh/github
 .ssh/merak-signing

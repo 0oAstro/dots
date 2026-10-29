@@ -4,8 +4,9 @@ After=network-online.target
 
 [Service]
 WorkingDirectory=%h
-# Interactive zsh puts the mise-managed claude on PATH.
-ExecStart=/usr/bin/zsh -ic 'claude remote-control --name home'
+# .zshenv puts the mise-managed claude on PATH; a login-free, non-interactive
+# zsh exports only the .zshenv allowlist, not every key in agents.env.
+ExecStart=/usr/bin/zsh -c 'claude remote-control --name home'
 KillSignal=SIGINT
 TimeoutStopSec=20
 Restart=always

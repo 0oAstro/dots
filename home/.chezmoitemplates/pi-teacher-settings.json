@@ -33,7 +33,7 @@
   "cacheWarming": "idle",
   "quietStartup": "header",
   "enableInstallTelemetry": false,
-  "defaultProjectTrust": "always",
+  "defaultProjectTrust": "ask",
   "hideThinkingBlock": true,
   "httpIdleTimeoutMs": 900000,
   "retry": {
