@@ -61,6 +61,7 @@ docker_stacks_networks:
   - {name: assistant_net, prefix: "172.25"}
   - {name: auth_net, prefix: "172.28"}
   - {name: blocky_net, prefix: "172.19"}
+  - {name: docker_api_net, prefix: "172.29", internal: true} # read-only Docker API proxy and its clients
 # Units the stacks own, by repo path; installed to /etc/systemd/system.
 # Timers and path units are enabled; their oneshot services stay static.
 docker_stacks_units:
