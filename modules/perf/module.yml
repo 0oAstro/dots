@@ -6,8 +6,9 @@ perf:
   vars:
     login_items_perf:
       - Bitwarden
-      - Blip
       - Tinycast
+      # Not Blip: it registers its own login item (Blip's Launch at login
+      # setting) and drops the one System Events adds.
 
     macos_defaults_perf:
       - {domain: com.apple.CrashReporter, key: DialogType, type: string, value: none}
