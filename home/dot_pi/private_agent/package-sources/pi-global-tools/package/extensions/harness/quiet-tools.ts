@@ -1,7 +1,7 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
 
-export default function (pi: ExtensionAPI) {
+export function quietTools(pi: ExtensionAPI) {
 	pi.registerToolRenderer((_toolName, next) => {
 		const base = next();
 		return {

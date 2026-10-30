@@ -46,6 +46,8 @@
     "fetchModel": "azure/gpt-6-luna"
   },
   "harness": {
+    "footer": true,
+    "quietTools": true,
     "loopGuard": { "nudgeAt": 3, "stopAt": 6 },
     "directToolModels": []
   },

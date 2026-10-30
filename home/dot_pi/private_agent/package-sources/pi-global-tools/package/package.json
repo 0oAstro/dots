@@ -5,9 +5,7 @@
   "pi": {
     "extensions": [
       "./firecrawl-web/index.ts",
-      "./extensions/pure-footer.ts",
-      "./extensions/quiet-tools.ts",
-      "./extensions/harness.ts"
+      "./extensions/harness/index.ts"
     ]
   },
   "peerDependencies": {

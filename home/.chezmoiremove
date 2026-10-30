@@ -32,6 +32,9 @@
 .pi/agent/package-sources/pi-global-tools/package/codemode-gpt.ts
 .pi/agent/package-sources/pi-global-tools/package/extensions/loop-guard.ts
 .pi/agent/package-sources/pi-global-tools/package/extensions/small-model-tools.ts
+.pi/agent/package-sources/pi-global-tools/package/extensions/harness.ts
+.pi/agent/package-sources/pi-global-tools/package/extensions/pure-footer.ts
+.pi/agent/package-sources/pi-global-tools/package/extensions/quiet-tools.ts
 .pi/agent/extensions/firecrawl-web
 .pi/agent/extensions/fast-mode.ts
 .pi/agent/extensions/fast-mode.json

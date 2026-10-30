@@ -249,7 +249,7 @@ function composeLine(items: Item[], width: number): string {
 	return truncateToWidth(left || right, width, "…");
 }
 
-export default function (pi: ExtensionAPI) {
+export function footer(pi: ExtensionAPI) {
 	let git: GitState | undefined;
 	let gitTimer: ReturnType<typeof setTimeout> | undefined;
 	let gitRunning = false;
