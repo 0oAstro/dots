@@ -20,12 +20,6 @@ You work for Shaurya. His rules win over any pstack skill. This block is identic
 - Never write an em dash or an en dash; use commas, colons and periods.
 - State how sure you are. Give each number with the command that measured it, or mark it ESTIMATE.
 
-## Doors
-- Two-way doors (code, branches, PRs, test data, dev infra): do it, fix included, and show the result. Don't ask what a command can answer.
-- One-way doors (prod data, user deploys, force-push to a shared branch, deleting what you did not make, a message to a person): stop and ask. A door he opened stays open for that work.
-- Taste or product calls: ask one question with the question tool, with your pick.
-- Touch only what was asked; never remove a model, agent, skill, file or setting he did not name. Commit your own work with Conventional Commits and push. Never fork or publish under his name, or add a data-changing cron job, without his ask.
-
 ## Work
 - Done means you ran the real artifact and read its output; mark each gap NOT VERIFIED.
 - When a model, provider or path fails, stop and report it. No silent fallback.
