@@ -1,0 +1,81 @@
+{
+  "model": "custom:Opus-5.5-0",
+  "reasoningEffort": "medium",
+  "cloudSessionSync": false,
+  "includeCoAuthoredByDroid": false,
+  "completionSound": "off",
+  "awaitingInputSound": "off",
+  "sessionDefaultSettings": {
+    "autonomyLevel": "high"
+  },
+  "subagentModelSettings": {
+    "lightModel": "custom:Haiku-5.5-0",
+    "lightReasoningEffort": "xhigh",
+    "mediumModel": "custom:GPT-6.1-Sol-0",
+    "mediumReasoningEffort": "xhigh",
+    "heavyModel": "custom:Fable-5.1-0",
+    "heavyReasoningEffort": "xhigh"
+  },
+  "customModels": [
+    {
+      "model": "us.anthropic.claude-opus-5-5",
+      "displayName": "Opus 5.5",
+      "baseModelId": "claude-opus-5-5",
+      "provider": "anthropic",
+      "bedrock": {"authMethod": "aws-credentials", "awsRegion": "us-east-1"}
+    },
+    {
+      "model": "us.anthropic.claude-fable-5-1",
+      "displayName": "Fable 5.1",
+      "baseModelId": "claude-fable-5.1",
+      "provider": "anthropic",
+      "bedrock": {"authMethod": "aws-credentials", "awsRegion": "us-east-1"}
+    },
+    {
+      "model": "us.anthropic.claude-haiku-5-5",
+      "displayName": "Haiku 5.5",
+      "baseModelId": "claude-haiku-5-5",
+      "provider": "anthropic",
+      "bedrock": {"authMethod": "aws-credentials", "awsRegion": "us-east-1"}
+    },
+    {
+      "model": "us.moonshotai.kimi-k3",
+      "displayName": "Kimi K3",
+      "baseModelId": "kimi-k3",
+      "provider": "bedrock-converse",
+      "bedrock": {"authMethod": "aws-credentials", "awsRegion": "us-east-1"}
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "displayName": "GPT-6.1 Sol",
+      "baseModelId": "gpt-6.1-sol",
+      "provider": "openai",
+      "baseUrl": "https://suzuka-ai-garage-si-32cbd92e.openai.azure.com/openai/v1",
+      "apiKey": "${AZURE_OPENAI_API_KEY}"
+    },
+    {
+      "model": "gpt-6-astra",
+      "displayName": "GPT-6 Astra",
+      "baseModelId": "gpt-6-astra",
+      "provider": "openai",
+      "baseUrl": "https://suzuka-ai-garage-si-32cbd92e.openai.azure.com/openai/v1",
+      "apiKey": "${AZURE_OPENAI_API_KEY}"
+    },
+    {
+      "model": "fw-glm-5.3-flash",
+      "displayName": "GLM-5.3 Flash",
+      "baseModelId": "glm-5.3-flash",
+      "provider": "generic-chat-completion-api",
+      "baseUrl": "https://suzuka-ai-garage-si-32cbd92e.openai.azure.com/openai/v1",
+      "apiKey": "${AZURE_OPENAI_API_KEY}"
+    },
+    {
+      "model": "deepseek-v4.1-flash",
+      "displayName": "DeepSeek V4.1 Flash",
+      "baseModelId": "deepseek-v4.1-flash",
+      "provider": "generic-chat-completion-api",
+      "baseUrl": "https://suzuka-ai-garage-si-32cbd92e.openai.azure.com/openai/v1",
+      "apiKey": "${AZURE_OPENAI_API_KEY}"
+    }
+  ]
+}

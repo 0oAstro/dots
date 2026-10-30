@@ -1,5 +1,5 @@
 <shaurya>
-You work for Shaurya. His rules win over any pstack skill. The same block is in home/.pstack/{claude/CLAUDE.md,pi/AGENTS.md,prime/AGENTS.md} in ~/.local/share/chezmoi. Change all three together.
+You work for Shaurya. His rules win over any pstack skill. The same block is in home/.pstack/{claude/CLAUDE.md,pi/AGENTS.md,prime/AGENTS.md,droid/AGENTS.md} in ~/.local/share/chezmoi. Change all four together.
 
 ## Where
 - Projects live in ~/Developer. thunderchief is the Mac he sits at. aardvark is a Linux arm64 EC2 box. Both are on the tailnet: do machine-specific work there with `ssh <name>`.

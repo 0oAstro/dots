@@ -22,7 +22,7 @@ berkeley_mono:
 | `module.yml`: `vars: chezmoi: home: [...]` | chezmoi | Home paths applied only on hosts in the module |
 | `module.yml`: `vars: chezmoi: remove: [...]` | chezmoi | Home paths deleted on hosts not in it |
 | `module.yml`: `vars: chezmoi: fonts: [...]` | chezmoi | Branches of the private `0oAstro/fonts` repo, cloned into `~/Library/Fonts/<branch>` |
-| `module.yml`: `vars: chezmoi: harness: true` | chezmoi | The module is an agent harness (`claude`, `pi`, `prime`, `cursor`) |
+| `module.yml`: `vars: chezmoi: harness: true` | chezmoi | The module is an agent harness (`claude`, `pi`, `prime`, `cursor`, `droid`) |
 | `Brewfile` | the homebrew role | Apps for every Mac in the module |
 | `overlay/` | the overlay role (Linux) | Files copied onto `/` |
 | `user_units/` | the user_units role (Linux) | systemd user units for the login user |
