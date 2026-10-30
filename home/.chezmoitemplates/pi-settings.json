@@ -47,11 +47,7 @@
   },
   "harness": {
     "loopGuard": { "nudgeAt": 3, "stopAt": 6 },
-    "directToolModels": [
-      "amazon-bedrock/us.anthropic.claude-haiku-5-5",
-      "azure/fw-glm-5.3-flash",
-      "azure/deepseek-v4.1-flash"
-    ]
+    "directToolModels": []
   },
   "warnings": {
     "anthropicExtraUsage": false
