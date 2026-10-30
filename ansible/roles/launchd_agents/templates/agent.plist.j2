@@ -20,7 +20,10 @@
 {% endfor %}
   </dict>
 {% endif %}
-{% if item.keep_alive | default(false) %}
+{% if item.run_at_load | default(false) %}
+  <key>RunAtLoad</key>
+  <true/>
+{% elif item.keep_alive | default(false) %}
   <key>RunAtLoad</key>
   <true/>
   <key>KeepAlive</key>

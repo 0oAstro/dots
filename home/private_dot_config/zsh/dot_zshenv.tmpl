@@ -91,6 +91,10 @@ export AWS_PROFILE=${AWS_PROFILE:-default}
 {{- end }}
 export AWS_REGION=${AWS_REGION:-us-east-1}
 
+# launchd sets CLAUDE_CODE_ENTRYPOINT=t3-code for T3 Desktop (claude module);
+# a shell's claude is the plain CLI.
+[[ ${CLAUDE_CODE_ENTRYPOINT:-} == t3-code ]] && unset CLAUDE_CODE_ENTRYPOINT
+
 # Claude Code re-sends each background agent's transcript every 30 s to write
 # its 3-word panel status (agent_summary). This Bun preload stops that timer
 # and is a no-op in any other Bun program. Vendored from gist

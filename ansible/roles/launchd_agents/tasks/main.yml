@@ -1,6 +1,6 @@
 # Per-user launchd agents. Each launchd_agents_<layer> item: {label, command, env} plus
-# start_interval (periodic, low priority) or keep_alive: true (daemon;
-# background: true lowers its priority). A
+# start_interval (periodic, low priority), keep_alive: true (daemon;
+# background: true lowers its priority) or run_at_load: true (once per login). A
 # changed plist is reloaded; nothing is run on demand.
 - name: Plists
   ansible.builtin.template:
