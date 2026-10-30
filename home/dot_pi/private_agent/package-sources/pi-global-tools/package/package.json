@@ -7,8 +7,7 @@
       "./firecrawl-web/index.ts",
       "./extensions/pure-footer.ts",
       "./extensions/quiet-tools.ts",
-      "./extensions/loop-guard.ts",
-      "./extensions/small-model-tools.ts"
+      "./extensions/harness.ts"
     ]
   },
   "peerDependencies": {
