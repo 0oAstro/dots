@@ -1,6 +1,10 @@
 {
   "syncClaudeAiPlugins": false,
   "syncClaudeAiSkills": false,
+  "idleCompaction": false,
+  "awaySummaryEnabled": false,
+  "promptSuggestionEnabled": false,
+  "autoDreamEnabled": false,
   "env": {
 {{- if .server }}
     "DISABLE_TELEMETRY": "1",
