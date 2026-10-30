@@ -83,8 +83,7 @@
     "simplify": "user-invocable-only",
     "slides": "user-invocable-only",
     "update-config": "user-invocable-only",
-    "verify": "user-invocable-only",
-    "workflow-authoring": "user-invocable-only"
+    "verify": "user-invocable-only"
   },
   "effortLevel": "medium",
   "tui": "fullscreen",
