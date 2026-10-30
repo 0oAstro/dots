@@ -22,8 +22,7 @@
     "pr": ""
   },
   "permissions": {
-    "defaultMode": "bypassPermissions",
-    "deny": ["Artifact"]
+    "defaultMode": "bypassPermissions"
   },
   "autoMode": {
     "environment": [
