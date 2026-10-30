@@ -1,3 +1,3 @@
-# Xcode, Cursor, Diri, T3 Code, TestFlight (Brewfile).
+# Xcode, Cursor, T3 Code, TestFlight (Brewfile).
 apps_dev:
   hosts: {thunderchief: , blackbird: }

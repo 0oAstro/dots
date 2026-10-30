@@ -52,3 +52,10 @@ Library
 .config/mise/conf.d/skill-profile.toml
 .config/mise/skill-profile
 {{- end }}
+
+{{- if ne .host "blackbird" }}
+# Diri stays only on blackbird (host_blackbird Brewfile).
+Library/Application Support/diri
+Library/Application Support/Dirijor
+Library/Application Support/Dirijor/**
+{{- end }}

@@ -1,2 +1,4 @@
+tap "cristicretu/diri", trusted: { casks: ["diri"] }
+cask "cristicretu/diri/diri"
 cask "brave-browser"
 cask "github"
