@@ -1,0 +1,63 @@
+# Distrusts roots anchoring the intermediates compromised in the October 2026
+# eMudhra incident, for CLI tools that verify against /etc/ssl/cert.pem
+# without revocation checks (browsers get Apple's blocks separately). The
+# only lever is removing the root; the original store is kept as
+# /etc/ssl/cert.pem.orig for rollback.
+
+- name: Backup exists
+  ansible.builtin.stat:
+    path: /etc/ssl/cert.pem.orig
+  register: macos_trust_store_backup
+  check_mode: false
+
+- name: Keep a backup of the original store
+  ansible.builtin.copy:
+    src: /etc/ssl/cert.pem
+    dest: /etc/ssl/cert.pem.orig
+    remote_src: true
+  when: not macos_trust_store_backup.stat.exists
+  become: true
+
+- name: Compromised roots still in the store
+  ansible.builtin.command: grep -cF '=== {{ item.subject }}' /etc/ssl/cert.pem
+  loop: "{{ macos_trust_store_roots | selectattr('block', 'equalto', true) | list }}"
+  loop_control:
+    label: "{{ item.subject.split('/')[-1] }}"
+  register: macos_trust_store_present
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Remove compromised roots
+  ansible.builtin.shell: |
+    t=$(mktemp)
+    awk -v s='=== {{ item.item.subject }}' \
+      '/^(===|###) /{skip=0} $0==s{skip=1} !skip' /etc/ssl/cert.pem > "$t" &&
+    [ -s "$t" ] && install -m 0644 -o root -g wheel "$t" /etc/ssl/cert.pem
+    rc=$?
+    rm -f "$t"
+    exit "$rc"
+  loop: "{{ macos_trust_store_present.results }}"
+  loop_control:
+    label: "{{ item.item.subject.split('/')[-1] }}"
+  when: item.stdout | trim | int > 0
+  become: true
+  changed_when: true
+
+- name: Compromised roots gone from the store
+  ansible.builtin.command: grep -cF '=== {{ item.subject }}' /etc/ssl/cert.pem
+  loop: "{{ macos_trust_store_roots | selectattr('block', 'equalto', true) | list }}"
+  loop_control:
+    label: "{{ item.subject.split('/')[-1] }}"
+  register: macos_trust_store_verify
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Verify removal
+  ansible.builtin.assert:
+    that: item.stdout | trim | int == 0
+    fail_msg: "root still present: {{ item.item.subject }}"
+  loop: "{{ macos_trust_store_verify.results }}"
+  loop_control:
+    label: "{{ item.item.subject.split('/')[-1] }}"

@@ -1,0 +1,10 @@
+# macos_trust_store_block_aaa also removes the Comodo 'AAA Certificate
+# Services' root: it anchors the six Sectigo cross-signed intermediates from
+# the October 2026 eMudhra incident and many unrelated sites.
+macos_trust_store_block_aaa: false
+
+macos_trust_store_roots:
+  - subject: /C=IN/OU=emSign PKI/O=eMudhra Technologies Limited/CN=emSign ECC Root CA - G3
+    block: true
+  - subject: /C=GB/ST=Greater Manchester/L=Salford/O=Comodo CA Limited/CN=AAA Certificate Services
+    block: "{{ macos_trust_store_block_aaa }}"

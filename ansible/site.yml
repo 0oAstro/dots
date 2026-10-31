@@ -15,6 +15,7 @@
     - {role: login_shell, tags: [login_shell]}
     - {role: macos_defaults, tags: [macos_defaults]}
     - {role: macos_firewall, tags: [macos_firewall]}
+    - {role: macos_trust_store, tags: [macos_trust_store]}
     - {role: launchd_agents, tags: [launchd_agents]}
     - {role: launchd_services, tags: [launchd_services]}
     - {role: login_items, tags: [login_items]}
