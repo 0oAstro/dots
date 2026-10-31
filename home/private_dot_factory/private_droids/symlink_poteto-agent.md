@@ -1,1 +1,1 @@
-../../.local/share/mise/installs/skill-profile/global/current/pstack/plugins/pstack/agents/poteto-agent.md
+../../.local/share/mise/installs/http-pstack/latest/plugins/pstack/agents/poteto-agent.md

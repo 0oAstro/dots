@@ -48,7 +48,5 @@ Library
 {{- if not .harnesses }}
 # Tooling that every harness shares.
 .config/mise/conf.d/ai.toml
-.config/mise/conf.d/skill-profile.toml
-.config/mise/skill-profile
 {{- end }}
 

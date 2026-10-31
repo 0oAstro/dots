@@ -5,13 +5,13 @@
   "subagentDefaultModel": "azure/gpt-6.1-sol",
   "enableBuiltinSkills": false,
   "skills": [
-    "~/.local/share/mise/installs/skill-profile/global/current/prime",
-    "~/.local/share/mise/installs/skill-profile/global/current/emil/emil-design-eng",
-    "~/.local/share/mise/installs/skill-profile/global/current/matt/productivity/grilling"
+    "~/.local/share/mise/installs/github-prime-intellect-ai-prime-agent/latest/skills",
+    "~/.local/share/mise/installs/http-emil-skills/latest/skills/emil-design-eng",
+    "~/.local/share/mise/installs/http-mattpocock-skills/latest/skills/productivity/grilling"
   ],
   "packages": [
     {
-      "source": "~/.local/share/mise/installs/skill-profile/global/current/pstack",
+      "source": "~/.local/share/mise/installs/http-pstack/latest",
       "skills": ["!principle-*","!arena","!swarm","!thermos","!thermo-nuclear-review","!thermo-nuclear-code-quality-review","!reflect","!ketchup","!bro","!what-did-i-get-done","!setup-pstack","!poteto-help","!automate-me","!babysit","!correct","!interrogate","!make-pr-easy-to-review","!maintain-verification-skill","!create-verification-skill"]
     }
   ],

@@ -1,6 +1,0 @@
-[plugins]
-pi-global-tools = "{{ .chezmoi.homeDir }}/.pi/agent/package-sources/pi-global-tools"
-
-[tools."pi-global-tools"]
-version = "{{ includeTemplate "pi-global-tools-version" . }}"
-bin_path = "bin"

@@ -28,11 +28,11 @@ The preceding paragraph is offered as an illustration.
 - The prompt cache lives 1 hour in the main session and 5 minutes in subagents. Never wait on one command or wakeup for over an hour, and never resume a subagent idle over 5 minutes: start a fresh one with a full brief.
 </shaurya>
 
-<pstack root="~/.local/share/mise/installs/skill-profile/global/current/pstack/plugins/pstack">
-- ~/.factory/skills links to the skill-profile's flat skill list.
+<pstack root="~/.local/share/mise/installs/http-pstack/latest/plugins/pstack">
+- ~/.factory/skills links each skill straight to its mise install.
 - pstack skills name Claude Code tools. On Droid, Agent is the Task tool, AskUserQuestion is AskUser, and Bash is Execute. pstack's agents (poteto-agent, comment-sicko, the two thermo-nuclear reviewers) are personal droids in ~/.factory/droids, so `subagent_type` names work as droid names.
 - Every model is BYOK through ~/.factory/settings.json: Claude and Kimi on Bedrock, GPT, GLM, and DeepSeek on Azure. Model ids are `custom:<display-name>-0`, such as `custom:Opus-5.5-0`.
-- Roles map to Task complexity. Pass `complexity` on each Task call: light runs Haiku 5.5 xhigh (how explorer, bounded lookups), medium runs GPT-6.1 Sol xhigh (feature, refactoring, bug-fix, perf-issue, hillclimb, swarm workers), heavy runs Fable 5.1 xhigh (strongest judgment). Investigation, architecture, and judgment and prose stay in this Opus 5.5 session. Policy: ~/.pi/agent/model-routing-policy.md.
+- Roles map to Task complexity. Pass `complexity` on each Task call: light runs Haiku 5.5 xhigh (how explorer, bounded lookups), medium runs GPT-6.1 Sol xhigh (feature, refactoring, bug-fix, perf-issue, hillclimb, swarm workers), heavy runs Fable 5.1 xhigh (strongest judgment). Investigation, architecture, and judgment and prose stay in this Opus 5.5 session.
 </pstack>
 
 <memory>

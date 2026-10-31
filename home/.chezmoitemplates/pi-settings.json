@@ -14,17 +14,15 @@
   "packages": [
     "~/.local/share/mise/installs/npm-cahalane-pi-monitor/latest/lib/node_modules/@cahalane/pi-monitor",
     "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/@sting8k/pi-vcc",
-    {
-      "source": "~/.local/share/mise/installs/npm-rea-agents/latest/lib/node_modules/rea-agents",
-      "skills": []
-    },
+    "~/.local/share/mise/installs/npm-rea-agents/latest/lib/node_modules/rea-agents",
     "~/.local/share/mise/installs/npm-tintinweb-pi-subagents/latest/lib/node_modules/@tintinweb/pi-subagents"
   ],
   "skills": [
-    "~/.local/share/mise/installs/skill-profile/global/current/pstack/plugins/pstack/skills",
-    "~/.local/share/mise/installs/skill-profile/global/current/emil",
-    "~/.local/share/mise/installs/skill-profile/global/current/matt",
-    "~/.local/share/mise/installs/skill-profile/global/current/rea"
+    "~/.local/share/mise/installs/http-emil-skills/latest/skills/emil-design-eng",
+    "~/.local/share/mise/installs/http-mattpocock-skills/latest/skills/productivity/grilling",
+    "~/.local/share/mise/installs/http-mattpocock-skills/latest/skills/productivity/grill-me",
+    "~/.local/share/mise/installs/http-mattpocock-skills/latest/skills/engineering/to-spec",
+    "~/.local/share/mise/installs/http-mattpocock-skills/latest/skills/engineering/to-tickets"
   ],
   "compaction": {
     "enabled": true,

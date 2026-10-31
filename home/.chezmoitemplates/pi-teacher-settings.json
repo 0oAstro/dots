@@ -10,7 +10,11 @@
     "amazon-bedrock/us.anthropic.claude-opus-5-5": "high"
   },
   "packages": [
-    "~/.local/share/mise/installs/npm-tintinweb-pi-subagents/latest/lib/node_modules/@tintinweb/pi-subagents"
+    "~/.local/share/mise/installs/npm-tintinweb-pi-subagents/latest/lib/node_modules/@tintinweb/pi-subagents",
+    {
+      "source": "git:github.com/0oAstro/pi-firecrawl-web",
+      "extensions": []
+    }
   ],
   "extensions": [
     "-builtin:llama.cpp",
