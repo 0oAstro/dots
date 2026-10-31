@@ -1,6 +1,4 @@
 rex.bind("cmd+r", "client.config.reload")
-rex.bind("cmd+left", "pane.send_key", { key = "home" })
-rex.bind("cmd+right", "pane.send_key", { key = "end" })
 {{- if ne .host "aardvark" }}
 
 rex.host{ label = "aardvark", endpoint = "http://aardvark.kitty-armadillo.ts.net:7297" }
