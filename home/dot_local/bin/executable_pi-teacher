@@ -1,19 +1,20 @@
 #!/bin/sh
-# Pi with the teacher profile (~/.pi/teacher), run inside the Learning vault.
-# With no arguments: start a new session mirrored to Sessions/<date time>.md.
+# Pi with the teacher profile (~/.pi/teacher), run inside the Teacher folder of the Life vault.
+# With no arguments: start a new session mirrored to Teacher/Sessions/<date time>.md.
 # With arguments (for example -c or -r): pass them to pi unchanged.
 set -eu
 
-vault="${PI_TEACHER_VAULT:-$HOME/Dropbox/obsidian/Learning}"
-mkdir -p "$vault/.obsidian" "$vault/Sessions" "$vault/Knowledge" "$vault/Sources" "$vault/viz"
-cd "$vault"
+vault="${PI_TEACHER_VAULT:-$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/life}"
+workdir="$vault/Teacher"
+mkdir -p "$workdir/Sessions" "$workdir/Knowledge" "$workdir/viz"
+cd "$workdir"
 export PI_CODING_AGENT_DIR="$HOME/.pi/teacher"
 
 if [ "$#" -gt 0 ]; then
 	exec pi "$@"
 fi
 
-note="$vault/Sessions/$(date '+%Y-%m-%d %H%M').md"
+note="$workdir/Sessions/$(date '+%Y-%m-%d %H%M').md"
 touch "$note"
 if [ "$(uname)" = Darwin ]; then
 	encoded=$(printf '%s' "$note" | sed 's/ /%20/g')

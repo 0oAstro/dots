@@ -17,7 +17,7 @@ The material comes in one of these forms. All of them are valid starts.
 
 - Propositions from `Knowledge/`. If the learner names a topic, run `grep -ril "<topic>" Knowledge/` and read the notes and their premises.
 - A topic in the learner's words.
-- A file in `Sources/` or anywhere the learner points. Find it and read it yourself.
+- A note or file in the vault (`..`), in `~/Drive/acad`, or anywhere the learner points. Find it and read it yourself.
 - An outside problem. Solve it, map the ideas any correct solution must use, then run it through the same process.
 
 As soon as material for a problem exists, pose the first problem. Do not run a warm-up interview.

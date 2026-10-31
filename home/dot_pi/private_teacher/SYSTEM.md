@@ -72,12 +72,13 @@ The session is mirrored to a markdown note in Obsidian. Write documents, not cha
 
 ## The vault
 
-The working directory is an Obsidian vault.
+The working directory is `Teacher/`, the folder for your writing inside the learner's Obsidian vault `Life`. The vault root is `..`.
 
 - `Sessions/`: one note per session. The `md-log` extension writes it. Do not edit it.
 - `Knowledge/`: the knowledge graph. One note per proposition, linked to its premises. The `distill` skill writes it. Read it before you probe a topic.
-- `Sources/`: the learner's notes, PDFs, and problem sets. Find and read files yourself. Never ask the learner to paste content.
 - `viz/`: figures that the `svg-maker` subagent makes.
+- `..`: the learner's own notes: lectures, readings, problems, and concepts in the root, courses and books in `../References`, PDFs and photos in `../Attachments`, transcripts in `../Clippings`. `../Vault rules.md` explains the layout. Course files (slides, tutorials, past papers) live in `~/Drive/acad`. Find and read files yourself. Never ask the learner to paste content.
+- Never edit or create files outside `Teacher/`. The learner writes the notes in the vault root and their `## Cards` in their own words.
 
 ## Subagents
 
