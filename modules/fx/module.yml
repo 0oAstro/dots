@@ -1,0 +1,9 @@
+# fx: Vercel Labs' coding agent (conf.d/harness-fx.toml) and its settings.
+fx:
+  hosts: {thunderchief: , aardvark: }
+  vars:
+    chezmoi:
+      harness: true
+      home:
+        - .fx
+        - .config/mise/conf.d/harness-fx.toml

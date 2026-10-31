@@ -1,0 +1,48 @@
+{
+  "permission_mode": "full-access",
+  "yolo_acknowledged": true,
+  "effort": "xhigh",
+  "auto_upgrade": false,
+  "notifications": {
+    "turn_end": false,
+    "attention_required": false,
+    "max": false
+  },
+  "statusLine": {
+    "sandbox": true,
+    "context": true,
+    "session": true
+  },
+  "workspaces": {
+    {{ .chezmoi.homeDir | quote }}: {
+      "sandbox": "none"
+    }
+  },
+  "provider": "azure",
+  "models": {
+    "gateway": "zai/glm-5.3",
+    "grok": "grok-4.7",
+    "azure": "deepseek-v4.1-flash"
+  },
+  "providers": {
+    "azure": {
+      "protocol": "openai-chat-completions",
+      "base_url": "https://suzuka-ai-garage-si-32cbd92e.openai.azure.com/openai/v1",
+      "auth": {
+        "type": "bearer",
+        "env": "AZURE_OPENAI_API_KEY"
+      },
+      "model_metadata": {
+        "fw-glm-5.3-flash": {
+          "context_window": 1048576,
+          "supports_tool_use": true,
+          "supports_vision": true
+        },
+        "deepseek-v4.1-flash": {
+          "context_window": 1048576,
+          "supports_tool_use": true
+        }
+      }
+    }
+  }
+}

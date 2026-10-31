@@ -4,7 +4,6 @@ java = ["zulu-25", "zulu-21"]
 "github:sindresorhus/macos-trash" = { version = "latest", asset_pattern = "trash.zip" }
 # Completions for zsh (lib/compinit.zsh). The quoting fix lives in the fzf-tab fork.
 carapace = "latest"
-"github:vercel-labs/fx" = "latest"
 "npm:@ytspar/hctl" = "latest"
 "npm:bitwarden-cli-bio" = "latest"
 "github:bitwarden/agent-access" = "latest"
