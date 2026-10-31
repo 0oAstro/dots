@@ -1,7 +1,4 @@
-
-
-
-# fx wrapper: `fx ask` uses ~/.fx/system.md (chezmoi-managed) as the system prompt; explicit --system passes through
+# fx: `fx ask` uses ~/.fx/system.md (chezmoi-managed) as the system prompt; explicit --system passes through
 fx() {
   if [ "$1" = "ask" ] && [[ "$*" != *--system* ]]; then
     shift
