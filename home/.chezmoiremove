@@ -29,12 +29,6 @@
 .pi/agent/extensions/codemode-gpt.ts
 .pi/agent/extensions/cache-ttl.ts
 .pi/agent/extensions/detox.ts
-.pi/agent/package-sources/pi-global-tools/package/codemode-gpt.ts
-.pi/agent/package-sources/pi-global-tools/package/extensions/loop-guard.ts
-.pi/agent/package-sources/pi-global-tools/package/extensions/small-model-tools.ts
-.pi/agent/package-sources/pi-global-tools/package/extensions/harness.ts
-.pi/agent/package-sources/pi-global-tools/package/extensions/pure-footer.ts
-.pi/agent/package-sources/pi-global-tools/package/extensions/quiet-tools.ts
 .pi/agent/extensions/firecrawl-web
 .pi/agent/extensions/fast-mode.ts
 .pi/agent/extensions/fast-mode.json
@@ -49,7 +43,7 @@
 .pi/agent/local/pi-nico-eager
 .pi/agent/git/github.com/tmustier/pi-extensions/session-recap
 .pi/agent/scripts/test-anthropic-subagents.ts
-# Pi extensions and skills now ship through mise (pi-global-tools, http:emil-skills,
+# Pi skills now ship through mise (http:emil-skills,
 # http:mattpocock-skills); the old chezmoi copies are gone.
 .pi/agent/extensions/pure-footer.ts
 .pi/agent/extensions/quiet-tools.ts
@@ -81,3 +75,20 @@
 {{- end }}
 # Ghostty is replaced by Rex (2026-10-31); its Kanagawa themes are imported into Rex.
 .config/ghostty
+# Retired 2026-10-31: the skill-profile builder, the pi-global-tools package
+# (firecrawl-web is now git:github.com/0oAstro/pi-firecrawl-web), the dated
+# frontier snapshot and the model routing policy.
+.config/mise/conf.d/skill-profile.toml
+.config/mise/skill-profile
+.config/mise/conf.d/pi-global-tools.toml
+.pi/agent/package-sources
+.pi/agent/optional-extensions
+.pi/agent/aa-frontier-2026-09-29.json
+.claude/aa-frontier-2026-09-29.json
+.pi/agent/model-routing-policy.md
+.claude/model-routing-policy.md
+.pi/agent/pstack-models.md
+.claude/skills/emil
+.claude/skills/matt
+.claude/skills/frontend-design
+.claude/skills/pstack

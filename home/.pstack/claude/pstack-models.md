@@ -1,6 +1,6 @@
 # pstack model configuration
 
-Role overrides for pstack on Claude Code. Pass the alias as the Agent `model` and `@level` as `effort`. Policy: ~/.claude/model-routing-policy.md.
+Role overrides for pstack on Claude Code. Pass the alias as the Agent `model` and `@level` as `effort`.
 
 feature, refactoring: opus @medium
 bug-fix: opus @medium

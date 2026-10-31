@@ -28,7 +28,7 @@ The preceding paragraph is offered as an illustration.
 - The prompt cache lives 1 hour in the main session and 5 minutes in subagents. Never wait on one command or wakeup for over an hour, and never resume a subagent idle over 5 minutes: start a fresh one with a full brief.
 </shaurya>
 
-<pstack root="~/.local/share/mise/installs/skill-profile/global/current/pstack/plugins/pstack">
+<pstack root="~/.local/share/mise/installs/http-pstack/latest/plugins/pstack">
 Automatic skills are emil-design-eng, grilling, and poteto-mode. Other skills load only on explicit request or as supporting references after one of those skills loads. Resolve links from each skill's directory.
 - Principle skills are unlisted; poteto-mode's Principles index names them, read them at skills/principle-<name>/SKILL.md.
 - pstack skills name Claude Code tools. On Prime Agent, the `ipython` kernel does reads, edits, and shell commands. Agent or Task is `rlm.spawn`. AskUserQuestion is a plain-text question. /loop and schedule_wakeup do not exist; `prime schedule` needs explicit opt-in.

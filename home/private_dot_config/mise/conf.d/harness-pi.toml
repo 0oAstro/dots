@@ -1,4 +1,4 @@
-# Pi. Settings live in ~/.pi; pi-global-tools.toml holds its local extensions.
+# Pi. Settings live in ~/.pi.
 
 [tools]
 # Pi extensions: pi-subagents for subagents, pi-monitor for long jobs, pi-vcc for compaction.

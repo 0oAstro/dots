@@ -8,4 +8,3 @@ pi:
         - .pi
         - .local/bin/pi-teacher
         - .config/mise/conf.d/harness-pi.toml
-        - .config/mise/conf.d/pi-global-tools.toml

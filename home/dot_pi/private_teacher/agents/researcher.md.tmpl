@@ -4,7 +4,7 @@ description: Web researcher. Verifies one fact or maps a field, and returns a sh
 model: amazon-bedrock/us.anthropic.claude-opus-5-5
 thinking: medium
 tools: read
-extensions: ["{{ .chezmoi.homeDir }}/.local/share/mise/installs/pi-global-tools/{{ includeTemplate "pi-global-tools-version" . }}/firecrawl-web/index.ts"]
+extensions: ["{{ .chezmoi.homeDir }}/.pi/teacher/git/github.com/0oAstro/pi-firecrawl-web/index.ts"]
 ---
 
 You are a research specialist for a teacher. You get one question with a little context. You see nothing else of the lesson. Your brief decides what the learner is taught, so accuracy comes first.
