@@ -1,5 +1,4 @@
 rex.bind("cmd+r", "client.config.reload")
-{{- if ne .host "aardvark" }}
 
+rex.host{ label = "thunderchief", endpoint = "https://thunderchief-rex.kitty-armadillo.ts.net" }
 rex.host{ label = "aardvark", endpoint = "https://aardvark-rex.kitty-armadillo.ts.net" }
-{{- end }}
