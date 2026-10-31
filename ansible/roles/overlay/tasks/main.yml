@@ -1,5 +1,7 @@
 # Copies modules/<module>/overlay/ onto / for each module the host is in.
 # Two modules may not write the same path. Existing directories keep their modes.
+# Tasks that touch the running system carry the service tag: containers have no
+# systemd, udev or writable sysctls, and skip them (--skip-tags service).
 - name: Collect overlay files
   ansible.builtin.set_fact:
     overlay_files: >-
@@ -43,32 +45,38 @@
 
 - name: Load kernel modules
   ansible.builtin.command: systemctl restart systemd-modules-load
+  tags: [service]
   when: overlay_changed | select('match', '/etc/modules-load.d/') | list | length > 0
   changed_when: true
 
 - name: Apply udev rules
   ansible.builtin.shell: udevadm control --reload && udevadm trigger --subsystem-match=block --action=change
+  tags: [service]
   when: overlay_changed | select('match', '/etc/udev/rules.d/') | list | length > 0
   changed_when: true
 
 - name: Apply sysctl
   ansible.builtin.command: sysctl --system
+  tags: [service]
   when: overlay_changed | select('match', '/etc/sysctl.d/') | list | length > 0
   changed_when: true
 
 - name: Reload systemd units
   ansible.builtin.systemd_service:
     daemon_reload: true
+  tags: [service]
   when: overlay_changed | select('match', '/etc/systemd/system/') | list | length > 0
 
 - name: Restart systemd-oomd
   ansible.builtin.systemd_service:
     name: systemd-oomd
     state: restarted
+  tags: [service]
   when: overlay_changed | select('match', '/etc/systemd/oomd.conf.d/') | list | length > 0
 
 - name: Apply tmpfiles
   ansible.builtin.command: systemd-tmpfiles --create
+  tags: [service]
   when: overlay_changed | select('match', '/etc/tmpfiles.d/') | list | length > 0
   changed_when: true
 
@@ -77,6 +85,7 @@
     name: systemd-zram-setup@zram0
     state: restarted
     daemon_reload: true
+  tags: [service]
   when: overlay_changed | select('match', '/etc/systemd/zram-generator.conf') | list | length > 0
 
 - name: Rebuild the CA trust store
