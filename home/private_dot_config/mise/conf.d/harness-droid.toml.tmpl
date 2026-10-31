@@ -1,0 +1,21 @@
+# Factory's Droid CLI. Settings live in ~/.factory. One static binary from
+# Factory's own release bucket, the same file app.factory.ai/cli installs;
+# postinstall checks it against the .sha256 published next to it.
+[tools."http:droid"]
+version = "latest"
+url = "https://downloads.factory.ai/factory-cli/releases/{{ "{{" }} version {{ "}}" }}/{{ if eq .chezmoi.os "darwin" }}darwin{{ else }}linux{{ end }}/{{ if eq .chezmoi.arch "arm64" }}arm64{{ else }}x64{{ end }}/droid"
+version_list_url = "https://app.factory.ai/cli"
+version_regex = 'VER="(\d+\.\d+\.\d+)"'
+version_order = "semver"
+bin = "droid"
+postinstall = '''
+set -eu
+want="$(curl -fsSL "https://downloads.factory.ai/factory-cli/releases/$MISE_TOOL_VERSION/{{ if eq .chezmoi.os "darwin" }}darwin{{ else }}linux{{ end }}/{{ if eq .chezmoi.arch "arm64" }}arm64{{ else }}x64{{ end }}/droid.sha256")"
+got="$(shasum -a 256 "$MISE_TOOL_INSTALL_PATH/droid" | cut -d' ' -f1)"
+[ "$want" = "$got" ] || { echo "droid checksum mismatch" >&2; rm -f "$MISE_TOOL_INSTALL_PATH/droid"; exit 1; }
+chmod +x "$MISE_TOOL_INSTALL_PATH/droid"
+'''
+
+# mise owns the binary; Droid's self-updater would overwrite it in place.
+[env]
+FACTORY_DROID_AUTO_UPDATE_ENABLED = "false"

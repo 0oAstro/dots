@@ -1,6 +1,6 @@
 # Droid: Factory's CLI (conf.d/harness-droid.toml) and its settings.
 droid:
-  hosts: {thunderchief: , blackbird: , aardvark: }
+  hosts: {aardvark: }
   vars:
     chezmoi:
       harness: true
