@@ -1,8 +1,3 @@
 {
-  "mcpServers": {
-    "executor": {
-      "type": "http",
-      "url": "https://executor.shau.me/mcp"
-    }
-  }
+  "mcpServers": {}
 }

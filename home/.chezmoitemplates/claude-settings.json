@@ -100,7 +100,7 @@
   "prefersReducedMotion": true,
   "skipDangerousModePermissionPrompt": true,
   "theme": "auto",
-  "preferredNotifChannel": "ghostty",
+  "preferredNotifChannel": "notifications_disabled",
   "switchModelsOnFlag": false,
   "modelSettings": {
     "claude-opus-5-5": {
