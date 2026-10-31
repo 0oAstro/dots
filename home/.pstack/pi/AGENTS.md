@@ -58,5 +58,10 @@ codemode
 - Keep intermediate data in the script. Emit what you need to decide or report, filtered when its size is unknown, but never filter out what could change the conclusion. Emit conclusions before bulk data.
 - When bash output may be large, redirect it to a file in the same command and read the file. A pipe into `head`, `tail`, or `grep` hides the exit code.
 - Throw when a precondition fails instead of reporting success.
-- For a job past about 2 minutes, start it with `monitor` and end the script. Never poll with `sleep`.
+- For a job past about 2 minutes, start it with `monitor` and end the script. Never poll with `sleep`. Write helper scripts to a file first; heredocs in codemode bash break.
+
+Pi setup
+- Subagents come from @tintinweb/pi-subagents (types in ~/.pi/agent/agents). Put the role level in `thinking`, never in `model`.
+- Harness tweaks go only in pi-global-tools `extensions/harness/`, one module per rule plus a key under `harness` in settings.json; never a new extension. Keep compaction.modelOverrides reserveTokens 40960 for 272k GPT models. `directToolModels` stays empty. AZURE_OPENAI_BASE_URL overrides models.json for openai-completions models.
+- Skills and extensions ship only through mise via ~/.pi/agent/settings.json; never vendor them into ~/.pi/agent/skills.
 </harness>

@@ -28,14 +28,6 @@ The preceding paragraph is offered as an illustration.
 - The prompt cache lives 1 hour in the main session and 5 minutes in subagents. Never wait on one command or wakeup for over an hour, and never resume a subagent idle over 5 minutes: start a fresh one with a full brief.
 </shaurya>
 
-<pstack root="~/.local/share/mise/installs/skill-profile/global/current/pstack/plugins/pstack">
-- Automatic skills are emil-design-eng, grilling, and poteto-mode. Other skills load only on explicit request or as supporting references after one of those skills loads.
-- pstack is the `pstack` plugin (`/pstack:<skill>`), linked at ~/.claude/skills/pstack from the mise skill profile. Read supporting skill files by path when poteto-mode routes to them, rather than invoking an explicit-only Skill command.
-- Roles live in ~/.claude/pstack-models.md, included below. Pass a role's alias as the Agent tool's `model` and its `@<level>` as `effort`. Use subagent_type `pstack:poteto-agent` for code-writing delegates and `general-purpose` otherwise.
-</pstack>
-
-@~/.claude/pstack-models.md
-
 <memory>
 Memory lives in the <machine-memory> block of ~/.pi/agent/APPEND_SYSTEM.md, local to each machine and outside git. Read it before work on a topic it names. Record durable facts and corrections there, inside that block only.
 </memory>
