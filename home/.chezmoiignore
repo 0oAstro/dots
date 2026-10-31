@@ -2,8 +2,6 @@
 # this host is not in (their `chezmoi: {home: [...]}` in modules/<name>/module.yml),
 # and by whether the age key exists.
 
-.config/zsh/README.md
-
 {{- if not (stat (joinPath .chezmoi.homeDir ".config/age/keys.txt")) }}
 # No age key yet: skip the encrypted files.
 .config/secrets/agents.env

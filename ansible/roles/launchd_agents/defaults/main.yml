@@ -1,2 +1,2 @@
 # Every list named launchd_agents_<layer> in scope (macs, a module, the host).
-launchd_agents_merged: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^launchd_agents_(?!merged$|absent$).+')) | flatten }}"
+launchd_agents_merged: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^launchd_agents_(?!merged$).+')) | flatten }}"

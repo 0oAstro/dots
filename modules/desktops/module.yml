@@ -1,5 +1,0 @@
-# Linux machines a person sits at.
-desktops:
-  hosts: {}
-  vars:
-    tailscale_enabled: true

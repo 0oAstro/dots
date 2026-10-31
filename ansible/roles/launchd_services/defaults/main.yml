@@ -4,5 +4,3 @@
 services_all: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^launchd_services_.+')) | flatten }}"
 services_gui: "{{ services_all | rejectattr('domain', 'defined') | list + services_all | selectattr('domain', 'defined') | selectattr('domain', '==', 'gui') | list }}"
 services_system: "{{ services_all | selectattr('domain', 'defined') | selectattr('domain', '==', 'system') | list }}"
-# Hand-made system daemons to remove: launchd_daemons_absent_<layer>.
-daemons_absent: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^launchd_daemons_absent_.+')) | flatten | unique }}"

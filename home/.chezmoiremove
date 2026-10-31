@@ -1,7 +1,4 @@
 # Targets that left the source; chezmoi otherwise leaves them behind.
-.config/zsh/config/integrations/macos.zsh*
-.config/zsh/config/integrations/linux.zsh*
-.config/zsh/config/themes/shell/kanagawa-dragon.zsh*
 .config/herdr/launch
 .config/herdr/config.toml
 .config/zsh/config/integrations/herdr-shell.zsh*
@@ -9,10 +6,6 @@
 .local/bin/routerctl
 .local/bin/airtel-routerctl
 .local/bin/routerctl_credentials.py
-.bashrc
-.bash_profile
-.config/bash
-.cache/bash
 # API keys moved from zsh to ~/.config/secrets/agents.env (2026-10-30).
 .config/zsh/.zshrc.local
 
@@ -73,6 +66,8 @@
 .pi/agent/prompts
 .pi/agent/agents
 {{- end }}
+# Cleanup audit (2026-10-31).
+.config/tmux/scripts
 # Ghostty is replaced by Rex (2026-10-31); its Kanagawa themes are imported into Rex.
 .config/ghostty
 # Retired 2026-10-31: the skill-profile builder, the pi-global-tools package

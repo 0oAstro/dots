@@ -10,7 +10,7 @@
 # Arguments go to ansible-playbook, for example -e to override variables.
 # DOTS_REPO overrides the repo, for example a file:// URL when testing.
 # DOTS_GROUP is the module for a host that no module lists yet (default:
-# macs on macOS, desktops on Linux).
+# macs on macOS, servers on Linux).
 set -eu
 
 bin=$HOME/.local/bin
@@ -76,7 +76,7 @@ cd "$src"
 
 set -- --limit "$host" "$@"
 if ! (cd ansible && "$mise" exec -- ansible-inventory --host "$host") >/dev/null 2>&1; then
-  case $(uname -s) in Darwin) group=${DOTS_GROUP:-macs} ;; *) group=${DOTS_GROUP:-desktops} ;; esac
+  case $(uname -s) in Darwin) group=${DOTS_GROUP:-macs} ;; *) group=${DOTS_GROUP:-servers} ;; esac
   extra=$(mktemp -d)/inventory.yml # the yaml plugin needs the extension
   printf 'all:\n  children:\n    %s:\n      hosts:\n        %s:\n' "$group" "$host" >"$extra"
   set -- "$@" -i ../modules -i "$extra"

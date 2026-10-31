@@ -10,7 +10,7 @@
   ansible.builtin.set_fact:
     packages_keep: >-
       {{ (query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^packages_.+')) | flatten
-          + ([docker_package.get(ansible_facts.distribution, docker_package[ansible_facts.os_family] | default('docker'))] if docker_users is defined else [])
+          + ([docker_package] if docker_users is defined else [])
           + (['tailscale'] if tailscale_enabled | default(false) else [])
           + (['rex'] if rex_enabled | default(false) else []))
          | unique }}

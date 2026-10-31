@@ -53,30 +53,22 @@ jobs:
     env: *fresh-env
     steps: *fresh-steps
 
-  # Each distro's package names, repos and login shell, installed for real.
+  # Amazon Linux 2023 package names, repos and login shell, installed for real.
   # Containers have no systemd, so tasks tagged service are skipped.
-  distros:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - {image: "amazonlinux:2023", prep: "dnf -y install python3 sudo"}
-          - {image: "fedora:latest", prep: "dnf -y install python3 python3-libdnf5 sudo"}
-          - {image: "debian:stable", prep: "apt-get update && apt-get install -y python3 sudo"}
-          - {image: "archlinux:latest", prep: "pacman -Sy --noconfirm python sudo"}
+  amazon-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
-      - name: Start ${{ matrix.image }}
+      - name: Start amazonlinux:2023
         run: |
-          docker run -d --name ci-target "${{ matrix.image }}" sleep infinity
-          docker exec ci-target sh -c "${{ matrix.prep }}"
+          docker run -d --name ci-target amazonlinux:2023 sleep infinity
+          docker exec ci-target sh -c "dnf -y install python3 sudo"
       - run: mise run ansible:deps
       - name: Provision twice; the second run must change nothing
         working-directory: ansible
         run: |
-          printf 'all:\n  children:\n    desktops:\n      hosts:\n        ci-target:\n          ansible_connection: community.docker.docker\n' >ci-inventory.yml
+          printf 'all:\n  children:\n    servers:\n      hosts:\n        ci-target:\n          ansible_connection: community.docker.docker\n' >ci-inventory.yml
           run() {
             mise exec -- ansible-playbook site.yml -i ../modules -i ci-inventory.yml --limit ci-target \
               --tags packages,login_shell,overlay,tailscale,docker --skip-tags service \

@@ -22,12 +22,12 @@ berkeley_mono:
 | `module.yml`: `vars: chezmoi: home: [...]` | chezmoi | Home paths applied only on hosts in the module |
 | `module.yml`: `vars: chezmoi: remove: [...]` | chezmoi | Home paths deleted on hosts not in it |
 | `module.yml`: `vars: chezmoi: fonts: [...]` | chezmoi | Branches of the private `0oAstro/fonts` repo, cloned into `~/Library/Fonts/<branch>` |
-| `module.yml`: `vars: chezmoi: harness: true` | chezmoi | The module is an agent harness (`claude`, `pi`, `prime`, `cursor`, `droid`) |
+| `module.yml`: `vars: chezmoi: harness: true` | chezmoi | The module is an agent harness (`claude`, `pi`, `prime`, `cursor`, `droid`, `fx`) |
 | `Brewfile` | the homebrew role | Apps for every Mac in the module |
 | `overlay/` | the overlay role (Linux) | Files copied onto `/` |
 | `user_units/` | the user_units role (Linux) | systemd user units for the login user |
 
-Kinds are modules too: `macs`, `linux`, `servers` (always-on), `desktops`. So are hosts: `host_<name>` holds a host's own apps and files, and its inline host vars (`screenshot_dir`, `pmset_*`) override every other module. `modules/all/` holds the settings every host gets.
+Kinds are modules too: `macs`, `linux`, `servers` (always-on; every Linux host is one, on Amazon Linux 2023). So are hosts: `host_<name>` holds a host's own apps and files, and its inline host vars (`screenshot_dir`, `pmset_*`) override every other module. `modules/all/` holds the settings every host gets.
 
 ```sh
 mise run modules                # every host and its modules
@@ -40,7 +40,7 @@ mise run modules thunderchief   # one host
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/0oAstro/dots/master/install.sh)"
 ```
 
-That is for the machine you are sitting at. `install.sh` bootstraps only what Ansible cannot do unattended: it installs [mise](https://mise.jdx.dev), logs in to GitHub, asks for the age key, runs Homebrew's installer on a Mac, and clones this repo. It then runs the playbook for this host. A host that no module lists gets `macs` or `desktops` for that run (`DOTS_GROUP` overrides); add it to `modules/macs/module.yml` (or `desktops`) and a `host_<name>` module, and commit.
+That is for the machine you are sitting at. `install.sh` bootstraps only what Ansible cannot do unattended: it installs [mise](https://mise.jdx.dev), logs in to GitHub, asks for the age key, runs Homebrew's installer on a Mac, and clones this repo. It then runs the playbook for this host. A host that no module lists gets `macs` or `servers` for that run (`DOTS_GROUP` overrides); add it to `modules/macs/module.yml` (or `servers`) and a `host_<name>` module, and commit.
 
 For a server, add it to `modules/servers/module.yml` and provision it from another machine. The playbook installs mise there, copies the age key and a GitHub login from the controller, clones this repo, and applies chezmoi.
 
@@ -61,11 +61,11 @@ Roles are generic; groups and hosts hold the data. A second run reports `changed
 | `modules/macs/` | What every Mac is: Homebrew taps to drop, application firewall, the `dev.dots.brew-upgrade` launchd agent, the base Brewfile |
 | `modules/<module>/` | One feature each. `look`, `input`, `finder`, `perf`, `vendor_updaters_off` and `ai_off` take every Mac (`children: {macs: }`); `apps_dev`, `apps_comms`, `apps_media`, `games`, `google_drive`, `dropbox` and the fonts list their hosts |
 | `modules/<module>/Brewfile` | Homebrew: a Mac gets the Brewfile of every module it is in. Together they are the whole truth: anything installed but unlisted is uninstalled |
-| `modules/linux/`, `servers/`, `desktops/` | Base packages, Tailscale (official repo), Claude Remote Control and the Rex server on servers |
+| `modules/linux/`, `servers/` | Base packages, Tailscale (official repo), Claude Remote Control and the Rex server on servers |
 | `modules/host_<host>/` | That host's personal choices as host vars (`screenshot_dir`, `macos_appearance`, `dock_tilesize`, `pmset_*`), packages, enabled units, firewalld zones, Docker stacks, its Brewfile |
 | `modules/<module>/overlay/` | Files copied onto `/` (`linux`, `servers`, `host_aardvark`). Two modules may not write the same path. sysctl, exports, sshd, firewalld direct rules and systemd units reload when they change |
 
-Lists named `packages_*`, `systemd_enabled_*`, `systemd_masked_*`, `macos_defaults_*`, `launchd_agents_*`, `launchd_services_*`, `launchd_daemons_absent_*`, `login_items_*` and `home_links_*` merge across modules, so each module adds its own; name them after the module (`macos_defaults_games`, `launchd_services_thunderchief`). A defaults key or launchd label set by two modules fails the run. Login items are exclusive: an app that no layer lists is removed. Firewalld services, ports and rich rules are exclusive too, so hand-added ones get removed.
+Lists named `packages_*`, `systemd_enabled_*`, `systemd_masked_*`, `macos_defaults_*`, `launchd_agents_*`, `launchd_services_*`, `login_items_*` and `home_links_*` merge across modules, so each module adds its own; name them after the module (`macos_defaults_games`, `launchd_services_thunderchief`). A defaults key or launchd label set by two modules fails the run. Login items are exclusive: an app that no layer lists is removed. Firewalld services, ports and rich rules are exclusive too, so hand-added ones get removed.
 
 aardvark's `/opt/docker` is the private repo `0oAstro/infra` (its `tofu/` holds the OpenTofu edge config). The `docker_stacks` role fast-forwards it, writes its secrets, installs the units the stacks own, creates the shared networks, and runs `docker compose up` for every stack without a `DISABLED` file. Secrets there are age-encrypted copies (`sealed/`, same key as this repo) listed in `secrets.yml`. The `secrets` role creates missing ones and fails, without writing, when a live secret differs from its copy: run `bin/seal` there to keep the live one, or pass `-e secrets_take_sealed=true` to restore the copy.
 
@@ -95,15 +95,15 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 
 | | Files |
 | --- | --- |
-| every machine | zsh, git, tmux, bat, ripgrep, glow, dtop, btop, Rex init.lua; `conf.d/core.toml` |
+| every machine | zsh, git, tmux, bat, ripgrep, glow, dtop, btop, lazysql, Rex init.lua; `conf.d/core.toml` |
 | any harness | pstack, agent-browser; `conf.d/ai.toml` |
-| a harness module | that harness's CLI in `conf.d/harness-<name>.toml` and its settings (`claude`, `pi`, `prime`, `cursor`) |
-| macOS | lazysql; `conf.d/macos.toml` |
+| a harness module | that harness's CLI in `conf.d/harness-<name>.toml` and its settings (`claude`, `pi`, `prime`, `cursor`, `droid`, `fx`) |
+| macOS | `conf.d/macos.toml` |
 | Linux | `conf.d/linux.toml` |
 | `input` module | Karabiner |
 | a font module | that family in `~/Library/Fonts/<family>` |
 
-`home/.chezmoiignore` holds the OS rules; module rules come from each module's `chezmoi: home:`. Ansible copies `modules/<module>/user_units/` into `~/.config/systemd/user/` (claude-rc and rex-server for `servers`; the AlgoChat timers for `host_aardvark`).
+`home/.chezmoiignore` holds the OS rules; module rules come from each module's `chezmoi: home:`. Ansible copies `modules/<module>/user_units/` into `~/.config/systemd/user/` (claude-rc and rex-server for `servers`; the AlgoChat timer for `host_aardvark`).
 
 Fonts need the GitHub login (`gh`, through mise) to clone the private repo. On a fresh machine that login's shim appears during the first apply, so fonts arrive on the second.
 

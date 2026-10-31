@@ -1,7 +1,1 @@
-# By distribution first, then OS family.
-docker_package:
-  Amazon: docker
-  Fedora: moby-engine
-  RedHat: docker
-  Debian: docker.io
-  Archlinux: docker
+docker_package: docker

@@ -1,9 +1,0 @@
-{
-  "overrideDefaultCompaction": true,
-  "smartKeepTail": true,
-  "continueAfterThresholdCompact": true,
-  "debug": false,
-  "skipForProviders": [],
-  "skipCustomTypes": [],
-  "trackCommands": []
-}

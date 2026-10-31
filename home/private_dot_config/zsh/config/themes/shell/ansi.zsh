@@ -1,6 +1,5 @@
 # Palette indexes, so colors follow the terminal's light/dark Kanagawa pair.
 # 19-20 come from the Kanagawa "Plus" themes, imported into Rex.
-typeset -g ZDOTS_THEME_PATINA=kanagawa-ansi
 typeset -g ZDOTS_COLOR_GREY=8
 typeset -g ZDOTS_COLOR_RED=1
 typeset -g ZDOTS_COLOR_YELLOW=3

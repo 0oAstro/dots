@@ -14,9 +14,6 @@
 	gpgSign = true
 	verbose = true
 
-[tap]
-	gpgSign = true
-
 [tag]
 	gpgSign = true
 	sort = version:refname
@@ -38,15 +35,12 @@
 	algorithm = histogram
 
 [merge]
-	tool = diffview
+	tool = nvimdiff
 	conflictstyle = diff3
 
 [mergetool]
 	prompt = false
 	keepBackup = false
-
-[mergetool "diffview"]
-	cmd = nvim -n -c "DiffviewOpen" "$MERGE"
 
 [pull]
 	rebase = true
@@ -83,19 +77,10 @@
 [receive]
 	fsckObjects = true
 
-[color]
-	ui = auto
-
 [delta]
 	navigate = true
 	side-by-side = true
 	line-numbers = true
-
-{{- if .server }}
-[safe]
-	directory = /opt/git/repos/polymarket.git
-	directory = /opt/git/repos/zdots.git
-{{- end }}
 
 [filter "lfs"]
 	process = git-lfs filter-process
