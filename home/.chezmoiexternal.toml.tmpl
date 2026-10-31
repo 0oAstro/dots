@@ -25,10 +25,11 @@
 {{- end }}
 {{- if has "pi" .harnesses }}
 
-# Teaching extensions for the pi-teacher profile (amosblomqvist/learn, no license, so not vendored).
+# Teaching extensions for the pi-teacher profile: 0oAstro/learn, a fork of amosblomqvist/learn
+# (no license, so not vendored) with a 1-cell md-log status icon.
 [".pi/teacher/vendor/learn"]
     type = "git-repo"
-    url = "https://github.com/amosblomqvist/learn.git"
+    url = "https://github.com/0oAstro/learn.git"
     clone.args = ["--depth", "1"]
     pull.args = ["--ff-only"]
 {{- end }}
