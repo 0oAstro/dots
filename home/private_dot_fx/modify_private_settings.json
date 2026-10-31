@@ -1,2 +1,13 @@
 {{- /* chezmoi:modify-template */ -}}
-{{- includeTemplate "merge" (dict "current" .chezmoi.stdin "managed" (includeTemplate "fx-settings.json" .) "format" "json" "compact" true) -}}
+{{- /*
+  .fx/settings.json is app-owned too: fx rewrites models.* when you switch
+  model with the model picker. Those keys are listed in "keep" so the live
+  choice survives, while every other managed key still propagates from the
+  repo on apply.
+*/ -}}
+{{- includeTemplate "merge" (dict
+      "current" .chezmoi.stdin
+      "managed" (includeTemplate "fx-settings.json" .)
+      "format" "json"
+      "compact" true
+      "keep" (list "models.azure" "models.gateway" "models.grok")) -}}

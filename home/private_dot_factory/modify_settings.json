@@ -1,2 +1,2 @@
 {{- /* chezmoi:modify-template */ -}}
-{{- includeTemplate "merge" (dict "current" .chezmoi.stdin "managed" (includeTemplate "droid-settings.json" .) "format" "json") -}}
+{{- includeTemplate "merge" (dict "current" .chezmoi.stdin "managed" (includeTemplate "droid-settings.json" .) "format" "json" "keep" (list "model"  "reasoningEffort"  "subagentModelSettings"  "customModels")) -}}

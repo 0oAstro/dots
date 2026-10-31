@@ -8,4 +8,4 @@
 {{-   if kindIs "map" $env }}{{ $_ := unset $env "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC" }}{{ end -}}
 {{-   $current = toJson $parsed -}}
 {{- end -}}
-{{- includeTemplate "merge" (dict "current" $current "managed" (includeTemplate "claude-settings.json" .) "format" "json") -}}
+{{- includeTemplate "merge" (dict "current" $current "managed" (includeTemplate "claude-settings.json" .) "format" "json" "keep" (list "modelSettings"  "theme"  "switchModelsOnFlag")) -}}

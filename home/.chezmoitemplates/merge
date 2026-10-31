@@ -2,12 +2,23 @@
   Overlay .managed onto .current, two levels deep, and print the result in
   .format ("json" or "toml"). With .compact true, json prints on one line
   (toJson), matching apps that write minified configs. modify_ files use this
-  for app-owned configs:
-  keys from the repo win; keys the app writes for itself (trusted projects,
-  last-seen versions, model picks) survive. Managed values replace outright,
-  so false and "" apply too. JSON ends with one newline (toPrettyJson's).
+  for app-owned configs.
+
+  Managed values replace outright, so false and "" apply too. Nested maps are
+  merged key-by-key.
+
+  .keep is an optional list of dot-separated paths (e.g. "models.azure") whose
+  LIVE value wins over the managed one. Use it for settings the app rewrites
+  itself -- model picks, provider choices, theme, trust state. The managed
+  value still applies when the live file has no value for that path, so fresh
+  installs get the repo default.
+
+  Without .keep the behaviour is plain managed-wins at every depth.
+
+  JSON ends with one newline (toPrettyJson's).
 */ -}}
 {{- $toml := eq .format "toml" -}}
+{{- $keep := index . "keep" | default list -}}
 {{- $cur := dict -}}
 {{- $managed := dict -}}
 {{- if $toml -}}
@@ -17,12 +28,41 @@
 {{-   if .current }}{{ $cur = fromJson .current }}{{ end -}}
 {{-   $managed = fromJson .managed -}}
 {{- end -}}
+{{- /* Snapshot keep-listed values from the live file before merging. */ -}}
+{{- $saved := dict -}}
+{{- range $path := $keep -}}
+{{-   $parts := splitList "." $path -}}
+{{-   if eq (len $parts) 1 -}}
+{{-     $pk := index $parts 0 -}}
+{{-     if hasKey $cur $pk }}{{ $_ := set $saved $path (get $cur $pk) }}{{ end -}}
+{{-   else -}}
+{{-     $pk := index $parts 0 -}}
+{{-     $sk := index $parts 1 -}}
+{{-     $sub := get $cur $pk -}}
+{{-     if and (kindIs "map" $sub) (hasKey $sub $sk) -}}
+{{-       $_ := set $saved $path (get $sub $sk) -}}
+{{-     end -}}
+{{-   end -}}
+{{- end -}}
+{{- /* Merge: managed values win, nested maps merged key-by-key. */ -}}
 {{- range $k, $v := $managed -}}
 {{-   $old := get $cur $k -}}
 {{-   if and (kindIs "map" $v) (kindIs "map" $old) -}}
 {{-     range $sk, $sv := $v }}{{ $_ := set $old $sk $sv }}{{ end -}}
 {{-   else -}}
 {{-     $_ := set $cur $k $v -}}
+{{-   end -}}
+{{- end -}}
+{{- /* Restore the app-owned values snapshotted above. */ -}}
+{{- range $path, $val := $saved -}}
+{{-   $parts := splitList "." $path -}}
+{{-   if eq (len $parts) 1 -}}
+{{-     $_ := set $cur (index $parts 0) $val -}}
+{{-   else -}}
+{{-     $pk := index $parts 0 -}}
+{{-     $sk := index $parts 1 -}}
+{{-     $sub := get $cur $pk -}}
+{{-     if kindIs "map" $sub }}{{ $_ := set $sub $sk $val }}{{ end -}}
 {{-   end -}}
 {{- end -}}
 {{- /* index, not .compact: callers may omit the key and chezmoi templates

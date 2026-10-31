@@ -2,4 +2,4 @@
 {{- $current := "{}" -}}
 {{- if .chezmoi.stdin }}{{ $current = .chezmoi.stdin }}{{ end -}}
 {{- /* Pi saves this file without a final newline. */ -}}
-{{- includeTemplate "merge" (dict "current" $current "managed" (includeTemplate "pi-teacher-settings.json" .) "format" "json") | trimSuffix "\n" -}}
+{{- includeTemplate "merge" (dict "current" $current "managed" (includeTemplate "pi-teacher-settings.json" .) "format" "json" "keep" (list "defaultModel" "defaultProvider" "defaultThinkingLevel" "theme" "defaultProjectTrust" "enabledModels" "modelThinkingLevels")) | trimSuffix "\n" -}}
