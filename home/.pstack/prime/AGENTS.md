@@ -55,3 +55,7 @@ swarm workers: azure/gpt-6.1-sol @xhigh
 architect runners: azure/gpt-6.1-sol @medium
 interrogate reviewers: azure/gpt-6.1-sol @xhigh, azure/gpt-6-astra @medium
 </pstack>
+
+<memory>
+Memory lives in the <machine-memory> block of ~/.pi/agent/APPEND_SYSTEM.md, local to each machine and outside git. Read it before work on a topic it names. Record durable facts and corrections there, inside that block only.
+</memory>

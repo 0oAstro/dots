@@ -34,3 +34,7 @@ The preceding paragraph is offered as an illustration.
 - Every model is BYOK through ~/.factory/settings.json: Claude and Kimi on Bedrock, GPT, GLM, and DeepSeek on Azure. Model ids are `custom:<display-name>-0`, such as `custom:Opus-5.5-0`.
 - Roles map to Task complexity. Pass `complexity` on each Task call: light runs Haiku 5.5 xhigh (how explorer, bounded lookups), medium runs GPT-6.1 Sol xhigh (feature, refactoring, bug-fix, perf-issue, hillclimb, swarm workers), heavy runs Fable 5.1 xhigh (strongest judgment). Investigation, architecture, and judgment and prose stay in this Opus 5.5 session. Policy: ~/.pi/agent/model-routing-policy.md.
 </pstack>
+
+<memory>
+Memory lives in the <machine-memory> block of ~/.pi/agent/APPEND_SYSTEM.md, local to each machine and outside git. Read it before work on a topic it names. Record durable facts and corrections there, inside that block only.
+</memory>
