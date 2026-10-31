@@ -1,5 +1,6 @@
 {
   "theme": "light/dark",
+  "editorPaddingX": 1,
   "defaultProvider": "amazon-bedrock",
   "defaultModel": "us.anthropic.claude-opus-5-5",
   "defaultThinkingLevel": "high",
