@@ -1,4 +1,7 @@
 rex.bind("cmd+r", "client.config.reload")
+-- From Ghostty: Cmd+Left and Cmd+Right go to the start and end of the line.
+rex.bind("cmd+left", "pane.send_key", { key = "home" })
+rex.bind("cmd+right", "pane.send_key", { key = "end" })
 {{- if ne .host "aardvark" }}
 
 rex.host{ label = "aardvark", endpoint = "http://aardvark.kitty-armadillo.ts.net:7297" }

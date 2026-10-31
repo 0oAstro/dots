@@ -79,3 +79,5 @@
 .pi/agent/prompts
 .pi/agent/agents
 {{- end }}
+# Ghostty is replaced by Rex (2026-10-31); its Kanagawa themes are imported into Rex.
+.config/ghostty

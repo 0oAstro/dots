@@ -1,5 +1,5 @@
 # Patina's kanagawa theme with palette indexes instead of hex, so it follows
-# Ghostty's Dragon/Lotus pair. 16-18 come from the "Plus" Ghostty themes.
+# The Kanagawa Dragon/Lotus pair. 16-18 come from the "Plus" themes, imported into Rex.
 # Upstream: https://github.com/michel-kraemer/zsh-patina/blob/main/themes/kanagawa.toml
 
 "comment" = 16

@@ -18,7 +18,6 @@ brew "henrygd/beszel/beszel-agent", trusted: true, restart_service: :changed
 brew "macmon"
 brew "smartmontools"
 
-cask "ghostty"
 cask "abue-ammar/tinycast/tinycast"  # launcher, hotkeys, clipboard history
 cask "tailscale-app"
 cask "rustdesk"

@@ -73,7 +73,7 @@ aardvark's `/opt/docker` is the private repo `0oAstro/infra` (its `tofu/` holds 
 
 ```sh
 chezmoi edit --apply ~/.config/git/config   # edit the repo copy, then apply it
-chezmoi re-add ~/.config/ghostty/config     # or copy an in-place edit back
+chezmoi re-add ~/.config/rex/init.lua       # or copy an in-place edit back
 chezmoi cd                                  # commit and push from here
 chezmoi update                              # on the other machines
 ```
@@ -98,7 +98,7 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 | every machine | zsh, git, tmux, bat, ripgrep, glow, dtop, btop; `conf.d/core.toml` |
 | any harness | pstack, agent-browser; `conf.d/ai.toml` |
 | a harness module | that harness's CLI in `conf.d/harness-<name>.toml` and its settings (`claude`, `pi`, `prime`, `cursor`) |
-| macOS | Ghostty, lazysql; `conf.d/macos.toml` |
+| macOS | Rex init.lua, lazysql; `conf.d/macos.toml` |
 | Linux | `conf.d/linux.toml` |
 | `input` module | Karabiner |
 | a font module | that family in `~/Library/Fonts/<family>` |

@@ -11,15 +11,7 @@
 {{- end }}
 {{- if eq .chezmoi.os "darwin" }}
 
-[".config/ghostty/shaders"]
-    type = "git-repo"
-    url = "https://github.com/sahaj-b/ghostty-cursor-shaders.git"
-    clone.args = ["--depth", "1"]
-    pull.args = ["--ff-only"]
-{{- end }}
-{{- if eq .chezmoi.os "darwin" }}
-
-# Ghostty's font. Homebrew's font-ioskeley-mono lacks the Term Nerd Font build.
+# IoskeleyMono Term Nerd Font. Homebrew's font-ioskeley-mono lacks the Term build.
 {{- range $w := list "Thin" "ExtraLight" "Light" "SemiLight" "Regular" "Medium" "SemiBold" "Bold" "ExtraBold" "Heavy" }}
 {{-   range $i := list "" "Italic" }}
 {{-     $style := ternary "Italic" (print $w $i) (and (eq $w "Regular") (eq $i "Italic")) }}

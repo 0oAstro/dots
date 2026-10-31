@@ -30,7 +30,6 @@ Host *
   SendEnv ZDOTS_APPEARANCE
 {{- if eq .chezmoi.os "darwin" }}
   IdentityAgent ~/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock
-  SetEnv TERM=xterm-ghostty
 {{- else }}
   AddKeysToAgent yes
 {{- end }}
