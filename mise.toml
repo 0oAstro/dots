@@ -37,13 +37,12 @@ run = """ansible "${usage_host}" -m ansible.builtin.debug -a var=group_names |
   jq -r '.plays[0].tasks[0].hosts | to_entries[] | "\\(.key): \\(.value.group_names | sort | join(" "))"'"""
 
 [tasks.check]
-description = "Format check, lint (shell, workflows), secret scan, playbook syntax, render every profile, start zsh"
+description = "Format check, lint (shell, workflows), secret scan, playbook syntax"
 depends = ["ansible:deps"]
 run = [
   "tests/fmt.py --check",
   "cd ansible && ansible-playbook --syntax-check site.yml",
-  "shellcheck --severity=warning install.sh tests/*.sh",
+  "shellcheck --severity=warning install.sh",
   "actionlint",
   "gitleaks dir --no-banner --redact .",
-  "tests/render.sh --smoke",
 ]

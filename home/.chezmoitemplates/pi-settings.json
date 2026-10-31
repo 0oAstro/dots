@@ -13,16 +13,12 @@
   ],
   "packages": [
     "~/.local/share/mise/installs/npm-cahalane-pi-monitor/latest/lib/node_modules/@cahalane/pi-monitor",
-    {
-      "source": "~/.local/share/mise/installs/http-pstack/latest",
-      "skills": []
-    },
     "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/@sting8k/pi-vcc",
     {
       "source": "~/.local/share/mise/installs/npm-rea-agents/latest/lib/node_modules/rea-agents",
       "skills": []
     },
-    "~/.local/share/mise/installs/pi-global-tools/{{ includeTemplate "pi-global-tools-version" . }}"
+    "~/.local/share/mise/installs/npm-tintinweb-pi-subagents/latest/lib/node_modules/@tintinweb/pi-subagents"
   ],
   "skills": [
     "~/.local/share/mise/installs/skill-profile/global/current/pstack/plugins/pstack/skills",
@@ -36,15 +32,6 @@
       "azure/gpt-6.1-sol": { "reserveTokens": 40960 },
       "azure/gpt-6-astra": { "reserveTokens": 40960 }
     }
-  },
-  "firecrawl-web": {
-    "fetchModel": "azure/gpt-6-luna"
-  },
-  "harness": {
-    "footer": true,
-    "quietTools": true,
-    "loopGuard": { "nudgeAt": 3, "stopAt": 6 },
-    "directToolModels": []
   },
   "warnings": {
     "anthropicExtraUsage": false

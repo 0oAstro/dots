@@ -1,8 +1,7 @@
 # Pi. Settings live in ~/.pi; pi-global-tools.toml holds its local extensions.
 
 [tools]
-# Pi extensions. pstack's own extension (http:pstack in ai.toml) gives the
-# agent, question and wake-up tools; pi-subagents serves only the pi-teacher profile.
+# Pi extensions: pi-subagents for subagents, pi-monitor for long jobs, pi-vcc for compaction.
 "npm:@tintinweb/pi-subagents" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "npm:@cahalane/pi-monitor" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "npm:@sting8k/pi-vcc" = { version = "latest", npm_args = "--legacy-peer-deps" }
