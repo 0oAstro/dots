@@ -21,7 +21,6 @@ brew "smartmontools"
 cask "abue-ammar/tinycast/tinycast"  # launcher, hotkeys, clipboard history
 cask "tailscale-app"
 cask "rustdesk"
-cask "blip"
 cask "helium-browser"
 cask "notion"
 cask "obsidian"

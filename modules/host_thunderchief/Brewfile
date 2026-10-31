@@ -1,4 +1,5 @@
 cask "cap"
 cask "grok-bot"
 cask "zoom"
+cask "tor-browser"
 brew "librsvg"  # rsvg-convert for the pi-teacher svg-maker

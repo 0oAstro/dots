@@ -1,4 +1,4 @@
-# Always-on hosts: Tailscale, systemd-oomd, Claude Remote Control.
+# Always-on hosts: Tailscale, systemd-oomd, Claude Remote Control, the Rex server.
 servers:
   hosts: {aardvark: }
   vars:

@@ -36,18 +36,3 @@
     label: "{{ item.0.label }}"
   when: item.1 is changed or item.2.rc != 0
   changed_when: true
-
-- name: Retired agents
-  ansible.builtin.shell: |
-    plist="$HOME/Library/LaunchAgents/{{ item.label }}.plist"
-    [ -e "$plist" ] || exit 0
-    launchctl bootout gui/{{ ansible_facts.user_uid }}/{{ item.label }} 2>/dev/null || true
-    rm -f "$plist"
-    {% for f in item.files | default([]) %}rm -rf {{ f | replace('~', '$HOME') }}
-    {% endfor %}
-    echo removed
-  loop: "{{ launchd_agents_absent | default([]) }}"
-  loop_control:
-    label: "{{ item.label }}"
-  register: launchd_retired
-  changed_when: "'removed' in launchd_retired.stdout"

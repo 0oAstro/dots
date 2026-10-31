@@ -14,7 +14,7 @@ zle -N accept-line _zdots_accept_line
 
 _globalias_expand_word() {
   local word=${${(Az)LBUFFER}[-1]}
-  case $word in ls|grep|gpg|vi|e|z|[0-9]) return ;; esac
+  case $word in ls|grep|vi|e|z|[0-9]) return ;; esac
   (( $+galiases[$word] || ! $+commands[$word] )) && zle _expand_alias
 }
 
@@ -30,12 +30,9 @@ globalias-accept() {
 }
 zle -N globalias-accept
 
-local keymap
-for keymap in emacs viins; do
-  bindkey -M "$keymap" ' ' globalias-space
-  bindkey -M "$keymap" '\e ' magic-space
-  bindkey -M "$keymap" '^M' globalias-accept
-done
+bindkey -M emacs ' ' globalias-space
+bindkey -M emacs '\e ' magic-space
+bindkey -M emacs '^M' globalias-accept
 bindkey -M isearch ' ' magic-space
 
 accept-line-plain() {
@@ -43,7 +40,6 @@ accept-line-plain() {
 }
 zle -N accept-line-plain
 bindkey -M emacs '^[^M' accept-line-plain
-bindkey -M viins '^[^M' accept-line-plain
 bindkey -M isearch '^[^M' accept-line-plain
 
 unset keymap

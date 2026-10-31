@@ -15,7 +15,6 @@
       "skills": ["!principle-*","!arena","!swarm","!thermos","!thermo-nuclear-review","!thermo-nuclear-code-quality-review","!reflect","!ketchup","!bro","!what-did-i-get-done","!setup-pstack","!poteto-help","!automate-me","!babysit","!correct","!interrogate","!make-pr-easy-to-review","!maintain-verification-skill","!create-verification-skill"]
     }
   ],
-  "prompts": ["~/.pi/agent/prompts"],
   "enabledModels": [
     "azure/deepseek-v4.1-flash:max",
     "azure/fw-glm-5.3-flash:max",

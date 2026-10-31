@@ -24,16 +24,9 @@ if [[ ! -S ${SSH_AUTH_SOCK:-} || ${SSH_AUTH_SOCK:A} == */com.apple.launchd.*/Lis
   export SSH_AUTH_SOCK=$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock
 fi
 
-# mise: skip aardvark's NFS-mounted $HOME config (targets the remote box).
-# Must be an env var; the global [settings] key is applied too late to suppress
-# the untrusted-config error.
-export MISE_IGNORED_CONFIG_PATHS=$HOME/aardvark
 export CP_HOME_DIR=$XDG_DATA_HOME/cocoapods
 {{- else }}
 
-# Ubuntu's /etc/zsh/zshrc runs a bare compinit unless this is set; .zshrc runs
-# its own (lib/compinit.zsh), so skip the duplicate and its insecure-dir prompt.
-skip_global_compinit=1
 export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/user/$UID}
 {{- if .server }}
 # Build and agent scratch belongs on disk, not the RAM-backed /tmp mount.
@@ -41,14 +34,6 @@ export TMPDIR=${TMPDIR:-/var/tmp}
 # Close an idle agent-browser daemon and its Chromium after 5 minutes.
 export AGENT_BROWSER_IDLE_TIMEOUT_MS=300000
 {{- end }}
-
-# systemd runs the gcr ssh-agent but doesn't export its socket to non-graphical
-# shells (tmux, ssh). No ssh-add: the keys are passphrase-less and ~/.ssh/config
-# pins IdentityFile + IdentitiesOnly per host, so loading every key would only
-# widen what gets offered. Servers without a desktop session have no gcr.
-if [[ -z ${SSH_AUTH_SOCK:-} && -S $XDG_RUNTIME_DIR/gcr/ssh ]]; then
-  export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/gcr/ssh
-fi
 {{- end }}
 
 export PROJECTS=${PROJECTS:-$HOME/Developer}
@@ -61,7 +46,6 @@ export NPM_CONFIG_CACHE=$XDG_CACHE_HOME/npm
 # npm 11 no longer supports NPM_CONFIG_TMP; discard stale inherited values.
 unset NPM_CONFIG_INIT_MODULE NPM_CONFIG_TMP
 export GOPATH=$XDG_DATA_HOME/go
-export GNUPGHOME=$XDG_DATA_HOME/gnupg
 export CARGO_HOME=$XDG_DATA_HOME/cargo
 export RUSTUP_HOME=$XDG_DATA_HOME/rustup
 export LESSHISTFILE=$XDG_STATE_HOME/lesshst
@@ -74,11 +58,7 @@ for _zdots_dir in \
   "$XDG_CACHE_HOME/zsh" "$XDG_STATE_HOME/zsh"; do
   [[ -d $_zdots_dir ]] || command mkdir -p -- "$_zdots_dir" 2>/dev/null
 done
-[[ -d $GNUPGHOME ]] || command mkdir -m 700 -p -- "$GNUPGHOME" 2>/dev/null
 unset _zdots_dir
-
-# Avoid duplicate wireless-debug transports; use explicit `adb connect host:port`.
-export ADB_MDNS_AUTO_CONNECT=0
 
 # Amazon Bedrock defaults: agents run Claude and Kimi K3 there. Macs use the
 # Bedrock-only `bedrock` profile. Linux hosts name the credential-less

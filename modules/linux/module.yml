@@ -1,8 +1,8 @@
 # What every Linux host is: base packages, zsh, the overlay/ files.
 linux:
-  children: {servers: , desktops: }
+  children: {servers: }
   vars:
-    # System python: dnf, apt and firewalld bindings live there, not in mise's.
+    # System python: dnf and firewalld bindings live there, not in mise's.
     ansible_python_interpreter: /usr/bin/python3
 
     # Lists named packages_* or systemd_enabled_* in any module are merged.
@@ -13,14 +13,6 @@ linux:
       - unzip
       - tar
     # mise builds its cargo: tools from source.
-    packages_linux_build: "{{ linux_build_packages[ansible_facts.os_family] | default([]) }}"
-    linux_build_packages:
-      RedHat: [gcc, gcc-c++, make, pkgconf, zlib-devel, openssl-devel]
-      Debian: [build-essential, pkg-config, zlib1g-dev, libssl-dev]
-      Archlinux: [base-devel, zlib, openssl]
+    packages_linux_build: [gcc, gcc-c++, make, pkgconf, zlib-devel, openssl-devel]
 
     login_shell: /bin/zsh
-
-    # Overlay files that are not 0644.
-    overlay_modes:
-      /etc/ssh/sshd_config.d/00-ansible.conf: "0600"

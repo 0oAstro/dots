@@ -25,9 +25,6 @@ Host *
   PreferredAuthentications publickey,keyboard-interactive,password
   # Fastest cipher first, rest of the default list kept as fallback.
   Ciphers ^aes128-gcm@openssh.com
-  # Tailscale links are fast; git and rsync compress on their own.
-  Compression no
-  SendEnv ZDOTS_APPEARANCE
 {{- if eq .chezmoi.os "darwin" }}
   IdentityAgent ~/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock
 {{- else }}

@@ -1,6 +1,2 @@
-style: "auto"
-mouse: false
-pager: false
-all: false
 # 0: don't truncate or wrap wide tables.
 width: 0

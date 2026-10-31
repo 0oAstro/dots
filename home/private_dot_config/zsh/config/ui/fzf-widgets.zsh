@@ -31,7 +31,5 @@ _zdots_fzf_dir_history() {
   zle fzf-cd-widget
 }
 zle -N _zdots_fzf_dir_history
-for keymap in emacs viins; do
-  bindkey -M "$keymap" '^[r' _zdots_fzf_dir_history
-done
-unset preview preview_layout keymap
+bindkey -M emacs '^[r' _zdots_fzf_dir_history
+unset preview preview_layout

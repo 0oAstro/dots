@@ -8,7 +8,7 @@ host_aardvark:
   hosts:
     aardvark:
       packages_aardvark:
-        - spal-release # Amazon's extra repo: mosh, chromium, ffmpeg, tesseract, poppler-utils
+        - spal-release # Amazon's extra repo: mosh, chromium, tesseract, poppler-utils
         - firewalld
         - rclone
         - fuse3
@@ -17,10 +17,8 @@ host_aardvark:
         - dnf-automatic
         - sysstat
         - mosh
-        - jq
         - fio
         - chromium
-        - ffmpeg
         - tesseract
         - poppler-utils
         - texlive-scheme-basic

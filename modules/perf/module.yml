@@ -7,8 +7,6 @@ perf:
     login_items_perf:
       - Bitwarden
       - Tinycast
-      # Not Blip: it registers its own login item (Blip's Launch at login
-      # setting) and drops the one System Events adds.
 
     macos_defaults_perf:
       - {domain: com.apple.CrashReporter, key: DialogType, type: string, value: none}
@@ -21,8 +19,3 @@ perf:
     # pmset defaults; a host overrides the whole dict. Values match thunderchief.
     pmset_battery: {displaysleep: 5, sleep: 10, disksleep: 10, powernap: 0, womp: 0, lessbright: 1}
     pmset_ac: {displaysleep: 10, sleep: 15, disksleep: 10, powernap: 0, womp: 0}
-
-    # A hand-made daemon that ran /usr/sbin/purge every two hours; purge only
-    # empties the file cache macOS would reuse anyway.
-    launchd_daemons_absent_perf:
-      - com.local.purge

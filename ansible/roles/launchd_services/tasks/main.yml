@@ -38,16 +38,3 @@
     (item.state == 'disabled') != (('"' ~ item.label ~ '" => disabled') in services_system_now.stdout)
   changed_when: true
   become: true
-
-- name: Hand-made daemons removed
-  ansible.builtin.shell: |
-    plist=/Library/LaunchDaemons/{{ item }}.plist
-    [ -e "$plist" ] || exit 0
-    launchctl bootout system/{{ item }} 2>/dev/null || true
-    launchctl enable system/{{ item }}
-    rm -f "$plist"
-    echo removed
-  loop: "{{ daemons_absent }}"
-  register: services_removed
-  changed_when: "'removed' in services_removed.stdout"
-  become: true

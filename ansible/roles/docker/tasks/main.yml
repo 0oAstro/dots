@@ -2,7 +2,7 @@
 # chezmoi (~/.docker/cli-plugins), so it matches on every host.
 - name: Engine
   ansible.builtin.package:
-    name: "{{ docker_package.get(ansible_facts.distribution, docker_package[ansible_facts.os_family] | default('docker')) }}"
+    name: "{{ docker_package }}"
     state: present
 
 - name: Service

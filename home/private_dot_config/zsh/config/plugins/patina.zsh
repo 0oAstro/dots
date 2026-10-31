@@ -6,7 +6,7 @@ if [[ -x $_patina_bin ]]; then
   if [[ $ZSH_PATINA_CONFIG_PATH -nt $XDG_CACHE_HOME/zsh/patina-selection ||
         ${ZSH_PATINA_CONFIG_PATH:h}/zsh-patina-kanagawa.toml -nt $XDG_CACHE_HOME/zsh/patina-selection ]]; then
     "$_patina_bin" restart >/dev/null 2>&1 &&
-      print -r -- "$ZSH_PATINA_THEME" >| "$XDG_CACHE_HOME/zsh/patina-selection"
+      : >| "$XDG_CACHE_HOME/zsh/patina-selection"
   fi
   eval "$("$_patina_bin" activate)"
 fi
