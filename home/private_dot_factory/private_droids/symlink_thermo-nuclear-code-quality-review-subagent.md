@@ -1,1 +1,0 @@
-../../.local/share/mise/installs/skill-profile/global/current/pstack/plugins/pstack/agents/thermo-nuclear-code-quality-review-subagent.md

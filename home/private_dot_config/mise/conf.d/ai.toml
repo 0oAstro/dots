@@ -2,8 +2,6 @@
 # harness-<name>.toml; modules/<name>/module.yml says which hosts get it.
 
 [tools]
-"aqua:vercel-labs/agent-browser" = "latest"
-
 # pstack: michael-denyer's Claude Code/Codex/Pi port of cursor/plugins/pstack.
 # Claude Code (~/.claude/skills/pstack) and Pi (settings packages) both read it
 # in place through the `latest` link, so `mise upgrade` is the whole update.
