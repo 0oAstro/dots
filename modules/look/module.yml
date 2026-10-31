@@ -12,6 +12,10 @@ look:
       - {domain: NSGlobalDomain, key: AppleICUForce24HourTime, type: bool, value: true}
       - {domain: NSGlobalDomain, key: AppleShowScrollBars, type: string, value: Automatic}
       - {domain: NSGlobalDomain, key: NSWindowShouldDragOnGesture, type: bool, value: true}
+      # Sidebars stay docked, not floating; corners at the pre-Tahoe 10pt radius
+      # (what macOS 15 shipped, vs Tahoe's ~26).
+      - {domain: NSGlobalDomain, key: NSSplitViewItemSidebarDefaultsToFloatingAppearance, type: bool, value: false}
+      - {domain: NSGlobalDomain, key: NSConvolutionOverride1, type: float, value: 10}
       - {domain: NSGlobalDomain, key: NSTableViewDefaultSizeMode, type: int, value: 2}
       - {domain: com.apple.WindowManager, key: EnableTiledWindowMargins, type: bool, value: false}
       - {domain: com.apple.WindowManager, key: StandardHideDesktopIcons, type: bool, value: true}
