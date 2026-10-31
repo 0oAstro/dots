@@ -1,2 +1,0 @@
-{{- /* chezmoi:modify-template */ -}}
-{{- includeTemplate "merge" (dict "current" .chezmoi.stdin "managed" "{\"hosts\":[{\"id\":\"aardvark\",\"name\":\"aardvark\",\"ssh\":\"aardvark\",\"transport\":{\"kind\":\"ssh\"},\"defaultCwd\":\"/home/ec2-user/Developer\"}]}" "format" "json") -}}
