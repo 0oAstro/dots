@@ -84,11 +84,6 @@
   when: overlay_changed | select('match', '/etc/pki/ca-trust/source/') | list | length > 0
   changed_when: true
 
-- name: Re-export NFS
-  ansible.builtin.command: exportfs -ra
-  when: overlay_changed | select('match', '/etc/exports') | list | length > 0
-  changed_when: true
-
 - name: Reload firewalld
   ansible.builtin.systemd_service:
     name: firewalld

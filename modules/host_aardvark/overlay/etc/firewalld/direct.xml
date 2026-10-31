@@ -12,12 +12,6 @@
   <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="91">-i ens34 -o docker0 -j DROP</rule>
   <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="92">-i ens34 -o br-+ -j DROP</rule>
   <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="-1">-i ens34 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="INPUT" priority="0">-i tailscale0 -p tcp --dport 111 '!' -s 100.81.80.94 -j DROP</rule>
-  <rule ipv="ipv4" table="filter" chain="INPUT" priority="0">-i tailscale0 -p udp --dport 111 '!' -s 100.81.80.94 -j DROP</rule>
-  <rule ipv="ipv4" table="filter" chain="INPUT" priority="0">-i tailscale0 -p tcp --dport 2049 '!' -s 100.81.80.94 -j DROP</rule>
-  <rule ipv="ipv4" table="filter" chain="INPUT" priority="0">-i tailscale0 -p udp --dport 2049 '!' -s 100.81.80.94 -j DROP</rule>
-  <rule ipv="ipv4" table="filter" chain="INPUT" priority="0">-i tailscale0 -p tcp --dport 20048 '!' -s 100.81.80.94 -j DROP</rule>
-  <rule ipv="ipv4" table="filter" chain="INPUT" priority="0">-i tailscale0 -p udp --dport 20048 '!' -s 100.81.80.94 -j DROP</rule>
   <rule ipv="ipv4" table="filter" chain="INPUT" priority="0">-i tailscale0 -p tcp --dport 56177 '!' -s 100.81.80.94 -j DROP</rule>
   <rule ipv="ipv4" table="filter" chain="INPUT" priority="0">-i tailscale0 -p udp --dport 56177 '!' -s 100.81.80.94 -j DROP</rule>
 </direct>
