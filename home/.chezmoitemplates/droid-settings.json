@@ -5,6 +5,18 @@
   "includeCoAuthoredByDroid": false,
   "completionSound": "off",
   "awaitingInputSound": "off",
+  "disabledSkills": [
+    "browse-wiki",
+    "detect-overlapping-workstreams",
+    "incident",
+    "install-code-review",
+    "install-qa",
+    "install-triage",
+    "install-wiki",
+    "shared-context",
+    "wiki",
+    "wiki-video-gen"
+  ],
   "sessionDefaultSettings": {
     "autonomyLevel": "high"
   },
