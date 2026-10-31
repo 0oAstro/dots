@@ -11,7 +11,7 @@
   "statusLine": {
     "sandbox": true,
     "context": true,
-    "session": true
+    "session": false
   },
   "workspaces": {
     {{ .chezmoi.homeDir | quote }}: {
@@ -22,7 +22,7 @@
   "models": {
     "gateway": "zai/glm-5.3",
     "grok": "grok-4.7",
-    "azure": "deepseek-v4.1-flash"
+    "azure": "fw-glm-5.3-flash"
   },
   "providers": {
     "azure": {

@@ -1,6 +1,8 @@
 {{- /*
   Overlay .managed onto .current, two levels deep, and print the result in
-  .format ("json" or "toml"). modify_ files use this for app-owned configs:
+  .format ("json" or "toml"). With .compact true, json prints on one line
+  (toJson), matching apps that write minified configs. modify_ files use this
+  for app-owned configs:
   keys from the repo win; keys the app writes for itself (trusted projects,
   last-seen versions, model picks) survive. Managed values replace outright,
   so false and "" apply too. JSON ends with one newline (toPrettyJson's).
@@ -23,4 +25,5 @@
 {{-     $_ := set $cur $k $v -}}
 {{-   end -}}
 {{- end -}}
-{{- if $toml }}{{ toToml $cur }}{{ else }}{{ toPrettyJson "  " $cur }}{{ end -}}
+{{- if $toml }}{{ toToml $cur }}{{ else if .compact }}{{ toJson $cur }}
+{{ else }}{{ toPrettyJson "  " $cur }}{{ end -}}

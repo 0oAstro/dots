@@ -1,2 +1,2 @@
 {{- /* chezmoi:modify-template */ -}}
-{{- includeTemplate "merge" (dict "current" .chezmoi.stdin "managed" (includeTemplate "fx-settings.json" .) "format" "json") -}}
+{{- includeTemplate "merge" (dict "current" .chezmoi.stdin "managed" (includeTemplate "fx-settings.json" .) "format" "json" "compact" true) -}}
