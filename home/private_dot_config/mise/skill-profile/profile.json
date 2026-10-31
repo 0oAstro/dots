@@ -41,12 +41,6 @@
       "optional": true
     },
     {
-      "name": "intercom",
-      "path": "npm-pi-intercom/latest/lib/node_modules/pi-intercom",
-      "root": "skills",
-      "skills": "."
-    },
-    {
       "name": "rea",
       "path": "npm-rea-agents/latest/lib/node_modules/rea-agents",
       "root": "skills",

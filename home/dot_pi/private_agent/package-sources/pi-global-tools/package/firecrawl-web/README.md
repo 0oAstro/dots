@@ -67,14 +67,4 @@ When `web_fetch` receives an `instruction`, it reads the model from `~/.pi/agent
 
 The value must exactly match a model known to Pi and have working authentication. There is no default: an `instruction` call fails until the setting exists. `/firecrawl` checks that an API key is configured and shows the selected extraction model; it does not verify network access or model authentication.
 
-## Validation
-
-Run offline regression tests through the installed Pi extension loader (no API/model calls):
-
-```bash
-pi --offline -ne -ns -np -nc --no-session -p -e ./tests/run.ts /firecrawl-tests
-```
-
-Append `live` to the command prompt (`"/firecrawl-tests live"`) to add bounded real search, long-page fetch, and focused-extraction checks. These spend Firecrawl/model credits.
-
 After updating an installed extension, run `/reload` or start a new Pi session to load the new tool definitions.

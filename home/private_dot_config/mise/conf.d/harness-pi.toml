@@ -6,7 +6,6 @@
 "npm:@tintinweb/pi-subagents" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "npm:@cahalane/pi-monitor" = { version = "latest", npm_args = "--legacy-peer-deps" }
 "npm:@sting8k/pi-vcc" = { version = "latest", npm_args = "--legacy-peer-deps" }
-"npm:pi-intercom" = { version = "latest", npm_args = "--legacy-peer-deps" }
 # REA (reverse engineering MCP). Pi registers it in ~/.pi/agent/mcp.json and
 # loads its skill as a settings package. Its native analysis drives Ghidra.
 "npm:rea-agents" = "latest"

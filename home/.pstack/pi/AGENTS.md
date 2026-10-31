@@ -29,7 +29,6 @@ The preceding paragraph is offered as an illustration.
 </shaurya>
 
 <pstack root="~/.local/share/mise/installs/skill-profile/global/current/pstack/plugins/pstack">
-- Automatic skills are emil-design-eng, grilling, and poteto-mode. Other skills load only on explicit request or as supporting references after one of those skills loads.
 - pstack loads as a Pi package with its extension. The role sheet (~/.pi/agent/pstack-models.md) is in the system prompt.
 </pstack>
 

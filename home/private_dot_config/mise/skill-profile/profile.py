@@ -47,7 +47,7 @@ def source_inventory(home, policy):
     for entry in policy["sources"]:
         source = installs / entry["path"]
         if not source.exists():
-            if entry.get("optional") or entry["name"] in {"intercom", "rea"}:
+            if entry.get("optional") or entry["name"] == "rea":
                 continue
             raise FileNotFoundError(source)
         sources.append((entry, source.resolve()))

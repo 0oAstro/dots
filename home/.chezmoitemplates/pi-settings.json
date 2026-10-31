@@ -19,10 +19,6 @@
     },
     "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/@sting8k/pi-vcc",
     {
-      "source": "~/.local/share/mise/installs/npm-pi-intercom/latest/lib/node_modules/pi-intercom",
-      "skills": []
-    },
-    {
       "source": "~/.local/share/mise/installs/npm-rea-agents/latest/lib/node_modules/rea-agents",
       "skills": []
     },
@@ -32,7 +28,6 @@
     "~/.local/share/mise/installs/skill-profile/global/current/pstack/plugins/pstack/skills",
     "~/.local/share/mise/installs/skill-profile/global/current/emil",
     "~/.local/share/mise/installs/skill-profile/global/current/matt",
-    "~/.local/share/mise/installs/skill-profile/global/current/intercom",
     "~/.local/share/mise/installs/skill-profile/global/current/rea"
   ],
   "compaction": {

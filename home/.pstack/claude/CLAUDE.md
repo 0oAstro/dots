@@ -27,9 +27,3 @@ The preceding paragraph is offered as an illustration.
 - Stop only your own PIDs and remove your temp files.
 - The prompt cache lives 1 hour in the main session and 5 minutes in subagents. Never wait on one command or wakeup for over an hour, and never resume a subagent idle over 5 minutes: start a fresh one with a full brief.
 </shaurya>
-
-<memory>
-Memory lives in the <machine-memory> block of ~/.pi/agent/APPEND_SYSTEM.md, local to each machine and outside git. Read it before work on a topic it names. Record durable facts and corrections there, inside that block only.
-</memory>
-
-@~/.pi/agent/APPEND_SYSTEM.md

@@ -81,3 +81,5 @@
 {{- end }}
 # Ghostty is replaced by Rex (2026-10-31); its Kanagawa themes are imported into Rex.
 .config/ghostty
+# Machine memory is dropped (2026-10-31); copies are in ~/archive.
+.pi/agent/APPEND_SYSTEM.md

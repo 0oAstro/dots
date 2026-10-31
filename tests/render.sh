@@ -105,7 +105,7 @@ assert package["npm_args"] == "--legacy-peer-deps", package
 assert "~/.local/share/mise/installs/npm-sting8k-pi-vcc/latest/lib/node_modules/@sting8k/pi-vcc" in settings["packages"], settings["packages"]
 assert "npm:@sting8k/pi-vcc" not in settings["packages"], settings["packages"]
 assert settings["compaction"]["enabled"] is True, settings["compaction"]
-assert {"source": "~/.local/share/mise/installs/npm-pi-intercom/latest/lib/node_modules/pi-intercom", "skills": []} in settings["packages"], settings["packages"]
+assert not any("pi-intercom" in str(package) for package in settings["packages"]), settings["packages"]
 assert settings["firecrawl-web"]["fetchModel"] == "azure/gpt-6-luna", settings["firecrawl-web"]
 extension_config = tomllib.loads((home / ".config/mise/conf.d/pi-global-tools.toml").read_text())
 version = extension_config["tools"]["pi-global-tools"]["version"]

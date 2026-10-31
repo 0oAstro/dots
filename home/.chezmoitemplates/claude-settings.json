@@ -2,6 +2,7 @@
   "syncClaudeAiPlugins": false,
   "syncClaudeAiSkills": false,
   "idleCompaction": false,
+  "autoMemoryEnabled": false,
   "awaySummaryEnabled": false,
   "promptSuggestionEnabled": false,
   "autoDreamEnabled": false,
