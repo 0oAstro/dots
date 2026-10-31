@@ -29,7 +29,6 @@ host_aardvark:
         - texlive-tcolorbox
         - texlive-pgf
         - perf
-        - libatomic # t3code runtime binary links it
 
       systemd_enabled_aardvark:
         - nfs-server.service
@@ -118,7 +117,6 @@ host_aardvark:
           ports: []
           rich_rules: []
 
-      # User units from user_units/. t3code.service itself is T3's
-      # (its ExecStart pins the runtime version); only its drop-ins live here.
+      # User units from user_units/.
       user_units_enabled_aardvark:
         - algochat-ads-chat-export.timer

@@ -3,10 +3,6 @@
   <chain ipv="ipv4" table="filter" chain="DOCKER-USER"/>
   <!-- IMDS hop limit is 2 for Bifrost's Bedrock role; every other forwarded source (containers, exit-node clients) is refused. -->
   <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="-2">-d 169.254.169.254/32 '!' -s 172.21.0.10 -j REJECT</rule>
-  <!-- t3 listens on 0.0.0.0:3773 for its T3 Connect tunnel (loopback) and Caddy (pinned 172.28.0.5 on auth_net) only. -->
-  <rule ipv="ipv4" table="filter" chain="INPUT" priority="-2">-p tcp --dport 3773 -s 127.0.0.0/8 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="INPUT" priority="-2">-p tcp --dport 3773 -s 172.28.0.5 -j ACCEPT</rule>
-  <rule ipv="ipv4" table="filter" chain="INPUT" priority="-1">-p tcp --dport 3773 -j REJECT --reject-with tcp-reset</rule>
   <!-- Tailnet and exit-node clients reach published ports (DNAT) and replies only, never container IPs. -->
   <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -m conntrack --ctstate DNAT -j ACCEPT</rule>
   <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="11">-i tailscale0 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT</rule>

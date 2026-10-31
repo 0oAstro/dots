@@ -1,0 +1,6 @@
+# preview: tagged builds. There is no stable channel yet; snapshot ships several builds a day.
+rex_channel: preview
+# Tailscale principals let in as the login user (accounts file).
+rex_principals: []
+# tailnet:// listener: the machine's own Tailscale identifies callers, tagged devices included.
+rex_tailnet_port: 7297

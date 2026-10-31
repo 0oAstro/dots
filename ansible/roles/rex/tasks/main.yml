@@ -1,0 +1,71 @@
+# Rex's login server (docs: superlogical.com/rex/docs/linux). Each caller
+# runs as the login user through PAM, so sessions started over ssh and from a
+# Rex client share one server. Tagged devices reach it only through the
+# tailnet:// listener: Tailscale Serve does not identify them.
+- name: Repo file
+  ansible.builtin.copy:
+    dest: /etc/yum.repos.d/rex.repo
+    mode: "0644"
+    content: |
+      [rex]
+      name=Rex ({{ rex_channel }})
+      baseurl=https://pkgs.superlogical.com/rex/rpm/{{ rex_channel }}/$basearch
+      enabled=1
+      gpgcheck=1
+      repo_gpgcheck=1
+      gpgkey=https://pkgs.superlogical.com/rex/keys/rex.asc
+
+- name: Signing key
+  ansible.builtin.rpm_key:
+    key: https://pkgs.superlogical.com/rex/keys/rex.asc
+
+- name: Trust the repo metadata key
+  ansible.builtin.command: dnf -y -q --repo rex makecache
+  changed_when: false
+
+- name: Package
+  ansible.builtin.package:
+    name: rex
+    state: present
+
+- name: Accounts
+  ansible.builtin.copy:
+    dest: /etc/rex/accounts.jsonc
+    mode: "0644"
+    content: |
+      {
+        "version": 1,
+        "accounts": {
+          {{ ansible_facts.user_id | to_json }}: { "principals": {{ rex_principals | to_json }} },
+        },
+      }
+  notify: Reload rex accounts
+
+- name: Drop-in directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/rex-login-server.service.d
+    state: directory
+    mode: "0755"
+
+- name: Tailnet listener
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/rex-login-server.service.d/tailnet.conf
+    mode: "0644"
+    content: |
+      [Unit]
+      After=tailscaled.service
+      Requires=tailscaled.service
+
+      [Service]
+      ExecStart=
+      ExecStart=/usr/bin/rex login-server --listen unix:///run/rex/login-server.sock \
+        --accounts /etc/rex/accounts.jsonc --runtime-root /run/rex --log-format text \
+        --pam-service rex-login-server --extra-listen tailnet://:{{ rex_tailnet_port }}
+  notify: Restart rex login server
+
+- name: Enable and start
+  ansible.builtin.systemd_service:
+    name: rex-login-server.service
+    enabled: true
+    state: started
+    daemon_reload: true

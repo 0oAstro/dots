@@ -4,6 +4,11 @@ servers:
   vars:
     tailscale_enabled: true
 
+    # Rex login server on tailnet://:7297. Tailscale identifies tagged devices
+    # only by tag: tag:personal is the Macs, nighthawk and grokbot-box.
+    rex_enabled: true
+    rex_principals: ["tailscale:tag:personal"]
+
     # Kills the worst cgroup under memory pressure (user-1000.slice opts in).
     systemd_enabled_servers:
       - systemd-oomd.service

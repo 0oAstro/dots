@@ -34,6 +34,10 @@
       become: true
       when: tailscale_enabled | default(false)
       tags: [tailscale]
+    - role: rex
+      become: true
+      when: rex_enabled | default(false)
+      tags: [rex]
     - role: firewalld
       become: true
       when: firewalld_zones is defined

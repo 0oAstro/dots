@@ -1,12 +1,11 @@
 # systemd --user units for the login user, kept running without a session
 # through lingering. Like the overlay role, modules/<module>/user_units/ is
 # copied into ~/.config/systemd/user/ for each module the host is in. Drop-ins (<unit>.d/*.conf) work for units that an
-# app writes itself, such as T3's t3code.service.
+# app writes itself.
 #
 # Units listed in a user_units_enabled_* list are enabled, started, and
 # restarted when their unit or drop-in changes. Anything else only gets a
-# daemon-reload: timer-run services pick changes up on their next run, and
-# t3code drop-ins wait for T3's next restart, which would end its sessions.
+# daemon-reload: timer-run services pick changes up on their next run.
 - name: Collect unit files
   ansible.builtin.set_fact:
     user_unit_files: >-

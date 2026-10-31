@@ -7,13 +7,11 @@ claude:
       home:
         - .claude
         - .config/mise/conf.d/harness-claude.toml
-    # GUI apps start from launchd, not a shell, so T3 Desktop's Claude sessions
-    # miss .zshenv. Set the agent_summary preload and T3's usage label at login;
-    # .zshenv drops the label again so terminal claude stays `cli`.
+    # GUI apps start from launchd, not a shell, so their Claude sessions miss
+    # .zshenv. Set the agent_summary preload at login.
     launchd_agents_claude:
       - label: dev.dots.claude-gui-env
         run_at_load: true
         command: >-
           /bin/launchctl setenv BUN_OPTIONS "--preload=$HOME/.local/share/no-agent-summary/no-agent-summary.js" &&
-          /bin/launchctl setenv CC_AGENT_SUMMARY_LOG "$HOME/Library/Logs/no-agent-summary.log" &&
-          /bin/launchctl setenv CLAUDE_CODE_ENTRYPOINT t3-code
+          /bin/launchctl setenv CC_AGENT_SUMMARY_LOG "$HOME/Library/Logs/no-agent-summary.log"

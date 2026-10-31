@@ -103,7 +103,7 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 | `input` module | Karabiner |
 | a font module | that family in `~/Library/Fonts/<family>` |
 
-`home/.chezmoiignore` holds the OS rules; module rules come from each module's `chezmoi: home:`. Ansible copies `modules/<module>/user_units/` into `~/.config/systemd/user/` (claude-rc for `servers`; the AlgoChat timers and T3 drop-ins for `host_aardvark`).
+`home/.chezmoiignore` holds the OS rules; module rules come from each module's `chezmoi: home:`. Ansible copies `modules/<module>/user_units/` into `~/.config/systemd/user/` (claude-rc for `servers`; the AlgoChat timers for `host_aardvark`).
 
 Fonts need the GitHub login (`gh`, through mise) to clone the private repo. On a fresh machine that login's shim appears during the first apply, so fonts arrive on the second.
 
