@@ -25,5 +25,7 @@
 {{-     $_ := set $cur $k $v -}}
 {{-   end -}}
 {{- end -}}
-{{- if $toml }}{{ toToml $cur }}{{ else if .compact }}{{ toJson $cur }}
+{{- /* index, not .compact: callers may omit the key and chezmoi templates
+       error on missing map keys. */ -}}
+{{- if $toml }}{{ toToml $cur }}{{ else if index . "compact" }}{{ toJson $cur }}
 {{ else }}{{ toPrettyJson "  " $cur }}{{ end -}}
