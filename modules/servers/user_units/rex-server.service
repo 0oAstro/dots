@@ -1,0 +1,19 @@
+[Unit]
+Description=Rex server for the login user, on the tailnet as its own node
+Documentation=https://www.superlogical.com/rex/docs/linux/remote-access
+After=network-online.target
+
+[Service]
+Type=notify
+NotifyAccess=main
+Environment=GODEBUG=
+# Built-in Tailscale: the node is named <hostname>-rex and keeps its sign-in in
+# ~/.local/state/rex/tsnet. The node is tagged, so it has no owner; tailnet
+# ACLs decide who reaches it.
+ExecStart=/usr/bin/rex server run --log-format text --tailscale \
+  --tailscale-hostname %H-rex --tailscale-allow-tailnet-members
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target

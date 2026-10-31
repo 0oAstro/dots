@@ -4,10 +4,8 @@ servers:
   vars:
     tailscale_enabled: true
 
-    # Rex login server on tailnet://:7297. Tailscale identifies tagged devices
-    # only by tag: tag:personal is the Macs, nighthawk and grokbot-box.
+    # Rex package; the server itself is user_units/rex-server.service.
     rex_enabled: true
-    rex_principals: ["tailscale:tag:personal"]
 
     # Kills the worst cgroup under memory pressure (user-1000.slice opts in).
     systemd_enabled_servers:
@@ -16,3 +14,4 @@ servers:
     # Login user's systemd units (user_units/) keep running without a session.
     user_units_enabled_servers:
       - claude-rc.service
+      - rex-server.service
