@@ -61,7 +61,7 @@ Roles are generic; groups and hosts hold the data. A second run reports `changed
 | `modules/macs/` | What every Mac is: Homebrew taps to drop, application firewall, the `dev.dots.brew-upgrade` launchd agent, the base Brewfile |
 | `modules/<module>/` | One feature each. `look`, `input`, `finder`, `perf`, `vendor_updaters_off` and `ai_off` take every Mac (`children: {macs: }`); `apps_dev`, `apps_comms`, `apps_media`, `games`, `google_drive`, `dropbox` and the fonts list their hosts |
 | `modules/<module>/Brewfile` | Homebrew: a Mac gets the Brewfile of every module it is in. Together they are the whole truth: anything installed but unlisted is uninstalled |
-| `modules/linux/`, `servers/`, `desktops/` | Base packages, Tailscale (official repo), Claude Remote Control on servers |
+| `modules/linux/`, `servers/`, `desktops/` | Base packages, Tailscale (official repo), Claude Remote Control and the Rex server on servers |
 | `modules/host_<host>/` | That host's personal choices as host vars (`screenshot_dir`, `macos_appearance`, `dock_tilesize`, `pmset_*`), packages, enabled units, firewalld zones, Docker stacks, its Brewfile |
 | `modules/<module>/overlay/` | Files copied onto `/` (`linux`, `servers`, `host_aardvark`). Two modules may not write the same path. sysctl, exports, sshd, firewalld direct rules and systemd units reload when they change |
 
@@ -95,15 +95,15 @@ Tools track `latest` (or `lts`), so there is nothing to bump. mise holds new rel
 
 | | Files |
 | --- | --- |
-| every machine | zsh, git, tmux, bat, ripgrep, glow, dtop, btop; `conf.d/core.toml` |
+| every machine | zsh, git, tmux, bat, ripgrep, glow, dtop, btop, Rex init.lua; `conf.d/core.toml` |
 | any harness | pstack, agent-browser; `conf.d/ai.toml` |
 | a harness module | that harness's CLI in `conf.d/harness-<name>.toml` and its settings (`claude`, `pi`, `prime`, `cursor`) |
-| macOS | Rex init.lua, lazysql; `conf.d/macos.toml` |
+| macOS | lazysql; `conf.d/macos.toml` |
 | Linux | `conf.d/linux.toml` |
 | `input` module | Karabiner |
 | a font module | that family in `~/Library/Fonts/<family>` |
 
-`home/.chezmoiignore` holds the OS rules; module rules come from each module's `chezmoi: home:`. Ansible copies `modules/<module>/user_units/` into `~/.config/systemd/user/` (claude-rc for `servers`; the AlgoChat timers for `host_aardvark`).
+`home/.chezmoiignore` holds the OS rules; module rules come from each module's `chezmoi: home:`. Ansible copies `modules/<module>/user_units/` into `~/.config/systemd/user/` (claude-rc and rex-server for `servers`; the AlgoChat timers for `host_aardvark`).
 
 Fonts need the GitHub login (`gh`, through mise) to clone the private repo. On a fresh machine that login's shim appears during the first apply, so fonts arrive on the second.
 
