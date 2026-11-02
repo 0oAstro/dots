@@ -1,0 +1,7 @@
+#!/bin/sh
+# Pi with the rea profile (~/.pi/rea): the fx prompt plus the rea reverse-engineering
+# MCP enabled by default. Models, auth, settings and host facts are shared with the
+# agent profile by symlink. Runs in the current directory; all arguments pass to pi.
+set -eu
+export PI_CODING_AGENT_DIR="$HOME/.pi/rea"
+exec pi "$@"
