@@ -29,6 +29,7 @@ host_aardvark:
         - perf
 
       systemd_enabled_aardvark:
+        - systemd-resolved.service
         - nfs-server.service
         - dnf-automatic.timer
         - tailscale-udp-gro.service
