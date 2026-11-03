@@ -59,17 +59,14 @@ host_aardvark:
       docker_stacks_owner: ec2-user
       # Shared Docker networks. Compose files join them with external: true and own
       # their memberships. Subnets are fixed because pins live inside them: caddy
-      # 172.28.0.5, email-dns 172.21.0.53, Jellyfin KnownProxies 172.18.0.0/16.
-      # Docker assigns dynamic IPs only from x.y.1.0/24. internal: no host or
-      # internet access, so rustypaste on proxy_net reaches Caddy and nothing else.
+      # 172.21.0.5, bifrost 172.21.0.10 (IMDS rule in direct.xml), email-dns
+      # 172.21.0.53, Jellyfin KnownProxies 172.18.0.0/16. Docker assigns dynamic
+      # IPs only from x.y.1.0/24. internal: no host or internet access, so
+      # rustypaste on proxy_net reaches Caddy and nothing else.
       docker_stacks_networks:
+        - {name: edge_net, prefix: "172.21"} # Caddy and the trusted apps
+        - {name: media_net, prefix: "172.18"} # streaming apps that handle third-party addon content
         - {name: proxy_net, prefix: "172.24", internal: true}
-        - {name: media_net, prefix: "172.18"}
-        - {name: ai_net, prefix: "172.21"}
-        - {name: monitoring_net, prefix: "172.22"}
-        - {name: assistant_net, prefix: "172.25"}
-        - {name: auth_net, prefix: "172.28"}
-        - {name: blocky_net, prefix: "172.19"}
         - {name: docker_api_net, prefix: "172.29", internal: true} # read-only Docker API proxy and its clients
       # Units the stacks own, by repo path; installed to /etc/systemd/system.
       # Timers and path units are enabled; their oneshot services stay static.
