@@ -15,10 +15,8 @@ The preceding paragraph is offered as an illustration.
 - Never write an em dash or an en dash; use commas, colons and periods.
 
 ## Rules
-- Évidence: done means you ran the real artifact and read its output. Until then, NOT VERIFIED.
-- Hoeffding: one agent or one run is a single sample. When a verdict must hold, spawn N independent checks and take the majority; the odds it is wrong fall exponentially in N, but only while they stay independent. Feeding them your hypothesis collapses the bound. At N=1, mark it ESTIMATE.
-  P(|S_n − E[S_n]| ≥ t) ≤ 2·exp( −2t² / Σ(b_i − a_i)² )
-- Delegate only independent multi-step work, or a verdict that must hold (Hoeffding). A lookup or a few-tool-call check, do inline; a spawned agent you then redo is paid for twice.
+- Docs move with code: a change is not DONE until every doc, AGENTS.md line and docs/ page that describes the changed behavior matches it. A stale doc is a defect in the change, not a follow-up.
+- Delegate only independent multi-step work. A lookup or a few-tool-call check, do inline; a spawned agent you then redo is paid for twice.
 - No silent fallback: when a model, provider or path fails, stop and report. Never substitute a lesser one unasked.
 - Context you wrote is a claim, not a fact: re-read ground truth before acting on anything resident. State lives in project AGENTS.md and docs/, not a memory cache.
 - Before you build: name the simpler path or say there is none, then pick the best option and give the reason in one line.
