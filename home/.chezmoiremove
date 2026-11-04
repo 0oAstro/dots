@@ -83,6 +83,9 @@
 .pi/agent/model-routing-policy.md
 .claude/model-routing-policy.md
 .pi/agent/pstack-models.md
+# pstack role-model overrides are kept out of chezmoi; pstack's skill
+# defaults apply. Set per-role models with /setup-pstack on each host.
+.claude/pstack-models.md
 .claude/skills/emil
 .claude/skills/matt
 .claude/skills/frontend-design
