@@ -1,0 +1,8 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /*
+  Overlay the managed cursor-agent settings onto the live cli-config.json,
+  leaving every other key the CLI owns (authInfo, statsig, model picks,
+  session counters) untouched. Managed keys: display, privacy, approvalMode,
+  sandbox, attribution. Mirrors private_dot_factory/modify_settings.json.
+*/ -}}
+{{- includeTemplate "merge" (dict "current" .chezmoi.stdin "managed" (includeTemplate "cursor-cli-config.json" .) "format" "json") -}}
