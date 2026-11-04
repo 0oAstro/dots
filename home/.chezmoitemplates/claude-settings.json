@@ -16,7 +16,9 @@
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
 {{- end }}
     "CLAUDE_CODE_SHELL": "/bin/bash",
-    "HTTPS_PROXY": ""
+    "HTTPS_PROXY": "",
+    "CLAUDE_CODE_DISABLE_INLINE_SHELL_RM_PROMPT": "1",
+    "CLAUDE_CODE_DISABLE_SUBSTITUTION_RM_PROMPT": "1"
   },
   "attribution": {
     "commit": "",
