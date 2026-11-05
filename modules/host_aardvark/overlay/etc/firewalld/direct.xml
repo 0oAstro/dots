@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <direct>
   <chain ipv="ipv4" table="filter" chain="DOCKER-USER"/>
-  <!-- IMDS hop limit is 2 for Bifrost's Bedrock role; every other forwarded source (containers, exit-node clients) is refused. -->
-  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="-2">-d 169.254.169.254/32 '!' -s 172.21.0.10 -j REJECT</rule>
+  <!-- Forwarded traffic (containers, exit-node clients) never reaches IMDS. -->
+  <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="-2">-d 169.254.169.254/32 -j REJECT</rule>
   <!-- Tailnet and exit-node clients reach published ports (DNAT) and replies only, never container IPs. -->
   <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="10">-i tailscale0 -m conntrack --ctstate DNAT -j ACCEPT</rule>
   <rule ipv="ipv4" table="filter" chain="DOCKER-USER" priority="11">-i tailscale0 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT</rule>

@@ -59,7 +59,7 @@ host_aardvark:
       docker_stacks_owner: ec2-user
       # Shared Docker networks. Compose files join them with external: true and own
       # their memberships. Subnets are fixed because pins live inside them: caddy
-      # 172.21.0.5, bifrost 172.21.0.10 (IMDS rule in direct.xml), email-dns
+      # 172.21.0.5, email-dns
       # 172.21.0.53, Jellyfin KnownProxies 172.18.0.0/16. Docker assigns dynamic
       # IPs only from x.y.1.0/24. internal: no host or internet access, so
       # rustypaste on proxy_net reaches Caddy and nothing else.
