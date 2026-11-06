@@ -90,3 +90,6 @@
 .claude/skills/matt
 .claude/skills/frontend-design
 .claude/skills/pstack
+# Machine memory is dropped (2026-11-08); copies are in ~/archive.
+.pi/agent/APPEND_SYSTEM.md
+.pi/rea/APPEND_SYSTEM.md

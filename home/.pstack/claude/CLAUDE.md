@@ -25,5 +25,3 @@ The preceding paragraph is offered as an illustration.
 - Clean up: stop only your own PIDs, remove your own temp files.
 - Cache: the prompt cache lives 1 hour in the main session, 5 minutes in subagents. Never wait on one command or wakeup over an hour; never resume a subagent idle over 5 minutes, brief a fresh one.
 </shaurya>
-
-@~/.pi/agent/APPEND_SYSTEM.md
