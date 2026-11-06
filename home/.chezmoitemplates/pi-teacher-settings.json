@@ -2,16 +2,14 @@
   "theme": "light/dark",
   "editorPaddingX": 1,
   "defaultProvider": "cliproxy",
-  "defaultModel": "a/claude-opus-5-5",
+  "defaultModel": "oauth/claude-opus-5-5",
   "defaultThinkingLevel": "high",
   "enabledModels": [
-    "cliproxy/a/claude-opus-5-5",
-    "cliproxy/b/claude-opus-5-5",
+    "cliproxy/oauth/claude-opus-5-5",
     "amazon-bedrock/us.anthropic.claude-opus-5-5"
   ],
   "modelThinkingLevels": {
-    "cliproxy/a/claude-opus-5-5": "high",
-    "cliproxy/b/claude-opus-5-5": "high",
+    "cliproxy/oauth/claude-opus-5-5": "high",
     "amazon-bedrock/us.anthropic.claude-opus-5-5": "high"
   },
   "packages": [

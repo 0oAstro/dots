@@ -10,4 +10,4 @@
       "managed" (includeTemplate "fx-settings.json" .)
       "format" "json"
       "compact" true
-      "keep" (list "provider" "models.azure" "models.gateway" "models.grok" "models.cliproxy-a" "models.cliproxy-b")) -}}
+      "keep" (list "provider" "models.azure" "models.gateway" "models.grok" "models.cliproxy")) -}}

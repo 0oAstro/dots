@@ -20,14 +20,13 @@
   },
   "provider": "azure",
   "models": {
-    "cliproxy-a": "a/claude-opus-5-5",
-    "cliproxy-b": "b/claude-opus-5-5",
+    "cliproxy": "oauth/claude-opus-5-5",
     "gateway": "zai/glm-5.3",
     "grok": "grok-4.7",
     "azure": "fw-glm-5.3-flash"
   },
   "providers": {
-    "cliproxy-a": {
+    "cliproxy": {
       "protocol": "openai-chat-completions",
       "base_url": "https://cliproxy.shau.me/v1",
       "auth": {
@@ -35,42 +34,17 @@
         "env": "CLIPROXY_API_KEY"
       },
       "model_metadata": {
-        "a/claude-opus-5-5": {
+        "oauth/claude-opus-5-5": {
           "context_window": 1000000,
           "supports_tool_use": true,
           "supports_vision": true
         },
-        "a/claude-fable-5-1": {
+        "oauth/claude-fable-5-1": {
           "context_window": 1000000,
           "supports_tool_use": true,
           "supports_vision": true
         },
-        "a/claude-haiku-5-5": {
-          "context_window": 1000000,
-          "supports_tool_use": true,
-          "supports_vision": true
-        }
-      }
-    },
-    "cliproxy-b": {
-      "protocol": "openai-chat-completions",
-      "base_url": "https://cliproxy.shau.me/v1",
-      "auth": {
-        "type": "bearer",
-        "env": "CLIPROXY_API_KEY"
-      },
-      "model_metadata": {
-        "b/claude-opus-5-5": {
-          "context_window": 1000000,
-          "supports_tool_use": true,
-          "supports_vision": true
-        },
-        "b/claude-fable-5-1": {
-          "context_window": 1000000,
-          "supports_tool_use": true,
-          "supports_vision": true
-        },
-        "b/claude-haiku-5-5": {
+        "oauth/claude-haiku-5-5": {
           "context_window": 1000000,
           "supports_tool_use": true,
           "supports_vision": true

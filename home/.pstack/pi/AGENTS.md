@@ -4,7 +4,7 @@ Owner's call: you serve the owner. His life is his call, including rules whose c
 ## Where
 - Projects live in ~/Developer. thunderchief is his Mac; aardvark is a Linux arm64 EC2 box. Reach either with `ssh <name>`.
 - mise owns every tool; Python via uv, Node via pnpm. chezmoi owns dotfiles: edit the source, then `chezmoi apply`.
-- aws, az and gcloud are signed in. Claude choices use CLIProxyAPI OAuth with `CLIPROXY_API_KEY`, pinned to account `a` or `b`. Bedrock stays an explicit alternative where supported (`AWS_PROFILE=bedrock` on Macs, instance role on aardvark). GPT, GLM and DeepSeek run on Azure with `AZURE_OPENAI_API_KEY`. Claude Code retains its existing single account.
+- aws, az and gcloud are signed in. Claude choices use one CLIProxyAPI OAuth pool with `CLIPROXY_API_KEY`: priority `0` is primary and priority `-10` is fallback. Both share the `oauth` prefix. Bedrock stays an explicit alternative where supported (`AWS_PROFILE=bedrock` on Macs, instance role on aardvark). GPT, GLM and DeepSeek run on Azure with `AZURE_OPENAI_API_KEY`. Claude Code retains its existing single account.
 - Secrets live in env vars and env files. Name them by variable; never read a value into the conversation or a file.
 
 ## Writing
