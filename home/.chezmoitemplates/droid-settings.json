@@ -1,5 +1,5 @@
 {
-  "model": "custom:Opus-5.5-0",
+  "model": "custom:Opus-5.5-OAuth-A-0",
   "reasoningEffort": "medium",
   "cloudSessionSync": false,
   "includeCoAuthoredByDroid": false,
@@ -21,14 +21,62 @@
     "autonomyLevel": "high"
   },
   "subagentModelSettings": {
-    "lightModel": "custom:Haiku-5.5-0",
+    "lightModel": "custom:Haiku-5.5-OAuth-A-0",
     "lightReasoningEffort": "xhigh",
     "mediumModel": "custom:GPT-6.1-Sol-0",
     "mediumReasoningEffort": "xhigh",
-    "heavyModel": "custom:Fable-5.1-0",
+    "heavyModel": "custom:Fable-5.1-OAuth-A-0",
     "heavyReasoningEffort": "xhigh"
   },
   "customModels": [
+    {
+      "model": "a/claude-opus-5-5",
+      "displayName": "Opus 5.5 OAuth A",
+      "baseModelId": "claude-opus-5-5",
+      "provider": "anthropic",
+      "baseUrl": "https://cliproxy.shau.me",
+      "apiKey": "${CLIPROXY_API_KEY}"
+    },
+    {
+      "model": "a/claude-fable-5-1",
+      "displayName": "Fable 5.1 OAuth A",
+      "baseModelId": "claude-fable-5.1",
+      "provider": "anthropic",
+      "baseUrl": "https://cliproxy.shau.me",
+      "apiKey": "${CLIPROXY_API_KEY}"
+    },
+    {
+      "model": "a/claude-haiku-5-5",
+      "displayName": "Haiku 5.5 OAuth A",
+      "baseModelId": "claude-haiku-5-5",
+      "provider": "anthropic",
+      "baseUrl": "https://cliproxy.shau.me",
+      "apiKey": "${CLIPROXY_API_KEY}"
+    },
+    {
+      "model": "b/claude-opus-5-5",
+      "displayName": "Opus 5.5 OAuth B",
+      "baseModelId": "claude-opus-5-5",
+      "provider": "anthropic",
+      "baseUrl": "https://cliproxy.shau.me",
+      "apiKey": "${CLIPROXY_API_KEY}"
+    },
+    {
+      "model": "b/claude-fable-5-1",
+      "displayName": "Fable 5.1 OAuth B",
+      "baseModelId": "claude-fable-5.1",
+      "provider": "anthropic",
+      "baseUrl": "https://cliproxy.shau.me",
+      "apiKey": "${CLIPROXY_API_KEY}"
+    },
+    {
+      "model": "b/claude-haiku-5-5",
+      "displayName": "Haiku 5.5 OAuth B",
+      "baseModelId": "claude-haiku-5-5",
+      "provider": "anthropic",
+      "baseUrl": "https://cliproxy.shau.me",
+      "apiKey": "${CLIPROXY_API_KEY}"
+    },
     {
       "model": "us.anthropic.claude-opus-5-5",
       "displayName": "Opus 5.5",

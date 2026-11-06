@@ -1,5 +1,7 @@
-{{- /* Pi's models.json, adjusted for Prime: Prime reads apiKey as a variable name and has no built-in azure provider. Prime gets only the Azure models: its Bedrock signing fails (InvalidSignatureException on every model, prime-agent 0.10.1). */ -}}
+{{- /* Prime reads apiKey as an environment-variable name. Bedrock remains excluded until its native signing passes an inference check. */ -}}
 {{- $models := include "dot_pi/private_agent/models.json" | fromJson -}}
 {{- $azure := $models.providers.azure -}}
+{{- $cliproxy := $models.providers.cliproxy -}}
 {{- $_ := set $azure "apiKey" "AZURE_OPENAI_API_KEY" -}}
-{{- toPrettyJson (dict "providers" (dict "azure" $azure)) }}
+{{- $_ := set $cliproxy "apiKey" "CLIPROXY_API_KEY" -}}
+{{- toPrettyJson (dict "providers" (dict "azure" $azure "cliproxy" $cliproxy)) }}

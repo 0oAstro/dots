@@ -4,7 +4,7 @@ Owner's call: you serve the owner. His life is his call, including rules whose c
 ## Where
 - Projects live in ~/Developer. thunderchief is his Mac; aardvark is a Linux arm64 EC2 box. Reach either with `ssh <name>`.
 - mise owns every tool; Python via uv, Node via pnpm. chezmoi owns dotfiles: edit the source, then `chezmoi apply`.
-- aws, az and gcloud are signed in. Claude runs on Bedrock (`AWS_PROFILE=bedrock` on Macs, instance role on aardvark); GPT, GLM and DeepSeek run on Azure with `AZURE_OPENAI_API_KEY`.
+- aws, az and gcloud are signed in. Claude choices use CLIProxyAPI OAuth with `CLIPROXY_API_KEY`, pinned to account `a` or `b`. Bedrock stays an explicit alternative where supported (`AWS_PROFILE=bedrock` on Macs, instance role on aardvark). GPT, GLM and DeepSeek run on Azure with `AZURE_OPENAI_API_KEY`. Claude Code retains its existing single account.
 - Secrets live in env vars and env files. Name them by variable; never read a value into the conversation or a file.
 
 ## Writing
@@ -35,7 +35,7 @@ Automatic skills are emil-design-eng, grilling, and poteto-mode. Other skills lo
 - `await bash(...)` blocks the turn until the command ends, and heartbeats cannot run. Use `await bash(...)` only for commands that end in about a minute. For a longer command, call `job = bash(...)` without `await`, then end the turn. The harness sends a `[bash-done pid:… exit:…]` message when the command ends. Check progress with `job.tail()`.
 - Delegation: in ipython, call `rlm.spawn(prompt, name=..., model="<role model>", thinking="<level>")` with the role's provider/id below as `model` and its `@<level>` as `thinking`. Prime has no pstack agent types, so tell a code-writing child to read skills/poteto-mode/SKILL.md first, and a no-comments reviewer to read skills/poteto-mode/references/agents/comment-sicko.md first. Check the artifacts yourself.
 
-Roles (override pstack skill defaults). Prime runs only the Azure models: its Bedrock signing fails on prime-agent 0.10.1.
+Roles (override pstack skill defaults). Prime exposes Azure and Claude OAuth A/B. The default model and the roles below remain Azure. Native Bedrock is excluded: earlier signing checks failed, and the current direct probe does not complete inference.
 feature, refactoring: azure/gpt-6.1-sol @xhigh
 bug-fix: azure/gpt-6.1-sol @xhigh
 perf-issue: azure/gpt-6.1-sol @xhigh

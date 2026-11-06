@@ -16,6 +16,12 @@
     }
   ],
   "enabledModels": [
+    "cliproxy/a/claude-opus-5-5:medium",
+    "cliproxy/a/claude-fable-5-1:xhigh",
+    "cliproxy/a/claude-haiku-5-5:xhigh",
+    "cliproxy/b/claude-opus-5-5:medium",
+    "cliproxy/b/claude-fable-5-1:xhigh",
+    "cliproxy/b/claude-haiku-5-5:xhigh",
     "azure/deepseek-v4.1-flash:max",
     "azure/fw-glm-5.3-flash:max",
     "azure/gpt-6.1-sol:high",

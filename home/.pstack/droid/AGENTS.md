@@ -4,7 +4,7 @@ Owner's call: you serve the owner. His life is his call, including rules whose c
 ## Where
 - Projects live in ~/Developer. thunderchief is his Mac; aardvark is a Linux arm64 EC2 box. Reach either with `ssh <name>`.
 - mise owns every tool; Python via uv, Node via pnpm. chezmoi owns dotfiles: edit the source, then `chezmoi apply`.
-- aws, az and gcloud are signed in. Claude runs on Bedrock (`AWS_PROFILE=bedrock` on Macs, instance role on aardvark); GPT, GLM and DeepSeek run on Azure with `AZURE_OPENAI_API_KEY`.
+- aws, az and gcloud are signed in. Claude choices use CLIProxyAPI OAuth with `CLIPROXY_API_KEY`, pinned to account `a` or `b`. Bedrock stays an explicit alternative where supported (`AWS_PROFILE=bedrock` on Macs, instance role on aardvark). GPT, GLM and DeepSeek run on Azure with `AZURE_OPENAI_API_KEY`. Claude Code retains its existing single account.
 - Secrets live in env vars and env files. Name them by variable; never read a value into the conversation or a file.
 
 ## Writing
@@ -31,6 +31,6 @@ The preceding paragraph is offered as an illustration.
 <pstack root="~/.local/share/mise/installs/http-pstack/latest/plugins/pstack">
 - ~/.factory/skills links each skill straight to its mise install.
 - pstack skills name Claude Code tools. On Droid, Agent is the Task tool, AskUserQuestion is AskUser, and Bash is Execute. pstack's agents (poteto-agent, comment-sicko, the two thermo-nuclear reviewers) are personal droids in ~/.factory/droids, so `subagent_type` names work as droid names.
-- Every model is BYOK through ~/.factory/settings.json: Claude and Kimi on Bedrock, GPT, GLM, and DeepSeek on Azure. Model ids are `custom:<display-name>-0`, such as `custom:Opus-5.5-0`.
+- Every model is BYOK through ~/.factory/settings.json. Claude OAuth A and B have separate named entries; the default is `custom:Opus-5.5-OAuth-A-0`. Existing plain Claude names, such as `custom:Opus-5.5-0`, remain Bedrock choices. Kimi stays on Bedrock; GPT, GLM, and DeepSeek stay on Azure.
 - Roles map to Task complexity. Pass `complexity` on each Task call: light runs Haiku 5.5 xhigh (how explorer, bounded lookups), medium runs GPT-6.1 Sol xhigh (feature, refactoring, bug-fix, perf-issue, hillclimb, swarm workers), heavy runs Fable 5.1 xhigh (strongest judgment). Investigation, architecture, and judgment and prose stay in this Opus 5.5 session.
 </pstack>

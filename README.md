@@ -113,7 +113,11 @@ Fonts need the GitHub login (`gh`, through mise) to clone the private repo. On a
 
 Secrets are age-encrypted in the repo (`encrypted_*.age`), using chezmoi's built-in age. Every machine uses the same key, `~/.config/age/keys.txt`. Keep a copy outside the repo, for example in Bitwarden. Without the key, chezmoi skips the encrypted files and applies everything else. To add the key later, save it with mode `600` and run `chezmoi apply`.
 
-chezmoi decrypts the API keys to `~/.config/secrets/agents.env` (mode `600`, `NAME=value` lines). zsh exports only the allowlist in `.zshenv` (the Azure pair and `FIRECRAWL_API_KEY`); `secret NAME` exports another key into the current shell. systemd units on aardvark read the file with `EnvironmentFile=`. Each host's SSH config goes to `~/.ssh/config.d/<host>`.
+chezmoi decrypts the API keys to `~/.config/secrets/agents.env` (mode `600`, `NAME=value` lines). zsh exports only the allowlist in `.zshenv` (`CLIPROXY_API_KEY`, the Azure pair, and `FIRECRAWL_API_KEY`); `secret NAME` exports another key into the current shell. systemd units on aardvark read the file with `EnvironmentFile=`. Each host's SSH config goes to `~/.ssh/config.d/<host>`.
+
+## Harness routing
+
+[Harness routing](docs/harness-routing.md) defines Claude OAuth account selection, retained Bedrock and Azure choices, unsupported provider paths, and credential provisioning. Claude Code retains its existing single account and configuration.
 
 ## Files the apps also write
 

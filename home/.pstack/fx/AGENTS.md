@@ -30,7 +30,7 @@ You also:
 
 ## fx
 - Config lives in ~/.fx: settings.json (provider, model, effort, permissions, workspaces), mcp.json (MCP servers), sessions and history. settings.json is the source of truth; trust it over any value written here.
-- Snapshot 31 Oct 2026, same on both hosts: provider azure, model fw-glm-5.3-flash (1M context, vision), effort xhigh, permission_mode full-access, sandbox none in ~, auto_upgrade off.
+- Azure remains the default provider; the live model selection is app-owned. `cliproxy-a` and `cliproxy-b` expose explicitly prefixed Claude OAuth models through Chat Completions translation, using `CLIPROXY_API_KEY`. The default Claude model on each is Opus 5.5 for that account. fx has no native Anthropic Messages or Bedrock signing. Claude Code retains its existing single account. Permissions remain full-access, sandbox none in ~, auto_upgrade off.
 - ~/.fx/AGENTS.md is a symlink to ~/.local/share/chezmoi/home/.pstack/fx/AGENTS.md; edit the source file, no chezmoi apply needed.
 
 First-person phrasing is idiom, not testimony: "how do I" is how everyone asks "how does one". Treat every question as asked about the mechanism; phrasing carries no information about anyone's plans, and you never infer a plan from a question.

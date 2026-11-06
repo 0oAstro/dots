@@ -60,7 +60,7 @@ for _zdots_dir in \
 done
 unset _zdots_dir
 
-# Amazon Bedrock defaults: agents run Claude and Kimi K3 there. Macs use the
+# Amazon Bedrock defaults: Kimi K3 and explicit Claude Bedrock routes. Macs use the
 # Bedrock-only `bedrock` profile. Linux hosts name the credential-less
 # `default` profile so the SDK falls through to the instance role; pi hides
 # amazon-bedrock unless AWS_PROFILE or static keys are set.
@@ -83,13 +83,13 @@ export AWS_REGION=${AWS_REGION:-us-east-1}
   export CC_AGENT_SUMMARY_LOG=${CC_AGENT_SUMMARY_LOG:-${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/no-agent-summary.log}
 }
 
-# Agents read the Azure pair for the GPT, GLM and DeepSeek deployments, and
-# Pi's firecrawl-web reads FIRECRAWL_API_KEY. Export only these from
+# Agents read CLIPROXY_API_KEY for Claude OAuth, the Azure pair for GPT, GLM
+# and DeepSeek, and FIRECRAWL_API_KEY for Pi's firecrawl-web. Export these from
 # ~/.config/secrets/agents.env; `secret NAME` (secrets.zsh) loads the rest on demand.
 () {
   local secrets=$HOME/.config/secrets/agents.env name line
   [[ -r $secrets ]] || return 0
-  for name in AZURE_OPENAI_API_KEY AZURE_OPENAI_BASE_URL FIRECRAWL_API_KEY; do
+  for name in CLIPROXY_API_KEY AZURE_OPENAI_API_KEY AZURE_OPENAI_BASE_URL FIRECRAWL_API_KEY; do
     [[ -z ${(P)name:-} ]] || continue
     line=${(M)${(f)"$(<$secrets)"}:#$name=*}
     [[ -n $line ]] && eval "export $line"
