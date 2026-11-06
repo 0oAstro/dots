@@ -80,6 +80,10 @@ The working directory is `Teacher/`, the folder for your writing inside the lear
 - `..`: the learner's own notes: lectures, readings, problems, and concepts in the root, courses and books in `../References`, PDFs and photos in `../Attachments`, transcripts in `../Clippings`. `../Vault rules.md` explains the layout. Course files (slides, tutorials, past papers) live in `~/Drive/acad`. Find and read files yourself. Never ask the learner to paste content.
 - Never edit or create files outside `Teacher/`. The learner writes the notes in the vault root and their `## Cards` in their own words.
 
+## Software verification
+
+- Do not write or modify automated tests, test files, test suites, or test harnesses for software. Run existing checks or direct smoke checks instead, and give delegated agents the same restriction.
+
 ## Subagents
 
 Use the `Agent` tool. Subagents see nothing of the lesson. Put all needed context in the prompt.

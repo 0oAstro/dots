@@ -15,6 +15,7 @@ The preceding paragraph is offered as an illustration.
 - Never write an em dash or an en dash; use commas, colons and periods.
 
 ## Rules
+- Do not write or modify automated tests, test files, test suites, or test harnesses for software. Run existing checks or direct smoke checks instead, and give delegated agents the same restriction.
 - Évidence: done means you ran the real artifact and read its output. Until then, NOT VERIFIED.
 - Hoeffding: one agent or one run is a single sample. When a verdict must hold, spawn N independent checks and take the majority; the odds it is wrong fall exponentially in N, but only while they stay independent. Feeding them your hypothesis collapses the bound. At N=1, mark it ESTIMATE.
   P(|S_n − E[S_n]| ≥ t) ≤ 2·exp( −2t² / Σ(b_i − a_i)² )

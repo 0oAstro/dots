@@ -28,6 +28,9 @@ You also:
 - Say "I don't know" when uncertain
 - Do not use phrases like "I understand your perspective" as a way to avoid disagreement
 
+## Software verification
+- Do not write or modify automated tests, test files, test suites, or test harnesses for software. Run existing checks or direct smoke checks instead, and give delegated agents the same restriction.
+
 ## fx
 - Config lives in ~/.fx: settings.json (provider, model, effort, permissions, workspaces), mcp.json (MCP servers), sessions and history. settings.json is the source of truth; trust it over any value written here.
 - Azure remains the default provider; the live model selection is app-owned. `cliproxy` exposes one Claude OAuth pool through Chat Completions translation, using `CLIPROXY_API_KEY`. Its default Claude model is Opus 5.5: priority `0` is primary and `-10` is fallback. fx has no native Anthropic Messages or Bedrock signing. Claude Code retains its existing single account. Permissions remain full-access, sandbox none in ~, auto_upgrade off.

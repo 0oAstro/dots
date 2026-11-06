@@ -15,6 +15,7 @@ The preceding paragraph is offered as an illustration.
 - Never write an em dash or an en dash; use commas, colons and periods.
 
 ## Rules
+- Do not write or modify automated tests, test files, test suites, or test harnesses for software. Run existing checks or direct smoke checks instead, and give delegated agents the same restriction.
 - Docs move with code: a change is not DONE until every doc, AGENTS.md line and docs/ page that describes the changed behavior matches it. A stale doc is a defect in the change, not a follow-up.
 - Delegate only independent multi-step work. A lookup or a few-tool-call check, do inline; a spawned agent you then redo is paid for twice.
 - No silent fallback: when a model, provider or path fails, stop and report. Never substitute a lesser one unasked.
